@@ -7,6 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		58094EBC2B26164B00D4D2FC /* IngredientsTableFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58094EBB2B26164B00D4D2FC /* IngredientsTableFooterView.swift */; };
+		58094EBE2B267E6300D4D2FC /* IngredientsTableHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58094EBD2B267E6300D4D2FC /* IngredientsTableHeaderView.swift */; };
+		580ED37E2B24BD1300B4A9F0 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 580ED37D2B24BD1300B4A9F0 /* SnapKit */; };
+		580ED3802B24C2F300B4A9F0 /* ReusableTextLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 580ED37F2B24C2F300B4A9F0 /* ReusableTextLabel.swift */; };
+		580ED3822B25068100B4A9F0 /* ColorTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 580ED3812B25068100B4A9F0 /* ColorTheme.swift */; };
+		580ED3842B2513C000B4A9F0 /* IngridientModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 580ED3832B2513C000B4A9F0 /* IngridientModel.swift */; };
+		58102DD12B2483B40090EAE8 /* TitleTextFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58102DD02B2483B40090EAE8 /* TitleTextFieldView.swift */; };
+		58102DD52B2494ED0090EAE8 /* RecipesListVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58102DD42B2494ED0090EAE8 /* RecipesListVM.swift */; };
+		58102DD92B2496960090EAE8 /* TabBarVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58102DD82B2496960090EAE8 /* TabBarVC.swift */; };
+		58102DDB2B249F900090EAE8 /* AddRecipeVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58102DDA2B249F900090EAE8 /* AddRecipeVM.swift */; };
+		58102DDE2B24A3150090EAE8 /* ShopingListVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58102DDD2B24A3150090EAE8 /* ShopingListVM.swift */; };
+		58102DE02B24AB9E0090EAE8 /* UITextFieldExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58102DDF2B24AB9E0090EAE8 /* UITextFieldExt.swift */; };
 		58356AFB2B1FB9E5000AC548 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356AFA2B1FB9E5000AC548 /* AppDelegate.swift */; };
 		58356AFD2B1FB9E5000AC548 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356AFC2B1FB9E5000AC548 /* SceneDelegate.swift */; };
 		58356B052B1FB9E6000AC548 /* Yem.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 58356B032B1FB9E6000AC548 /* Yem.xcdatamodeld */; };
@@ -14,27 +26,14 @@
 		58356B152B1FB9E8000AC548 /* YemTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B142B1FB9E8000AC548 /* YemTests.swift */; };
 		58356B1F2B1FB9E8000AC548 /* YemUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B1E2B1FB9E8000AC548 /* YemUITests.swift */; };
 		58356B212B1FB9E8000AC548 /* YemUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B202B1FB9E8000AC548 /* YemUITestsLaunchTests.swift */; };
-		58356B362B20C631000AC548 /* AppRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B352B20C631000AC548 /* AppRouter.swift */; };
-		58356B382B20C831000AC548 /* CookingModeRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B372B20C831000AC548 /* CookingModeRouter.swift */; };
-		58356B3A2B20D84C000AC548 /* CookingModeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B392B20D84C000AC548 /* CookingModeVC.swift */; };
-		58356B3C2B20D8EF000AC548 /* CookingModeInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B3B2B20D8EF000AC548 /* CookingModeInteractor.swift */; };
-		58356B3E2B20D9CC000AC548 /* CookingModePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B3D2B20D9CC000AC548 /* CookingModePresenter.swift */; };
-		58356B452B20DACC000AC548 /* CookingModeProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B442B20DACC000AC548 /* CookingModeProtocols.swift */; };
 		58356B472B20E0DB000AC548 /* ShopingListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B462B20E0DB000AC548 /* ShopingListVC.swift */; };
 		58356B492B20E0ED000AC548 /* RecipesListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B482B20E0ED000AC548 /* RecipesListVC.swift */; };
-		58356B4B2B20E148000AC548 /* RecipesListRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B4A2B20E148000AC548 /* RecipesListRouter.swift */; };
-		58356B4D2B20E159000AC548 /* RecipesListInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B4C2B20E159000AC548 /* RecipesListInteractor.swift */; };
-		58356B4F2B20E167000AC548 /* RecipesListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B4E2B20E167000AC548 /* RecipesListPresenter.swift */; };
-		58356B512B20E178000AC548 /* RecipesListProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B502B20E178000AC548 /* RecipesListProtocols.swift */; };
-		58356B532B20E18E000AC548 /* ShopingListRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B522B20E18E000AC548 /* ShopingListRouter.swift */; };
-		58356B552B20E19C000AC548 /* ShopingListInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B542B20E19C000AC548 /* ShopingListInteractor.swift */; };
-		58356B572B20E1FB000AC548 /* ShopingListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B562B20E1FB000AC548 /* ShopingListPresenter.swift */; };
-		58356B592B20E20E000AC548 /* ShopingListProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B582B20E20E000AC548 /* ShopingListProtocols.swift */; };
 		58356B5B2B2267BE000AC548 /* AddRecipeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B5A2B2267BE000AC548 /* AddRecipeVC.swift */; };
-		58356B5D2B2267F8000AC548 /* AddRecipeProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B5C2B2267F8000AC548 /* AddRecipeProtocols.swift */; };
-		58356B5F2B226808000AC548 /* AddRecipeInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B5E2B226808000AC548 /* AddRecipeInteractor.swift */; };
-		58356B612B226816000AC548 /* AddRecipePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B602B226816000AC548 /* AddRecipePresenter.swift */; };
-		58356B632B226823000AC548 /* AddRecipeRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B622B226823000AC548 /* AddRecipeRouter.swift */; };
+		586932152B252D1800379C8C /* UIViewExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 586932142B252D1800379C8C /* UIViewExt.swift */; };
+		586932172B25351A00379C8C /* AddRecipeIngredientsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 586932162B25351A00379C8C /* AddRecipeIngredientsVC.swift */; };
+		5869321B2B253AB300379C8C /* AddRecipeInstructionsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5869321A2B253AB300379C8C /* AddRecipeInstructionsVC.swift */; };
+		5869321D2B26112000379C8C /* IconImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5869321C2B26112000379C8C /* IconImageView.swift */; };
+		58EBB0772B227B82000EB128 /* AddPhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58EBB0762B227B82000EB128 /* AddPhotoView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +54,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		58094EBB2B26164B00D4D2FC /* IngredientsTableFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientsTableFooterView.swift; sourceTree = "<group>"; };
+		58094EBD2B267E6300D4D2FC /* IngredientsTableHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientsTableHeaderView.swift; sourceTree = "<group>"; };
+		580ED37F2B24C2F300B4A9F0 /* ReusableTextLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReusableTextLabel.swift; sourceTree = "<group>"; };
+		580ED3812B25068100B4A9F0 /* ColorTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorTheme.swift; sourceTree = "<group>"; };
+		580ED3832B2513C000B4A9F0 /* IngridientModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngridientModel.swift; sourceTree = "<group>"; };
+		58102DD02B2483B40090EAE8 /* TitleTextFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleTextFieldView.swift; sourceTree = "<group>"; };
+		58102DD42B2494ED0090EAE8 /* RecipesListVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipesListVM.swift; sourceTree = "<group>"; };
+		58102DD82B2496960090EAE8 /* TabBarVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarVC.swift; sourceTree = "<group>"; };
+		58102DDA2B249F900090EAE8 /* AddRecipeVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRecipeVM.swift; sourceTree = "<group>"; };
+		58102DDD2B24A3150090EAE8 /* ShopingListVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopingListVM.swift; sourceTree = "<group>"; };
+		58102DDF2B24AB9E0090EAE8 /* UITextFieldExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextFieldExt.swift; sourceTree = "<group>"; };
 		58356AF72B1FB9E5000AC548 /* Yem.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yem.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		58356AFA2B1FB9E5000AC548 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		58356AFC2B1FB9E5000AC548 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -66,27 +76,14 @@
 		58356B1A2B1FB9E8000AC548 /* YemUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YemUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		58356B1E2B1FB9E8000AC548 /* YemUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YemUITests.swift; sourceTree = "<group>"; };
 		58356B202B1FB9E8000AC548 /* YemUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YemUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		58356B352B20C631000AC548 /* AppRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRouter.swift; sourceTree = "<group>"; };
-		58356B372B20C831000AC548 /* CookingModeRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CookingModeRouter.swift; sourceTree = "<group>"; };
-		58356B392B20D84C000AC548 /* CookingModeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CookingModeVC.swift; sourceTree = "<group>"; };
-		58356B3B2B20D8EF000AC548 /* CookingModeInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CookingModeInteractor.swift; sourceTree = "<group>"; };
-		58356B3D2B20D9CC000AC548 /* CookingModePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CookingModePresenter.swift; sourceTree = "<group>"; };
-		58356B442B20DACC000AC548 /* CookingModeProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CookingModeProtocols.swift; sourceTree = "<group>"; };
 		58356B462B20E0DB000AC548 /* ShopingListVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopingListVC.swift; sourceTree = "<group>"; };
 		58356B482B20E0ED000AC548 /* RecipesListVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipesListVC.swift; sourceTree = "<group>"; };
-		58356B4A2B20E148000AC548 /* RecipesListRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipesListRouter.swift; sourceTree = "<group>"; };
-		58356B4C2B20E159000AC548 /* RecipesListInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipesListInteractor.swift; sourceTree = "<group>"; };
-		58356B4E2B20E167000AC548 /* RecipesListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipesListPresenter.swift; sourceTree = "<group>"; };
-		58356B502B20E178000AC548 /* RecipesListProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipesListProtocols.swift; sourceTree = "<group>"; };
-		58356B522B20E18E000AC548 /* ShopingListRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopingListRouter.swift; sourceTree = "<group>"; };
-		58356B542B20E19C000AC548 /* ShopingListInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopingListInteractor.swift; sourceTree = "<group>"; };
-		58356B562B20E1FB000AC548 /* ShopingListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopingListPresenter.swift; sourceTree = "<group>"; };
-		58356B582B20E20E000AC548 /* ShopingListProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopingListProtocols.swift; sourceTree = "<group>"; };
 		58356B5A2B2267BE000AC548 /* AddRecipeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRecipeVC.swift; sourceTree = "<group>"; };
-		58356B5C2B2267F8000AC548 /* AddRecipeProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRecipeProtocols.swift; sourceTree = "<group>"; };
-		58356B5E2B226808000AC548 /* AddRecipeInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRecipeInteractor.swift; sourceTree = "<group>"; };
-		58356B602B226816000AC548 /* AddRecipePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRecipePresenter.swift; sourceTree = "<group>"; };
-		58356B622B226823000AC548 /* AddRecipeRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRecipeRouter.swift; sourceTree = "<group>"; };
+		586932142B252D1800379C8C /* UIViewExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewExt.swift; sourceTree = "<group>"; };
+		586932162B25351A00379C8C /* AddRecipeIngredientsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRecipeIngredientsVC.swift; sourceTree = "<group>"; };
+		5869321A2B253AB300379C8C /* AddRecipeInstructionsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRecipeInstructionsVC.swift; sourceTree = "<group>"; };
+		5869321C2B26112000379C8C /* IconImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconImageView.swift; sourceTree = "<group>"; };
+		58EBB0762B227B82000EB128 /* AddPhotoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +91,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				580ED37E2B24BD1300B4A9F0 /* SnapKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -114,6 +112,54 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		58102DD22B2494BC0090EAE8 /* Screens */ = {
+			isa = PBXGroup;
+			children = (
+				58102DD82B2496960090EAE8 /* TabBarVC.swift */,
+				58102DD32B2494C20090EAE8 /* RecipesList */,
+				58102DD72B24961B0090EAE8 /* AddRecipe */,
+				58102DDC2B24A2080090EAE8 /* ShopingList */,
+			);
+			path = Screens;
+			sourceTree = "<group>";
+		};
+		58102DD32B2494C20090EAE8 /* RecipesList */ = {
+			isa = PBXGroup;
+			children = (
+				58356B482B20E0ED000AC548 /* RecipesListVC.swift */,
+				58102DD42B2494ED0090EAE8 /* RecipesListVM.swift */,
+			);
+			path = RecipesList;
+			sourceTree = "<group>";
+		};
+		58102DD62B2496110090EAE8 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				580ED3832B2513C000B4A9F0 /* IngridientModel.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		58102DD72B24961B0090EAE8 /* AddRecipe */ = {
+			isa = PBXGroup;
+			children = (
+				58356B5A2B2267BE000AC548 /* AddRecipeVC.swift */,
+				586932162B25351A00379C8C /* AddRecipeIngredientsVC.swift */,
+				5869321A2B253AB300379C8C /* AddRecipeInstructionsVC.swift */,
+				58102DDA2B249F900090EAE8 /* AddRecipeVM.swift */,
+			);
+			path = AddRecipe;
+			sourceTree = "<group>";
+		};
+		58102DDC2B24A2080090EAE8 /* ShopingList */ = {
+			isa = PBXGroup;
+			children = (
+				58356B462B20E0DB000AC548 /* ShopingListVC.swift */,
+				58102DDD2B24A3150090EAE8 /* ShopingListVM.swift */,
+			);
+			path = ShopingList;
+			sourceTree = "<group>";
+		};
 		58356AEE2B1FB9E5000AC548 = {
 			isa = PBXGroup;
 			children = (
@@ -121,6 +167,7 @@
 				58356B132B1FB9E8000AC548 /* YemTests */,
 				58356B1D2B1FB9E8000AC548 /* YemUITests */,
 				58356AF82B1FB9E5000AC548 /* Products */,
+				58EBB0712B227A8A000EB128 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -137,11 +184,11 @@
 		58356AF92B1FB9E5000AC548 /* Yem */ = {
 			isa = PBXGroup;
 			children = (
-				58356B332B1FD8A3000AC548 /* Data */,
+				58102DD62B2496110090EAE8 /* Model */,
+				58102DD22B2494BC0090EAE8 /* Screens */,
 				58356B322B1FD891000AC548 /* CustomViews */,
-				58356B312B1FD87C000AC548 /* Modules */,
+				58356B332B1FD8A3000AC548 /* Data */,
 				58356B342B1FD8A9000AC548 /* Helpers */,
-				58356B352B20C631000AC548 /* AppRouter.swift */,
 				58356AFA2B1FB9E5000AC548 /* AppDelegate.swift */,
 				58356AFC2B1FB9E5000AC548 /* SceneDelegate.swift */,
 				58356B062B1FB9E7000AC548 /* Assets.xcassets */,
@@ -168,70 +215,15 @@
 			path = YemUITests;
 			sourceTree = "<group>";
 		};
-		58356B2D2B1FD7F1000AC548 /* RecipesList */ = {
-			isa = PBXGroup;
-			children = (
-				58356B4A2B20E148000AC548 /* RecipesListRouter.swift */,
-				58356B482B20E0ED000AC548 /* RecipesListVC.swift */,
-				58356B4C2B20E159000AC548 /* RecipesListInteractor.swift */,
-				58356B4E2B20E167000AC548 /* RecipesListPresenter.swift */,
-				58356B502B20E178000AC548 /* RecipesListProtocols.swift */,
-			);
-			path = RecipesList;
-			sourceTree = "<group>";
-		};
-		58356B2E2B1FD844000AC548 /* AddRecipe */ = {
-			isa = PBXGroup;
-			children = (
-				58356B5A2B2267BE000AC548 /* AddRecipeVC.swift */,
-				58356B5E2B226808000AC548 /* AddRecipeInteractor.swift */,
-				58356B602B226816000AC548 /* AddRecipePresenter.swift */,
-				58356B622B226823000AC548 /* AddRecipeRouter.swift */,
-				58356B5C2B2267F8000AC548 /* AddRecipeProtocols.swift */,
-			);
-			path = AddRecipe;
-			sourceTree = "<group>";
-		};
-		58356B2F2B1FD862000AC548 /* ShopingList */ = {
-			isa = PBXGroup;
-			children = (
-				58356B522B20E18E000AC548 /* ShopingListRouter.swift */,
-				58356B462B20E0DB000AC548 /* ShopingListVC.swift */,
-				58356B542B20E19C000AC548 /* ShopingListInteractor.swift */,
-				58356B562B20E1FB000AC548 /* ShopingListPresenter.swift */,
-				58356B582B20E20E000AC548 /* ShopingListProtocols.swift */,
-			);
-			path = ShopingList;
-			sourceTree = "<group>";
-		};
-		58356B302B1FD870000AC548 /* CookingMode */ = {
-			isa = PBXGroup;
-			children = (
-				58356B422B20DA91000AC548 /* Entity */,
-				58356B3F2B20DA73000AC548 /* View */,
-				58356B372B20C831000AC548 /* CookingModeRouter.swift */,
-				58356B392B20D84C000AC548 /* CookingModeVC.swift */,
-				58356B3B2B20D8EF000AC548 /* CookingModeInteractor.swift */,
-				58356B3D2B20D9CC000AC548 /* CookingModePresenter.swift */,
-				58356B442B20DACC000AC548 /* CookingModeProtocols.swift */,
-			);
-			path = CookingMode;
-			sourceTree = "<group>";
-		};
-		58356B312B1FD87C000AC548 /* Modules */ = {
-			isa = PBXGroup;
-			children = (
-				58356B302B1FD870000AC548 /* CookingMode */,
-				58356B2D2B1FD7F1000AC548 /* RecipesList */,
-				58356B2E2B1FD844000AC548 /* AddRecipe */,
-				58356B2F2B1FD862000AC548 /* ShopingList */,
-			);
-			path = Modules;
-			sourceTree = "<group>";
-		};
 		58356B322B1FD891000AC548 /* CustomViews */ = {
 			isa = PBXGroup;
 			children = (
+				58EBB0762B227B82000EB128 /* AddPhotoView.swift */,
+				58102DD02B2483B40090EAE8 /* TitleTextFieldView.swift */,
+				580ED37F2B24C2F300B4A9F0 /* ReusableTextLabel.swift */,
+				5869321C2B26112000379C8C /* IconImageView.swift */,
+				58094EBB2B26164B00D4D2FC /* IngredientsTableFooterView.swift */,
+				58094EBD2B267E6300D4D2FC /* IngredientsTableHeaderView.swift */,
 			);
 			path = CustomViews;
 			sourceTree = "<group>";
@@ -246,22 +238,18 @@
 		58356B342B1FD8A9000AC548 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				58102DDF2B24AB9E0090EAE8 /* UITextFieldExt.swift */,
+				586932142B252D1800379C8C /* UIViewExt.swift */,
+				580ED3812B25068100B4A9F0 /* ColorTheme.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
 		};
-		58356B3F2B20DA73000AC548 /* View */ = {
+		58EBB0712B227A8A000EB128 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 			);
-			path = View;
-			sourceTree = "<group>";
-		};
-		58356B422B20DA91000AC548 /* Entity */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Entity;
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -280,6 +268,9 @@
 			dependencies = (
 			);
 			name = Yem;
+			packageProductDependencies = (
+				580ED37D2B24BD1300B4A9F0 /* SnapKit */,
+			);
 			productName = Yem;
 			productReference = 58356AF72B1FB9E5000AC548 /* Yem.app */;
 			productType = "com.apple.product-type.application";
@@ -352,6 +343,9 @@
 				Base,
 			);
 			mainGroup = 58356AEE2B1FB9E5000AC548;
+			packageReferences = (
+				58356B642B2279E9000AC548 /* XCRemoteSwiftPackageReference "SnapKit" */,
+			);
 			productRefGroup = 58356AF82B1FB9E5000AC548 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -393,30 +387,28 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				58356B3C2B20D8EF000AC548 /* CookingModeInteractor.swift in Sources */,
-				58356B512B20E178000AC548 /* RecipesListProtocols.swift in Sources */,
-				58356B632B226823000AC548 /* AddRecipeRouter.swift in Sources */,
-				58356B4F2B20E167000AC548 /* RecipesListPresenter.swift in Sources */,
-				58356B612B226816000AC548 /* AddRecipePresenter.swift in Sources */,
-				58356B552B20E19C000AC548 /* ShopingListInteractor.swift in Sources */,
 				58356B472B20E0DB000AC548 /* ShopingListVC.swift in Sources */,
-				58356B382B20C831000AC548 /* CookingModeRouter.swift in Sources */,
-				58356B3A2B20D84C000AC548 /* CookingModeVC.swift in Sources */,
-				58356B4D2B20E159000AC548 /* RecipesListInteractor.swift in Sources */,
-				58356B4B2B20E148000AC548 /* RecipesListRouter.swift in Sources */,
-				58356B362B20C631000AC548 /* AppRouter.swift in Sources */,
-				58356B592B20E20E000AC548 /* ShopingListProtocols.swift in Sources */,
+				5869321D2B26112000379C8C /* IconImageView.swift in Sources */,
+				58094EBE2B267E6300D4D2FC /* IngredientsTableHeaderView.swift in Sources */,
+				58102DD52B2494ED0090EAE8 /* RecipesListVM.swift in Sources */,
+				58102DD92B2496960090EAE8 /* TabBarVC.swift in Sources */,
+				58102DDE2B24A3150090EAE8 /* ShopingListVM.swift in Sources */,
+				58094EBC2B26164B00D4D2FC /* IngredientsTableFooterView.swift in Sources */,
 				58356B492B20E0ED000AC548 /* RecipesListVC.swift in Sources */,
 				58356AFB2B1FB9E5000AC548 /* AppDelegate.swift in Sources */,
+				580ED3822B25068100B4A9F0 /* ColorTheme.swift in Sources */,
+				5869321B2B253AB300379C8C /* AddRecipeInstructionsVC.swift in Sources */,
+				586932172B25351A00379C8C /* AddRecipeIngredientsVC.swift in Sources */,
+				580ED3802B24C2F300B4A9F0 /* ReusableTextLabel.swift in Sources */,
 				58356AFD2B1FB9E5000AC548 /* SceneDelegate.swift in Sources */,
-				58356B452B20DACC000AC548 /* CookingModeProtocols.swift in Sources */,
-				58356B3E2B20D9CC000AC548 /* CookingModePresenter.swift in Sources */,
+				58EBB0772B227B82000EB128 /* AddPhotoView.swift in Sources */,
 				58356B052B1FB9E6000AC548 /* Yem.xcdatamodeld in Sources */,
-				58356B532B20E18E000AC548 /* ShopingListRouter.swift in Sources */,
-				58356B5F2B226808000AC548 /* AddRecipeInteractor.swift in Sources */,
+				58102DD12B2483B40090EAE8 /* TitleTextFieldView.swift in Sources */,
 				58356B5B2B2267BE000AC548 /* AddRecipeVC.swift in Sources */,
-				58356B5D2B2267F8000AC548 /* AddRecipeProtocols.swift in Sources */,
-				58356B572B20E1FB000AC548 /* ShopingListPresenter.swift in Sources */,
+				586932152B252D1800379C8C /* UIViewExt.swift in Sources */,
+				58102DDB2B249F900090EAE8 /* AddRecipeVM.swift in Sources */,
+				580ED3842B2513C000B4A9F0 /* IngridientModel.swift in Sources */,
+				58102DE02B24AB9E0090EAE8 /* UITextFieldExt.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -586,6 +578,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -613,6 +606,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -742,6 +736,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		58356B642B2279E9000AC548 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.6.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		580ED37D2B24BD1300B4A9F0 /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 58356B642B2279E9000AC548 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		58356B032B1FB9E6000AC548 /* Yem.xcdatamodeld */ = {

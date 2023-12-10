@@ -7,10 +7,10 @@
 
 import UIKit
 
-class ShopingListVC: UIViewController, ShopingListViewProtocol {
+class ShopingListVC: UIViewController{
     
-    var presenter: ShopingListPresenterProtocol?
-
+    let vm = ShopingListVM()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
