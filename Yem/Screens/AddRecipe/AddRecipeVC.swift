@@ -9,7 +9,12 @@ import Combine
 import SnapKit
 import UIKit
 
-class AddRecipeVC: UIViewController {
+class AddRecipeVC: UIViewController, TextfieldWithIconCellDelegate {
+    func textFieldDidEndEditing(_ cell: TextfieldWithIconCell, didUpdateText text: String) {
+        //
+    }
+    
+    
     let vm = AddRecipeViewModel()
     private var cancellables = Set<AnyCancellable>()
     
@@ -64,12 +69,20 @@ class AddRecipeVC: UIViewController {
     let prepTimeLabel = UILabel()
     let prepTimePickerView = UIPickerView()
     
-//    let divider1 = UIView()
-    let divider = UIView()
+    let recipeDataStack: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .vertical
+        sv.distribution = .fillEqually
+        sv.spacing = 8
+        return sv
+    }()
     
-    /// Ingridients
-    
-    let titleForIngridients = ReusableTextLabel(fontStyle: .footnote, fontWeight: .regular, textColor: .orange)
+    var nameTextfield: TextfieldWithIconCell!
+    var difficultyCell: PickerButtonWithIconCell!
+    var servingCell: PickerButtonWithIconCell!
+    var prepTimeCell: PickerButtonWithIconCell!
+    var spicyCell: PickerButtonWithIconCell!
+    var categoryCell: PickerButtonWithIconCell!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -86,24 +99,24 @@ class AddRecipeVC: UIViewController {
         setupPageStackView()
     
         setupAddPhotoView()
-//        setupFirstDivider()
         
-        setupTitleForTitleTextField()
-        setupTitleTextField()
+        setupNameTextfield()
+
+        setupDifficultyCell()
+        setupServingCell()
+        setupPrepTimeCell()
+        setupSpicyCell()
+        setupCategoryCell()
         
-        print("test")
-        setupTitleForDifficultyPicker()
-        setupPickerViewButton()
-        
-        setupTitleForServingsPicker()
-        setupServingPickerViewButton()
-        
-        setupTitleForPrepTimePicker()
-        setupPrepTimePickerViewButton()
-        
-        setupDivider()
-        
-        setupTitleForIngridients()
+        configureRecipeDataStackView()
+
+//        
+//        setupTitleForServingsPicker()
+//        setupServingPickerViewButton()
+//        
+//        setupTitleForPrepTimePicker()
+//        setupPrepTimePickerViewButton()
+
     }
     
     deinit {
@@ -161,188 +174,180 @@ class AddRecipeVC: UIViewController {
     
         addPhotoView.snp.makeConstraints { make in
             make.top.equalTo(pageStackView.snp.bottom).offset(18)
-            make.leading.equalToSuperview().offset(12)
-            make.trailing.equalToSuperview().offset(-12)
+            make.leading.trailing.equalToSuperview().inset(18)
             make.height.equalTo(150)
         }
     }
-//    
-//    private func setupFirstDivider() {
-//        contentView.addSubview(divider1)
+    
+    private func setupNameTextfield() {
+        nameTextfield = TextfieldWithIconCell(iconImage: "pencil", placeholderText: "Enter your recipe name")
+        nameTextfield.delegate = self
+        contentView.addSubview(nameTextfield)
+        
+        nameTextfield.snp.makeConstraints { make in
+            make.top.equalTo(addPhotoView.snp.bottom).offset(12)
+            make.leading.trailing.equalToSuperview().inset(18)
+            make.height.greaterThanOrEqualTo(50)
+        }
+    }
+
+    
+    // Difficulty Picker
+    
+    private func configureRecipeDataStackView() {
+        contentView.addSubview(recipeDataStack)
+        recipeDataStack.addArrangedSubview(difficultyCell)
+        recipeDataStack.addArrangedSubview(servingCell)
+        recipeDataStack.addArrangedSubview(prepTimeCell)
+        recipeDataStack.addArrangedSubview(spicyCell)
+        recipeDataStack.addArrangedSubview(categoryCell)
+
+        
+        recipeDataStack.snp.makeConstraints { make in
+            make.top.equalTo(nameTextfield.snp.bottom).offset(8)
+            make.leading.trailing.equalToSuperview().inset(18)
+        }
+    }
+    
+    private func setupDifficultyCell() {
+        difficultyCell = PickerButtonWithIconCell(iconImage: "puzzlepiece.extension", textOnButton: "Select difficulty")
+        difficultyCell.tag = 1
+        difficultyCell.delegate = self
+//        contentView.addSubview(difficultyCell)
 //        
-//        divider1.backgroundColor = UIColor.ui.divider
-//        divider1.snp.makeConstraints { make in
-//            make.top.equalTo(addPhotoView.snp.bottom).offset(24)
-//            make.leading.equalToSuperview().offset(12)
-//            make.trailing.equalToSuperview().offset(-12)
-//            make.height.equalTo(0.5)
+//        difficultyCell.snp.makeConstraints { make in
+//            make.top.equalTo(titleTextFieldView.snp.bottom).offset(12)
+//            make.leading.trailing.equalToSuperview().inset(18)
+//            make.height.greaterThanOrEqualTo(50)
+//        }
+    }
+    
+    private func setupServingCell() {
+        servingCell = PickerButtonWithIconCell(iconImage: "person", textOnButton: "Select servings count")
+        servingCell.tag = 2
+        servingCell.delegate = self
+//        contentView.addSubview(servingCell)
+//        
+//        servingCell.snp.makeConstraints { make in
+//            make.top.equalTo(difficultyCell.snp.bottom).offset(12)
+//            make.leading.trailing.equalToSuperview().inset(18)
+//            make.height.greaterThanOrEqualTo(50)
+//        }
+    }
+    
+    private func setupPrepTimeCell() {
+        prepTimeCell = PickerButtonWithIconCell(iconImage: "timer", textOnButton: "Select prep time")
+        prepTimeCell.tag = 3
+        prepTimeCell.delegate = self
+        contentView.addSubview(prepTimeCell)
+        
+//        prepTimeCell.snp.makeConstraints { make in
+//            make.top.equalTo(servingCell.snp.bottom).offset(12)
+//            make.leading.trailing.equalToSuperview().inset(18)
+//            make.height.greaterThanOrEqualTo(50)
+//        }
+    }
+    
+    private func setupSpicyCell() {
+        spicyCell = PickerButtonWithIconCell(iconImage: "leaf", textOnButton: "Select spicy")
+        spicyCell.tag = 4
+        spicyCell.delegate = self
+//        contentView.addSubview(spicyCell)
+//        
+//        spicyCell.snp.makeConstraints { make in
+//            make.top.equalTo(prepTimeCell.snp.bottom).offset(12)
+//            make.leading.trailing.equalToSuperview().inset(18)
+//            make.height.greaterThanOrEqualTo(50)
+//        }
+    }
+
+//    
+//    // Servings Picker with title
+//    
+//    private func setupTitleForServingsPicker() {
+//        contentView.addSubview(titleForServingsPicker)
+//        titleForServingsPicker.text = "SERVINGS*"
+//        
+//        titleForServingsPicker.snp.makeConstraints { make in
+//            make.top.equalTo(difficultyViewButton.snp.bottom).offset(12)
+//            make.leading.trailing.equalToSuperview().inset(24)
+//        }
+//    }
+//    
+//    private func setupServingPickerViewButton() {
+//        contentView.addSubview(servingsViewButton)
+//        
+//        contentView.addSubview(servingsLabel)
+//        servingsLabel.text = "Select servings count"
+//        servingsLabel.textColor = .ui.secondaryText
+//        servingsLabel.snp.makeConstraints { make in
+//            make.leading.equalTo(servingsViewButton.snp.leading).offset(12) // Adjust the offset as needed
+//            make.centerY.equalTo(servingsViewButton.snp.centerY)
+//        }
+//        
+//        // Configure the button
+//        servingsViewButton.backgroundColor = .ui.primaryContainer
+//        servingsViewButton.layer.cornerRadius = 20
+//        servingsViewButton.addTarget(self, action: #selector(popUpPicker(_:)), for: .touchUpInside)
+//
+//        // Set constraints for pickerViewButton
+//        servingsViewButton.snp.makeConstraints { make in
+//            make.top.equalTo(titleForServingsPicker.snp.bottom).offset(4)
+//            make.leading.trailing.equalToSuperview().inset(12)
+//            make.height.greaterThanOrEqualTo(50)
+//        }
+//    }
+//    
+//    // Prep Time with title
+//    
+//    private func setupTitleForPrepTimePicker() {
+//        contentView.addSubview(titleForPrepTimePicker)
+//        titleForPrepTimePicker.text = "PREP TIME*"
+//        
+//        titleForPrepTimePicker.snp.makeConstraints { make in
+//            make.top.equalTo(servingsViewButton.snp.bottom).offset(12)
+//            make.leading.trailing.equalToSuperview().inset(24)
+//        }
+//    }
+//    
+//    private func setupPrepTimePickerViewButton() {
+//        contentView.addSubview(prepTimeViewButton)
+//        
+//        contentView.addSubview(prepTimeLabel)
+//        prepTimeLabel.text = "Select prep time"
+//        prepTimeLabel.textColor = .ui.secondaryText
+//        prepTimeLabel.snp.makeConstraints { make in
+//            make.leading.equalTo(prepTimeViewButton.snp.leading).offset(12) 
+//            make.centerY.equalTo(prepTimeViewButton.snp.centerY)
+//        }
+//        
+//        // Configure the button
+//        prepTimeViewButton.backgroundColor = .ui.primaryContainer
+//        prepTimeViewButton.layer.cornerRadius = 20
+//        prepTimeViewButton.addTarget(self, action: #selector(popUpPicker(_:)), for: .touchUpInside)
+//
+//        // Set constraints for pickerViewButton
+//        prepTimeViewButton.snp.makeConstraints { make in
+//            make.top.equalTo(titleForPrepTimePicker.snp.bottom).offset(4)
+//            make.leading.trailing.equalToSuperview().inset(12)
+//            make.height.greaterThanOrEqualTo(50)
 //        }
 //    }
     
-    // Title TextField with title
-    
-    private func setupTitleForTitleTextField() {
-        contentView.addSubview(titleForTitleTextField)
-        titleForTitleTextField.text = "RECIPE TITLE*"
-        
-        titleForTitleTextField.snp.makeConstraints { make in
-            make.top.equalTo(addPhotoView.snp.bottom).offset(18)
-            make.leading.equalToSuperview().offset(24)
-            make.trailing.equalToSuperview().offset(-12)
-//            make.bottom.equalTo(titleTextFieldView.snp.top).offset(-4)
-        }
-    }
-    
-    private func setupTitleTextField() {
-        titleTextFieldView = TitleTextFieldView(textFieldString: vm.titleText.value)
-        
-        contentView.addSubview(titleTextFieldView)
-        titleTextFieldView.snp.makeConstraints { make in
-            make.top.equalTo(titleForTitleTextField.snp.bottom).offset(4)
-            make.leading.equalToSuperview().offset(12)
-            make.trailing.equalToSuperview().offset(-12)
-            make.height.greaterThanOrEqualTo(50)
-        }
-    }
-    
-    // Difficulty Picker with title
-    
-    private func setupTitleForDifficultyPicker() {
-        contentView.addSubview(titleForDifficultyPicker)
-        titleForDifficultyPicker.text = "DIFFICULTY*"
-        
-        titleForDifficultyPicker.snp.makeConstraints { make in
-            make.top.equalTo(titleTextFieldView.snp.bottom).offset(12)
-            make.leading.trailing.equalToSuperview().inset(24)
-        }
-    }
-    
-    private func setupPickerViewButton() {
-        contentView.addSubview(difficultyViewButton)
-        contentView.addSubview(difficultyTitleLabel)
-        
-        // Configure the label
-        difficultyTitleLabel.text = "Select Background Colour"
-        difficultyTitleLabel.textColor = .ui.secondaryText
-
-        // Configure the button
-        difficultyViewButton.backgroundColor = .ui.primaryContainer
-        difficultyViewButton.layer.cornerRadius = 20
-        difficultyViewButton.addTarget(self, action: #selector(popUpPicker(_:)), for: .touchUpInside)
-        
-        difficultyTitleLabel.snp.makeConstraints { make in
-            make.leading.equalTo(difficultyViewButton.snp.leading).offset(12)
-            make.centerY.equalTo(difficultyViewButton.snp.centerY)
-//            make.top.equalTo(titleForDifficultyPicker.snp.bottom).offset(4)
-//            make.leading.equalToSuperview().offset(12) // Adjust the offset as needed
-//            make.width.equalTo(screenWidth / 2 - 18)
+    private func setupCategoryCell() {
+        categoryCell = PickerButtonWithIconCell(iconImage: "plus", textOnButton: "Select category")
+        categoryCell.delegate = self
+//        contentView.addSubview(categoryCell)
+//        
+//        categoryCell.snp.makeConstraints { make in
+//            make.top.equalTo(spicyCell.snp.bottom).offset(4)
+//            make.leading.trailing.equalToSuperview().inset(18)
 //            make.height.greaterThanOrEqualTo(50)
-        }
-
-        // Set constraints for pickerViewButton
-        difficultyViewButton.snp.makeConstraints { make in
-            make.top.equalTo(titleForDifficultyPicker.snp.bottom).offset(4)
-            make.leading.trailing.equalToSuperview().inset(12)
-            make.height.greaterThanOrEqualTo(50)
-        }
-    }
-    
-    // Servings Picker with title
-    
-    private func setupTitleForServingsPicker() {
-        contentView.addSubview(titleForServingsPicker)
-        titleForServingsPicker.text = "SERVINGS*"
-        
-        titleForServingsPicker.snp.makeConstraints { make in
-            make.top.equalTo(difficultyViewButton.snp.bottom).offset(12)
-            make.leading.trailing.equalToSuperview().inset(24)
-        }
-    }
-    
-    private func setupServingPickerViewButton() {
-        contentView.addSubview(servingsViewButton)
-        
-        contentView.addSubview(servingsLabel)
-        servingsLabel.text = "Select servings count"
-        servingsLabel.textColor = .ui.secondaryText
-        servingsLabel.snp.makeConstraints { make in
-            make.leading.equalTo(servingsViewButton.snp.leading).offset(12) // Adjust the offset as needed
-            make.centerY.equalTo(servingsViewButton.snp.centerY)
-        }
-        
-        // Configure the button
-        servingsViewButton.backgroundColor = .ui.primaryContainer
-        servingsViewButton.layer.cornerRadius = 20
-        servingsViewButton.addTarget(self, action: #selector(popUpPicker(_:)), for: .touchUpInside)
-
-        // Set constraints for pickerViewButton
-        servingsViewButton.snp.makeConstraints { make in
-            make.top.equalTo(titleForServingsPicker.snp.bottom).offset(4)
-            make.leading.trailing.equalToSuperview().inset(12)
-            make.height.greaterThanOrEqualTo(50)
-        }
-    }
-    
-    // Prep Time with title
-    
-    private func setupTitleForPrepTimePicker() {
-        contentView.addSubview(titleForPrepTimePicker)
-        titleForPrepTimePicker.text = "PREP TIME*"
-        
-        titleForPrepTimePicker.snp.makeConstraints { make in
-            make.top.equalTo(servingsViewButton.snp.bottom).offset(12)
-            make.leading.trailing.equalToSuperview().inset(24)
-        }
-    }
-    
-    private func setupPrepTimePickerViewButton() {
-        contentView.addSubview(prepTimeViewButton)
-        
-        contentView.addSubview(prepTimeLabel)
-        prepTimeLabel.text = "Select prep time"
-        prepTimeLabel.textColor = .ui.secondaryText
-        prepTimeLabel.snp.makeConstraints { make in
-            make.leading.equalTo(prepTimeViewButton.snp.leading).offset(12) // Adjust the offset as needed
-            make.centerY.equalTo(prepTimeViewButton.snp.centerY)
-        }
-        
-        // Configure the button
-        prepTimeViewButton.backgroundColor = .ui.primaryContainer
-        prepTimeViewButton.layer.cornerRadius = 20
-        prepTimeViewButton.addTarget(self, action: #selector(popUpPicker(_:)), for: .touchUpInside)
-
-        // Set constraints for pickerViewButton
-        prepTimeViewButton.snp.makeConstraints { make in
-            make.top.equalTo(titleForPrepTimePicker.snp.bottom).offset(4)
-            make.leading.trailing.equalToSuperview().inset(12)
-            make.height.greaterThanOrEqualTo(50)
-        }
-    }
-    
-    private func setupDivider() {
-        contentView.addSubview(divider)
-        
-        divider.backgroundColor = UIColor.ui.divider
-        divider.snp.makeConstraints { make in
-            make.top.equalTo(prepTimeViewButton.snp.bottom).offset(24)
-            make.leading.equalToSuperview().offset(12)
-            make.trailing.equalToSuperview().offset(-12)
-            make.height.equalTo(0.5)
-        }
+//        }
     }
 
-    // Ingridients with title
-    
-    private func setupTitleForIngridients() {
-        contentView.addSubview(titleForIngridients)
-        titleForIngridients.text = "INGRIDIENTS"
-        
-        titleForIngridients.snp.makeConstraints { make in
-            make.top.equalTo(divider.snp.bottom).offset(12)
-            make.leading.trailing.equalToSuperview().inset(24)
-        }
-    }
 
+    /// https://www.youtube.com/watch?v=9Fy0Gc1l3VE
     @objc func popUpPicker(_ sender: Any) {
         let vc = UIViewController()
         vc.preferredContentSize = CGSize(width: view.frame.width - 20, height: 250)
@@ -373,6 +378,15 @@ class AddRecipeVC: UIViewController {
     // UIPickerViewDataSource and UIPickerViewDelegate methods...
 }
 
+extension AddRecipeVC: PickerButtonWithIconCellDelegate {
+    func pickerButtonWithIconCellDidTapButton(_ cell: PickerButtonWithIconCell) {
+        print("my new button tapped")
+        categoryCell.textOnButton.text = "yyy"
+    }
+    
+    
+}
+
 extension AddRecipeVC {
     func setupNavigationBarButtons() {
         let nextButtonItem = UIBarButtonItem(title: "Next", style: .plain, target: self, action: #selector(saveTapped))
@@ -395,6 +409,7 @@ extension AddRecipeVC {
         view.navigationController?.pushViewController(toView, animated: true)
     }
 }
+
 
 extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {

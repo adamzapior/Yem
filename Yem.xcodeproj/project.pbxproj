@@ -33,6 +33,8 @@
 		586932172B25351A00379C8C /* AddRecipeIngredientsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 586932162B25351A00379C8C /* AddRecipeIngredientsVC.swift */; };
 		5869321B2B253AB300379C8C /* AddRecipeInstructionsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5869321A2B253AB300379C8C /* AddRecipeInstructionsVC.swift */; };
 		5869321D2B26112000379C8C /* IconImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5869321C2B26112000379C8C /* IconImageView.swift */; };
+		58D5F9C02B27A84700A72619 /* PickerButtonWithIconCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D5F9BF2B27A84700A72619 /* PickerButtonWithIconCell.swift */; };
+		58D5F9C22B27B3F600A72619 /* TextfieldWithIconCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D5F9C12B27B3F600A72619 /* TextfieldWithIconCell.swift */; };
 		58EBB0772B227B82000EB128 /* AddPhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58EBB0762B227B82000EB128 /* AddPhotoView.swift */; };
 /* End PBXBuildFile section */
 
@@ -83,6 +85,8 @@
 		586932162B25351A00379C8C /* AddRecipeIngredientsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRecipeIngredientsVC.swift; sourceTree = "<group>"; };
 		5869321A2B253AB300379C8C /* AddRecipeInstructionsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRecipeInstructionsVC.swift; sourceTree = "<group>"; };
 		5869321C2B26112000379C8C /* IconImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconImageView.swift; sourceTree = "<group>"; };
+		58D5F9BF2B27A84700A72619 /* PickerButtonWithIconCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerButtonWithIconCell.swift; sourceTree = "<group>"; };
+		58D5F9C12B27B3F600A72619 /* TextfieldWithIconCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextfieldWithIconCell.swift; sourceTree = "<group>"; };
 		58EBB0762B227B82000EB128 /* AddPhotoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -218,10 +222,9 @@
 		58356B322B1FD891000AC548 /* CustomViews */ = {
 			isa = PBXGroup;
 			children = (
+				58D5F9BE2B27A7D400A72619 /* Components */,
 				58EBB0762B227B82000EB128 /* AddPhotoView.swift */,
 				58102DD02B2483B40090EAE8 /* TitleTextFieldView.swift */,
-				580ED37F2B24C2F300B4A9F0 /* ReusableTextLabel.swift */,
-				5869321C2B26112000379C8C /* IconImageView.swift */,
 				58094EBB2B26164B00D4D2FC /* IngredientsTableFooterView.swift */,
 				58094EBD2B267E6300D4D2FC /* IngredientsTableHeaderView.swift */,
 			);
@@ -243,6 +246,17 @@
 				580ED3812B25068100B4A9F0 /* ColorTheme.swift */,
 			);
 			path = Helpers;
+			sourceTree = "<group>";
+		};
+		58D5F9BE2B27A7D400A72619 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				580ED37F2B24C2F300B4A9F0 /* ReusableTextLabel.swift */,
+				5869321C2B26112000379C8C /* IconImageView.swift */,
+				58D5F9BF2B27A84700A72619 /* PickerButtonWithIconCell.swift */,
+				58D5F9C12B27B3F600A72619 /* TextfieldWithIconCell.swift */,
+			);
+			path = Components;
 			sourceTree = "<group>";
 		};
 		58EBB0712B227A8A000EB128 /* Frameworks */ = {
@@ -387,6 +401,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				58D5F9C02B27A84700A72619 /* PickerButtonWithIconCell.swift in Sources */,
 				58356B472B20E0DB000AC548 /* ShopingListVC.swift in Sources */,
 				5869321D2B26112000379C8C /* IconImageView.swift in Sources */,
 				58094EBE2B267E6300D4D2FC /* IngredientsTableHeaderView.swift in Sources */,
@@ -406,6 +421,7 @@
 				58102DD12B2483B40090EAE8 /* TitleTextFieldView.swift in Sources */,
 				58356B5B2B2267BE000AC548 /* AddRecipeVC.swift in Sources */,
 				586932152B252D1800379C8C /* UIViewExt.swift in Sources */,
+				58D5F9C22B27B3F600A72619 /* TextfieldWithIconCell.swift in Sources */,
 				58102DDB2B249F900090EAE8 /* AddRecipeVM.swift in Sources */,
 				580ED3842B2513C000B4A9F0 /* IngridientModel.swift in Sources */,
 				58102DE02B24AB9E0090EAE8 /* UITextFieldExt.swift in Sources */,
