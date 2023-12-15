@@ -21,7 +21,6 @@ class TextfieldWithIconCell: UIView, UITextFieldDelegate {
 
         super.init(frame: frame)
         self.icon = IconImageView(systemImage: iconImage, color: .ui.theme, textStyle: textStyle)
-        configure()
     }
     
     required init?(coder: NSCoder) {
@@ -33,6 +32,8 @@ class TextfieldWithIconCell: UIView, UITextFieldDelegate {
         self.iconImage = iconImage
         self.icon = IconImageView(systemImage: iconImage, color: .ui.theme, textStyle: textStyle)
         self.textField.placeholder = placeholderText
+        
+        configure()
     }
     
     private func configure() {
@@ -43,9 +44,24 @@ class TextfieldWithIconCell: UIView, UITextFieldDelegate {
         backgroundColor = .ui.primaryContainer
 
         textField.delegate = self // Ustawienie self jako delegata UITextField
-        textField.borderStyle = .roundedRect
+//        textField.borderStyle = .roundedRect
+        textField.backgroundColor = .ui.primaryContainer
         
-        // ... (reszta konfiguracji i ograniczeń)
+        icon.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview().inset(12)
+            make.leading.equalToSuperview().offset(18)
+            make.width.equalTo(24)
+            make.height.equalTo(24)
+        }
+        
+        textField.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview().inset(2)
+            make.leading.equalTo(icon.snp.trailing).offset(22)
+            make.trailing.equalToSuperview().offset(-9)
+//            make.height.greaterThanOrEqualTo(50)
+        }
+        
+        
     }
 
     // Implementacja metody UITextFieldDelegate

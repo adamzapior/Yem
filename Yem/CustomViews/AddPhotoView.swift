@@ -8,6 +8,8 @@
 import UIKit
 
 class AddPhotoView: UIView {
+    
+    let icon = IconImageView(systemImage: "camera", color: .ui.theme, textStyle: .largeTitle)
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -22,6 +24,15 @@ class AddPhotoView: UIView {
     private func setupUI() {
         backgroundColor = .ui.primaryContainer
         layer.cornerRadius = 20
+        
+        addSubview(icon)
+        icon.snp.makeConstraints { make in
+            make.centerX.centerY.equalToSuperview()
+        }
     }
+    
+    
+    
+    
     
 }

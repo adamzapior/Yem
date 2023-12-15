@@ -40,6 +40,7 @@ class PickerButtonWithIconCell: UIView {
         self.iconImage = iconImage
         self.icon = IconImageView(systemImage: iconImage, color: .ui.theme, textStyle: textStyle)
         self.textOnButton.text = textOnButton
+        self.textOnButton.textColor = .ui.secondaryText
         
         configure()
     }
@@ -57,7 +58,8 @@ class PickerButtonWithIconCell: UIView {
         icon.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview().inset(12)
             make.leading.equalToSuperview().offset(18)
-            make.width.equalTo(36)
+            make.width.equalTo(24)
+            make.height.equalTo(24)
         }
         
         button.snp.makeConstraints { make in
