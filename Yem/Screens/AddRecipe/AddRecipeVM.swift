@@ -10,7 +10,24 @@ import Foundation
 import UIKit
 
 class AddRecipeViewModel {
-    var titleText = CurrentValueSubject<String, Never>("")
+    
+    @Published
+    var recipeTitle: String = ""
+    
+    @Published
+    var difficulty: String = ""
+    
+    @Published
+    var serving: Int = 0
+    
+    @Published
+    var prepTime: String = ""
+    
+    @Published
+    var spicy: String = ""
+    
+    @Published
+    var category: String = ""
     
     var difficultyRowArray: [String] = ["Easy", "Medium", "Hard"]
     
@@ -46,6 +63,7 @@ class AddRecipeViewModel {
     
     deinit {
         print("viewmodel out")
+        print(recipeTitle)
     }
     
     func saveRecipe() {

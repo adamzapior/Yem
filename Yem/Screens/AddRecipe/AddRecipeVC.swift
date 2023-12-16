@@ -10,8 +10,13 @@ import SnapKit
 import UIKit
 
 class AddRecipeVC: UIViewController {
-    let vm = AddRecipeViewModel()
+    
+    // MARK: - ViewModel
+    
+    let viewModel = AddRecipeViewModel()
     private var cancellables = Set<AnyCancellable>()
+    
+    // MARK: - View properties
     
     let scrollView = UIScrollView()
     let contentView = UIView()
@@ -29,16 +34,15 @@ class AddRecipeVC: UIViewController {
     
     let screenWidth = UIScreen.main.bounds.width - 10
     let screenHeight = UIScreen.main.bounds.height / 2
-    var selectedRow = 0
     
     let addPhotoView = AddPhotoView()
    
-    var nameTextfield: TextfieldWithIconCell!
-    var difficultyCell: PickerButtonWithIconCell!
-    var servingCell: PickerButtonWithIconCell!
-    var prepTimeCell: PickerButtonWithIconCell!
-    var spicyCell: PickerButtonWithIconCell!
-    var categoryCell: PickerButtonWithIconCell!
+    var nameTextfield = TextfieldWithIconCell(iconImage: "info.square", placeholderText: "Enter your recipe name")
+    var difficultyCell = PickerButtonWithIconCell(iconImage: "puzzlepiece.extension", textOnButton: "Select difficulty")
+    var servingCell = PickerButtonWithIconCell(iconImage: "person", textOnButton: "Select servings count")
+    var prepTimeCell = PickerButtonWithIconCell(iconImage: "timer", textOnButton: "Select prep time")
+    var spicyCell = PickerButtonWithIconCell(iconImage: "leaf", textOnButton: "Select spicy")
+    var categoryCell = PickerButtonWithIconCell(iconImage: "book.pages", textOnButton: "Select category")
     
     let difficultyPickerView = UIPickerView()
     let servingsPickerView = UIPickerView()
@@ -54,6 +58,8 @@ class AddRecipeVC: UIViewController {
         return sv
     }()
     
+    // MARK: - Lifecycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -68,23 +74,19 @@ class AddRecipeVC: UIViewController {
         setupPageStackView()
     
         setupAddPhotoView()
-        
-        setupNameTextfield()
-        setupDifficultyCell()
-        setupServingCell()
-        setupPrepTimeCell()
-        setupSpicyCell()
-        setupCategoryCell()
-        
         configureRecipeDataStackView()
+        setupDelegateOfViewItems()
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
     }
     
     deinit {
         print("Add recipeVC deinit")
     }
     
-    // MARK: Setup UI
-    
+    // MARK: - UI Setup
+
     private func setupScrollView() {
         view.addSubview(scrollView)
         scrollView.showsVerticalScrollIndicator = false
@@ -106,15 +108,12 @@ class AddRecipeVC: UIViewController {
         hConstant.isActive = true
         hConstant.priority = UILayoutPriority(50) /// always less priority than ScrollView
     }
-    
-    // Page stack
-    
+        
     private func setupPageStackView() {
         for _ in 0 ..< pageCount {
             let divider = UIView.createDivider(color: .gray)
             pageStackView.addArrangedSubview(divider)
-            pageViews.append(divider) // Dodaj divider do tablicy
-//            divider.widthAnchor.constraint(equalTo: pageStackView.widthAnchor, multiplier: 1/CGFloat(pageCount)).isActive = true
+            pageViews.append(divider)
         }
         
         pageViews[0].backgroundColor = .ui.theme
@@ -138,63 +137,6 @@ class AddRecipeVC: UIViewController {
         }
     }
     
-    private func setupNameTextfield() {
-        nameTextfield = TextfieldWithIconCell(iconImage: "info", placeholderText: "Enter your recipe name")
-        nameTextfield.delegate = self
-    }
-
-    private func setupDifficultyCell() {
-        difficultyCell = PickerButtonWithIconCell(iconImage: "puzzlepiece.extension", textOnButton: "Select difficulty")
-        difficultyCell.tag = 1
-        difficultyCell.delegate = self
-        
-        difficultyPickerView.tag = 1
-        difficultyPickerView.delegate = self
-        difficultyPickerView.dataSource = self
-    }
-    
-    private func setupServingCell() {
-        servingCell = PickerButtonWithIconCell(iconImage: "person", textOnButton: "Select servings count")
-        servingCell.tag = 2
-        servingCell.delegate = self
-        
-        servingsPickerView.tag = 2
-        servingsPickerView.delegate = self
-        servingsPickerView.dataSource = self
-    }
-    
-    private func setupPrepTimeCell() {
-        prepTimeCell = PickerButtonWithIconCell(iconImage: "timer", textOnButton: "Select prep time")
-        prepTimeCell.tag = 3
-        prepTimeCell.delegate = self
-        
-        prepTimePickerView.tag = 3
-        prepTimePickerView.delegate = self
-        prepTimePickerView.dataSource = self
-    }
-    
-    private func setupSpicyCell() {
-        spicyCell = PickerButtonWithIconCell(iconImage: "leaf", textOnButton: "Select spicy")
-        spicyCell.tag = 4
-        spicyCell.delegate = self
-        
-        spicyPickerView.tag = 4
-        spicyPickerView.delegate = self
-        spicyPickerView.dataSource = self
-    }
-
-    private func setupCategoryCell() {
-        categoryCell = PickerButtonWithIconCell(iconImage: "plus", textOnButton: "Select category")
-        categoryCell.tag = 5
-        categoryCell.delegate = self
-        
-        categoryPickerView.tag = 5
-        categoryPickerView.delegate = self
-        categoryPickerView.dataSource = self
-    }
-    
-    // Difficulty Picker
-    
     private func configureRecipeDataStackView() {
         contentView.addSubview(recipeDataStack)
         recipeDataStack.addArrangedSubview(nameTextfield)
@@ -211,8 +153,12 @@ class AddRecipeVC: UIViewController {
     }
 
 //    /// https://www.youtube.com/watch?v=9Fy0Gc1l3VE
-  
+    
+    // MARK: - methods
+
     func popUpPicker(for pickerView: UIPickerView, title: String) {
+        view.endEditing(true)
+        
         pickerView.dataSource = self
         pickerView.delegate = self
         pickerView.tag = pickerView.tag // Ensure the picker view has the correct tag
@@ -233,19 +179,92 @@ class AddRecipeVC: UIViewController {
         selectAction.setValue(UIColor.orange, forKey: "titleTextColor")
 
         alert.addAction(selectAction)
-
         present(alert, animated: true, completion: nil)
     }
-
-    // UIPickerViewDataSource and UIPickerViewDelegate methods...
+    
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
+    }
 }
+
+// MARK: - Tags & DataSource
+
+extension AddRecipeVC {
+    private func setupDelegateOfViewItems() {
+        setupNameTextfield()
+        setupDifficultyCell()
+        setupServingCell()
+        setupPrepTimeCell()
+        setupSpicyCell()
+        setupCategoryCell()
+    }
+    
+    private func setupNameTextfield() {
+        nameTextfield.delegate = self
+    }
+
+    private func setupDifficultyCell() {
+        difficultyCell.tag = 1
+        difficultyCell.delegate = self
+        
+        difficultyPickerView.tag = 1
+        difficultyPickerView.delegate = self
+        difficultyPickerView.dataSource = self
+    }
+    
+    private func setupServingCell() {
+        servingCell.tag = 2
+        servingCell.delegate = self
+        
+        servingsPickerView.tag = 2
+        servingsPickerView.delegate = self
+        servingsPickerView.dataSource = self
+    }
+    
+    private func setupPrepTimeCell() {
+        prepTimeCell.tag = 3
+        prepTimeCell.delegate = self
+        
+        prepTimePickerView.tag = 3
+        prepTimePickerView.delegate = self
+        prepTimePickerView.dataSource = self
+    }
+    
+    private func setupSpicyCell() {
+        spicyCell.tag = 4
+        spicyCell.delegate = self
+        
+        spicyPickerView.tag = 4
+        spicyPickerView.delegate = self
+        spicyPickerView.dataSource = self
+    }
+
+    private func setupCategoryCell() {
+        categoryCell.tag = 5
+        categoryCell.delegate = self
+        
+        categoryPickerView.tag = 5
+        categoryPickerView.delegate = self
+        categoryPickerView.dataSource = self
+    }
+}
+
+// MARK: - Textfield delegate/dataSource
 
 extension AddRecipeVC: TextfieldWithIconCellDelegate {
     func textFieldDidEndEditing(_ cell: TextfieldWithIconCell, didUpdateText text: String) {
-        //
-        
+        if let text = cell.textField.text {
+            viewModel.recipeTitle = text
+        }
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder() // Ukrywa klawiaturę
+        return true
     }
 }
+
+// MARK: - Button delegate/dataSource
 
 extension AddRecipeVC: PickerButtonWithIconCellDelegate {
     func pickerButtonWithIconCellDidTapButton(_ cell: PickerButtonWithIconCell) {
@@ -266,6 +285,9 @@ extension AddRecipeVC: PickerButtonWithIconCellDelegate {
     }
 }
 
+// MARK: - PickerView delegate/dataSource
+
+
 extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
         let label: UILabel
@@ -277,15 +299,15 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
         }
         switch pickerView.tag {
         case 1:
-            label.text = vm.difficultyRowArray[row]
+            label.text = viewModel.difficultyRowArray[row]
         case 2:
-            label.text = vm.servingRowArray[row].description
+            label.text = viewModel.servingRowArray[row].description
         case 3:
-            label.text = vm.timeHoursArray[row].description
+            label.text = viewModel.timeHoursArray[row].description
         case 4:
-            label.text = vm.spicyRowArray[row]
+            label.text = viewModel.spicyRowArray[row]
         case 5:
-            label.text = vm.categoryRowArray[row]
+            label.text = viewModel.categoryRowArray[row]
         default:
             label.text = ""
         }
@@ -295,25 +317,30 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         switch pickerView.tag {
         case 1: // For difficulty
-            let selectedDifficulty = vm.difficultyRowArray[row]
+            let selectedDifficulty = viewModel.difficultyRowArray[row]
             difficultyCell.textOnButton.text = selectedDifficulty
             difficultyCell.textOnButton.textColor = .ui.primaryText
+            viewModel.difficulty = selectedDifficulty
         case 2:
-            let selectedServing = vm.servingRowArray[row].description
-            servingCell.textOnButton.text = "\(selectedServing) (serving)"
+            let selectedServing = viewModel.servingRowArray[row]
+            servingCell.textOnButton.text = "\(selectedServing.description) (serving)"
             servingCell.textOnButton.textColor = .ui.primaryText
+            viewModel.serving = selectedServing
         case 3:
-            let selectedDifficulty = vm.timeHoursArray[row].description
-            prepTimeCell.textOnButton.text = selectedDifficulty
+            let selectedPerpTime = viewModel.timeHoursArray[row].description
+            prepTimeCell.textOnButton.text = selectedPerpTime
             prepTimeCell.textOnButton.textColor = .ui.primaryText
+            viewModel.prepTime = selectedPerpTime
         case 4:
-            let selectedDifficulty = vm.spicyRowArray[row]
-            spicyCell.textOnButton.text = selectedDifficulty
+            let selectedSpicy = viewModel.spicyRowArray[row]
+            spicyCell.textOnButton.text = selectedSpicy
             spicyCell.textOnButton.textColor = .ui.primaryText
+            viewModel.spicy = selectedSpicy
         case 5:
-            let selectedDifficulty = vm.categoryRowArray[row]
-            categoryCell.textOnButton.text = selectedDifficulty
+            let selectedCategory = viewModel.categoryRowArray[row]
+            categoryCell.textOnButton.text = selectedCategory
             categoryCell.textOnButton.textColor = .ui.primaryText
+            viewModel.category = selectedCategory
         default:
             break
         }
@@ -326,15 +353,15 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         switch pickerView.tag {
         case 1:
-            return vm.difficultyRowArray.count
+            return viewModel.difficultyRowArray.count
         case 2:
-            return vm.servingRowArray.count
+            return viewModel.servingRowArray.count
         case 3:
-            return vm.timeHoursArray.count
+            return viewModel.timeHoursArray.count
         case 4:
-            return vm.spicyRowArray.count
+            return viewModel.spicyRowArray.count
         case 5:
-            return vm.categoryRowArray.count
+            return viewModel.categoryRowArray.count
         default:
             break
         }
@@ -346,6 +373,8 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
     }
 }
 
+// MARK: - Navigation
+
 extension AddRecipeVC {
     func setupNavigationBarButtons() {
         let nextButtonItem = UIBarButtonItem(title: "Next", style: .plain, target: self, action: #selector(saveTapped))
@@ -355,7 +384,7 @@ extension AddRecipeVC {
 
     @objc func saveTapped(_ sender: UIBarButtonItem) {
 //        backToRecipesListScreen(from: self)
-        pushToNextScreen(from: self, toView: AddRecipeIngredientsVC(viewModel: vm))
+        pushToNextScreen(from: self, toView: AddRecipeIngredientsVC(viewModel: viewModel))
     }
     
     func backToRecipesListScreen(from view: UIViewController) {

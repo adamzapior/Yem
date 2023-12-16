@@ -70,4 +70,9 @@ class TextfieldWithIconCell: UIView, UITextFieldDelegate {
             delegate?.textFieldDidEndEditing(self, didUpdateText: text)
         }
     }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+          textField.resignFirstResponder() // Hides the keyboard
+          return true
+      }
 }
