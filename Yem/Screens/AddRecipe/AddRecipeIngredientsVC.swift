@@ -8,8 +8,11 @@
 import UIKit
 
 class AddRecipeIngredientsVC: UIViewController {
-    let vm: AddRecipeViewModel
     
+    // MARK: - ViewModel
+    let viewModel: AddRecipeViewModel
+    
+    // MARK: - View properties
     let pageStackView: UIStackView = {
         let sv = UIStackView()
         sv.axis = .horizontal
@@ -25,8 +28,10 @@ class AddRecipeIngredientsVC: UIViewController {
     private let tableViewFooter = IngredientsTableFooterView()
     private let tableViewHeader = IngredientsTableHeaderView()
     
+    // MARK: - Lifecycle
+    
     init(viewModel: AddRecipeViewModel) {
-        self.vm = viewModel
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -45,20 +50,18 @@ class AddRecipeIngredientsVC: UIViewController {
         setupTableViewHeader()
         setupTableViewFooter()
 
-//        setupScrollView()
-//        setupContentView()
-//        setupPageStackView()
     }
     
-    // MARK: Setup UI
+    // MARK: - Setup UI
     
     private func setupTableView() {
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView.register(IngredientsCell.self, forCellReuseIdentifier: IngredientsCell.id)
         
         tableView.backgroundColor = UIColor.ui.background
         tableView.showsVerticalScrollIndicator = false
+        tableView.separatorStyle = .none
         
         view.addSubview(tableView)
         tableView.snp.makeConstraints { make in
@@ -71,12 +74,6 @@ class AddRecipeIngredientsVC: UIViewController {
         tableView.tableFooterView = tableViewFooter
         tableViewFooter.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 50)
         tableViewFooter.backgroundColor = UIColor.ui.background
-        
-//        tableViewHeader.snp.makeConstraints { make in
-//            make.leading.equalToSuperview()
-//            make.trailing.equalToSuperview()
-//            make.height.greaterThanOrEqualTo(50)
-//        }
     }
 
     private func setupTableViewHeader() {
@@ -88,15 +85,23 @@ class AddRecipeIngredientsVC: UIViewController {
     }
 }
 
+// MARK: -  TableView delegate & data source
+
 extension AddRecipeIngredientsVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return viewModel.ingredientsList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.text = "Row \(indexPath.row)"
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: IngredientsCell.id, for: indexPath) as? IngredientsCell else {
+            fatalError("IngredientsCell error")
+        }
+        cell.configure(with: viewModel.ingredientsList[indexPath.row])
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
     }
 }
 
@@ -112,7 +117,7 @@ extension AddRecipeIngredientsVC {
     }
     
     @objc func nextButtonTapped(_ sender: UIBarButtonItem) {
-        pushToNextScreen(from: self, toView: AddRecipeInstructionsVC(viewModel: vm))
+        pushToNextScreen(from: self, toView: AddRecipeInstructionsVC(viewModel: viewModel))
     }
     
     func pushToNextScreen(from view: UIViewController, toView: UIViewController) {

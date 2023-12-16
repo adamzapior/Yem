@@ -11,6 +11,8 @@ import UIKit
 
 class AddRecipeViewModel {
     
+    // MARK: Observable properties
+    
     @Published
     var recipeTitle: String = ""
     
@@ -21,13 +23,27 @@ class AddRecipeViewModel {
     var serving: Int = 0
     
     @Published
-    var prepTime: String = ""
+    var prepTimeHours: String = ""
+    
+    @Published
+    var prepTimeMinutes: String = ""
     
     @Published
     var spicy: String = ""
     
     @Published
     var category: String = ""
+    
+    @Published
+    var ingredientsList: [IngredientModel] = [
+        IngredientModel(id: 1, value: "100", valueType: "kg", name: "Milk"),
+        IngredientModel(id: 2, value: "1", valueType: "kg", name: "Milk"),
+        IngredientModel(id: 3, value: "20", valueType: "pounds", name: "Milk"),
+        IngredientModel(id: 4, value: "13", valueType: "gram", name: "Milk"),
+        IngredientModel(id: 5, value: "2", valueType: "count", name: "Milk")
+    ]
+    
+    // MARK: Properties
     
     var difficultyRowArray: [String] = ["Easy", "Medium", "Hard"]
     
@@ -59,12 +75,16 @@ class AddRecipeViewModel {
     
     lazy var categoryRowArray: [String] = ["Breakfast", "Lunch", "Dinner", "Desserts", "Snacks", "Beverages", "Appetizers", "Side Dishes", "Vegan", "Vegetarian"]
     
+    // MARK: Initialization
+    
     init() {}
     
     deinit {
         print("viewmodel out")
         print(recipeTitle)
     }
+    
+    // MARK: Methods
     
     func saveRecipe() {
         // Logika zapisu przepisu

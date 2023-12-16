@@ -10,7 +10,6 @@ import SnapKit
 import UIKit
 
 class AddRecipeVC: UIViewController {
-    
     // MARK: - ViewModel
     
     let viewModel = AddRecipeViewModel()
@@ -44,11 +43,11 @@ class AddRecipeVC: UIViewController {
     var spicyCell = PickerButtonWithIconCell(iconImage: "leaf", textOnButton: "Select spicy")
     var categoryCell = PickerButtonWithIconCell(iconImage: "book.pages", textOnButton: "Select category")
     
-    let difficultyPickerView = UIPickerView()
-    let servingsPickerView = UIPickerView()
-    let prepTimePickerView = UIPickerView()
-    let spicyPickerView = UIPickerView()
-    let categoryPickerView = UIPickerView()
+    lazy var difficultyPickerView = UIPickerView()
+    lazy var servingsPickerView = UIPickerView()
+    lazy var prepTimePickerView = UIPickerView()
+    lazy var spicyPickerView = UIPickerView()
+    lazy var categoryPickerView = UIPickerView()
     
     let recipeDataStack: UIStackView = {
         let sv = UIStackView()
@@ -287,7 +286,6 @@ extension AddRecipeVC: PickerButtonWithIconCellDelegate {
 
 // MARK: - PickerView delegate/dataSource
 
-
 extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
         let label: UILabel
@@ -303,7 +301,14 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
         case 2:
             label.text = viewModel.servingRowArray[row].description
         case 3:
-            label.text = viewModel.timeHoursArray[row].description
+            switch component {
+            case 0:
+                label.text = "\(viewModel.timeHoursArray[row].description) h"
+            case 1:
+                label.text = "\(viewModel.timeMinutesArray[row].description) min"
+            default:
+                break
+            }
         case 4:
             label.text = viewModel.spicyRowArray[row]
         case 5:
@@ -327,10 +332,37 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
             servingCell.textOnButton.textColor = .ui.primaryText
             viewModel.serving = selectedServing
         case 3:
-            let selectedPerpTime = viewModel.timeHoursArray[row].description
-            prepTimeCell.textOnButton.text = selectedPerpTime
+            if component == 0 {
+                let selectedHours = viewModel.timeHoursArray[row].description
+                viewModel.prepTimeHours = selectedHours
+            } else {
+                let selectedMinutes = viewModel.timeMinutesArray[row].description
+                viewModel.prepTimeMinutes = selectedMinutes
+            }
+            
+            var hours: String = ""
+            var minutes: String = ""
+            
+            /// hours for '2 - 48'
+            if viewModel.prepTimeHours != "0" &&
+                viewModel.prepTimeHours != "1" &&
+                viewModel.prepTimeHours != "" {
+                hours = "\(viewModel.prepTimeHours) hours"
+            }
+            
+            /// hours for '1'
+            if viewModel.prepTimeHours == "1" {
+                hours = "\(viewModel.prepTimeHours) hour"
+            }
+            
+            /// minutes
+            if viewModel.prepTimeMinutes != "0" && 
+                viewModel.prepTimeMinutes != "" {
+                minutes = "\(viewModel.prepTimeMinutes) min"
+            }
+            
+            prepTimeCell.textOnButton.text = "\(hours) \(minutes)"
             prepTimeCell.textOnButton.textColor = .ui.primaryText
-            viewModel.prepTime = selectedPerpTime
         case 4:
             let selectedSpicy = viewModel.spicyRowArray[row]
             spicyCell.textOnButton.text = selectedSpicy
@@ -347,7 +379,20 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
     }
 
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
+        switch pickerView.tag {
+        case 1:
+            return 1
+        case 2:
+            return 1
+        case 3:
+            return 2
+        case 4:
+            return 1
+        case 5:
+            return 1
+        default:
+            return 1
+        }
     }
 
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
@@ -357,6 +402,14 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
         case 2:
             return viewModel.servingRowArray.count
         case 3:
+            switch component {
+            case 0:
+                return viewModel.timeHoursArray.count
+            case 1:
+                return viewModel.timeMinutesArray.count
+            default:
+                break
+            }
             return viewModel.timeHoursArray.count
         case 4:
             return viewModel.spicyRowArray.count

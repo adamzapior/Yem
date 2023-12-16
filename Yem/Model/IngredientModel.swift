@@ -7,8 +7,9 @@
 
 import Foundation
 
-struct IngridientModel {
+struct IngredientModel {
     let id: Int64
-    let count: String
+    let value: String
+    let valueType: String
     let name: String
 }
