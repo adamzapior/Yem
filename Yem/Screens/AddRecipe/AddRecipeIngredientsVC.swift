@@ -7,12 +7,17 @@
 
 import UIKit
 
-class AddRecipeIngredientsVC: UIViewController {
+class AddRecipeIngredientsVC: UIViewController, AddRecipeViewModelDelegate {
+    func reloadTable() {
+        tableView.reloadData()
+    }
     
     // MARK: - ViewModel
+
     let viewModel: AddRecipeViewModel
     
     // MARK: - View properties
+
     let pageStackView: UIStackView = {
         let sv = UIStackView()
         sv.axis = .horizontal
@@ -49,8 +54,26 @@ class AddRecipeIngredientsVC: UIViewController {
         setupTableView()
         setupTableViewHeader()
         setupTableViewFooter()
-
     }
+    
+//    override func viewDidLayoutSubviews() {
+//        super.viewDidLayoutSubviews()
+//
+//        let footerWidth = tableView.bounds.width - 2 * 18
+//        tableViewFooter.frame = CGRect(x: 0, y: 0, width: footerWidth, height: 50)
+//        tableView.tableFooterView = tableViewFooter
+//    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        tableView.layoutIfNeeded() // Upewnij się, że rozmiary tabeli są aktualne
+//        let footerWidth = tableView.bounds.width
+//        tableViewFooter.frame = CGRect(x: 0, y: 0, height: 50)
+
+        tableView.tableFooterView = tableViewFooter
+    }
+
     
     // MARK: - Setup UI
     
@@ -70,10 +93,16 @@ class AddRecipeIngredientsVC: UIViewController {
     }
     
     private func setupTableViewFooter() {
-        tableView.addSubview(tableViewFooter)
-        tableView.tableFooterView = tableViewFooter
-        tableViewFooter.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 50)
+        tableViewFooter.delegate = self
+        let footerWidth = tableView.bounds.width 
+
+        tableViewFooter.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 100)
         tableViewFooter.backgroundColor = UIColor.ui.background
+        tableView.tableFooterView = tableViewFooter
+        
+        if viewModel.ingredientsList.isEmpty == true {
+            tableViewFooter.setEditButtonVisible(true)
+        }
     }
 
     private func setupTableViewHeader() {
@@ -81,7 +110,12 @@ class AddRecipeIngredientsVC: UIViewController {
         tableView.tableHeaderView = tableViewHeader
         tableViewHeader.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 36)
         tableViewHeader.backgroundColor = UIColor.ui.background
-        
+    }
+}
+
+extension AddRecipeIngredientsVC: IngredientsTableFooterViewDelegate {
+    func addIconTapped(view: UIView) {
+        addIgredientTapped()
     }
 }
 
@@ -105,7 +139,6 @@ extension AddRecipeIngredientsVC: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
-
 // MARK: - Navigation
 
 extension AddRecipeIngredientsVC {
@@ -113,7 +146,6 @@ extension AddRecipeIngredientsVC {
         let nextButtonItem = UIBarButtonItem(title: "Next", style: .plain, target: self, action: #selector(nextButtonTapped))
         navigationItem.rightBarButtonItem = nextButtonItem
         navigationItem.rightBarButtonItem?.tintColor = .ui.theme
-        
     }
     
     @objc func nextButtonTapped(_ sender: UIBarButtonItem) {
@@ -124,4 +156,11 @@ extension AddRecipeIngredientsVC {
         view.navigationController?.pushViewController(toView, animated: true)
     }
     
+    func addIgredientTapped() {
+        let sheet = AddIgredientSheetVC(viewModel: viewModel)
+        present(sheet, animated: true)
+//        pushToNextScreen(from: self, toView: )
+    }
+    
+    private func openIgredientSheet(from view: UIViewController, toView: UIViewController) {}
 }

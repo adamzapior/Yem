@@ -66,6 +66,7 @@ class IngredientsCell: UITableViewCell {
         valueTypeLabel.snp.makeConstraints { make in
             make.leading.equalTo(valueLabel.snp.trailing).offset(8)
             make.centerY.equalTo(valueLabel)
+            make.width.greaterThanOrEqualTo(84)
         }
         
         ingredientNameLabel.snp.makeConstraints { make in

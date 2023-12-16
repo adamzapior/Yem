@@ -9,6 +9,10 @@ import Combine
 import Foundation
 import UIKit
 
+protocol AddRecipeViewModelDelegate: AnyObject {
+    func reloadTable()
+}
+
 class AddRecipeViewModel {
     
     // MARK: Observable properties
@@ -42,6 +46,15 @@ class AddRecipeViewModel {
         IngredientModel(id: 4, value: "13", valueType: "gram", name: "Milk"),
         IngredientModel(id: 5, value: "2", valueType: "count", name: "Milk")
     ]
+    
+    @Published
+    var igredientName: String = ""
+    
+    @Published
+    var igredientCount: String = ""
+    
+    @Published
+    var igredientValueType: String = ""
     
     // MARK: Properties
     
@@ -82,11 +95,30 @@ class AddRecipeViewModel {
     deinit {
         print("viewmodel out")
         print(recipeTitle)
+        
+        for items in ingredientsList {
+            print(items.name)
+        }
     }
     
     // MARK: Methods
     
+    func addIngredientToList() -> Bool {
+        var ingredient = IngredientModel(id: Int64(), value: igredientCount, valueType: igredientValueType, name: igredientName)
+        ingredientsList.append(ingredient)
+        
+        return true
+    }
+    
     func saveRecipe() {
         // Logika zapisu przepisu
     }
+}
+
+extension AddRecipeViewModel: AddRecipeViewModelDelegate {
+    func reloadTable() {
+        print("reload data")
+    }
+    
+    
 }

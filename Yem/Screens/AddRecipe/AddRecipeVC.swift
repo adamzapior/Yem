@@ -36,7 +36,7 @@ class AddRecipeVC: UIViewController {
     
     let addPhotoView = AddPhotoView()
    
-    var nameTextfield = TextfieldWithIconCell(iconImage: "info.square", placeholderText: "Enter your recipe name")
+    var nameTextfield = TextfieldWithIconCell(iconImage: "info.square", placeholderText: "Enter your recipe name", textColor: .ui.secondaryText)
     var difficultyCell = PickerButtonWithIconCell(iconImage: "puzzlepiece.extension", textOnButton: "Select difficulty")
     var servingCell = PickerButtonWithIconCell(iconImage: "person", textOnButton: "Select servings count")
     var prepTimeCell = PickerButtonWithIconCell(iconImage: "timer", textOnButton: "Select prep time")

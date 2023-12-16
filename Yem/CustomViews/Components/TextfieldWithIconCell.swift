@@ -27,11 +27,17 @@ class TextfieldWithIconCell: UIView, UITextFieldDelegate {
         fatalError("init(coder:) has not been implemented")
     }
     
-    convenience init(iconImage: String, placeholderText: String) {
+    convenience init(iconImage: String, placeholderText: String, textColor: UIColor?) {
         self.init(frame: .zero)
         self.iconImage = iconImage
         self.icon = IconImageView(systemImage: iconImage, color: .ui.theme, textStyle: textStyle)
-        self.textField.placeholder = placeholderText
+//        self.textField.placeholder = placeholderText
+        
+        
+        let placeholderText = NSAttributedString(string: "\(placeholderText)",
+                                                 attributes: [NSAttributedString.Key.foregroundColor: textColor ?? .primaryContainer])
+                
+        self.textField.attributedPlaceholder = placeholderText
         
         configure()
     }
