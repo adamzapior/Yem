@@ -52,7 +52,7 @@ class IngredientsTableFooterView: UIView {
             make.centerY.equalToSuperview()
             make.centerX.equalToSuperview()
             make.height.greaterThanOrEqualTo(50)
-            make.width.greaterThanOrEqualTo(350)
+            make.width.greaterThanOrEqualTo(330.HAdapted)
         }
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(addIconTapped))
@@ -66,7 +66,7 @@ class IngredientsTableFooterView: UIView {
             make.top.equalTo(addButton.snp.bottom).offset(12)
             make.centerX.equalToSuperview()
             make.height.greaterThanOrEqualTo(50)
-            make.width.greaterThanOrEqualTo(350)
+            make.width.greaterThanOrEqualTo(330.HAdapted)
         }
     }
 }

@@ -106,7 +106,6 @@ class AddRecipeViewModel {
     func addIngredientToList() -> Bool {
         var ingredient = IngredientModel(id: Int64(), value: igredientCount, valueType: igredientValueType, name: igredientName)
         ingredientsList.append(ingredient)
-        
         return true
     }
     

@@ -36,6 +36,7 @@
 		5887468C2B2E075C00EC5E11 /* IngredientsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5887468B2B2E075C00EC5E11 /* IngredientsCell.swift */; };
 		5887468E2B2E1AA000EC5E11 /* AddIgredientSheetVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5887468D2B2E1AA000EC5E11 /* AddIgredientSheetVC.swift */; };
 		588746912B2E400000EC5E11 /* MainAppButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 588746902B2E400000EC5E11 /* MainAppButton.swift */; };
+		588746932B2E6D4B00EC5E11 /* AdaptiveLayoutHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 588746922B2E6D4B00EC5E11 /* AdaptiveLayoutHelper.swift */; };
 		58D5F9C02B27A84700A72619 /* PickerButtonWithIconCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D5F9BF2B27A84700A72619 /* PickerButtonWithIconCell.swift */; };
 		58D5F9C22B27B3F600A72619 /* TextfieldWithIconCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D5F9C12B27B3F600A72619 /* TextfieldWithIconCell.swift */; };
 		58EBB0772B227B82000EB128 /* AddPhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58EBB0762B227B82000EB128 /* AddPhotoView.swift */; };
@@ -91,6 +92,7 @@
 		5887468B2B2E075C00EC5E11 /* IngredientsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientsCell.swift; sourceTree = "<group>"; };
 		5887468D2B2E1AA000EC5E11 /* AddIgredientSheetVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddIgredientSheetVC.swift; sourceTree = "<group>"; };
 		588746902B2E400000EC5E11 /* MainAppButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainAppButton.swift; sourceTree = "<group>"; };
+		588746922B2E6D4B00EC5E11 /* AdaptiveLayoutHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveLayoutHelper.swift; sourceTree = "<group>"; };
 		58D5F9BF2B27A84700A72619 /* PickerButtonWithIconCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerButtonWithIconCell.swift; sourceTree = "<group>"; };
 		58D5F9C12B27B3F600A72619 /* TextfieldWithIconCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextfieldWithIconCell.swift; sourceTree = "<group>"; };
 		58EBB0762B227B82000EB128 /* AddPhotoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoView.swift; sourceTree = "<group>"; };
@@ -253,6 +255,7 @@
 				58102DDF2B24AB9E0090EAE8 /* UITextFieldExt.swift */,
 				586932142B252D1800379C8C /* UIViewExt.swift */,
 				580ED3812B25068100B4A9F0 /* ColorTheme.swift */,
+				588746922B2E6D4B00EC5E11 /* AdaptiveLayoutHelper.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -443,6 +446,7 @@
 				58356AFD2B1FB9E5000AC548 /* SceneDelegate.swift in Sources */,
 				58EBB0772B227B82000EB128 /* AddPhotoView.swift in Sources */,
 				58356B052B1FB9E6000AC548 /* Yem.xcdatamodeld in Sources */,
+				588746932B2E6D4B00EC5E11 /* AdaptiveLayoutHelper.swift in Sources */,
 				58102DD12B2483B40090EAE8 /* TitleTextFieldView.swift in Sources */,
 				5887468E2B2E1AA000EC5E11 /* AddIgredientSheetVC.swift in Sources */,
 				58356B5B2B2267BE000AC548 /* AddRecipeVC.swift in Sources */,
