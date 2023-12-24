@@ -120,7 +120,7 @@ class AddRecipeVC: UIViewController {
         contentView.addSubview(pageStackView)
         pageStackView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(12)
-            make.leading.trailing.equalToSuperview().inset(12)
+            make.leading.trailing.equalToSuperview()
         }
     }
     
@@ -153,14 +153,14 @@ class AddRecipeVC: UIViewController {
 
 //    /// https://www.youtube.com/watch?v=9Fy0Gc1l3VE
     
-    // MARK: - methods
+    // MARK: - Pop Up Picker method
 
     func popUpPicker(for pickerView: UIPickerView, title: String) {
         view.endEditing(true)
         
         pickerView.dataSource = self
         pickerView.delegate = self
-        pickerView.tag = pickerView.tag // Ensure the picker view has the correct tag
+        pickerView.tag = pickerView.tag
 
         let vc = UIViewController()
         vc.preferredContentSize = CGSize(width: view.frame.width - 20, height: 180)
@@ -172,11 +172,63 @@ class AddRecipeVC: UIViewController {
         alert.setValue(vc, forKey: "contentViewController")
 
         let selectAction = UIAlertAction(title: "Select", style: .default, handler: { _ in
-            // Handle selection here if needed
+        let selectedRow = pickerView.selectedRow(inComponent: 0)
+                   
+            switch pickerView.tag {
+            case 1:
+                let selectedDifficulty = self.viewModel.difficultyRowArray[selectedRow]
+                self.difficultyCell.textOnButton.text = selectedDifficulty
+                self.difficultyCell.textOnButton.textColor = .ui.primaryText
+                self.viewModel.difficulty = selectedDifficulty
+            case 2:
+                
+                let selectedServing = self.viewModel.servingRowArray[selectedRow]
+                self.servingCell.textOnButton.text = "\(selectedServing.description) (serving)"
+                self.servingCell.textOnButton.textColor = .ui.primaryText
+                self.viewModel.serving = selectedServing
+                
+            case 3:
+                let selectedHoursRow = pickerView.selectedRow(inComponent: 0) // Komponent dla godzin
+                let selectedMinutesRow = pickerView.selectedRow(inComponent: 1) // Komponent dla minut
+
+                let selectedHours = self.viewModel.timeHoursArray[selectedHoursRow].description
+                self.viewModel.prepTimeHours = selectedHours
+
+                let selectedMinutes = self.viewModel.timeMinutesArray[selectedMinutesRow].description
+                self.viewModel.prepTimeMinutes = selectedMinutes
+
+                var hours = ""
+                var minutes = ""
+                
+                if self.viewModel.prepTimeHours != "0", self.viewModel.prepTimeHours != "1", self.viewModel.prepTimeHours != "" {
+                    hours = "\(self.viewModel.prepTimeHours) hours"
+                } else if self.viewModel.prepTimeHours == "1" {
+                    hours = "\(self.viewModel.prepTimeHours) hour"
+                }
+
+                if self.viewModel.prepTimeMinutes != "0", self.viewModel.prepTimeMinutes != "" {
+                    minutes = "\(self.viewModel.prepTimeMinutes) min"
+                }
+                self.prepTimeCell.textOnButton.text = "\(hours) \(minutes)".trimmingCharacters(in: .whitespaces)
+                self.prepTimeCell.textOnButton.textColor = .ui.primaryText
+
+            case 4:
+                let selectedSpicy = self.viewModel.spicyRowArray[selectedRow]
+                self.spicyCell.textOnButton.text = selectedSpicy
+                self.spicyCell.textOnButton.textColor = .ui.primaryText
+                self.viewModel.spicy = selectedSpicy
+            case 5:
+                let selectedCategory = self.viewModel.categoryRowArray[selectedRow]
+                self.categoryCell.textOnButton.text = selectedCategory
+                self.categoryCell.textOnButton.textColor = .ui.primaryText
+                self.viewModel.category = selectedCategory
+            default:
+                break
+            }
+            
         })
 
         selectAction.setValue(UIColor.orange, forKey: "titleTextColor")
-
         alert.addAction(selectAction)
         present(alert, animated: true, completion: nil)
     }
@@ -269,7 +321,7 @@ extension AddRecipeVC: PickerButtonWithIconCellDelegate {
     func pickerButtonWithIconCellDidTapButton(_ cell: PickerButtonWithIconCell) {
         switch cell.tag {
         case 1:
-            popUpPicker(for: difficultyPickerView, title: "Select difficulty of recipe")
+            popUpPicker(for: difficultyPickerView, title: "Wybierz opcję")
         case 2:
             popUpPicker(for: servingsPickerView, title: "Select servings count")
         case 3:
@@ -346,7 +398,8 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
             /// hours for '2 - 48'
             if viewModel.prepTimeHours != "0" &&
                 viewModel.prepTimeHours != "1" &&
-                viewModel.prepTimeHours != "" {
+                viewModel.prepTimeHours != ""
+            {
                 hours = "\(viewModel.prepTimeHours) hours"
             }
             
@@ -356,8 +409,9 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
             }
             
             /// minutes
-            if viewModel.prepTimeMinutes != "0" && 
-                viewModel.prepTimeMinutes != "" {
+            if viewModel.prepTimeMinutes != "0" &&
+                viewModel.prepTimeMinutes != ""
+            {
                 minutes = "\(viewModel.prepTimeMinutes) min"
             }
             

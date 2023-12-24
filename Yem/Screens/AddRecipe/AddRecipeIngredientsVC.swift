@@ -56,21 +56,10 @@ class AddRecipeIngredientsVC: UIViewController, AddRecipeViewModelDelegate {
         setupTableViewFooter()
     }
     
-//    override func viewDidLayoutSubviews() {
-//        super.viewDidLayoutSubviews()
-//
-//        let footerWidth = tableView.bounds.width - 2 * 18
-//        tableViewFooter.frame = CGRect(x: 0, y: 0, width: footerWidth, height: 50)
-//        tableView.tableFooterView = tableViewFooter
-//    }
-    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        tableView.layoutIfNeeded() // Upewnij się, że rozmiary tabeli są aktualne
-//        let footerWidth = tableView.bounds.width
-//        tableViewFooter.frame = CGRect(x: 0, y: 0, height: 50)
-
+        tableView.layoutIfNeeded()
         tableView.tableFooterView = tableViewFooter
     }
 
@@ -94,7 +83,6 @@ class AddRecipeIngredientsVC: UIViewController, AddRecipeViewModelDelegate {
     
     private func setupTableViewFooter() {
         tableViewFooter.delegate = self
-        let footerWidth = tableView.bounds.width 
 
         tableViewFooter.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 100)
         tableViewFooter.backgroundColor = UIColor.ui.background
@@ -137,7 +125,7 @@ extension AddRecipeIngredientsVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
-}
+}    
 
 // MARK: - Navigation
 

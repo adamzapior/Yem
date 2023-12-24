@@ -14,7 +14,6 @@ protocol AddRecipeViewModelDelegate: AnyObject {
 }
 
 class AddRecipeViewModel {
-    
     // MARK: Observable properties
     
     @Published
@@ -38,6 +37,7 @@ class AddRecipeViewModel {
     @Published
     var category: String = ""
     
+    /// Igredient sheet and vc variables
     @Published
     var ingredientsList: [IngredientModel] = [
         IngredientModel(id: 1, value: "100", valueType: "kg", name: "Milk"),
@@ -51,13 +51,44 @@ class AddRecipeViewModel {
     var igredientName: String = ""
     
     @Published
-    var igredientCount: String = ""
+    var igredientValue: String = ""
     
     @Published
     var igredientValueType: String = ""
     
+    /// Error handling
+    /// Recepies
+    @Published
+    var recipeTitleIsError: Bool = false
+    
+    @Published
+    var difficultyIsError: Bool = false
+    
+    @Published
+    var servingIsError: Bool = false
+    
+    @Published
+    var perpTimeIsError: Bool = false
+    
+    @Published
+    var spicyIsError: Bool = false
+    
+    @Published
+    var categoryIsError: Bool = false
+    
+    /// Igredient
+    @Published
+    var igredientNameIsError: Bool = false
+    
+    @Published
+    var igredientValueIsError: Bool = false
+    
+    @Published
+    var igredientValueTypeIsError: Bool = false
+
     // MARK: Properties
     
+    /// UIPickerView properties
     var difficultyRowArray: [String] = ["Easy", "Medium", "Hard"]
     
     lazy var servingRowArray: [Int] = {
@@ -88,6 +119,8 @@ class AddRecipeViewModel {
     
     lazy var categoryRowArray: [String] = ["Breakfast", "Lunch", "Dinner", "Desserts", "Snacks", "Beverages", "Appetizers", "Side Dishes", "Vegan", "Vegetarian"]
     
+    lazy var valueTypeArray: [String] = ["Unit", "Grams (g)", "Kilograms (kg)", "Milliliters (ml)", "Liters (L)", "Teaspoons (tsp)", "Tablespoons (Tbsp)", "Cups (c)", "Pinch"]
+    
     // MARK: Initialization
     
     init() {}
@@ -103,8 +136,78 @@ class AddRecipeViewModel {
     
     // MARK: Methods
     
+    /// Validation
+    
+    private func validateRecipeTitle() {
+        if recipeTitle.isEmpty {
+            recipeTitleIsError = true
+        }
+    }
+    
+    private func validateDifficulty() {
+        if difficulty.isEmpty {
+            difficultyIsError = true
+        }
+    }
+    
+    private func validateServing() {
+        if serving != 0 {
+            servingIsError = true
+        }
+    }
+    
+    private func validatePerpTime() {
+        if recipeTitle.isEmpty {
+            recipeTitleIsError = true
+        }
+    }
+
+    private func validateSpicy() {
+        if spicy.isEmpty {
+            spicyIsError = true
+        }
+    }
+
+    private func validateCategory() {
+        if category.isEmpty {
+            categoryIsError = true
+        }
+    }
+    
+    private func validateForms() {
+        validateRecipeTitle()
+        validateDifficulty()
+        validateServing()
+        validatePerpTime()
+        validateSpicy()
+        validateCategory()
+    }
+    
+    private func resetValidationFlags() {
+        recipeTitleIsError = false
+        difficultyIsError = false
+        servingIsError = false
+        perpTimeIsError = false
+        spicyIsError = false
+        categoryIsError = false
+    }
+    
+    private func resetIgredientValidationFlags() {
+        igredientNameIsError = false
+        igredientValueIsError = false
+        igredientValueTypeIsError = false
+    }
+    
     func addIngredientToList() -> Bool {
-        var ingredient = IngredientModel(id: Int64(), value: igredientCount, valueType: igredientValueType, name: igredientName)
+        resetIgredientValidationFlags()
+        
+        if perpTimeIsError || igredientValueIsError || igredientValueTypeIsError  {
+            // TODO: push alert on VC
+            // TODO: change item color
+            return false
+        }
+        
+        var ingredient = IngredientModel(id: Int64(), value: igredientValue, valueType: igredientValueType, name: igredientName)
         ingredientsList.append(ingredient)
         return true
     }
@@ -118,6 +221,4 @@ extension AddRecipeViewModel: AddRecipeViewModelDelegate {
     func reloadTable() {
         print("reload data")
     }
-    
-    
 }
