@@ -12,8 +12,9 @@ protocol PickerButtonWithIconCellDelegate: AnyObject {
 }
 
 class PickerButtonWithIconCell: UIView {
-    
     weak var delegate: PickerButtonWithIconCellDelegate?
+    
+    // MARK: - Properties
     
     var icon: IconImageView!
     var iconImage: String
@@ -21,16 +22,19 @@ class PickerButtonWithIconCell: UIView {
     
     let button = UIButton()
     var textOnButton = UILabel()
-
+    
+    // MARK: - Lifecycle
+    
     override init(frame: CGRect) {
-        // Initialize properties here
-        self.iconImage = "plus" // Provide a default icon name
-        self.textStyle = .body // Provide a default text style
+        /// default values
+        self.iconImage = "plus"
+        self.textStyle = .body
 
         super.init(frame: frame)
         self.icon = IconImageView(systemImage: iconImage, color: .ui.theme, textStyle: textStyle)
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -44,6 +48,8 @@ class PickerButtonWithIconCell: UIView {
         
         configure()
     }
+    
+    // MARK: UI Setup
     
     private func configure() {
         addSubview(icon)
@@ -72,11 +78,11 @@ class PickerButtonWithIconCell: UIView {
             make.leading.equalTo(button.snp.leading).offset(18)
             make.centerY.equalTo(button.snp.centerY)
         }
-        
-        
     }
     
+    // MARK: - Methods
+    
     @objc private func buttonTapped() {
-           delegate?.pickerButtonWithIconCellDidTapButton(self)
-       }
+        delegate?.pickerButtonWithIconCellDidTapButton(self)
+    }
 }

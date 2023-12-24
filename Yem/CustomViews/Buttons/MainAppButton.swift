@@ -7,11 +7,21 @@
 
 import UIKit
 
+protocol MainAppButtonDelegate: AnyObject {
+    func mainAppButtonTapped(_ cell: MainAppButton)
+}
+
 class MainAppButton: UIButton {
+    
+    weak var delegate: MainAppButtonDelegate?
+    
+    // MARK: - Lifecycle
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
+        
+        self.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
     }
 
     @available(*, unavailable)
@@ -25,11 +35,17 @@ class MainAppButton: UIButton {
         self.backgroundColor = backgroundColor
     }
     
+    // MARK:  UI Setup
 
     private func setupUI() {
         self.layer.cornerRadius = 20
         self.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
     }
-
+    
+    // MARK: - Methods
+    
+    @objc private func buttonTapped() {
+        delegate?.mainAppButtonTapped(self)
+    }
    
 }

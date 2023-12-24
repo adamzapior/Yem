@@ -5,7 +5,6 @@ protocol TextfieldWithIconCellDelegate: AnyObject {
 }
 
 class TextfieldWithIconCell: UIView, UITextFieldDelegate {
-
     weak var delegate: TextfieldWithIconCellDelegate?
     
     var icon: IconImageView!
@@ -13,16 +12,22 @@ class TextfieldWithIconCell: UIView, UITextFieldDelegate {
     var textStyle: UIFont.TextStyle
     
     let textField = UITextField()
+    
+    var keyboardType: UIKeyboardType = .default {
+        didSet {
+            textField.keyboardType = keyboardType
+        }
+    }
 
     override init(frame: CGRect) {
-        // Inicjalizacja właściwości
-        self.iconImage = "plus" // Domyślna nazwa ikony
-        self.textStyle = .body // Domyślny styl tekstu
+        self.iconImage = "plus"
+        self.textStyle = .body
 
         super.init(frame: frame)
         self.icon = IconImageView(systemImage: iconImage, color: .ui.theme, textStyle: textStyle)
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -31,13 +36,11 @@ class TextfieldWithIconCell: UIView, UITextFieldDelegate {
         self.init(frame: .zero)
         self.iconImage = iconImage
         self.icon = IconImageView(systemImage: iconImage, color: .ui.theme, textStyle: textStyle)
-//        self.textField.placeholder = placeholderText
-        
-        
+                
         let placeholderText = NSAttributedString(string: "\(placeholderText)",
                                                  attributes: [NSAttributedString.Key.foregroundColor: textColor ?? .primaryContainer])
                 
-        self.textField.attributedPlaceholder = placeholderText
+        textField.attributedPlaceholder = placeholderText
         
         configure()
     }
@@ -49,9 +52,9 @@ class TextfieldWithIconCell: UIView, UITextFieldDelegate {
         layer.cornerRadius = 20
         backgroundColor = .ui.primaryContainer
 
-        textField.delegate = self // Ustawienie self jako delegata UITextField
-//        textField.borderStyle = .roundedRect
+        textField.delegate = self
         textField.backgroundColor = .ui.primaryContainer
+        textField.keyboardType = keyboardType
         
         icon.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview().inset(12)
@@ -64,13 +67,11 @@ class TextfieldWithIconCell: UIView, UITextFieldDelegate {
             make.top.bottom.equalToSuperview().inset(2)
             make.leading.equalTo(icon.snp.trailing).offset(22)
             make.trailing.equalToSuperview().offset(-9)
-//            make.height.greaterThanOrEqualTo(50)
         }
-        
-        
     }
+    
+    // MARK: Delegate textfield
 
-    // Implementacja metody UITextFieldDelegate
     func textFieldDidEndEditing(_ textField: UITextField) {
         if let text = textField.text {
             delegate?.textFieldDidEndEditing(self, didUpdateText: text)
@@ -78,7 +79,7 @@ class TextfieldWithIconCell: UIView, UITextFieldDelegate {
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-          textField.resignFirstResponder() // Hides the keyboard
-          return true
-      }
+        textField.resignFirstResponder() // Hides the keyboard
+        return true
+    }
 }

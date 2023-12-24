@@ -14,6 +14,8 @@ protocol AddRecipeViewModelDelegate: AnyObject {
 }
 
 class AddRecipeViewModel {
+    weak var delegate: AddRecipeViewModelDelegate?
+    
     // MARK: Observable properties
     
     @Published
@@ -45,7 +47,11 @@ class AddRecipeViewModel {
         IngredientModel(id: 3, value: "20", valueType: "pounds", name: "Milk"),
         IngredientModel(id: 4, value: "13", valueType: "gram", name: "Milk"),
         IngredientModel(id: 5, value: "2", valueType: "count", name: "Milk")
-    ]
+    ] {
+        didSet {
+            reloadTable()
+        }
+    }
     
     @Published
     var igredientName: String = ""
@@ -201,13 +207,13 @@ class AddRecipeViewModel {
     func addIngredientToList() -> Bool {
         resetIgredientValidationFlags()
         
-        if perpTimeIsError || igredientValueIsError || igredientValueTypeIsError  {
+        if perpTimeIsError || igredientValueIsError || igredientValueTypeIsError {
             // TODO: push alert on VC
             // TODO: change item color
             return false
         }
         
-        var ingredient = IngredientModel(id: Int64(), value: igredientValue, valueType: igredientValueType, name: igredientName)
+        let ingredient = IngredientModel(id: Int64(), value: igredientValue, valueType: igredientValueType, name: igredientName)
         ingredientsList.append(ingredient)
         return true
     }
@@ -219,6 +225,8 @@ class AddRecipeViewModel {
 
 extension AddRecipeViewModel: AddRecipeViewModelDelegate {
     func reloadTable() {
-        print("reload data")
+        DispatchQueue.main.async {
+            self.delegate?.reloadTable()
+        }
     }
 }

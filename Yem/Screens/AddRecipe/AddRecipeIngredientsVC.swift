@@ -7,10 +7,7 @@
 
 import UIKit
 
-class AddRecipeIngredientsVC: UIViewController, AddRecipeViewModelDelegate {
-    func reloadTable() {
-        tableView.reloadData()
-    }
+class AddRecipeIngredientsVC: UIViewController {
     
     // MARK: - ViewModel
 
@@ -48,6 +45,8 @@ class AddRecipeIngredientsVC: UIViewController, AddRecipeViewModelDelegate {
     override func viewDidLoad() {
         view.backgroundColor = .systemBackground
         title = "Ingredients"
+        
+        viewModel.delegate = self
         
         setupNavigationBarButtons()
         
@@ -145,10 +144,16 @@ extension AddRecipeIngredientsVC {
     }
     
     func addIgredientTapped() {
-        let sheet = AddIgredientSheetVC(viewModel: viewModel)
+        let sheet = AddIngredientSheetVC(viewModel: viewModel)
         present(sheet, animated: true)
 //        pushToNextScreen(from: self, toView: )
     }
     
     private func openIgredientSheet(from view: UIViewController, toView: UIViewController) {}
+}
+
+extension AddRecipeIngredientsVC: AddRecipeViewModelDelegate {
+        func reloadTable() {
+            self.tableView.reloadData()
+        }
 }

@@ -7,14 +7,14 @@
 
 import UIKit
 
-class AddIgredientSheetVC: UIViewController {
+class AddIngredientSheetVC: UIViewController {
     // MARK: - VM
     
     var viewModel: AddRecipeViewModel
     
     // MARK: - View properties
     
-    let igredientNameTextfield = TextfieldWithIconCell(iconImage: "info.square", placeholderText: "Enter your igredient name", textColor: .ui.secondaryText)
+    let ingredientNameTextfield = TextfieldWithIconCell(iconImage: "info.square", placeholderText: "Enter your igredient name", textColor: .ui.secondaryText)
     let countTextfield = TextfieldWithIconCell(iconImage: "bag.badge.plus", placeholderText: "Enter value", textColor: .ui.secondaryText)
     let valueTypeCell = PickerButtonWithIconCell(iconImage: "note.text.badge.plus", textOnButton: "Select value type")
     let addButton = MainAppButton(title: "Add", backgroundColor: .ui.addBackground!)
@@ -47,8 +47,6 @@ class AddIgredientSheetVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        view.backgroundColor = .systemBackground
         
         let smallDetentId = UISheetPresentationController.Detent.Identifier("small")
         let smallDetent = UISheetPresentationController.Detent.custom(identifier: smallDetentId) { _ in
@@ -61,7 +59,7 @@ class AddIgredientSheetVC: UIViewController {
         }
         
         setupUI()
-        setupDelegateForViewComponents()
+        configureComponents()
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
@@ -70,6 +68,7 @@ class AddIgredientSheetVC: UIViewController {
     // MARK: - UI Setup
     
     private func setupUI() {
+        view.backgroundColor = .systemBackground
         view.addSubview(stackView)
         
         stackView.snp.makeConstraints { make in
@@ -77,7 +76,7 @@ class AddIgredientSheetVC: UIViewController {
             make.leading.trailing.equalToSuperview().inset(12)
         }
         
-        stackView.addArrangedSubview(igredientNameTextfield)
+        stackView.addArrangedSubview(ingredientNameTextfield)
         stackView.addArrangedSubview(countTextfield)
         stackView.addArrangedSubview(valueTypeCell)
         stackView.addArrangedSubview(addButton)
@@ -87,27 +86,48 @@ class AddIgredientSheetVC: UIViewController {
 
 // MARK: - Delegate & data source items
 
-extension AddIgredientSheetVC {
-    func setupDelegateForViewComponents() {
-        igredientNameTextfield.tag = 1
+extension AddIngredientSheetVC {
+    private func configureComponents() {
+        configureTags()
+        configureDelegateAndDataSource()
+        configureKeyboardType()
+    }
+    
+    private func configureTags() {
+        /// textfields:
+        ingredientNameTextfield.tag = 1
         countTextfield.tag = 2
-
-        igredientNameTextfield.delegate = self
+        
+        /// mainButton:
+        addButton.tag = 1
+        cancelButton.tag = 2
+    }
+    
+    private func configureDelegateAndDataSource() {
+        /// textfields:
+        ingredientNameTextfield.delegate = self
         countTextfield.delegate = self
+        
+        /// picker:
         valueTypeCell.delegate = self
+        
+        /// mainButton:
+        addButton.delegate = self
+        cancelButton.delegate = self
         
         valueTypePickerView.delegate = self
         valueTypePickerView.dataSource = self
+    }
+    
+    private func configureKeyboardType() {
+        countTextfield.keyboardType = .decimalPad
     }
 }
 
 // MARK: Gestures: TextfieldWithIconCellDelegate & PickerButtonWithIconCellDelegate
 
-extension AddIgredientSheetVC: TextfieldWithIconCellDelegate, PickerButtonWithIconCellDelegate {
-    func pickerButtonWithIconCellDidTapButton(_ cell: PickerButtonWithIconCell) {
-        popUpPicker(for: valueTypePickerView, title: "Select ingredient value type")
-    }
-    
+extension AddIngredientSheetVC: TextfieldWithIconCellDelegate, PickerButtonWithIconCellDelegate, MainAppButtonDelegate {
+    // Textfield
     func textFieldDidEndEditing(_ cell: TextfieldWithIconCell, didUpdateText text: String) {
         switch cell.tag {
         case 1:
@@ -123,18 +143,74 @@ extension AddIgredientSheetVC: TextfieldWithIconCellDelegate, PickerButtonWithIc
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder() // Ukrywa klawiaturę
+        textField.resignFirstResponder() // turn off keyboard
         return true
     }
     
+    // Picker
+    func pickerButtonWithIconCellDidTapButton(_ cell: PickerButtonWithIconCell) {
+        popUpPicker(for: valueTypePickerView, title: "Select ingredient value type")
+    }
+    
+    // Add & Cancel buttons
+    func mainAppButtonTapped(_ cell: MainAppButton) {
+        switch cell.tag {
+        case 1:
+            /// add button
+            let success = viewModel.addIngredientToList()
+            if success {
+                // Pop the view controller from the navigation stack
+                navigationController?.popViewController(animated: true)
+            } else {
+                print("mainAppButtonTapped error: if.succes == false")
+            }
+
+        case 2: break
+        /// cancel button
+        default: break
+        }
+    }
+    
+    // for view
     @objc private func dismissKeyboard() {
         view.endEditing(true)
     }
 }
 
-// MARK: - Popup Picker
+// MARK: -  PickerView setup
 
-extension AddIgredientSheetVC {
+extension AddIngredientSheetVC: UIPickerViewDelegate, UIPickerViewDataSource {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return viewModel.valueTypeArray.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
+        let label: UILabel
+        if let reuseLabel = view as? UILabel {
+            label = reuseLabel
+        } else {
+            label = UILabel(frame: CGRect(x: 0, y: 0, width: screenWidth, height: 30))
+            label.textAlignment = .center
+        }
+        label.text = viewModel.valueTypeArray[row]
+        return label
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
+        return 60
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        let selectedRow = viewModel.valueTypeArray[row]
+        valueTypeCell.textOnButton.text = selectedRow
+        valueTypeCell.textOnButton.textColor = .ui.primaryText
+        viewModel.igredientValueType = selectedRow
+    }
+    
     func popUpPicker(for pickerView: UIPickerView, title: String) {
         view.endEditing(true)
         
@@ -163,40 +239,5 @@ extension AddIgredientSheetVC {
         selectAction.setValue(UIColor.orange, forKey: "titleTextColor")
         alert.addAction(selectAction)
         present(alert, animated: true, completion: nil)
-    }
-}
-
-// MARK: -  PickerView Delegate & DataSource methods
-
-extension AddIgredientSheetVC: UIPickerViewDelegate, UIPickerViewDataSource {
-    func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
-    }
-
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return viewModel.valueTypeArray.count
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
-        let label: UILabel
-        if let reuseLabel = view as? UILabel {
-            label = reuseLabel
-        } else {
-            label = UILabel(frame: CGRect(x: 0, y: 0, width: screenWidth, height: 30))
-            label.textAlignment = .center // Dostosuj wyrównanie tekstu
-        }
-        label.text = viewModel.valueTypeArray[row]
-        return label
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
-        return 60 // Ustaw wysokość na 50 lub na inną wartość, której potrzebujesz
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        let selectedRow = viewModel.valueTypeArray[row]
-        valueTypeCell.textOnButton.text = selectedRow
-        valueTypeCell.textOnButton.textColor = .ui.primaryText
-        viewModel.igredientValueType = selectedRow
     }
 }
