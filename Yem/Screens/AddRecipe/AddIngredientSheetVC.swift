@@ -160,13 +160,13 @@ extension AddIngredientSheetVC: TextfieldWithIconCellDelegate, PickerButtonWithI
             let success = viewModel.addIngredientToList()
             if success {
                 // Pop the view controller from the navigation stack
-                navigationController?.popViewController(animated: true)
+                self.dismiss(animated: true, completion: nil)
             } else {
                 print("mainAppButtonTapped error: if.succes == false")
             }
 
-        case 2: break
-        /// cancel button
+        case 2: 
+            self.dismiss(animated: true, completion: nil)
         default: break
         }
     }

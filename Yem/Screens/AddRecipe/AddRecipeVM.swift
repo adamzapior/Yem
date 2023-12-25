@@ -229,4 +229,6 @@ extension AddRecipeViewModel: AddRecipeViewModelDelegate {
             self.delegate?.reloadTable()
         }
     }
+    
+    //TODO: push to previous viewcontroller and clear data in textfields or something
 }
