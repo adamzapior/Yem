@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 
 protocol AddRecipeViewModelDelegate: AnyObject {
+    func updateEditButtonVisibility(isEmpty: Bool)
     func reloadTable()
 }
 
@@ -41,13 +42,7 @@ class AddRecipeViewModel {
     
     /// Igredient sheet and vc variables
     @Published
-    var ingredientsList: [IngredientModel] = [
-        IngredientModel(id: 1, value: "100", valueType: "kg", name: "Milk"),
-        IngredientModel(id: 2, value: "1", valueType: "kg", name: "Milk"),
-        IngredientModel(id: 3, value: "20", valueType: "pounds", name: "Milk"),
-        IngredientModel(id: 4, value: "13", valueType: "gram", name: "Milk"),
-        IngredientModel(id: 5, value: "2", valueType: "count", name: "Milk")
-    ] {
+    var ingredientsList: [IngredientModel] = [] {
         didSet {
             reloadTable()
         }
@@ -91,6 +86,11 @@ class AddRecipeViewModel {
     
     @Published
     var igredientValueTypeIsError: Bool = false
+    
+    /// validation used for validate all recipe
+    @Published
+    var validationErrors: [ValidateRecipeErrors] = []
+
 
     // MARK: Properties
     
@@ -129,7 +129,7 @@ class AddRecipeViewModel {
     
     // MARK: Initialization
     
-    init() {}
+    init() { }
     
     deinit {
         print("viewmodel out")
@@ -180,6 +180,24 @@ class AddRecipeViewModel {
         }
     }
     
+    private func validateIgredientName() {
+        if igredientName.isEmpty {
+            igredientNameIsError = true
+        }
+    }
+    
+    private func validateIgredientValue() {
+        if igredientValue.isEmpty {
+            igredientValueIsError = true
+        }
+    }
+    
+    private func validateIgredientValueType() {
+        if igredientValueType.isEmpty {
+            igredientValueTypeIsError = true
+        }
+    }
+    
     private func validateForms() {
         validateRecipeTitle()
         validateDifficulty()
@@ -187,6 +205,12 @@ class AddRecipeViewModel {
         validatePerpTime()
         validateSpicy()
         validateCategory()
+    }
+    
+    private func validateIngredientForm() {
+        validateIgredientName()
+        validateIgredientValue()
+        validateIgredientValueType()
     }
     
     private func resetValidationFlags() {
@@ -207,7 +231,9 @@ class AddRecipeViewModel {
     func addIngredientToList() -> Bool {
         resetIgredientValidationFlags()
         
-        if perpTimeIsError || igredientValueIsError || igredientValueTypeIsError {
+        validateIngredientForm()
+        
+        if igredientNameIsError || igredientValueIsError || igredientValueTypeIsError {
             // TODO: push alert on VC
             // TODO: change item color
             return false
@@ -224,6 +250,12 @@ class AddRecipeViewModel {
 }
 
 extension AddRecipeViewModel: AddRecipeViewModelDelegate {
+    internal func updateEditButtonVisibility(isEmpty: Bool) {
+        delegate?.updateEditButtonVisibility(isEmpty: isEmpty)
+    }
+    
+
+    
     func reloadTable() {
         DispatchQueue.main.async {
             self.delegate?.reloadTable()
@@ -232,3 +264,36 @@ extension AddRecipeViewModel: AddRecipeViewModelDelegate {
     
     //TODO: push to previous viewcontroller and clear data in textfields or something
 }
+
+
+// TODO: add validate errors
+
+enum ValidateRecipeErrors: CustomStringConvertible {
+    case recipeTitle
+    case difficulty
+    case serving
+    case prepTime
+    case spicy
+    case category
+    case ingredientsList
+
+    var description: String {
+        switch self {
+        case .recipeTitle:
+            return ""
+        case .difficulty:
+            return ""
+        case .serving:
+            return ""
+        case .prepTime:
+            return ""
+        case .spicy:
+            return ""
+        case .category:
+            return ""
+        case .ingredientsList:
+            return ""
+        }
+    }
+}
+

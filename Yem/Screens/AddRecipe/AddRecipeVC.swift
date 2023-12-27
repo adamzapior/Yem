@@ -41,7 +41,7 @@ class AddRecipeVC: UIViewController {
     var servingCell = PickerButtonWithIconCell(iconImage: "person", textOnButton: "Select servings count")
     var prepTimeCell = PickerButtonWithIconCell(iconImage: "timer", textOnButton: "Select prep time")
     var spicyCell = PickerButtonWithIconCell(iconImage: "leaf", textOnButton: "Select spicy")
-    var categoryCell = PickerButtonWithIconCell(iconImage: "book.pages", textOnButton: "Select category")
+    var categoryCell = PickerButtonWithIconCell(iconImage: "book", textOnButton: "Select category")
     
     lazy var difficultyPickerView = UIPickerView()
     lazy var servingsPickerView = UIPickerView()

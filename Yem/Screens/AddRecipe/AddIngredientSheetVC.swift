@@ -157,6 +157,8 @@ extension AddIngredientSheetVC: TextfieldWithIconCellDelegate, PickerButtonWithI
         switch cell.tag {
         case 1:
             /// add button
+            cell.onTapAnimation()
+            
             let success = viewModel.addIngredientToList()
             if success {
                 // Pop the view controller from the navigation stack
@@ -166,6 +168,7 @@ extension AddIngredientSheetVC: TextfieldWithIconCellDelegate, PickerButtonWithI
             }
 
         case 2: 
+            cell.onTapAnimation()
             self.dismiss(animated: true, completion: nil)
         default: break
         }

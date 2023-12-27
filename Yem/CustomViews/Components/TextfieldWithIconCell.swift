@@ -71,12 +71,17 @@ class TextfieldWithIconCell: UIView, UITextFieldDelegate {
     }
     
     // MARK: Delegate textfield
+    
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        self.onTapAnimation()
+        return true
+    }
 
     func textFieldDidEndEditing(_ textField: UITextField) {
         if let text = textField.text {
             delegate?.textFieldDidEndEditing(self, didUpdateText: text)
         }
-    }
+}
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder() // Hides the keyboard

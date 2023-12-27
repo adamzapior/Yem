@@ -31,12 +31,6 @@ class IngredientsTableFooterView: UIView {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
-    
-    func setEditButtonVisible(_ isVisible: Bool) {
-        editButton.isHidden = !isVisible
-    }
-
-    
 
     private func configure() {
         
@@ -69,10 +63,17 @@ class IngredientsTableFooterView: UIView {
             make.width.greaterThanOrEqualTo(330.HAdapted)
         }
     }
+    
+    func setEditButtonVisible(_ isVisible: Bool) {
+         editButton.isHidden = !isVisible
+     }
 }
 
 extension IngredientsTableFooterView: IngredientsTableFooterViewDelegate {
     @objc func addIconTapped(view: UIView) {
+        self.addButton.onTapAnimation()
+
         delegate?.addIconTapped(view: self)
     }
+
 }

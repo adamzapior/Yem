@@ -10,11 +10,11 @@ import UIKit
 class AddRecipeIngredientsVC: UIViewController {
     
     // MARK: - ViewModel
-
+    
     let viewModel: AddRecipeViewModel
     
     // MARK: - View properties
-
+    
     let pageStackView: UIStackView = {
         let sv = UIStackView()
         sv.axis = .horizontal
@@ -27,8 +27,8 @@ class AddRecipeIngredientsVC: UIViewController {
     var pageViews = [UIView]()
     
     private let tableView = UITableView()
-    private let tableViewFooter = IngredientsTableFooterView()
     private let tableViewHeader = IngredientsTableHeaderView()
+    private let tableViewFooter = IngredientsTableFooterView()
     
     // MARK: - Lifecycle
     
@@ -53,15 +53,17 @@ class AddRecipeIngredientsVC: UIViewController {
         setupTableView()
         setupTableViewHeader()
         setupTableViewFooter()
+        
+        updateEditButtonVisibility(isEmpty: viewModel.ingredientsList.isEmpty)
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-
+        
         tableView.layoutIfNeeded()
         tableView.tableFooterView = tableViewFooter
     }
-
+    
     
     // MARK: - Setup UI
     
@@ -82,16 +84,15 @@ class AddRecipeIngredientsVC: UIViewController {
     
     private func setupTableViewFooter() {
         tableViewFooter.delegate = self
-
+        
         tableViewFooter.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 100)
         tableViewFooter.backgroundColor = UIColor.ui.background
         tableView.tableFooterView = tableViewFooter
         
-        if viewModel.ingredientsList.isEmpty == true {
-            tableViewFooter.setEditButtonVisible(true)
-        }
+        tableViewFooter.setEditButtonVisible(true)
+        
     }
-
+    
     private func setupTableViewHeader() {
         tableView.addSubview(tableViewHeader)
         tableView.tableHeaderView = tableViewHeader
@@ -153,7 +154,12 @@ extension AddRecipeIngredientsVC {
 }
 
 extension AddRecipeIngredientsVC: AddRecipeViewModelDelegate {
+    func updateEditButtonVisibility(isEmpty: Bool) {
+        tableViewFooter.setEditButtonVisible(!isEmpty)
+    }
+    
         func reloadTable() {
             self.tableView.reloadData()
+            updateEditButtonVisibility(isEmpty: viewModel.ingredientsList.isEmpty)
         }
 }

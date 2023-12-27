@@ -33,7 +33,7 @@ class TabBarVC: UITabBarController {
         tabBar.scrollEdgeAppearance = appearance
 
         setViewControllers([vc1, vc2], animated: true)
-        
+                
 //        let appearanceBar = UINavigationBarAppearance()
 //        appearanceBar.configureWithOpaqueBackground()
 ////        appearanceBar.backgroundColor = .clear // Ustaw tło paska nawigacyjnego, jeśli potrzebujesz

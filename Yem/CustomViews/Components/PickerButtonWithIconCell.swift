@@ -83,6 +83,8 @@ class PickerButtonWithIconCell: UIView {
     // MARK: - Methods
     
     @objc private func buttonTapped() {
+        self.onTapAnimation()
+        
         delegate?.pickerButtonWithIconCellDidTapButton(self)
     }
 }
