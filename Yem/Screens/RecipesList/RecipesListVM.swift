@@ -8,7 +8,7 @@
 import Foundation
 
 
-class RecipesListViewModel {
+class RecipesListVM {
     
  
     init() {

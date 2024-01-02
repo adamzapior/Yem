@@ -7,16 +7,16 @@
 
 import UIKit
 
-protocol PickerButtonWithIconCellDelegate: AnyObject {
-    func pickerButtonWithIconCellDidTapButton(_ cell: PickerButtonWithIconCell)
+protocol PickerWithIconRowDelegate: AnyObject {
+    func pickerWithIconRowTappped(_ cell: PickerWithIconRow)
 }
 
-class PickerButtonWithIconCell: UIView {
-    weak var delegate: PickerButtonWithIconCellDelegate?
+class PickerWithIconRow: UIView {
+    weak var delegate: PickerWithIconRowDelegate?
     
     // MARK: - Properties
     
-    var icon: IconImageView!
+    var icon: IconImage!
     var iconImage: String
     var textStyle: UIFont.TextStyle
     
@@ -31,7 +31,7 @@ class PickerButtonWithIconCell: UIView {
         self.textStyle = .body
 
         super.init(frame: frame)
-        self.icon = IconImageView(systemImage: iconImage, color: .ui.theme, textStyle: textStyle)
+        self.icon = IconImage(systemImage: iconImage, color: .ui.theme, textStyle: textStyle)
     }
     
     @available(*, unavailable)
@@ -42,7 +42,7 @@ class PickerButtonWithIconCell: UIView {
     convenience init(iconImage: String, textOnButton: String) {
         self.init(frame: .zero)
         self.iconImage = iconImage
-        self.icon = IconImageView(systemImage: iconImage, color: .ui.theme, textStyle: textStyle)
+        self.icon = IconImage(systemImage: iconImage, color: .ui.theme, textStyle: textStyle)
         self.textOnButton.text = textOnButton
         self.textOnButton.textColor = .ui.secondaryText
         
@@ -84,7 +84,6 @@ class PickerButtonWithIconCell: UIView {
     
     @objc private func buttonTapped() {
         self.onTapAnimation()
-        
-        delegate?.pickerButtonWithIconCellDidTapButton(self)
+        delegate?.pickerWithIconRowTappped(self)
     }
 }

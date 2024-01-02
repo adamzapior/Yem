@@ -7,13 +7,13 @@
 
 import UIKit
 
-protocol MainAppButtonDelegate: AnyObject {
-    func mainAppButtonTapped(_ cell: MainAppButton)
+protocol MainActionButtonDelegate: AnyObject {
+    func mainActionButtonTapped(_ button: MainActionButton)
 }
 
-class MainAppButton: UIButton {
+class MainActionButton: UIButton {
     
-    weak var delegate: MainAppButtonDelegate?
+    weak var delegate: MainActionButtonDelegate?
     
     // MARK: - Lifecycle
     
@@ -45,7 +45,7 @@ class MainAppButton: UIButton {
     // MARK: - Methods
     
     @objc private func buttonTapped() {
-        delegate?.mainAppButtonTapped(self)
+        delegate?.mainActionButtonTapped(self)
     }
    
 }

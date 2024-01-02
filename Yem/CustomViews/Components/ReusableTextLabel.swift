@@ -8,7 +8,6 @@
 import UIKit
 
 class ReusableTextLabel: UILabel {
-
     override init(frame: CGRect) {
         super.init(frame: frame)
         configure()
@@ -32,5 +31,4 @@ class ReusableTextLabel: UILabel {
         lineBreakMode = .byWordWrapping
         numberOfLines = 0
     }
-
 }

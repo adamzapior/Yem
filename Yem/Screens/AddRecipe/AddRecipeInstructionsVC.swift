@@ -9,10 +9,13 @@ import Foundation
 import UIKit
 
 class AddRecipeInstructionsVC: UIViewController {
+    // MARK: - Properties
+
+    let viewModel: AddRecipeViewModel
+    let coordinator: AddRecipeCoordinator
     
-    
-    let vm: AddRecipeViewModel
-    
+    // MARK: - View properties
+
     let scrollView = UIScrollView()
     let contentView = UIView()
     
@@ -27,11 +30,15 @@ class AddRecipeInstructionsVC: UIViewController {
     let pageCount = 3
     var pageViews = [UIView]()
     
-    init(viewModel: AddRecipeViewModel) {
-        self.vm = viewModel
+    // MARK: - Lifecycle
+    
+    init(viewModel: AddRecipeViewModel, coordinator: AddRecipeCoordinator) {
+        self.viewModel = viewModel
+        self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -39,7 +46,6 @@ class AddRecipeInstructionsVC: UIViewController {
     override func viewDidLoad() {
         view.backgroundColor = .systemBackground
         setupNavigationBarButtons()
-
     }
 }
 
@@ -49,16 +55,9 @@ extension AddRecipeInstructionsVC {
     func setupNavigationBarButtons() {
         let nextButtonItem = UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(saveButtonTapped))
         navigationItem.rightBarButtonItem = nextButtonItem
-        navigationItem.rightBarButtonItem?.tintColor = .ui.theme
-        
     }
     
     @objc func saveButtonTapped(_ sender: UIBarButtonItem) {
-        backToRecipesListScreen(from: self)
+        coordinator.dismissVCStack()
     }
-    
-    func backToRecipesListScreen(from view: UIViewController) {
-        view.navigationController?.popToRootViewController(animated: true)
-    }
-    
 }

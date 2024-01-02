@@ -1,13 +1,13 @@
 import UIKit
 
-protocol TextfieldWithIconCellDelegate: AnyObject {
-    func textFieldDidEndEditing(_ cell: TextfieldWithIconCell, didUpdateText text: String)
+protocol TextfieldWithIconRowDelegate: AnyObject {
+    func textFieldDidEndEditing(_ cell: TextfieldWithIconRow, didUpdateText text: String)
 }
 
-class TextfieldWithIconCell: UIView, UITextFieldDelegate {
-    weak var delegate: TextfieldWithIconCellDelegate?
+class TextfieldWithIconRow: UIView, UITextFieldDelegate {
+    weak var delegate: TextfieldWithIconRowDelegate?
     
-    var icon: IconImageView!
+    var icon: IconImage!
     var iconImage: String
     var textStyle: UIFont.TextStyle
     
@@ -24,7 +24,7 @@ class TextfieldWithIconCell: UIView, UITextFieldDelegate {
         self.textStyle = .body
 
         super.init(frame: frame)
-        self.icon = IconImageView(systemImage: iconImage, color: .ui.theme, textStyle: textStyle)
+        self.icon = IconImage(systemImage: iconImage, color: .ui.theme, textStyle: textStyle)
     }
     
     @available(*, unavailable)
@@ -35,7 +35,7 @@ class TextfieldWithIconCell: UIView, UITextFieldDelegate {
     convenience init(iconImage: String, placeholderText: String, textColor: UIColor?) {
         self.init(frame: .zero)
         self.iconImage = iconImage
-        self.icon = IconImageView(systemImage: iconImage, color: .ui.theme, textStyle: textStyle)
+        self.icon = IconImage(systemImage: iconImage, color: .ui.theme, textStyle: textStyle)
                 
         let placeholderText = NSAttributedString(string: "\(placeholderText)",
                                                  attributes: [NSAttributedString.Key.foregroundColor: textColor ?? .primaryContainer])
@@ -73,7 +73,7 @@ class TextfieldWithIconCell: UIView, UITextFieldDelegate {
     // MARK: Delegate textfield
     
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-        self.onTapAnimation()
+        onTapAnimation()
         return true
     }
 
@@ -81,7 +81,7 @@ class TextfieldWithIconCell: UIView, UITextFieldDelegate {
         if let text = textField.text {
             delegate?.textFieldDidEndEditing(self, didUpdateText: text)
         }
-}
+    }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder() // Hides the keyboard

@@ -16,10 +16,10 @@ class IngredientsTableFooterView: UIView {
 
     let screenWidth = UIScreen.main.bounds.width
 
-    private let addIcon = IconImageView(systemImage: "plus", color: .ui.theme, textStyle: .body, contentMode: .scaleAspectFit)
+    private let addIcon = IconImage(systemImage: "plus", color: .ui.theme, textStyle: .body, contentMode: .scaleAspectFit)
     
-    private let addButton = MainAppButton(title: "Add", backgroundColor: .ui.addBackground!)
-    private let editButton = MainAppButton(title: "Edit", backgroundColor: .ui.primaryContainer!)
+    private let addButton = MainActionButton(title: "Add", backgroundColor: .ui.addBackground!)
+    private let editButton = MainActionButton(title: "Edit", backgroundColor: .ui.primaryContainer!)
     
     private let content = UIView()
 

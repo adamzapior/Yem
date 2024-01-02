@@ -10,16 +10,26 @@ import UIKit
 import UIKit
 
 class RecipesListVC: UIViewController {
-    var vm = RecipesListViewModel()
+    
+    var coordinator: RecipesListCoordinator
+    var viewModel: RecipesListVM
+    
+    init(coordinator: RecipesListCoordinator, viewModel: RecipesListVM) {
+        self.coordinator = coordinator
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         
-        // NavigationBar setup
         setupNavigationBar()
-        
-        vm.getRecipesList()
+        viewModel.getRecipesList()
     }
     
     func setupNavigationBar() {
@@ -27,10 +37,6 @@ class RecipesListVC: UIViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addRecipeButtonTapped))
         navigationItem.rightBarButtonItem?.tintColor = .orange
     }
-    
-    //    func showRecipes(recipes: [Recipe]) {
-    //        // Update UI with recipes
-    //    }
 }
 
 extension RecipesListVC {
@@ -39,8 +45,7 @@ extension RecipesListVC {
     }
     
     func addRecipe() {
-        let recipeView = AddRecipeVC()
-        goToAddRecipeScreen(from: self, toView: recipeView)
+        coordinator.goToAddRecipeScreen()
     }
     
     func goToAddRecipeScreen(from view: UIViewController, toView: UIViewController) {

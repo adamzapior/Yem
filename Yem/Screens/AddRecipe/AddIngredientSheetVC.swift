@@ -8,17 +8,18 @@
 import UIKit
 
 class AddIngredientSheetVC: UIViewController {
-    // MARK: - VM
+    // MARK: - Properties
     
+    var coordinator: AddRecipeCoordinator
     var viewModel: AddRecipeViewModel
     
     // MARK: - View properties
     
-    let ingredientNameTextfield = TextfieldWithIconCell(iconImage: "info.square", placeholderText: "Enter your igredient name", textColor: .ui.secondaryText)
-    let countTextfield = TextfieldWithIconCell(iconImage: "bag.badge.plus", placeholderText: "Enter value", textColor: .ui.secondaryText)
-    let valueTypeCell = PickerButtonWithIconCell(iconImage: "note.text.badge.plus", textOnButton: "Select value type")
-    let addButton = MainAppButton(title: "Add", backgroundColor: .ui.addBackground!)
-    let cancelButton = MainAppButton(title: "Cancel", backgroundColor: .ui.cancelBackground ?? .ui.theme)
+    let ingredientNameTextfield = TextfieldWithIconRow(iconImage: "info.square", placeholderText: "Enter your igredient name", textColor: .ui.secondaryText)
+    let countTextfield = TextfieldWithIconRow(iconImage: "bag.badge.plus", placeholderText: "Enter value", textColor: .ui.secondaryText)
+    let valueTypeCell = PickerWithIconRow(iconImage: "note.text.badge.plus", textOnButton: "Select value type")
+    let addButton = MainActionButton(title: "Add", backgroundColor: .ui.addBackground!)
+    let cancelButton = MainActionButton(title: "Cancel", backgroundColor: .ui.cancelBackground ?? .ui.theme)
     
     let valueTypePickerView = UIPickerView()
     
@@ -35,8 +36,9 @@ class AddIngredientSheetVC: UIViewController {
     
     // MARK: - Lifecycle
     
-    init(viewModel: AddRecipeViewModel) {
+    init(viewModel: AddRecipeViewModel, coordinator: AddRecipeCoordinator) {
         self.viewModel = viewModel
+        self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -126,9 +128,9 @@ extension AddIngredientSheetVC {
 
 // MARK: Gestures: TextfieldWithIconCellDelegate & PickerButtonWithIconCellDelegate
 
-extension AddIngredientSheetVC: TextfieldWithIconCellDelegate, PickerButtonWithIconCellDelegate, MainAppButtonDelegate {
+extension AddIngredientSheetVC: TextfieldWithIconRowDelegate, PickerWithIconRowDelegate, MainActionButtonDelegate {
     // Textfield
-    func textFieldDidEndEditing(_ cell: TextfieldWithIconCell, didUpdateText text: String) {
+    func textFieldDidEndEditing(_ cell: TextfieldWithIconRow, didUpdateText text: String) {
         switch cell.tag {
         case 1:
             if let text = cell.textField.text {
@@ -148,12 +150,12 @@ extension AddIngredientSheetVC: TextfieldWithIconCellDelegate, PickerButtonWithI
     }
     
     // Picker
-    func pickerButtonWithIconCellDidTapButton(_ cell: PickerButtonWithIconCell) {
+    func pickerWithIconRowTappped(_ cell: PickerWithIconRow) {
         popUpPicker(for: valueTypePickerView, title: "Select ingredient value type")
     }
     
     // Add & Cancel buttons
-    func mainAppButtonTapped(_ cell: MainAppButton) {
+    func mainActionButtonTapped(_ cell: MainActionButton) {
         switch cell.tag {
         case 1:
             /// add button
@@ -162,14 +164,14 @@ extension AddIngredientSheetVC: TextfieldWithIconCellDelegate, PickerButtonWithI
             let success = viewModel.addIngredientToList()
             if success {
                 // Pop the view controller from the navigation stack
-                self.dismiss(animated: true, completion: nil)
+                coordinator.dismissVC()
             } else {
                 print("mainAppButtonTapped error: if.succes == false")
             }
 
         case 2: 
             cell.onTapAnimation()
-            self.dismiss(animated: true, completion: nil)
+            coordinator.dismissVC()
         default: break
         }
     }

@@ -8,10 +8,10 @@
 import UIKit
 
 class AddRecipeIngredientsVC: UIViewController {
-    
     // MARK: - ViewModel
     
     let viewModel: AddRecipeViewModel
+    var coordinator: AddRecipeCoordinator
     
     // MARK: - View properties
     
@@ -32,8 +32,9 @@ class AddRecipeIngredientsVC: UIViewController {
     
     // MARK: - Lifecycle
     
-    init(viewModel: AddRecipeViewModel) {
+    init(viewModel: AddRecipeViewModel, coordinator: AddRecipeCoordinator) {
         self.viewModel = viewModel
+        self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -64,7 +65,6 @@ class AddRecipeIngredientsVC: UIViewController {
         tableView.tableFooterView = tableViewFooter
     }
     
-    
     // MARK: - Setup UI
     
     private func setupTableView() {
@@ -90,7 +90,6 @@ class AddRecipeIngredientsVC: UIViewController {
         tableView.tableFooterView = tableViewFooter
         
         tableViewFooter.setEditButtonVisible(true)
-        
     }
     
     private func setupTableViewHeader() {
@@ -125,7 +124,7 @@ extension AddRecipeIngredientsVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
-}    
+}
 
 // MARK: - Navigation
 
@@ -133,21 +132,14 @@ extension AddRecipeIngredientsVC {
     func setupNavigationBarButtons() {
         let nextButtonItem = UIBarButtonItem(title: "Next", style: .plain, target: self, action: #selector(nextButtonTapped))
         navigationItem.rightBarButtonItem = nextButtonItem
-        navigationItem.rightBarButtonItem?.tintColor = .ui.theme
     }
     
     @objc func nextButtonTapped(_ sender: UIBarButtonItem) {
-        pushToNextScreen(from: self, toView: AddRecipeInstructionsVC(viewModel: viewModel))
+        coordinator.goToInstructionsVC()
     }
-    
-    func pushToNextScreen(from view: UIViewController, toView: UIViewController) {
-        view.navigationController?.pushViewController(toView, animated: true)
-    }
-    
+
     func addIgredientTapped() {
-        let sheet = AddIngredientSheetVC(viewModel: viewModel)
-        present(sheet, animated: true)
-//        pushToNextScreen(from: self, toView: )
+        coordinator.openIngredientSheet()
     }
     
     private func openIgredientSheet(from view: UIViewController, toView: UIViewController) {}
@@ -158,8 +150,8 @@ extension AddRecipeIngredientsVC: AddRecipeViewModelDelegate {
         tableViewFooter.setEditButtonVisible(!isEmpty)
     }
     
-        func reloadTable() {
-            self.tableView.reloadData()
-            updateEditButtonVisibility(isEmpty: viewModel.ingredientsList.isEmpty)
-        }
+    func reloadTable() {
+        tableView.reloadData()
+        updateEditButtonVisibility(isEmpty: viewModel.ingredientsList.isEmpty)
+    }
 }

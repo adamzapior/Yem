@@ -10,9 +10,11 @@ import SnapKit
 import UIKit
 
 class AddRecipeVC: UIViewController {
-    // MARK: - ViewModel
+    // MARK: - Properties
     
-    let viewModel = AddRecipeViewModel()
+    var coordinator: AddRecipeCoordinator
+    var viewModel: AddRecipeViewModel
+
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - View properties
@@ -36,12 +38,12 @@ class AddRecipeVC: UIViewController {
     
     let addPhotoView = AddPhotoView()
    
-    var nameTextfield = TextfieldWithIconCell(iconImage: "info.square", placeholderText: "Enter your recipe name", textColor: .ui.secondaryText)
-    var difficultyCell = PickerButtonWithIconCell(iconImage: "puzzlepiece.extension", textOnButton: "Select difficulty")
-    var servingCell = PickerButtonWithIconCell(iconImage: "person", textOnButton: "Select servings count")
-    var prepTimeCell = PickerButtonWithIconCell(iconImage: "timer", textOnButton: "Select prep time")
-    var spicyCell = PickerButtonWithIconCell(iconImage: "leaf", textOnButton: "Select spicy")
-    var categoryCell = PickerButtonWithIconCell(iconImage: "book", textOnButton: "Select category")
+    var nameTextfield = TextfieldWithIconRow(iconImage: "info.square", placeholderText: "Enter your recipe name", textColor: .ui.secondaryText)
+    var difficultyCell = PickerWithIconRow(iconImage: "puzzlepiece.extension", textOnButton: "Select difficulty")
+    var servingCell = PickerWithIconRow(iconImage: "person", textOnButton: "Select servings count")
+    var prepTimeCell = PickerWithIconRow(iconImage: "timer", textOnButton: "Select prep time")
+    var spicyCell = PickerWithIconRow(iconImage: "leaf", textOnButton: "Select spicy")
+    var categoryCell = PickerWithIconRow(iconImage: "book", textOnButton: "Select category")
     
     lazy var difficultyPickerView = UIPickerView()
     lazy var servingsPickerView = UIPickerView()
@@ -58,7 +60,17 @@ class AddRecipeVC: UIViewController {
     }()
     
     // MARK: - Lifecycle
-
+    
+    init(coordinator: AddRecipeCoordinator, viewModel: AddRecipeViewModel) {
+        self.coordinator = coordinator
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -302,8 +314,8 @@ extension AddRecipeVC {
 
 // MARK: - Textfield delegate/dataSource
 
-extension AddRecipeVC: TextfieldWithIconCellDelegate {
-    func textFieldDidEndEditing(_ cell: TextfieldWithIconCell, didUpdateText text: String) {
+extension AddRecipeVC: TextfieldWithIconRowDelegate {
+    func textFieldDidEndEditing(_ cell: TextfieldWithIconRow, didUpdateText text: String) {
         if let text = cell.textField.text {
             viewModel.recipeTitle = text
         }
@@ -317,8 +329,8 @@ extension AddRecipeVC: TextfieldWithIconCellDelegate {
 
 // MARK: - Button delegate/dataSource
 
-extension AddRecipeVC: PickerButtonWithIconCellDelegate {
-    func pickerButtonWithIconCellDidTapButton(_ cell: PickerButtonWithIconCell) {
+extension AddRecipeVC: PickerWithIconRowDelegate {
+    func pickerWithIconRowTappped(_ cell: PickerWithIconRow) {
         switch cell.tag {
         case 1:
             popUpPicker(for: difficultyPickerView, title: "Wybierz opcję")
@@ -345,7 +357,7 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
             label = reuseLabel
         } else {
             label = UILabel(frame: CGRect(x: 0, y: 0, width: screenWidth, height: 30))
-            label.textAlignment = .center // Dostosuj wyrównanie tekstu
+            label.textAlignment = .center 
         }
         switch pickerView.tag {
         case 1:
@@ -484,22 +496,11 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
 
 extension AddRecipeVC {
     func setupNavigationBarButtons() {
-        let nextButtonItem = UIBarButtonItem(title: "Next", style: .plain, target: self, action: #selector(saveTapped))
+        let nextButtonItem = UIBarButtonItem(title: "Next", style: .plain, target: self, action: #selector(nextButtonTapped))
         navigationItem.rightBarButtonItem = nextButtonItem
-        navigationItem.rightBarButtonItem?.tintColor = .ui.theme
     }
 
-    @objc func saveTapped(_ sender: UIBarButtonItem) {
-//        backToRecipesListScreen(from: self)
-        pushToNextScreen(from: self, toView: AddRecipeIngredientsVC(viewModel: viewModel))
-    }
-    
-    func backToRecipesListScreen(from view: UIViewController) {
-        view.navigationController?.popToRootViewController(animated: true)
-    }
-    
-    func pushToNextScreen(from view: UIViewController, toView: UIViewController) {
-//        toView.hidesBottomBarWhenPushed = true
-        view.navigationController?.pushViewController(toView, animated: true)
+    @objc func nextButtonTapped(_ sender: UIBarButtonItem) {
+        coordinator.goToRecipeIngredientsVC()
     }
 }
