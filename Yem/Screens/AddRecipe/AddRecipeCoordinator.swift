@@ -12,7 +12,6 @@ final class AddRecipeCoordinator {
     var viewModel: AddRecipeViewModel
     weak var navigationController: UINavigationController?
 
-    // Konstruktor przyjmuje UINavigationController.
     init(navigationController: UINavigationController?, viewModel: AddRecipeViewModel) {
         self.navigationController = navigationController
         self.viewModel = viewModel
@@ -23,28 +22,33 @@ final class AddRecipeCoordinator {
         return addRecipeVC
     }
 
-    func goToRecipeIngredientsVC() {
-        let controller = AddRecipeIngredientsVC(viewModel: viewModel, coordinator: self)
-        navigationController?.pushViewController(controller, animated: true)
+    func pushVC(for route: AddRecipeRoute) {
+        let viewModel = viewModel
+        let coordinator = self
+        switch route {
+        case .ingredientsList:
+            let controller = AddRecipeIngredientsVC(viewModel: viewModel, coordinator: self)
+            navigationController?.pushViewController(controller, animated: true)
+        case .addIngredient:
+            let controller = AddIngredientSheetVC(viewModel: viewModel, coordinator: self)
+            navigationController?.present(controller, animated: true)
+        case .instructions:
+            let controller = AddRecipeInstructionsVC(viewModel: viewModel, coordinator: self)
+            navigationController?.pushViewController(controller, animated: true)
+        }
     }
-
-    func openIngredientSheet() {
-        let controller = AddIngredientSheetVC(viewModel: viewModel, coordinator: self)
-        navigationController?.present(controller, animated: true)
-    }
-    
-    func goToInstructionsVC() {
-        let controller = AddRecipeInstructionsVC(viewModel: viewModel, coordinator: self)
-        navigationController?.pushViewController(controller, animated: true)
-    }
-    
-    // MARK: Dissmis view controller
 
     func dismissVC() {
         navigationController?.dismiss(animated: true)
     }
-    
+
     func dismissVCStack() {
         navigationController?.popToRootViewController(animated: true)
     }
+}
+
+enum AddRecipeRoute {
+    case ingredientsList
+    case addIngredient
+    case instructions
 }

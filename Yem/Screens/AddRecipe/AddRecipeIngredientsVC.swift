@@ -135,11 +135,11 @@ extension AddRecipeIngredientsVC {
     }
     
     @objc func nextButtonTapped(_ sender: UIBarButtonItem) {
-        coordinator.goToInstructionsVC()
+        coordinator.pushVC(for: .instructions)
     }
 
     func addIgredientTapped() {
-        coordinator.openIngredientSheet()
+        coordinator.pushVC(for: .addIngredient)
     }
     
     private func openIgredientSheet(from view: UIViewController, toView: UIViewController) {}

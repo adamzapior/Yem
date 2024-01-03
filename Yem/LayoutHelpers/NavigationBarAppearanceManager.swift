@@ -14,7 +14,7 @@ final class NavigationBarAppearanceManager {
 
         let navigationBarAppearance = UINavigationBar.appearance()
         navigationBarAppearance.tintColor = UIColor.ui.theme
-        navigationBarAppearance.barTintColor = UIColor.ui.theme
+        navigationBarAppearance.barTintColor = .systemBackground
         navigationBarAppearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.ui.theme]
     }
 }

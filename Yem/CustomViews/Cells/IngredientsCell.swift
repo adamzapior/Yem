@@ -20,6 +20,8 @@ class IngredientsCell: UITableViewCell {
     let valueLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .semibold, textColor: .ui.theme, textAlignment: .center)
     let valueTypeLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
     let ingredientNameLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText)
+    
+    lazy var trashIcon = IconImage(systemImage: "trash", color: .red, textStyle: .body)
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -50,7 +52,7 @@ class IngredientsCell: UITableViewCell {
         content.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview().inset(4)
             make.leading.trailing.equalToSuperview().inset(18)
-            make.height.greaterThanOrEqualTo(50)
+            make.height.greaterThanOrEqualTo(60)
         }
         
         content.addSubview(valueLabel)
@@ -58,20 +60,22 @@ class IngredientsCell: UITableViewCell {
         content.addSubview(ingredientNameLabel)
         
         valueLabel.snp.makeConstraints { make in
-            make.leading.equalTo(content).offset(12)
-            make.top.bottom.equalToSuperview().inset(12)
+            make.leading.equalTo(content.snp.leading).offset(12)
+            make.top.equalToSuperview().inset(12)
             make.width.greaterThanOrEqualTo(36)
         }
         
         valueTypeLabel.snp.makeConstraints { make in
             make.leading.equalTo(valueLabel.snp.trailing).offset(8)
-            make.centerY.equalTo(valueLabel)
+            make.top.equalToSuperview().inset(12)
             make.width.greaterThanOrEqualTo(84)
         }
         
         ingredientNameLabel.snp.makeConstraints { make in
-            make.leading.equalTo(valueTypeLabel.snp.trailing).offset(8)
-            make.centerY.equalTo(valueLabel)
+            make.top.equalTo(valueLabel.snp.bottom).offset(24)
+            make.leading.equalTo(content.snp.leading).offset(12)
+            make.bottom.equalToSuperview().inset(12)
+            make.width.greaterThanOrEqualTo(36)
         }
     }
 }

@@ -246,9 +246,8 @@
 		58356B322B1FD891000AC548 /* CustomViews */ = {
 			isa = PBXGroup;
 			children = (
-				5887468F2B2E3F8300EC5E11 /* Buttons */,
-				5887468A2B2E073000EC5E11 /* Cells */,
 				58D5F9BE2B27A7D400A72619 /* Components */,
+				5887468A2B2E073000EC5E11 /* Cells */,
 				58EBB0762B227B82000EB128 /* AddPhotoView.swift */,
 				58094EBB2B26164B00D4D2FC /* IngredientsTableFooterView.swift */,
 				58094EBD2B267E6300D4D2FC /* IngredientsTableHeaderView.swift */,
@@ -299,6 +298,22 @@
 			path = LayoutHelpers;
 			sourceTree = "<group>";
 		};
+		589929522B44C5DE00FAB070 /* Labels */ = {
+			isa = PBXGroup;
+			children = (
+				580ED37F2B24C2F300B4A9F0 /* ReusableTextLabel.swift */,
+			);
+			path = Labels;
+			sourceTree = "<group>";
+		};
+		589929532B44C5EE00FAB070 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				5869321C2B26112000379C8C /* IconImage.swift */,
+			);
+			path = Images;
+			sourceTree = "<group>";
+		};
 		58D5E7D72B3C6FBB007FC9E8 /* Animations */ = {
 			isa = PBXGroup;
 			children = (
@@ -310,8 +325,9 @@
 		58D5F9BE2B27A7D400A72619 /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				580ED37F2B24C2F300B4A9F0 /* ReusableTextLabel.swift */,
-				5869321C2B26112000379C8C /* IconImage.swift */,
+				589929522B44C5DE00FAB070 /* Labels */,
+				5887468F2B2E3F8300EC5E11 /* Buttons */,
+				589929532B44C5EE00FAB070 /* Images */,
 				58D5F9BF2B27A84700A72619 /* PickerWithIconRow.swift */,
 				58D5F9C12B27B3F600A72619 /* TextfieldWithIconRow.swift */,
 			);

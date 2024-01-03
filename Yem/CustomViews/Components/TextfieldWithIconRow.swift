@@ -1,7 +1,9 @@
 import UIKit
 
 protocol TextfieldWithIconRowDelegate: AnyObject {
-    func textFieldDidEndEditing(_ cell: TextfieldWithIconRow, didUpdateText text: String)
+    func textFieldDidBeginEditing(_ textfield: TextfieldWithIconRow, didUpdateText text: String)
+    func textFieldDidChange(_ textfield: TextfieldWithIconRow, didUpdateText text: String)
+    func textFieldDidEndEditing(_ textfield: TextfieldWithIconRow, didUpdateText text: String)
 }
 
 class TextfieldWithIconRow: UIView, UITextFieldDelegate {
@@ -68,13 +70,22 @@ class TextfieldWithIconRow: UIView, UITextFieldDelegate {
             make.leading.equalTo(icon.snp.trailing).offset(22)
             make.trailing.equalToSuperview().offset(-9)
         }
+        
+        textField.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
     }
     
     // MARK: Delegate textfield
     
-    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-        onTapAnimation()
-        return true
+    @objc private func textFieldEditingChanged(_ textField: UITextField) {
+        if let text = textField.text {
+            delegate?.textFieldDidChange(self, didUpdateText: text)
+        }
+    }
+
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if let text = textField.text {
+            delegate?.textFieldDidBeginEditing(self, didUpdateText: text)
+        }
     }
 
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -82,6 +93,28 @@ class TextfieldWithIconRow: UIView, UITextFieldDelegate {
             delegate?.textFieldDidEndEditing(self, didUpdateText: text)
         }
     }
+
+    
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        onTapAnimation()
+        return true
+    }
+//    
+//    func textFieldDidChangeSelection(_ textField: UITextField) {
+//        <#code#>
+//    }
+//    
+//    func textFieldDidBeginEditing(_ textField: UITextField) {
+//        if let text = textField.text {
+//            delegate?.textFieldDidEndEditing(self, didUpdateText: text)
+//        }
+//    }
+//
+//    func textFieldDidEndEditing(_ textField: UITextField) {
+//        if let text = textField.text {
+//            delegate?.textFieldDidEndEditing(self, didUpdateText: text)
+//        }
+//    }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder() // Hides the keyboard

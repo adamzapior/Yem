@@ -315,8 +315,20 @@ extension AddRecipeVC {
 // MARK: - Textfield delegate/dataSource
 
 extension AddRecipeVC: TextfieldWithIconRowDelegate {
-    func textFieldDidEndEditing(_ cell: TextfieldWithIconRow, didUpdateText text: String) {
-        if let text = cell.textField.text {
+    func textFieldDidChange(_ textfield: TextfieldWithIconRow, didUpdateText text: String) {
+        if let text = textfield.textField.text {
+            viewModel.recipeTitle = text
+        }
+    }
+    
+    func textFieldDidBeginEditing(_ textfield: TextfieldWithIconRow, didUpdateText text: String) {
+        if let text = textfield.textField.text {
+            viewModel.recipeTitle = text
+        }
+    }
+    
+    func textFieldDidEndEditing(_ textfield: TextfieldWithIconRow, didUpdateText text: String) {
+        if let text = textfield.textField.text {
             viewModel.recipeTitle = text
         }
     }
@@ -501,6 +513,6 @@ extension AddRecipeVC {
     }
 
     @objc func nextButtonTapped(_ sender: UIBarButtonItem) {
-        coordinator.goToRecipeIngredientsVC()
+        coordinator.pushVC(for: .ingredientsList)
     }
 }

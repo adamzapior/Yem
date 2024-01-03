@@ -129,15 +129,43 @@ extension AddIngredientSheetVC {
 // MARK: Gestures: TextfieldWithIconCellDelegate & PickerButtonWithIconCellDelegate
 
 extension AddIngredientSheetVC: TextfieldWithIconRowDelegate, PickerWithIconRowDelegate, MainActionButtonDelegate {
-    // Textfield
-    func textFieldDidEndEditing(_ cell: TextfieldWithIconRow, didUpdateText text: String) {
-        switch cell.tag {
+    func textFieldDidChange(_ textfield: TextfieldWithIconRow, didUpdateText text: String) {
+        switch textfield.tag {
         case 1:
-            if let text = cell.textField.text {
+            if let text = textfield.textField.text {
                 viewModel.igredientName = text
             }
         case 2:
-            if let text = cell.textField.text {
+            if let text = textfield.textField.text {
+                viewModel.igredientValue = text
+            }
+        default: break
+        }
+    }
+    
+    func textFieldDidBeginEditing(_ textfield: TextfieldWithIconRow, didUpdateText text: String) {
+        switch textfield.tag {
+        case 1:
+            if let text = textfield.textField.text {
+                viewModel.igredientName = text
+            }
+        case 2:
+            if let text = textfield.textField.text {
+                viewModel.igredientValue = text
+            }
+        default: break
+        }
+    }
+    
+    // Textfield
+    func textFieldDidEndEditing(_ textfield: TextfieldWithIconRow, didUpdateText text: String) {
+        switch textfield.tag {
+        case 1:
+            if let text = textfield.textField.text {
+                viewModel.igredientName = text
+            }
+        case 2:
+            if let text = textfield.textField.text {
                 viewModel.igredientValue = text
             }
         default: break
