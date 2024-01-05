@@ -114,7 +114,6 @@ extension AddRecipeIngredientsVC: UITableViewDelegate, UITableViewDataSource, In
             guard let indexPath = self.tableView.indexPath(for: cell) else { return }
             // Teraz masz indexPath, więc możesz zidentyfikować, który element został wybrany.
             self.viewModel.removeIngredientFromList(at: indexPath.row)
-            self.tableView.reloadData()
         }
     }
     

@@ -23,9 +23,9 @@ class IngredientsCell: UITableViewCell {
         return view
     }()
     
-    let valueLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .semibold, textColor: .ui.theme, textAlignment: .center)
+    let valueLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .semibold, textColor: .ui.theme)
     let valueTypeLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
-    let ingredientNameLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText, textAlignment: .center)
+    let ingredientNameLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText)
     
     lazy var trashIcon: IconImage = {
         let icon = IconImage(systemImage: "trash", color: .red, textStyle: .body)
@@ -68,43 +68,40 @@ class IngredientsCell: UITableViewCell {
 
         content.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview().inset(4)
-            make.leading.trailing.equalToSuperview().inset(18)
+            make.left.right.equalToSuperview().inset(18)
             make.height.greaterThanOrEqualTo(60)
         }
         
-        button.setTitleColor(.white, for: .highlighted)
-        button.addTarget(self, action: #selector(didTapButtonAction), for: .touchUpInside)
-        button.setTitle("Tap", for: .normal)
         content.addSubview(valueLabel)
         content.addSubview(valueTypeLabel)
         content.addSubview(ingredientNameLabel)
-        content.addSubview(button)
+        content.addSubview(trashIcon)
         
         valueLabel.snp.makeConstraints { make in
-            make.leading.equalTo(content.snp.leading).offset(12)
-            make.top.equalToSuperview().inset(12)
+            make.leading.equalTo(content.snp.leading).offset(24)
+            make.top.equalToSuperview().offset(12)
             make.width.greaterThanOrEqualTo(36)
         }
         
         valueTypeLabel.snp.makeConstraints { make in
-            make.leading.equalTo(valueLabel.snp.trailing).offset(8)
+            make.leading.equalTo(valueLabel.snp.trailing).offset(4)
             make.top.equalToSuperview().offset(12)
             make.width.greaterThanOrEqualTo(84)
         }
         
         ingredientNameLabel.snp.makeConstraints { make in
-            make.top.equalTo(valueLabel.snp.bottom).offset(24)
-            make.leading.equalTo(content.snp.leading).offset(12)
+            make.top.equalTo(valueLabel.snp.bottom).offset(8)
+            make.leading.equalTo(content.snp.leading).offset(24)
             make.bottom.equalToSuperview().inset(12)
             make.width.greaterThanOrEqualTo(36)
         }
         
-        button.snp.makeConstraints { make in
-            make.leading.equalTo(valueTypeLabel.snp.trailing).offset(12)
-            make.trailing.equalToSuperview().offset(-36)
-            make.top.equalToSuperview().offset(12)
-            make.height.equalTo(44)
-            make.width.equalTo(44)
+        trashIcon.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().offset(-12)
+//            make.leading.equalTo(valueTypeLabel.snp.trailing).offset(12)
+            make.centerY.equalToSuperview()
+            make.height.greaterThanOrEqualTo(24)
+            make.width.greaterThanOrEqualTo(24)
         }
     }
     

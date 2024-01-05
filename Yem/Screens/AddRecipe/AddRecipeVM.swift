@@ -42,7 +42,7 @@ class AddRecipeViewModel {
     
     /// Igredient sheet and vc variables
     @Published
-    var ingredientsList: [IngredientModel] = [IngredientModel(id: 9, value: "g", valueType: "66", name: "98")] {
+    var ingredientsList: [IngredientModel] = [IngredientModel(id: 9, value: "100", valueType: "Grams (g)", name: "Sugar")] {
         didSet {
             reloadTable()
         }
