@@ -108,7 +108,17 @@ extension AddRecipeIngredientsVC: IngredientsTableFooterViewDelegate {
 
 // MARK: -  TableView delegate & data source
 
-extension AddRecipeIngredientsVC: UITableViewDelegate, UITableViewDataSource {
+extension AddRecipeIngredientsVC: UITableViewDelegate, UITableViewDataSource, IngredientsCellDelegate {
+    func didTapButton(inCell cell: IngredientsCell) {
+        DispatchQueue.main.async {
+            guard let indexPath = self.tableView.indexPath(for: cell) else { return }
+            // Teraz masz indexPath, więc możesz zidentyfikować, który element został wybrany.
+            self.viewModel.removeIngredientFromList(at: indexPath.row)
+            self.tableView.reloadData()
+        }
+    }
+    
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.ingredientsList.count
     }
@@ -117,7 +127,10 @@ extension AddRecipeIngredientsVC: UITableViewDelegate, UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: IngredientsCell.id, for: indexPath) as? IngredientsCell else {
             fatalError("IngredientsCell error")
         }
+        cell.button.tag = indexPath.row
+        cell.delegate = self
         cell.configure(with: viewModel.ingredientsList[indexPath.row])
+
         return cell
     }
     

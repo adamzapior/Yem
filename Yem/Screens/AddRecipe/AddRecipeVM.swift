@@ -42,7 +42,7 @@ class AddRecipeViewModel {
     
     /// Igredient sheet and vc variables
     @Published
-    var ingredientsList: [IngredientModel] = [] {
+    var ingredientsList: [IngredientModel] = [IngredientModel(id: 9, value: "g", valueType: "66", name: "98")] {
         didSet {
             reloadTable()
         }
@@ -242,6 +242,10 @@ class AddRecipeViewModel {
         let ingredient = IngredientModel(id: Int64(), value: igredientValue, valueType: igredientValueType, name: igredientName)
         ingredientsList.append(ingredient)
         return true
+    }
+    
+    func removeIngredientFromList(at index: Int) {
+        ingredientsList.remove(at: index)
     }
     
     func saveRecipe() {
