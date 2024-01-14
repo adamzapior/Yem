@@ -19,10 +19,10 @@ class AddRecipeVC: UIViewController {
     
     // MARK: - View properties
     
-    let scrollView = UIScrollView()
-    let contentView = UIView()
+    private let scrollView = UIScrollView()
+    private let contentView = UIView()
     
-    let pageStackView: UIStackView = {
+    private let pageStackView: UIStackView = {
         let sv = UIStackView()
         sv.axis = .horizontal
         sv.distribution = .fillEqually
@@ -30,26 +30,26 @@ class AddRecipeVC: UIViewController {
         return sv
     }()
     
-    let pageCount = 3
-    var pageViews = [UIView]()
+    private let pageCount = 3
+    private var pageViews = [UIView]()
     
-    let screenWidth = UIScreen.main.bounds.width - 10
-    let screenHeight = UIScreen.main.bounds.height / 2
+    private let screenWidth = UIScreen.main.bounds.width - 10
+    private let screenHeight = UIScreen.main.bounds.height / 2
     
-    let addPhotoView = AddPhotoView()
+    private  let addPhotoView = AddPhotoView()
    
-    var nameTextfield = TextfieldWithIconRow(iconImage: "info.square", placeholderText: "Enter your recipe name", textColor: .ui.secondaryText)
-    var difficultyCell = PickerWithIconRow(iconImage: "puzzlepiece.extension", textOnButton: "Select difficulty")
-    var servingCell = PickerWithIconRow(iconImage: "person", textOnButton: "Select servings count")
-    var prepTimeCell = PickerWithIconRow(iconImage: "timer", textOnButton: "Select prep time")
-    var spicyCell = PickerWithIconRow(iconImage: "leaf", textOnButton: "Select spicy")
-    var categoryCell = PickerWithIconRow(iconImage: "book", textOnButton: "Select category")
+    private var nameTextfield = TextfieldWithIconRow(iconImage: "info.square", placeholderText: "Enter your recipe name", textColor: .ui.secondaryText)
+    private var difficultyCell = PickerWithIconRow(iconImage: "puzzlepiece.extension", textOnButton: "Select difficulty")
+    private var servingCell = PickerWithIconRow(iconImage: "person", textOnButton: "Select servings count")
+    private var prepTimeCell = PickerWithIconRow(iconImage: "timer", textOnButton: "Select prep time")
+    private var spicyCell = PickerWithIconRow(iconImage: "leaf", textOnButton: "Select spicy")
+    private var categoryCell = PickerWithIconRow(iconImage: "book", textOnButton: "Select category")
     
-    lazy var difficultyPickerView = UIPickerView()
-    lazy var servingsPickerView = UIPickerView()
-    lazy var prepTimePickerView = UIPickerView()
-    lazy var spicyPickerView = UIPickerView()
-    lazy var categoryPickerView = UIPickerView()
+    private lazy var difficultyPickerView = UIPickerView()
+    private lazy var servingsPickerView = UIPickerView()
+    private lazy var prepTimePickerView = UIPickerView()
+    private lazy var spicyPickerView = UIPickerView()
+    private lazy var categoryPickerView = UIPickerView()
     
     let recipeDataStack: UIStackView = {
         let sv = UIStackView()

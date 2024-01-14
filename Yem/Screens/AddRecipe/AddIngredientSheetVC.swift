@@ -15,15 +15,15 @@ class AddIngredientSheetVC: UIViewController {
     
     // MARK: - View properties
     
-    let ingredientNameTextfield = TextfieldWithIconRow(iconImage: "info.square", placeholderText: "Enter your igredient name", textColor: .ui.secondaryText)
-    let countTextfield = TextfieldWithIconRow(iconImage: "bag.badge.plus", placeholderText: "Enter value", textColor: .ui.secondaryText)
-    let valueTypeCell = PickerWithIconRow(iconImage: "note.text.badge.plus", textOnButton: "Select value type")
-    let addButton = MainActionButton(title: "Add", backgroundColor: .ui.addBackground!)
-    let cancelButton = MainActionButton(title: "Cancel", backgroundColor: .ui.cancelBackground ?? .ui.theme)
+    private let ingredientNameTextfield = TextfieldWithIconRow(iconImage: "info.square", placeholderText: "Enter your igredient name", textColor: .ui.secondaryText)
+    private let countTextfield = TextfieldWithIconRow(iconImage: "bag.badge.plus", placeholderText: "Enter value", textColor: .ui.secondaryText)
+    private let valueTypeCell = PickerWithIconRow(iconImage: "note.text.badge.plus", textOnButton: "Select value type")
+    private let addButton = MainActionButton(title: "Add", backgroundColor: .ui.addBackground!)
+    private let cancelButton = MainActionButton(title: "Cancel", backgroundColor: .ui.cancelBackground ?? .ui.theme)
     
-    let valueTypePickerView = UIPickerView()
+    private let valueTypePickerView = UIPickerView()
     
-    let stackView: UIStackView = {
+    private let stackView: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
         stack.distribution = .fillEqually
@@ -31,8 +31,8 @@ class AddIngredientSheetVC: UIViewController {
         return stack
     }()
     
-    let screenWidth = UIScreen.main.bounds.width - 10
-    let screenHeight = UIScreen.main.bounds.height / 2
+    private let screenWidth = UIScreen.main.bounds.width - 10
+    private let screenHeight = UIScreen.main.bounds.height / 2
     
     // MARK: - Lifecycle
     

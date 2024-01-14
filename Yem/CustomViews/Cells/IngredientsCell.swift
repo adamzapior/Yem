@@ -16,18 +16,18 @@ class IngredientsCell: UITableViewCell {
     
     weak var delegate: IngredientsCellDelegate?
     
-    let content: UIView = {
+    private let content: UIView = {
         let view = UIView()
         view.backgroundColor = .ui.primaryContainer
         view.layer.cornerRadius = 20
         return view
     }()
     
-    let valueLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .semibold, textColor: .ui.theme)
-    let valueTypeLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
-    let ingredientNameLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText)
+    private let valueLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .semibold, textColor: .ui.theme)
+    private let valueTypeLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
+    private let ingredientNameLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText)
     
-    lazy var trashIcon: IconImage = {
+    private lazy var trashIcon: IconImage = {
         let icon = IconImage(systemImage: "trash", color: .red, textStyle: .body)
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapButtonAction))
         icon.addGestureRecognizer(tapGesture)
@@ -35,9 +35,9 @@ class IngredientsCell: UITableViewCell {
         return icon
     }()
         
-    let button = UIButton()
+    private let button = UIButton()
 
-    var didDelete: ((UITableViewCell) -> Void)?
+    private var didDelete: ((UITableViewCell) -> Void)?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

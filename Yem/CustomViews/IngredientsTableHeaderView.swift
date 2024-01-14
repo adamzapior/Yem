@@ -9,9 +9,9 @@ import UIKit
 
 class IngredientsTableHeaderView: UIView {
     
-    let screenWidth = UIScreen.main.bounds.width
+    private let screenWidth = UIScreen.main.bounds.width
     
-    let pageStackView: UIStackView = {
+    private let pageStackView: UIStackView = {
         let sv = UIStackView()
         sv.axis = .horizontal
         sv.distribution = .fillEqually
@@ -19,8 +19,10 @@ class IngredientsTableHeaderView: UIView {
         return sv
     }()
     
-    let pageCount = 3
-    var pageViews = [UIView]()
+    private let pageCount = 3
+    private var pageViews = [UIView]()
+    
+    
 
     override init (frame: CGRect) {
         super.init(frame: frame)

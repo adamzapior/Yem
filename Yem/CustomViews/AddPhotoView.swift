@@ -9,7 +9,7 @@ import UIKit
 
 class AddPhotoView: UIView {
     
-    let icon = IconImage(systemImage: "camera", color: .ui.theme, textStyle: .largeTitle)
+    private let icon = IconImage(systemImage: "camera", color: .ui.theme, textStyle: .largeTitle)
 
     override init(frame: CGRect) {
         super.init(frame: frame)

@@ -16,12 +16,12 @@ class PickerWithIconRow: UIView {
     
     // MARK: - Properties
     
-    var icon: IconImage!
-    var iconImage: String
-    var textStyle: UIFont.TextStyle
+    private var icon: IconImage!
+    private var iconImage: String
+    private var textStyle: UIFont.TextStyle
     
-    let button = UIButton()
-    var textOnButton = UILabel()
+    private let button = UIButton()
+    private var textOnButton = UILabel()
     
     // MARK: - Lifecycle
     

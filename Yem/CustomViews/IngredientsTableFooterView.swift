@@ -14,7 +14,7 @@ protocol IngredientsTableFooterViewDelegate: AnyObject {
 class IngredientsTableFooterView: UIView {
     weak var delegate: IngredientsTableFooterViewDelegate?
 
-    let screenWidth = UIScreen.main.bounds.width
+    private let screenWidth = UIScreen.main.bounds.width
 
     private let addIcon = IconImage(systemImage: "plus", color: .ui.theme, textStyle: .body, contentMode: .scaleAspectFit)
     
