@@ -7,13 +7,13 @@ protocol TextfieldWithIconRowDelegate: AnyObject {
 }
 
 class TextfieldWithIconRow: UIView, UITextFieldDelegate {
-    private weak var delegate: TextfieldWithIconRowDelegate?
+    weak var delegate: TextfieldWithIconRowDelegate?
     
     private var icon: IconImage!
     private var iconImage: String
     private var textStyle: UIFont.TextStyle
     
-    private let textField = UITextField()
+    let textField = UITextField()
     
     var keyboardType: UIKeyboardType = .default {
         didSet {

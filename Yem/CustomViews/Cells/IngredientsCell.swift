@@ -35,7 +35,7 @@ class IngredientsCell: UITableViewCell {
         return icon
     }()
         
-    private let button = UIButton()
+    let button = UIButton()
 
     private var didDelete: ((UITableViewCell) -> Void)?
     

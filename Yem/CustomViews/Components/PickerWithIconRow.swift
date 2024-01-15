@@ -21,7 +21,7 @@ class PickerWithIconRow: UIView {
     private var textStyle: UIFont.TextStyle
     
     private let button = UIButton()
-    private var textOnButton = UILabel()
+    var textOnButton = UILabel()
     
     // MARK: - Lifecycle
     
