@@ -8,6 +8,7 @@
 import Combine
 import Foundation
 import UIKit
+import CoreData
 
 protocol AddRecipeViewModelDelegate: AnyObject {
     func updateEditButtonVisibility(isEmpty: Bool)
@@ -127,16 +128,25 @@ class AddRecipeViewModel {
     
     lazy var valueTypeArray: [String] = ["Unit", "Grams (g)", "Kilograms (kg)", "Milliliters (ml)", "Liters (L)", "Teaspoons (tsp)", "Tablespoons (Tbsp)", "Cups (c)", "Pinch"]
     
+    
+    
+    
+    var recipies: [RecipeEntity] = []
+    
+    
+    
+    
     // MARK: Initialization
     
-    init() { }
+    init() { 
+        fetchRecipesTest()
+    }
     
     deinit {
-        print("viewmodel out")
-        print(recipeTitle)
+        print("AddRecipe viewmodel deinit")
         
-        for items in ingredientsList {
-            print(items.name)
+        for i in recipies {
+            print(i.id)
         }
     }
     
@@ -249,7 +259,25 @@ class AddRecipeViewModel {
     }
     
     func saveRecipe() {
-        // Logika zapisu przepisu
+        let recipe = RecipeEntity(context: CoreDataManager.shared.context)
+        recipe.id = UUID()
+        recipe.name = "Test"
+        recipe.servings = ""
+        recipe.prepTimeHours = ""
+        recipe.prepTimeMinutes = ""
+        recipe.spicy = ""
+        recipe.category = ""
+        
+        CoreDataManager.shared.saveContext()
+    }
+    
+    func fetchRecipes() -> [RecipeEntity] {
+        let request: NSFetchRequest<RecipeEntity> = RecipeEntity.fetchRequest()
+        return try! (CoreDataManager.shared.context.fetch(request) )
+    }
+    
+    func fetchRecipesTest() {
+        recipies = fetchRecipes()
     }
 }
 

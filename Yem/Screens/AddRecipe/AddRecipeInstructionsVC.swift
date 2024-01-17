@@ -58,6 +58,7 @@ extension AddRecipeInstructionsVC {
     }
     
     @objc func saveButtonTapped(_ sender: UIBarButtonItem) {
+        viewModel.saveRecipe()
         coordinator.dismissVCStack()
     }
 }

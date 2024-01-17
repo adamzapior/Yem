@@ -15,7 +15,7 @@ final class CoreDataManager {
     let context: NSManagedObjectContext
 
     init() {
-        persistentContainer = NSPersistentContainer(name: "Yem")
+        persistentContainer = NSPersistentContainer(name: "YemData")
         persistentContainer.loadPersistentStores { _, error in
             if let error = error as NSError? {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
@@ -29,6 +29,7 @@ final class CoreDataManager {
         if context.hasChanges {
             do {
                 try context.save()
+                print("Core Data context has saved")
             } catch {
                 let nserror = error as NSError
                 fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
