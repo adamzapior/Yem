@@ -50,7 +50,10 @@ extension Coordinator {
 class MainCoordinator: MainBaseCoordinator {
     var parentCoordinator: MainBaseCoordinator? // Mark 3
     
-    lazy var recipesListCoordinator: RecipesListCoordinator = .init()
+//    let moc = CoreDataManager()
+    lazy var repository = DataRepository()
+    
+    lazy var recipesListCoordinator: RecipesListCoordinator = .init(repository: repository, viewModel: RecipesListVM(repository: repository))
     lazy var shopingListCoordinator: ShopingListCoordinator = .init()
     
     lazy var rootViewController: UIViewController = UITabBarController()

@@ -36,4 +36,14 @@ final class CoreDataManager {
             }
         }
     }
+    
+    func fetchAllRecipes() throws -> [RecipeEntity] {
+        let request: NSFetchRequest<RecipeEntity> = RecipeEntity.fetchRequest()
+        do {
+            return try CoreDataManager.shared.context.fetch(request)
+        } catch {
+            throw error // Rzuca wyłapany wyjątek do dalszej obsługi
+        }
+    }
+
 }

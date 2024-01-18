@@ -10,9 +10,10 @@ import UIKit
 import UIKit
 
 class RecipesListVC: UIViewController {
-    
     var coordinator: RecipesListCoordinator
     var viewModel: RecipesListVM
+    
+    // MARK: - Lifecycle
     
     init(coordinator: RecipesListCoordinator, viewModel: RecipesListVM) {
         self.coordinator = coordinator
@@ -20,6 +21,7 @@ class RecipesListVC: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -29,8 +31,13 @@ class RecipesListVC: UIViewController {
         view.backgroundColor = .systemBackground
         
         setupNavigationBar()
-        viewModel.getRecipesList()
+        
+        Task {
+            await viewModel.loadRecipes()
+        }
     }
+    
+    // MARK: UI Setup
     
     func setupNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = false
@@ -39,17 +46,10 @@ class RecipesListVC: UIViewController {
     }
 }
 
+    // MARK: - Navigation
+
 extension RecipesListVC {
     @objc func addRecipeButtonTapped() {
-        addRecipe()
-    }
-    
-    func addRecipe() {
         coordinator.goToAddRecipeScreen()
-    }
-    
-    func goToAddRecipeScreen(from view: UIViewController, toView: UIViewController) {
-        toView.hidesBottomBarWhenPushed = true
-        view.navigationController?.pushViewController(toView, animated: true)
     }
 }

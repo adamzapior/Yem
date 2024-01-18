@@ -17,6 +17,7 @@ protocol AddRecipeViewModelDelegate: AnyObject {
 
 class AddRecipeViewModel {
     weak var delegate: AddRecipeViewModelDelegate?
+    var repository: DataRepository
     
     // MARK: Observable properties
     
@@ -43,7 +44,7 @@ class AddRecipeViewModel {
     
     /// Igredient sheet and vc variables
     @Published
-    var ingredientsList: [IngredientModel] = [IngredientModel(id: 9, value: "100", valueType: "Grams (g)", name: "Sugar")] {
+    var ingredientsList: [IngredientModel] = [IngredientModel(id: UUID(), value: "100", valueType: "Grams (g)", name: "Sugar")] {
         didSet {
             reloadTable()
         }
@@ -131,23 +132,23 @@ class AddRecipeViewModel {
     
     
     
-    var recipies: [RecipeEntity] = []
+    var recipies: [RecipeModel] = []
     
     
     
     
     // MARK: Initialization
     
-    init() { 
-        fetchRecipesTest()
+    init(repository: DataRepository) {
+        self.repository = repository
     }
     
     deinit {
         print("AddRecipe viewmodel deinit")
         
-        for i in recipies {
-            print(i.id)
-        }
+//        for i in recipies {
+//            print(i.id)
+//        }
     }
     
     // MARK: Methods
@@ -249,7 +250,7 @@ class AddRecipeViewModel {
             return false
         }
         
-        let ingredient = IngredientModel(id: Int64(), value: igredientValue, valueType: igredientValueType, name: igredientName)
+        let ingredient = IngredientModel(id: UUID(), value: igredientValue, valueType: igredientValueType, name: igredientName)
         ingredientsList.append(ingredient)
         return true
     }
@@ -258,8 +259,11 @@ class AddRecipeViewModel {
         ingredientsList.remove(at: index)
     }
     
+    let shared = CoreDataManager.shared
+    
     func saveRecipe() {
-        let recipe = RecipeEntity(context: CoreDataManager.shared.context)
+//        
+        let recipe = RecipeEntity(context: repository.moc.context)
         recipe.id = UUID()
         recipe.name = "Test"
         recipe.servings = ""
@@ -268,17 +272,9 @@ class AddRecipeViewModel {
         recipe.spicy = ""
         recipe.category = ""
         
-        CoreDataManager.shared.saveContext()
+        repository.save()
     }
-    
-    func fetchRecipes() -> [RecipeEntity] {
-        let request: NSFetchRequest<RecipeEntity> = RecipeEntity.fetchRequest()
-        return try! (CoreDataManager.shared.context.fetch(request) )
-    }
-    
-    func fetchRecipesTest() {
-        recipies = fetchRecipes()
-    }
+
 }
 
 extension AddRecipeViewModel: AddRecipeViewModelDelegate {

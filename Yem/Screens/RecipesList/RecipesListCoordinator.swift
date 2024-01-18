@@ -11,7 +11,14 @@ final class RecipesListCoordinator {
     var parentCoordinator: MainBaseCoordinator?
     
     lazy var rootViewController: UIViewController = .init()
-    let viewModel = RecipesListVM()
+    let repository: DataRepository
+    let viewModel: RecipesListVM
+    
+    init(parentCoordinator: MainBaseCoordinator? = nil, repository: DataRepository, viewModel: RecipesListVM) {
+        self.parentCoordinator = parentCoordinator
+        self.repository = repository
+        self.viewModel = viewModel
+    }
     
     func start() -> UIViewController {
         rootViewController = UINavigationController(rootViewController: RecipesListVC(coordinator: self, viewModel: viewModel))
@@ -20,7 +27,7 @@ final class RecipesListCoordinator {
     
     
     func goToAddRecipeScreen() {
-        let viewModel = AddRecipeViewModel()
+        let viewModel = AddRecipeViewModel(repository: repository)
         
         // Utwórz koordynatora, przekazując istniejący UINavigationController.
         let coordinator = AddRecipeCoordinator(navigationController: rootViewController as? UINavigationController, viewModel: viewModel)

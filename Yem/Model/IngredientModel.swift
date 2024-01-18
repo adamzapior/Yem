@@ -8,7 +8,7 @@
 import Foundation
 
 struct IngredientModel {
-    let id: Int64
+    let id: UUID
     let value: String
     let valueType: String
     let name: String
