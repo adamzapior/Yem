@@ -9,4 +9,9 @@ import Foundation
 
 class ShopingListVM {
     
+    let repository: DataRepository
+    
+    init(repository: DataRepository) {
+        self.repository = repository
+    }
 }

@@ -6,13 +6,14 @@
 //
 
 import Combine
+import CoreData
 import Foundation
 import UIKit
-import CoreData
 
 protocol AddRecipeViewModelDelegate: AnyObject {
     func updateEditButtonVisibility(isEmpty: Bool)
     func reloadTable()
+    func pushAlert()
 }
 
 class AddRecipeViewModel {
@@ -44,7 +45,9 @@ class AddRecipeViewModel {
     
     /// Igredient sheet and vc variables
     @Published
-    var ingredientsList: [IngredientModel] = [IngredientModel(id: UUID(), value: "100", valueType: "Grams (g)", name: "Sugar")] {
+    var ingredientsList: [IngredientModel] = [IngredientModel(id: UUID(), value: "100", valueType: "Grams (g)", name: "Sugar"),
+                                              IngredientModel(id: UUID(), value: "100", valueType: "Grams (g)", name: "Sugar")]
+    {
         didSet {
             reloadTable()
         }
@@ -59,25 +62,67 @@ class AddRecipeViewModel {
     @Published
     var igredientValueType: String = ""
     
+    @Published
+    var instructionList: [InstructionModel] = [
+        InstructionModel(index: 1, text: "testoweanko alsldlasldls"),
+//                                               InstructionModel(index: 2, text: "hardkor")
+    ]
+    
     /// Error handling
     /// Recepies
     @Published
-    var recipeTitleIsError: Bool = false
+    var recipeTitleIsError: Bool = false {
+        didSet {
+            if recipeTitleIsError == true {
+                delegate?.pushAlert()
+            }
+        }
+    }
     
     @Published
-    var difficultyIsError: Bool = false
+    var difficultyIsError: Bool = false {
+        didSet {
+            if difficultyIsError == true {
+                delegate?.pushAlert()
+            }
+        }
+    }
     
     @Published
-    var servingIsError: Bool = false
+    var servingIsError: Bool = false {
+        didSet {
+            if servingIsError == true {
+                delegate?.pushAlert()
+            }
+        }
+    }
     
     @Published
-    var perpTimeIsError: Bool = false
+    var perpTimeIsError: Bool = false {
+        didSet {
+            if perpTimeIsError == true {
+                delegate?.pushAlert()
+            }
+        }
+    }
     
     @Published
-    var spicyIsError: Bool = false
+    var spicyIsError: Bool = false {
+        didSet {
+            if spicyIsError == true {
+                delegate?.pushAlert()
+            }
+        }
+    }
     
     @Published
-    var categoryIsError: Bool = false
+    var categoryIsError: Bool = false {
+        didSet {
+            if categoryIsError == true {
+                delegate?.pushAlert()
+            }
+        }
+    }
     
     /// Igredient
     @Published
@@ -92,7 +137,6 @@ class AddRecipeViewModel {
     /// validation used for validate all recipe
     @Published
     var validationErrors: [ValidateRecipeErrors] = []
-
 
     // MARK: Properties
     
@@ -129,14 +173,6 @@ class AddRecipeViewModel {
     
     lazy var valueTypeArray: [String] = ["Unit", "Grams (g)", "Kilograms (kg)", "Milliliters (ml)", "Liters (L)", "Teaspoons (tsp)", "Tablespoons (Tbsp)", "Cups (c)", "Pinch"]
     
-    
-    
-    
-    var recipies: [RecipeModel] = []
-    
-    
-    
-    
     // MARK: Initialization
     
     init(repository: DataRepository) {
@@ -145,10 +181,6 @@ class AddRecipeViewModel {
     
     deinit {
         print("AddRecipe viewmodel deinit")
-        
-//        for i in recipies {
-//            print(i.id)
-//        }
     }
     
     // MARK: Methods
@@ -168,7 +200,7 @@ class AddRecipeViewModel {
     }
     
     private func validateServing() {
-        if serving != 0 {
+        if serving == 0 {
             servingIsError = true
         }
     }
@@ -258,31 +290,44 @@ class AddRecipeViewModel {
     func removeIngredientFromList(at index: Int) {
         ingredientsList.remove(at: index)
     }
-    
-    let shared = CoreDataManager.shared
-    
-    func saveRecipe() {
-//        
-        let recipe = RecipeEntity(context: repository.moc.context)
-        recipe.id = UUID()
-        recipe.name = "Test"
-        recipe.servings = ""
-        recipe.prepTimeHours = ""
-        recipe.prepTimeMinutes = ""
-        recipe.spicy = ""
-        recipe.category = ""
         
+    func saveRecipe() -> Bool {
+        resetValidationFlags()
+        validateForms()
+        
+//        if recipeTitleIsError || servingIsError {
+//            pushAlert()
+//            return false
+//        }
+        
+        let recipe = RecipeModel(id: UUID(),
+                                 name: recipeTitle,
+                                 serving: serving.description,
+                                 perpTimeHours: prepTimeHours,
+                                 perpTimeMinutes: prepTimeMinutes,
+                                 spicy: spicy,
+                                 category: category,
+                                 difficulty: difficulty,
+                                 ingredientList: ingredientsList,
+                                 instructionList: instructionList)
+        
+        repository.addRecipe(recipe: recipe)
         repository.save()
+        print("New recipe saved")
+        return true
     }
-
 }
 
 extension AddRecipeViewModel: AddRecipeViewModelDelegate {
-    internal func updateEditButtonVisibility(isEmpty: Bool) {
-        delegate?.updateEditButtonVisibility(isEmpty: isEmpty)
+    func pushAlert() {
+        DispatchQueue.main.async {
+            self.delegate?.pushAlert()
+        }
     }
     
-
+    func updateEditButtonVisibility(isEmpty: Bool) {
+        delegate?.updateEditButtonVisibility(isEmpty: isEmpty)
+    }
     
     func reloadTable() {
         DispatchQueue.main.async {
@@ -290,9 +335,8 @@ extension AddRecipeViewModel: AddRecipeViewModelDelegate {
         }
     }
     
-    //TODO: push to previous viewcontroller and clear data in textfields or something
+    // TODO: push to previous viewcontroller and clear data in textfields or something
 }
-
 
 // TODO: add validate errors
 
@@ -324,4 +368,3 @@ enum ValidateRecipeErrors: CustomStringConvertible {
         }
     }
 }
-

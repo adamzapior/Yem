@@ -159,6 +159,10 @@ extension AddRecipeIngredientsVC {
 }
 
 extension AddRecipeIngredientsVC: AddRecipeViewModelDelegate {
+    func pushAlert() {
+        //
+    }
+    
     func updateEditButtonVisibility(isEmpty: Bool) {
         tableViewFooter.setEditButtonVisible(!isEmpty)
     }

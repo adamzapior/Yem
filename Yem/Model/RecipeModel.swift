@@ -15,4 +15,7 @@ struct RecipeModel {
     var perpTimeMinutes: String
     var spicy: String
     var category: String
+    var difficulty: String
+    var ingredientList: [IngredientModel]
+    var instructionList: [InstructionModel]
 }

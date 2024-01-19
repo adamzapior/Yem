@@ -16,8 +16,7 @@ class AddRecipeInstructionsVC: UIViewController {
     
     // MARK: - View properties
 
-    let scrollView = UIScrollView()
-    let contentView = UIView()
+    let tableView = UITableView()
     
     let pageStackView: UIStackView = {
         let sv = UIStackView()
@@ -46,6 +45,39 @@ class AddRecipeInstructionsVC: UIViewController {
     override func viewDidLoad() {
         view.backgroundColor = .systemBackground
         setupNavigationBarButtons()
+        setupTableView()
+    }
+    
+    private func setupTableView() {
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.register(InstructionCell.self, forCellReuseIdentifier: "InstructionCell")
+        
+        tableView.backgroundColor = UIColor.ui.background
+        tableView.showsVerticalScrollIndicator = false
+        tableView.separatorStyle = .none
+        
+        view.addSubview(tableView)
+        tableView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+    }
+}
+
+extension AddRecipeInstructionsVC: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return viewModel.instructionList.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: InstructionCell.id, for: indexPath) as? InstructionCell else {
+            fatalError("instructionCell error")
+        }
+        //        cell.button.tag = indexPath.row
+        //        cell.delegate = self
+        //        cell.configure(with: viewModel.ingredientsList[indexPath.row])
+        
+        return cell
     }
 }
 
@@ -58,7 +90,7 @@ extension AddRecipeInstructionsVC {
     }
     
     @objc func saveButtonTapped(_ sender: UIBarButtonItem) {
-        viewModel.saveRecipe()
+        _ = viewModel.saveRecipe()
         coordinator.dismissVCStack()
     }
 }

@@ -9,12 +9,15 @@ import UIKit
 
 class ShopingListVC: UIViewController {
     var coordinator: ShopingListCoordinator?
+    let repository: DataRepository
 
-    let viewModel = ShopingListVM()
+    let viewModel: ShopingListVM
 
-    init(coordinator: ShopingListCoordinator) {
-        super.init(nibName: nil, bundle: nil)
+    init(coordinator: ShopingListCoordinator, repository: DataRepository, viewModel: ShopingListVM) {
         self.coordinator = coordinator
+        self.repository = repository
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
     }
 
     @available(*, unavailable)

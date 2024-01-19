@@ -21,7 +21,7 @@ final class CoreDataManager {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
         }
-        
+
         context = persistentContainer.viewContext
     }
 
@@ -36,14 +36,26 @@ final class CoreDataManager {
             }
         }
     }
-    
+
     func fetchAllRecipes() throws -> [RecipeEntity] {
         let request: NSFetchRequest<RecipeEntity> = RecipeEntity.fetchRequest()
         do {
             return try CoreDataManager.shared.context.fetch(request)
         } catch {
-            throw error // Rzuca wyłapany wyjątek do dalszej obsługi
+            throw error
         }
     }
 
+    func fetchRecipesWithName(_ name: String) throws -> [RecipeEntity]? {
+        let request: NSFetchRequest<RecipeEntity> = RecipeEntity.fetchRequest()
+        let idString = name
+        request.predicate = NSPredicate(format: "name == %@", idString)
+
+        do {
+            let results = try context.fetch(request)
+            return results 
+        } catch {
+            throw error
+        }
+    }
 }

@@ -54,7 +54,7 @@ class MainCoordinator: MainBaseCoordinator {
     lazy var repository = DataRepository()
     
     lazy var recipesListCoordinator: RecipesListCoordinator = .init(repository: repository, viewModel: RecipesListVM(repository: repository))
-    lazy var shopingListCoordinator: ShopingListCoordinator = .init()
+    lazy var shopingListCoordinator: ShopingListCoordinator = .init(repository: repository, viewModel: ShopingListVM(repository: repository))
     
     lazy var rootViewController: UIViewController = UITabBarController()
     

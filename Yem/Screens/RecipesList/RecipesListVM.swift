@@ -28,6 +28,22 @@ class RecipesListVM {
             _ = result.map { success in
                 self.recipes = success
             }
+            
+            for x in recipes {
+//                print(x.instructionList.first)
+            }
+            
+            reloadTable()
+        case .failure:
+            break
+        }
+    }
+    
+    func searchRecipesByName(_ query: String) async {
+        let result = await repository.fetchRecipesWithName(query)
+        switch result {
+        case .success(let recepies):
+            self.recipes = recipes
             reloadTable()
         case .failure:
             break

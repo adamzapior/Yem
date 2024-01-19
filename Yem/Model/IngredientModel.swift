@@ -8,8 +8,8 @@
 import Foundation
 
 struct IngredientModel {
-    let id: UUID
-    let value: String
-    let valueType: String
-    let name: String
+    var id: UUID
+    var value: String
+    var valueType: String
+    var name: String
 }

@@ -34,6 +34,8 @@ class RecipesListVC: UIViewController {
         
         Task {
             await viewModel.loadRecipes()
+            
+            await viewModel.searchRecipesByName("XD")
         }
     }
     
