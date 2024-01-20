@@ -16,8 +16,6 @@ class AddRecipeInstructionsVC: UIViewController {
     
     // MARK: - View properties
 
-    let tableView = UITableView()
-    
     let pageStackView: UIStackView = {
         let sv = UIStackView()
         sv.axis = .horizontal
@@ -28,6 +26,10 @@ class AddRecipeInstructionsVC: UIViewController {
     
     let pageCount = 3
     var pageViews = [UIView]()
+    
+    let tableView = UITableView()
+    private let tableViewHeader = InstructionTableHeaderView()
+    private let tableViewFooter = IngredientsTableFooterView()
     
     // MARK: - Lifecycle
     
@@ -46,6 +48,8 @@ class AddRecipeInstructionsVC: UIViewController {
         view.backgroundColor = .systemBackground
         setupNavigationBarButtons()
         setupTableView()
+        setupTableViewFooter()
+        setupTableViewHeader()
     }
     
     private func setupTableView() {
@@ -53,6 +57,10 @@ class AddRecipeInstructionsVC: UIViewController {
         tableView.dataSource = self
         tableView.register(InstructionCell.self, forCellReuseIdentifier: "InstructionCell")
         
+        tableView.dragDelegate = self
+        tableView.dropDelegate = self
+        tableView.dragInteractionEnabled = true // Włącza interakcje przeciągania
+
         tableView.backgroundColor = UIColor.ui.background
         tableView.showsVerticalScrollIndicator = false
         tableView.separatorStyle = .none
@@ -61,6 +69,24 @@ class AddRecipeInstructionsVC: UIViewController {
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+    }
+    
+    private func setupTableViewFooter() {
+        tableViewFooter.delegate = self
+        
+        tableViewFooter.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 200)
+        tableViewFooter.backgroundColor = UIColor.ui.background
+        tableView.tableFooterView = tableViewFooter
+        
+        tableViewFooter.setEditButtonVisible(true)
+    }
+    
+    private func setupTableViewHeader() {
+        tableView.addSubview(tableViewHeader)
+        tableView.tableHeaderView = tableViewHeader
+        tableViewHeader.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 36)
+        tableViewHeader.backgroundColor = UIColor.ui.background
+        
     }
 }
 
@@ -73,18 +99,79 @@ extension AddRecipeInstructionsVC: UITableViewDelegate, UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: InstructionCell.id, for: indexPath) as? InstructionCell else {
             fatalError("instructionCell error")
         }
-        //        cell.button.tag = indexPath.row
-        //        cell.delegate = self
-        //        cell.configure(with: viewModel.ingredientsList[indexPath.row])
+//                cell.button.tag = indexPath.row
+        cell.delegate = self
+        cell.configure(with: viewModel.instructionList[indexPath.row])
         
         return cell
+    }
+}
+
+extension AddRecipeInstructionsVC: UITableViewDragDelegate {
+    func tableView(_ tableView: UITableView,
+                   itemsForBeginning session: UIDragSession,
+                   at indexPath: IndexPath) -> [UIDragItem]
+    {
+        let item = viewModel.instructionList[indexPath.row]
+        let itemProvider = NSItemProvider(object: item.text as NSString)
+        let dragItem = UIDragItem(itemProvider: itemProvider)
+        return [dragItem]
+    }
+}
+
+extension AddRecipeInstructionsVC: UITableViewDropDelegate {
+
+    
+    func tableView(_ tableView: UITableView,
+                   performDropWith coordinator: UITableViewDropCoordinator)
+    {
+        if let destinationIndexPath = coordinator.destinationIndexPath,
+           let sourceIndexPath = coordinator.items.first?.sourceIndexPath
+        {
+            coordinator.session.loadObjects(ofClass: NSString.self) { items in
+                // Aktualizacja modelu danych
+                let draggedItem = self.viewModel.instructionList[sourceIndexPath.row]
+                self.viewModel.instructionList.remove(at: sourceIndexPath.row)
+                self.viewModel.instructionList.insert(draggedItem, at: destinationIndexPath.row)
+
+                // Aktualizacja tableView
+                tableView.performBatchUpdates({
+                    tableView.deleteRows(at: [sourceIndexPath], with: .fade)
+                    tableView.insertRows(at: [destinationIndexPath], with: .fade)
+                }, completion: nil)
+                
+                self.viewModel.updateInstructionIndexes()
+                self.tableView.reloadData()
+            }
+        }
+    }
+
+    func tableView(_ tableView: UITableView,
+                   dropSessionDidUpdate session: UIDropSession,
+                   withDestinationIndexPath destinationIndexPath: IndexPath?) -> UITableViewDropProposal
+    {
+        return UITableViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
+    }
+}
+
+extension AddRecipeInstructionsVC: InstructionCellDelegate, IngredientsTableFooterViewDelegate {
+    func editButtonTapped(view: UIView) {
+        print("clicked")
+    }
+    
+    func addIconTapped(view: UIView) {
+        addInstructionTapped()
+    }
+    
+    func didTapButton(in cell: InstructionCell) {
+        //
     }
 }
 
 // MARK: - Navigation
 
 extension AddRecipeInstructionsVC {
-    func setupNavigationBarButtons() {
+    private func setupNavigationBarButtons() {
         let nextButtonItem = UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(saveButtonTapped))
         navigationItem.rightBarButtonItem = nextButtonItem
     }
@@ -92,5 +179,9 @@ extension AddRecipeInstructionsVC {
     @objc func saveButtonTapped(_ sender: UIBarButtonItem) {
         _ = viewModel.saveRecipe()
         coordinator.dismissVCStack()
+    }
+    
+    private func addInstructionTapped() {
+        // push view from coordinator
     }
 }

@@ -86,7 +86,7 @@ class AddRecipeIngredientsVC: UIViewController {
     private func setupTableViewFooter() {
         tableViewFooter.delegate = self
         
-        tableViewFooter.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 100)
+        tableViewFooter.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 200)
         tableViewFooter.backgroundColor = UIColor.ui.background
         tableView.tableFooterView = tableViewFooter
         
@@ -102,6 +102,11 @@ class AddRecipeIngredientsVC: UIViewController {
 }
 
 extension AddRecipeIngredientsVC: IngredientsTableFooterViewDelegate {
+    func editButtonTapped(view: UIView) {
+        //
+        
+    }
+    
     func addIconTapped(view: UIView) {
         addIgredientTapped()
     }
@@ -110,7 +115,7 @@ extension AddRecipeIngredientsVC: IngredientsTableFooterViewDelegate {
 // MARK: -  TableView delegate & data source
 
 extension AddRecipeIngredientsVC: UITableViewDelegate, UITableViewDataSource, IngredientsCellDelegate {
-    func didTapButton(inCell cell: IngredientsCell) {
+    func didTapButton(in cell: IngredientsCell) {
         DispatchQueue.main.async {
             guard let indexPath = self.tableView.indexPath(for: cell) else { return }
             // Teraz masz indexPath, więc możesz zidentyfikować, który element został wybrany.
@@ -127,7 +132,7 @@ extension AddRecipeIngredientsVC: UITableViewDelegate, UITableViewDataSource, In
         guard let cell = tableView.dequeueReusableCell(withIdentifier: IngredientsCell.id, for: indexPath) as? IngredientsCell else {
             fatalError("IngredientsCell error")
         }
-        cell.button.tag = indexPath.row
+//        cell.button.tag = indexPath.row
         cell.delegate = self
         cell.configure(with: viewModel.ingredientsList[indexPath.row])
 

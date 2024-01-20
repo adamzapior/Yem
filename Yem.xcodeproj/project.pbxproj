@@ -55,6 +55,8 @@
 		58BBEB932B5AF5D10058851C /* InstructionEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB8F2B5AF5D10058851C /* InstructionEntity+CoreDataProperties.swift */; };
 		58BBEB952B5B0C3A0058851C /* InstructionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB942B5B0C3A0058851C /* InstructionModel.swift */; };
 		58BBEB982B5B28390058851C /* YemData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB962B5B28390058851C /* YemData.xcdatamodeld */; };
+		58BBEB9B2B5C14C70058851C /* InstructionTableFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB9A2B5C14C70058851C /* InstructionTableFooterView.swift */; };
+		58BBEB9D2B5C18840058851C /* InstructionTableHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB9C2B5C18840058851C /* InstructionTableHeaderView.swift */; };
 		58D5E7D92B3C6FE2007FC9E8 /* OnTapAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D5E7D82B3C6FE2007FC9E8 /* OnTapAnimation.swift */; };
 		58D5F9C02B27A84700A72619 /* PickerWithIconRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D5F9BF2B27A84700A72619 /* PickerWithIconRow.swift */; };
 		58D5F9C22B27B3F600A72619 /* TextfieldWithIconRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D5F9C12B27B3F600A72619 /* TextfieldWithIconRow.swift */; };
@@ -131,6 +133,8 @@
 		58BBEB8F2B5AF5D10058851C /* InstructionEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "InstructionEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		58BBEB942B5B0C3A0058851C /* InstructionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionModel.swift; sourceTree = "<group>"; };
 		58BBEB972B5B28390058851C /* YemData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = YemData.xcdatamodel; sourceTree = "<group>"; };
+		58BBEB9A2B5C14C70058851C /* InstructionTableFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionTableFooterView.swift; sourceTree = "<group>"; };
+		58BBEB9C2B5C18840058851C /* InstructionTableHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionTableHeaderView.swift; sourceTree = "<group>"; };
 		58D5E7D82B3C6FE2007FC9E8 /* OnTapAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnTapAnimation.swift; sourceTree = "<group>"; };
 		58D5F9BF2B27A84700A72619 /* PickerWithIconRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerWithIconRow.swift; sourceTree = "<group>"; };
 		58D5F9C12B27B3F600A72619 /* TextfieldWithIconRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextfieldWithIconRow.swift; sourceTree = "<group>"; };
@@ -281,8 +285,7 @@
 				58D5F9BE2B27A7D400A72619 /* Components */,
 				5887468A2B2E073000EC5E11 /* Cells */,
 				58EBB0762B227B82000EB128 /* AddPhotoView.swift */,
-				58094EBB2B26164B00D4D2FC /* IngredientsTableFooterView.swift */,
-				58094EBD2B267E6300D4D2FC /* IngredientsTableHeaderView.swift */,
+				58BBEB992B5C14980058851C /* TableViewsHeader+Footer */,
 			);
 			path = CustomViews;
 			sourceTree = "<group>";
@@ -385,6 +388,17 @@
 				58BBEB8F2B5AF5D10058851C /* InstructionEntity+CoreDataProperties.swift */,
 			);
 			path = Instruction;
+			sourceTree = "<group>";
+		};
+		58BBEB992B5C14980058851C /* TableViewsHeader+Footer */ = {
+			isa = PBXGroup;
+			children = (
+				58094EBB2B26164B00D4D2FC /* IngredientsTableFooterView.swift */,
+				58094EBD2B267E6300D4D2FC /* IngredientsTableHeaderView.swift */,
+				58BBEB9A2B5C14C70058851C /* InstructionTableFooterView.swift */,
+				58BBEB9C2B5C18840058851C /* InstructionTableHeaderView.swift */,
+			);
+			path = "TableViewsHeader+Footer";
 			sourceTree = "<group>";
 		};
 		58D5E7D72B3C6FBB007FC9E8 /* Animations */ = {
@@ -566,6 +580,7 @@
 				58BBEB752B59C94B0058851C /* IngredientEntity+CoreDataClass.swift in Sources */,
 				58D5F9C02B27A84700A72619 /* PickerWithIconRow.swift in Sources */,
 				58356B472B20E0DB000AC548 /* ShopingListVC.swift in Sources */,
+				58BBEB9B2B5C14C70058851C /* InstructionTableFooterView.swift in Sources */,
 				5899294A2B4484FD00FAB070 /* RecipesListCoordinator.swift in Sources */,
 				5869321D2B26112000379C8C /* IconImage.swift in Sources */,
 				58094EBE2B267E6300D4D2FC /* IngredientsTableHeaderView.swift in Sources */,
@@ -578,6 +593,7 @@
 				58356AFB2B1FB9E5000AC548 /* AppDelegate.swift in Sources */,
 				58BBEB7B2B59C9EB0058851C /* RecipeEntity+CoreDataClass.swift in Sources */,
 				58BBEB922B5AF5D10058851C /* InstructionEntity+CoreDataClass.swift in Sources */,
+				58BBEB9D2B5C18840058851C /* InstructionTableHeaderView.swift in Sources */,
 				580ED3822B25068100B4A9F0 /* ColorTheme.swift in Sources */,
 				5869321B2B253AB300379C8C /* AddRecipeInstructionsVC.swift in Sources */,
 				586932172B25351A00379C8C /* AddRecipeIngredientsVC.swift in Sources */,

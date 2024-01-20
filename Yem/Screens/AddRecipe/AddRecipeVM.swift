@@ -64,8 +64,11 @@ class AddRecipeViewModel {
     
     @Published
     var instructionList: [InstructionModel] = [
-        InstructionModel(index: 1, text: "testoweanko alsldlasldls"),
-//                                               InstructionModel(index: 2, text: "hardkor")
+        InstructionModel(index: 1, text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus nec placerat sem. Morbi eget turpis tincidunt, porttitor odio id, dignissim ante. Aenean id viverra tortor. Cras vehicula sapien sed nisl mattis scelerisque. "),
+        InstructionModel(index: 2, text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus nec placerat sem. Morbi eget turpis tincidunt, porttitor odio id, dignissim ante. Aenean id viverra tortor. Cras vehicula sapien sed nisl mattis scelerisque. Proin aliquam mi eros, sit amet ultricies lorem convallis nec. Nulla nec ante ornare nisl interdum lobortis. Vivamus varius accumsan metus in pellentesque. Sed ac nunc odio. Cras quis mauris porta, varius quam ut, ultricies ante. Integer ornare molestie mauris, vitae faucibus justo sollicitudin at. Quisque eget lacinia magna."),
+        InstructionModel(index: 3, text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus nec pr odio id, dignissim ante. Aenean id viverra tortor. Cras vehicula sapien sed nisl mattis scelerisque. "),
+        InstructionModel(index: 4, text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus nec placerat sem. Morbi eget turpis tincidunt, porttitor odio id, dignissim ante. Aenean id viverra tortor. Crrisque. "),
+        InstructionModel(index: 5, text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus nec placerat sem. Morbi  tincidunt, porttitor odio id, dignissim ante. Aenean id viverra tortor. Cras vehicula sapien sed nisl mattis scelerisque. ")
     ]
     
     /// Error handling
@@ -74,6 +77,7 @@ class AddRecipeViewModel {
     var recipeTitleIsError: Bool = false {
         didSet {
             if recipeTitleIsError == true {
+                validationErrors.append(.recipeTitle)
                 delegate?.pushAlert()
             }
         }
@@ -83,6 +87,7 @@ class AddRecipeViewModel {
     var difficultyIsError: Bool = false {
         didSet {
             if difficultyIsError == true {
+                validationErrors.append(.difficulty)
                 delegate?.pushAlert()
             }
         }
@@ -92,6 +97,7 @@ class AddRecipeViewModel {
     var servingIsError: Bool = false {
         didSet {
             if servingIsError == true {
+                validationErrors.append(.recipeTitle)
                 delegate?.pushAlert()
             }
         }
@@ -101,6 +107,7 @@ class AddRecipeViewModel {
     var perpTimeIsError: Bool = false {
         didSet {
             if perpTimeIsError == true {
+                validationErrors.append(.prepTime)
                 delegate?.pushAlert()
             }
         }
@@ -110,6 +117,7 @@ class AddRecipeViewModel {
     var spicyIsError: Bool = false {
         didSet {
             if spicyIsError == true {
+                validationErrors.append(.spicy)
                 delegate?.pushAlert()
             }
         }
@@ -119,6 +127,7 @@ class AddRecipeViewModel {
     var categoryIsError: Bool = false {
         didSet {
             if categoryIsError == true {
+                validationErrors.append(.category)
                 delegate?.pushAlert()
             }
         }
@@ -271,6 +280,8 @@ class AddRecipeViewModel {
         igredientValueTypeIsError = false
     }
     
+    
+    
     func addIngredientToList() -> Bool {
         resetIgredientValidationFlags()
         
@@ -290,15 +301,23 @@ class AddRecipeViewModel {
     func removeIngredientFromList(at index: Int) {
         ingredientsList.remove(at: index)
     }
+    
+    func updateInstructionIndexes() {
+        for (index, var instruction) in instructionList.enumerated() {
+            instruction.index = index + 1
+            instructionList[index] = instruction
+        }
+    }
+
         
     func saveRecipe() -> Bool {
         resetValidationFlags()
         validateForms()
         
-//        if recipeTitleIsError || servingIsError {
-//            pushAlert()
-//            return false
-//        }
+        if recipeTitleIsError || servingIsError || difficultyIsError || perpTimeIsError || spicyIsError || categoryIsError {
+            pushAlert()
+            return false
+        }
         
         let recipe = RecipeModel(id: UUID(),
                                  name: recipeTitle,

@@ -8,7 +8,7 @@
 import UIKit
 
 protocol IngredientsCellDelegate: AnyObject {
-    func didTapButton(inCell cell: IngredientsCell)
+    func didTapButton(in cell: IngredientsCell)
 }
 
 class IngredientsCell: UITableViewCell {
@@ -35,14 +35,12 @@ class IngredientsCell: UITableViewCell {
         return icon
     }()
         
-    let button = UIButton()
-
-    private var didDelete: ((UITableViewCell) -> Void)?
+//    let button = UIButton()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        contentView.isUserInteractionEnabled = true
+        contentView.isUserInteractionEnabled = true // !!
         setupUI()
     }
     
@@ -107,6 +105,6 @@ class IngredientsCell: UITableViewCell {
     
     @objc func didTapButtonAction() {
         print("button tapped")
-        delegate?.didTapButton(inCell: self)
+        delegate?.didTapButton(in: self)
     }
 }

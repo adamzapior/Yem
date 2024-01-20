@@ -9,14 +9,13 @@ import UIKit
 
 protocol IngredientsTableFooterViewDelegate: AnyObject {
     func addIconTapped(view: UIView)
+    func editButtonTapped(view: UIView)
 }
 
 class IngredientsTableFooterView: UIView {
     weak var delegate: IngredientsTableFooterViewDelegate?
 
     private let screenWidth = UIScreen.main.bounds.width
-
-    private let addIcon = IconImage(systemImage: "plus", color: .ui.theme, textStyle: .body, contentMode: .scaleAspectFit)
     
     private let addButton = MainActionButton(title: "Add", backgroundColor: .ui.addBackground!)
     private let editButton = MainActionButton(title: "Edit", backgroundColor: .ui.primaryContainer!)
@@ -37,7 +36,8 @@ class IngredientsTableFooterView: UIView {
         addSubview(content)
         content.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(32)
-            make.leading.trailing.bottom.equalToSuperview()
+            make.bottom.equalToSuperview().offset(-100)
+            make.leading.trailing.equalToSuperview()
         }
         
         content.addSubview(addButton)
@@ -62,6 +62,10 @@ class IngredientsTableFooterView: UIView {
             make.height.greaterThanOrEqualTo(50)
             make.width.greaterThanOrEqualTo(330.HAdapted)
         }
+        
+        let editTapGesture = UITapGestureRecognizer(target: self, action: #selector(editButtonTapped))
+        editButton.addGestureRecognizer(editTapGesture)
+        editButton.isUserInteractionEnabled = true
     }
     
     func setEditButtonVisible(_ isVisible: Bool) {
@@ -72,8 +76,15 @@ class IngredientsTableFooterView: UIView {
 extension IngredientsTableFooterView: IngredientsTableFooterViewDelegate {
     @objc func addIconTapped(view: UIView) {
         self.addButton.onTapAnimation()
-
         delegate?.addIconTapped(view: self)
+        print("worked")
     }
+    
+    @objc func editButtonTapped(view: UIView) {
+        self.editButton.onTapAnimation()
+        delegate?.editButtonTapped(view: self)
+        print("worked2")
+
+       }
 
 }

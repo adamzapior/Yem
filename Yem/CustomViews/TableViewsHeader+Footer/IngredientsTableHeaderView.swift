@@ -26,7 +26,7 @@ class IngredientsTableHeaderView: UIView {
 
     override init (frame: CGRect) {
         super.init(frame: frame)
-        configure()
+        configure(page: 1)
     }
     
     required init?(coder: NSCoder) {
@@ -34,7 +34,7 @@ class IngredientsTableHeaderView: UIView {
     }
 
 
-    private func configure() {
+    func configure(page: Int) {
        
         for _ in 0..<pageCount {
             let divider = UIView.createDivider(color: .gray)
@@ -42,7 +42,7 @@ class IngredientsTableHeaderView: UIView {
             pageViews.append(divider)
         }
         
-        pageViews[1].backgroundColor = .ui.theme
+        pageViews[page].backgroundColor = .ui.theme
         
         addSubview(pageStackView)
         pageStackView.snp.makeConstraints { make in
