@@ -35,6 +35,9 @@ final class AddRecipeCoordinator {
         case .instructions:
             let controller = AddRecipeInstructionsVC(viewModel: viewModel, coordinator: self)
             navigationController?.pushViewController(controller, animated: true)
+        case .addInstruction:
+            let controller = AddInstructionSheetVC(viewModel: viewModel, coordinator: self)
+            navigationController?.present(controller, animated: true)
         }
     }
 
@@ -51,4 +54,5 @@ enum AddRecipeRoute {
     case ingredientsList
     case addIngredient
     case instructions
+    case addInstruction
 }

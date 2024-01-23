@@ -98,8 +98,7 @@ class IngredientsCell: UITableViewCell {
             make.trailing.equalToSuperview().offset(-12)
 //            make.leading.equalTo(valueTypeLabel.snp.trailing).offset(12)
             make.centerY.equalToSuperview()
-            make.height.greaterThanOrEqualTo(24)
-            make.width.greaterThanOrEqualTo(24)
+
         }
     }
     

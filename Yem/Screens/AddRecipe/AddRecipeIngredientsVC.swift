@@ -56,7 +56,6 @@ class AddRecipeIngredientsVC: UIViewController {
         setupTableViewHeader()
         setupTableViewFooter()
         
-        updateEditButtonVisibility(isEmpty: viewModel.ingredientsList.isEmpty)
     }
     
     override func viewDidLayoutSubviews() {
@@ -90,7 +89,6 @@ class AddRecipeIngredientsVC: UIViewController {
         tableViewFooter.backgroundColor = UIColor.ui.background
         tableView.tableFooterView = tableViewFooter
         
-        tableViewFooter.setEditButtonVisible(true)
     }
     
     private func setupTableViewHeader() {
@@ -164,14 +162,15 @@ extension AddRecipeIngredientsVC {
 }
 
 extension AddRecipeIngredientsVC: AddRecipeViewModelDelegate {
+    func updateEditButtonVisibility(isEmpty: Bool) {
+        //
+    }
+    
     func pushAlert() {
         //
     }
     
-    func updateEditButtonVisibility(isEmpty: Bool) {
-        tableViewFooter.setEditButtonVisible(!isEmpty)
-    }
-    
+ 
     func reloadTable() {
         tableView.reloadData()
         updateEditButtonVisibility(isEmpty: viewModel.ingredientsList.isEmpty)

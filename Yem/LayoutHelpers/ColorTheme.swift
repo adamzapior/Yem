@@ -14,6 +14,7 @@ struct ColorTheme {
     var primaryText = UIColor(named: "primaryText")
     var secondaryText = UIColor(named: "secondaryText")
     var primaryContainer = UIColor(named: "primaryContainer")
+    var secondaryContainer = UIColor(named: "secondaryContainer")
     var addBackground = UIColor(named: "addBackground")
     var cancelBackground = UIColor(named: "cancelBackground")
     var divider = UIColor(named: "divider")

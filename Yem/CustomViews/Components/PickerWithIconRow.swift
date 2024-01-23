@@ -39,8 +39,9 @@ class PickerWithIconRow: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    convenience init(iconImage: String, textOnButton: String) {
+    convenience init(backgroundColor: UIColor? = UIColor.ui.primaryContainer, iconImage: String, textOnButton: String) {
         self.init(frame: .zero)
+        self.backgroundColor = backgroundColor
         self.iconImage = iconImage
         self.icon = IconImage(systemImage: iconImage, color: .ui.theme, textStyle: textStyle)
         self.textOnButton.text = textOnButton
@@ -57,7 +58,6 @@ class PickerWithIconRow: UIView {
         addSubview(textOnButton)
         
         layer.cornerRadius = 20
-        backgroundColor = .ui.primaryContainer
         
         button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
         

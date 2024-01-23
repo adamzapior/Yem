@@ -1,29 +1,40 @@
+//
+//  NoteWithIconRow.swift
+//  Yem
+//
+//  Created by Adam Zapiór on 21/01/2024.
+//
+
 import UIKit
 
-protocol TextfieldWithIconRowDelegate: AnyObject {
-    func textFieldDidBeginEditing(_ textfield: TextfieldWithIconRow, didUpdateText text: String)
-    func textFieldDidChange(_ textfield: TextfieldWithIconRow, didUpdateText text: String)
-    func textFieldDidEndEditing(_ textfield: TextfieldWithIconRow, didUpdateText text: String)
+protocol NoteWithIconRowDelegate: AnyObject {
+    func textFieldDidBeginEditing(_ textfield: NoteWithIconRow, didUpdateText text: String)
+    func textFieldDidChange(_ textfield: NoteWithIconRow, didUpdateText text: String)
+    func textFieldDidEndEditing(_ textfield: NoteWithIconRow, didUpdateText text: String)
 }
 
-class TextfieldWithIconRow: UIView, UITextFieldDelegate {
-    weak var delegate: TextfieldWithIconRowDelegate?
+class NoteWithIconRow: UIView, UITextFieldDelegate {
+    weak var delegate: NoteWithIconRowDelegate?
     
     private var icon: IconImage!
     private var iconImage: String
+    private var nameOfRow = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText)
+    private var nameOfRowText: String
     private var textStyle: UIFont.TextStyle
     
-    let textField = UITextField()
+    let textField = UITextView()
     
     var keyboardType: UIKeyboardType = .default {
         didSet {
             textField.keyboardType = keyboardType
         }
     }
+    
 
     override init(frame: CGRect) {
         self.iconImage = "plus"
         self.textStyle = .body
+        self.nameOfRowText = ""
 
         super.init(frame: frame)
         self.icon = IconImage(systemImage: iconImage, color: .ui.theme, textStyle: textStyle)
@@ -34,45 +45,58 @@ class TextfieldWithIconRow: UIView, UITextFieldDelegate {
         fatalError("init(coder:) has not been implemented")
     }
     
-    convenience init(backgroundColor: UIColor? = .ui.primaryContainer, iconImage: String, placeholderText: String, textColor: UIColor?) {
+    convenience init(nameOfRowText: String, iconImage: String, placeholderText: String, textColor: UIColor?) {
         self.init(frame: .zero)
-        self.backgroundColor = backgroundColor
+        self.nameOfRowText = nameOfRowText
         self.iconImage = iconImage
         self.icon = IconImage(systemImage: iconImage, color: .ui.theme, textStyle: textStyle)
                 
         let placeholderText = NSAttributedString(string: "\(placeholderText)",
                                                  attributes: [NSAttributedString.Key.foregroundColor: textColor ?? .primaryContainer])
                 
-        textField.attributedPlaceholder = placeholderText
+//        textField.attributedPlaceholder = placeholderText
         
         configure()
     }
     
+    
     private func configure() {
+        
         addSubview(icon)
+        addSubview(nameOfRow)
         addSubview(textField)
         
         layer.cornerRadius = 20
-//        backgroundColor = .ui.primaryContainer
+        backgroundColor = .ui.secondaryContainer
 
-        textField.delegate = self
-        textField.backgroundColor = backgroundColor
+//        textField.delegate = self
+        textField.backgroundColor = .ui.secondaryContainer
         textField.keyboardType = keyboardType
         
         icon.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview().inset(12)
+            make.top.equalToSuperview().offset(12)
             make.leading.equalToSuperview().offset(18)
             make.width.equalTo(24)
             make.height.equalTo(24)
         }
         
-        textField.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview().inset(2)
-            make.leading.equalTo(icon.snp.trailing).offset(22)
-            make.trailing.equalToSuperview().offset(-9)
+        nameOfRow.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(12)
+            make.centerY.equalTo(icon)
+            make.leading.equalTo(icon.snp.trailing).offset(6)
+            make.trailing.equalToSuperview().offset(-18)
         }
         
-        textField.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
+        nameOfRow.text = "Add new step"
+        
+        textField.snp.makeConstraints { make in
+            make.top.equalTo(nameOfRow.snp.bottom).offset(6)
+            make.leading.trailing.equalToSuperview().inset(18)
+            make.bottom.equalToSuperview().offset(-12)
+            make.height.greaterThanOrEqualTo(72)
+        }
+        
+        textField.font = UIFont.systemFont(ofSize: UIFont.preferredFont(forTextStyle: .body).pointSize, weight: .regular)
     }
     
     // MARK: Delegate textfield
@@ -98,27 +122,6 @@ class TextfieldWithIconRow: UIView, UITextFieldDelegate {
     
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         onTapAnimation()
-        return true
-    }
-//    
-//    func textFieldDidChangeSelection(_ textField: UITextField) {
-//        <#code#>
-//    }
-//    
-//    func textFieldDidBeginEditing(_ textField: UITextField) {
-//        if let text = textField.text {
-//            delegate?.textFieldDidEndEditing(self, didUpdateText: text)
-//        }
-//    }
-//
-//    func textFieldDidEndEditing(_ textField: UITextField) {
-//        if let text = textField.text {
-//            delegate?.textFieldDidEndEditing(self, didUpdateText: text)
-//        }
-//    }
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder() // Hides the keyboard
         return true
     }
 }

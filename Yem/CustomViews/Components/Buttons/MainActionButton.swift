@@ -40,6 +40,10 @@ class MainActionButton: UIButton {
     private func setupUI() {
         self.layer.cornerRadius = 20
         self.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
+        
+        self.snp.makeConstraints { make in
+            make.height.equalTo(54.HAdapted)
+        }
     }
     
     // MARK: - Methods

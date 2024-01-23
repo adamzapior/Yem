@@ -78,7 +78,6 @@ class AddRecipeInstructionsVC: UIViewController {
         tableViewFooter.backgroundColor = UIColor.ui.background
         tableView.tableFooterView = tableViewFooter
         
-        tableViewFooter.setEditButtonVisible(true)
     }
     
     private func setupTableViewHeader() {
@@ -155,12 +154,13 @@ extension AddRecipeInstructionsVC: UITableViewDropDelegate {
 }
 
 extension AddRecipeInstructionsVC: InstructionCellDelegate, IngredientsTableFooterViewDelegate {
-    func editButtonTapped(view: UIView) {
-        print("clicked")
-    }
     
     func addIconTapped(view: UIView) {
         addInstructionTapped()
+    }
+    
+    func editButtonTapped(view: UIView) {
+        print("clicked")
     }
     
     func didTapButton(in cell: InstructionCell) {
@@ -182,6 +182,6 @@ extension AddRecipeInstructionsVC {
     }
     
     private func addInstructionTapped() {
-        // push view from coordinator
+        coordinator.pushVC(for: .addInstruction)
     }
 }

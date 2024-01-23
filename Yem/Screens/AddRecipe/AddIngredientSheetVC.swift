@@ -15,9 +15,9 @@ class AddIngredientSheetVC: UIViewController {
     
     // MARK: - View properties
     
-    private let ingredientNameTextfield = TextfieldWithIconRow(iconImage: "info.square", placeholderText: "Enter your igredient name", textColor: .ui.secondaryText)
-    private let countTextfield = TextfieldWithIconRow(iconImage: "bag.badge.plus", placeholderText: "Enter value", textColor: .ui.secondaryText)
-    private let valueTypeCell = PickerWithIconRow(iconImage: "note.text.badge.plus", textOnButton: "Select value type")
+    private let ingredientNameTextfield = TextfieldWithIconRow(backgroundColor: .ui.secondaryContainer, iconImage: "info.square", placeholderText: "Enter your igredient name", textColor: .ui.secondaryText)
+    private let countTextfield = TextfieldWithIconRow(backgroundColor: .ui.secondaryContainer, iconImage: "bag.badge.plus", placeholderText: "Enter value", textColor: .ui.secondaryText)
+    private let valueTypeCell = PickerWithIconRow(backgroundColor: .ui.secondaryContainer, iconImage: "note.text.badge.plus", textOnButton: "Select value type")
     private let addButton = MainActionButton(title: "Add", backgroundColor: .ui.addBackground!)
     private let cancelButton = MainActionButton(title: "Cancel", backgroundColor: .ui.cancelBackground ?? .ui.theme)
     
@@ -30,6 +30,16 @@ class AddIngredientSheetVC: UIViewController {
         stack.spacing = 8
         return stack
     }()
+    
+    private let buttonsStackView: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.distribution = .fillEqually
+        stack.spacing = 8
+        return stack
+    }()
+    
+    
     
     private let screenWidth = UIScreen.main.bounds.width - 10
     private let screenHeight = UIScreen.main.bounds.height / 2
@@ -70,8 +80,11 @@ class AddIngredientSheetVC: UIViewController {
     // MARK: - UI Setup
     
     private func setupUI() {
+        
         view.backgroundColor = .systemBackground
         view.addSubview(stackView)
+        view.addSubview(buttonsStackView)
+
         
         stackView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(12)
@@ -81,8 +94,15 @@ class AddIngredientSheetVC: UIViewController {
         stackView.addArrangedSubview(ingredientNameTextfield)
         stackView.addArrangedSubview(countTextfield)
         stackView.addArrangedSubview(valueTypeCell)
-        stackView.addArrangedSubview(addButton)
-        stackView.addArrangedSubview(cancelButton)
+        
+        buttonsStackView.snp.makeConstraints { make in
+            make.top.equalTo(stackView.snp.bottom).offset(12)
+            make.leading.trailing.equalToSuperview().inset(12)
+        }
+        
+        buttonsStackView.addArrangedSubview(addButton)
+        buttonsStackView.addArrangedSubview(cancelButton)
+        
     }
 }
 
