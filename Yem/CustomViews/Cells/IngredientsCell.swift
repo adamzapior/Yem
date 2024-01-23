@@ -35,7 +35,6 @@ class IngredientsCell: UITableViewCell {
         return icon
     }()
         
-//    let button = UIButton()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -96,7 +95,6 @@ class IngredientsCell: UITableViewCell {
         
         trashIcon.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-12)
-//            make.leading.equalTo(valueTypeLabel.snp.trailing).offset(12)
             make.centerY.equalToSuperview()
 
         }

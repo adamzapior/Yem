@@ -77,7 +77,6 @@ class AddRecipeInstructionsVC: UIViewController {
         tableViewFooter.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 200)
         tableViewFooter.backgroundColor = UIColor.ui.background
         tableView.tableFooterView = tableViewFooter
-        
     }
     
     private func setupTableViewHeader() {
@@ -85,7 +84,6 @@ class AddRecipeInstructionsVC: UIViewController {
         tableView.tableHeaderView = tableViewHeader
         tableViewHeader.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 36)
         tableViewHeader.backgroundColor = UIColor.ui.background
-        
     }
 }
 
@@ -119,15 +117,13 @@ extension AddRecipeInstructionsVC: UITableViewDragDelegate {
 }
 
 extension AddRecipeInstructionsVC: UITableViewDropDelegate {
-
-    
     func tableView(_ tableView: UITableView,
                    performDropWith coordinator: UITableViewDropCoordinator)
     {
         if let destinationIndexPath = coordinator.destinationIndexPath,
            let sourceIndexPath = coordinator.items.first?.sourceIndexPath
         {
-            coordinator.session.loadObjects(ofClass: NSString.self) { items in
+            coordinator.session.loadObjects(ofClass: NSString.self) { _ in
                 // Aktualizacja modelu danych
                 let draggedItem = self.viewModel.instructionList[sourceIndexPath.row]
                 self.viewModel.instructionList.remove(at: sourceIndexPath.row)
@@ -154,17 +150,18 @@ extension AddRecipeInstructionsVC: UITableViewDropDelegate {
 }
 
 extension AddRecipeInstructionsVC: InstructionCellDelegate, IngredientsTableFooterViewDelegate {
-    
     func addIconTapped(view: UIView) {
         addInstructionTapped()
     }
-    
-    func editButtonTapped(view: UIView) {
-        print("clicked")
-    }
-    
+  
     func didTapButton(in cell: InstructionCell) {
-        //
+        DispatchQueue.main.async {
+            print("wow")
+            guard let indexPath = self.tableView.indexPath(for: cell) else { return }
+            self.viewModel.removeInstructionFromList(at: indexPath.row)
+            self.viewModel.updateInstructionIndexes()
+            self.tableView.reloadData()
+        }
     }
 }
 

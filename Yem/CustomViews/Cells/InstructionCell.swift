@@ -27,30 +27,20 @@ class InstructionCell: UITableViewCell {
     
     private let textTextView = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText, textAlignment: .natural)
     
-    private let deleteIcon: IconImage = {
-        let icon = IconImage(systemImage: "trash", color: .red, textStyle: .body)
-        let tapGesture = UITapGestureRecognizer(target: InstructionCell.self, action: #selector(didTapButtonAction))
-        icon.addGestureRecognizer(tapGesture)
-        icon.isUserInteractionEnabled = true
-        return icon
-    }()
+//    private let deleteIcon: IconImage = {
+//        let icon = IconImage(systemImage: "trash", color: .red, textStyle: .body)
+//        // Zmieniony selektor na metodę instancji
+//       
+//        icon.isUserInteractionEnabled = true
+//        return icon
+//    }()
+
     
     private let moveIcon: IconImage = {
         let icon = IconImage(systemImage: "text.justify", color: .ui.secondaryText, textStyle: .body)
-//        let tapGesture = UITapGestureRecognizer(target: InstructionCell.self, action: #selector(didTapButtonAction))
-//        icon.addGestureRecognizer(tapGesture)
-//        icon.isUserInteractionEnabled = true
         return icon
     }()
-        
-    
-    
-    
-//    private let textTextView: UITextView = {
-//        let text = UITextView()
-//        text.backgroundColor = .ui.primaryContainer
-//        return text
-//    }()
+
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -76,6 +66,15 @@ class InstructionCell: UITableViewCell {
     }
     
     private func setupUI() {
+        
+        let deleteIcon = IconImage(systemImage: "trash", color: .red, textStyle: .body)
+            deleteIcon.isUserInteractionEnabled = true
+            content.addSubview(deleteIcon)
+
+            // Dodanie tap gesture recognizer
+            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapButtonAction))
+            deleteIcon.addGestureRecognizer(tapGesture)
+        
         addSubview(content)
         
         content.snp.makeConstraints { make in
@@ -108,6 +107,9 @@ class InstructionCell: UITableViewCell {
             make.leading.trailing.equalToSuperview().inset(24)
             make.bottom.equalToSuperview().offset(-12)
         }
+        
+//        let tapGesture = UITapGestureRecognizer(target: InstructionCell.self, action: #selector(didTapButtonAction))
+//        deleteIcon.addGestureRecognizer(tapGesture)
     }
 
     @objc func didTapButtonAction() {

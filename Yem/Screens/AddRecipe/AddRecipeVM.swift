@@ -308,6 +308,10 @@ class AddRecipeViewModel {
             instructionList[index] = instruction
         }
     }
+    
+    func removeInstructionFromList(at index: Int) {
+        instructionList.remove(at: index)
+    }
 
         
     func saveRecipe() -> Bool {

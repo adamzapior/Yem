@@ -100,10 +100,7 @@ class AddRecipeIngredientsVC: UIViewController {
 }
 
 extension AddRecipeIngredientsVC: IngredientsTableFooterViewDelegate {
-    func editButtonTapped(view: UIView) {
-        //
-        
-    }
+
     
     func addIconTapped(view: UIView) {
         addIgredientTapped()
@@ -113,14 +110,7 @@ extension AddRecipeIngredientsVC: IngredientsTableFooterViewDelegate {
 // MARK: -  TableView delegate & data source
 
 extension AddRecipeIngredientsVC: UITableViewDelegate, UITableViewDataSource, IngredientsCellDelegate {
-    func didTapButton(in cell: IngredientsCell) {
-        DispatchQueue.main.async {
-            guard let indexPath = self.tableView.indexPath(for: cell) else { return }
-            // Teraz masz indexPath, więc możesz zidentyfikować, który element został wybrany.
-            self.viewModel.removeIngredientFromList(at: indexPath.row)
-        }
-    }
-    
+
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.ingredientsList.count
@@ -140,6 +130,14 @@ extension AddRecipeIngredientsVC: UITableViewDelegate, UITableViewDataSource, In
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
+    
+    func didTapButton(in cell: IngredientsCell) {
+        DispatchQueue.main.async {
+            guard let indexPath = self.tableView.indexPath(for: cell) else { return }
+            self.viewModel.removeIngredientFromList(at: indexPath.row)
+        }
+    }
+    
 }
 
 // MARK: - Navigation

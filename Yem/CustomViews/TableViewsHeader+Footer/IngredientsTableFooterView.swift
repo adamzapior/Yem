@@ -9,7 +9,6 @@ import UIKit
 
 protocol IngredientsTableFooterViewDelegate: AnyObject {
     func addIconTapped(view: UIView)
-    func editButtonTapped(view: UIView)
 }
 
 class IngredientsTableFooterView: UIView {
