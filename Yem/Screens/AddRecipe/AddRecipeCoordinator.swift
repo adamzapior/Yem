@@ -41,6 +41,13 @@ final class AddRecipeCoordinator {
         }
     }
 
+    func presentValidationAlert(title: String, message: String) {
+        let alertVC = ValidationAlertVC(title: title, message: message)
+        alertVC.modalPresentationStyle = .overFullScreen
+        alertVC.modalTransitionStyle = .crossDissolve
+        navigationController?.present(alertVC, animated: true, completion: nil)
+    }
+
     func dismissVC() {
         navigationController?.dismiss(animated: true)
     }

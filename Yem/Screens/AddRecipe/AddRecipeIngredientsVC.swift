@@ -160,6 +160,7 @@ extension AddRecipeIngredientsVC {
 }
 
 extension AddRecipeIngredientsVC: AddRecipeViewModelDelegate {
+    
     func updateEditButtonVisibility(isEmpty: Bool) {
         //
     }

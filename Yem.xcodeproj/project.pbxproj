@@ -18,6 +18,7 @@
 		58102DDE2B24A3150090EAE8 /* ShopingListVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58102DDD2B24A3150090EAE8 /* ShopingListVM.swift */; };
 		58102DE02B24AB9E0090EAE8 /* UITextFieldExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58102DDF2B24AB9E0090EAE8 /* UITextFieldExt.swift */; };
 		5812ADED2B5927E90035EAA5 /* RecipeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5812ADEC2B5927E90035EAA5 /* RecipeModel.swift */; };
+		582E71AE2B62C7BC002D3164 /* ValidationAlertVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 582E71AD2B62C7BC002D3164 /* ValidationAlertVC.swift */; };
 		58356AFB2B1FB9E5000AC548 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356AFA2B1FB9E5000AC548 /* AppDelegate.swift */; };
 		58356AFD2B1FB9E5000AC548 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356AFC2B1FB9E5000AC548 /* SceneDelegate.swift */; };
 		58356B072B1FB9E7000AC548 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 58356B062B1FB9E7000AC548 /* Assets.xcassets */; };
@@ -94,6 +95,7 @@
 		58102DDD2B24A3150090EAE8 /* ShopingListVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopingListVM.swift; sourceTree = "<group>"; };
 		58102DDF2B24AB9E0090EAE8 /* UITextFieldExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextFieldExt.swift; sourceTree = "<group>"; };
 		5812ADEC2B5927E90035EAA5 /* RecipeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeModel.swift; sourceTree = "<group>"; };
+		582E71AD2B62C7BC002D3164 /* ValidationAlertVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidationAlertVC.swift; sourceTree = "<group>"; };
 		58356AF72B1FB9E5000AC548 /* Yem.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yem.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		58356AFA2B1FB9E5000AC548 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		58356AFC2B1FB9E5000AC548 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -225,6 +227,14 @@
 				5899294B2B44851F00FAB070 /* ShopingListCoordinator.swift */,
 			);
 			path = ShopingList;
+			sourceTree = "<group>";
+		};
+		582E71AC2B62C7A3002D3164 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				582E71AD2B62C7BC002D3164 /* ValidationAlertVC.swift */,
+			);
+			path = ViewControllers;
 			sourceTree = "<group>";
 		};
 		58356AEE2B1FB9E5000AC548 = {
@@ -417,6 +427,7 @@
 		58D5F9BE2B27A7D400A72619 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				582E71AC2B62C7A3002D3164 /* ViewControllers */,
 				589929522B44C5DE00FAB070 /* Labels */,
 				5887468F2B2E3F8300EC5E11 /* Buttons */,
 				589929532B44C5EE00FAB070 /* Images */,
@@ -630,6 +641,7 @@
 				5887468C2B2E075C00EC5E11 /* IngredientsCell.swift in Sources */,
 				580ED3842B2513C000B4A9F0 /* IngredientModel.swift in Sources */,
 				5899294E2B44946000FAB070 /* AddRecipeCoordinator.swift in Sources */,
+				582E71AE2B62C7BC002D3164 /* ValidationAlertVC.swift in Sources */,
 				58BBEB7F2B5AD1C80058851C /* ShopingListEntity+CoreDataClass.swift in Sources */,
 				58D644192B56F4AD0008413A /* CoreDataManager.swift in Sources */,
 				58102DE02B24AB9E0090EAE8 /* UITextFieldExt.swift in Sources */,

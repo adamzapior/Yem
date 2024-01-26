@@ -52,6 +52,11 @@ class PickerWithIconRow: UIView {
     
     // MARK: UI Setup
     
+    func setPlaceholderColor(_ color: UIColor) {
+        self.textOnButton.textColor = color
+
+       }
+    
     private func configure() {
         addSubview(icon)
         addSubview(button)

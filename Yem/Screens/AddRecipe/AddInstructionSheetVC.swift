@@ -8,7 +8,6 @@
 import UIKit
 
 class AddInstructionSheetVC: UIViewController {
-    
     // MARK: - Properties
     
     var coordinator: AddRecipeCoordinator
@@ -47,7 +46,7 @@ class AddInstructionSheetVC: UIViewController {
 
         let smallDetentId = UISheetPresentationController.Detent.Identifier("small")
         let smallDetent = UISheetPresentationController.Detent.custom(identifier: smallDetentId) { _ in
-            300
+            380
         }
         
         if let presentationController = presentationController as? UISheetPresentationController {
@@ -55,16 +54,27 @@ class AddInstructionSheetVC: UIViewController {
             presentationController.prefersGrabberVisible = true
         }
         
+        configureTags()
+        configureDelegate()
         setupUI()
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
     }
     
+    private func configureTags() {
+        addButton.tag = 1
+        cancelButton.tag = 2
+    }
+    
+    private func configureDelegate() {
+        addButton.delegate = self
+        cancelButton.delegate = self
+    }
+        
     private func setupUI() {
         view.backgroundColor = .systemBackground
         
-//        view.addSubview(stackView)
         view.addSubview(noteRow)
         view.addSubview(addButton)
         view.addSubview(cancelButton)
@@ -73,34 +83,41 @@ class AddInstructionSheetVC: UIViewController {
             make.top.equalToSuperview().offset(12)
             make.leading.trailing.equalToSuperview().inset(12)
             make.height.greaterThanOrEqualTo(150)
-
         }
         
         addButton.snp.makeConstraints { make in
             make.top.equalTo(noteRow.snp.bottom).offset(12)
             make.leading.trailing.equalToSuperview().inset(12)
-
         }
         
         cancelButton.snp.makeConstraints { make in
             make.top.equalTo(addButton.snp.bottom).offset(12)
             make.leading.trailing.equalToSuperview().inset(12)
         }
-        
-//        stackView.snp.makeConstraints { make in
-//            make.top.equalTo(noteRow).offset(12)
-//            make.leading.trailing.equalToSuperview().inset(12)
-//            make.bottom.equalToSuperview()
-//        }
-//  
-//        stackView.addArrangedSubview(addButton)
-//        stackView.addArrangedSubview(cancelButton)
     }
 }
 
-    // MARK: - Gestures
+// MARK: - Gestures
 
-extension AddInstructionSheetVC {
+extension AddInstructionSheetVC: MainActionButtonDelegate {
+    func mainActionButtonTapped(_ button: MainActionButton) {
+        switch button.tag {
+        case 1:
+            button.onTapAnimation()
+            
+            let success = viewModel.addInstructionToList()
+            if success {
+                coordinator.dismissVC()
+            } else {
+               
+            }
+        case 2:
+            button.onTapAnimation()
+            coordinator.dismissVC()
+        default: break
+        }
+    }
+    
     // for view
     @objc private func dismissKeyboard() {
         view.endEditing(true)

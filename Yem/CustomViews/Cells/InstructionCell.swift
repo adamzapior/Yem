@@ -87,12 +87,12 @@ class InstructionCell: UITableViewCell {
         content.addSubview(indexLabel)
         content.addSubview(textTextView)
         
-        deleteIcon.snp.makeConstraints { make in
+        moveIcon.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(18)
             make.leading.equalToSuperview().offset(18)
         }
         
-        moveIcon.snp.makeConstraints { make in
+        deleteIcon.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(18)
             make.trailing.equalToSuperview().offset(-18)
         }

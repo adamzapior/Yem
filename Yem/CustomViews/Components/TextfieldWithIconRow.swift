@@ -48,6 +48,12 @@ class TextfieldWithIconRow: UIView, UITextFieldDelegate {
         configure()
     }
     
+    func setPlaceholderColor(_ color: UIColor) {
+           let placeholderText = NSAttributedString(string: textField.placeholder ?? "",
+                                                    attributes: [NSAttributedString.Key.foregroundColor: color])
+           textField.attributedPlaceholder = placeholderText
+       }
+    
     private func configure() {
         addSubview(icon)
         addSubview(textField)
@@ -80,6 +86,7 @@ class TextfieldWithIconRow: UIView, UITextFieldDelegate {
     @objc private func textFieldEditingChanged(_ textField: UITextField) {
         if let text = textField.text {
             delegate?.textFieldDidChange(self, didUpdateText: text)
+            setPlaceholderColor(.ui.secondaryText ?? .darkGray)
         }
     }
 
@@ -100,22 +107,6 @@ class TextfieldWithIconRow: UIView, UITextFieldDelegate {
         onTapAnimation()
         return true
     }
-//    
-//    func textFieldDidChangeSelection(_ textField: UITextField) {
-//        <#code#>
-//    }
-//    
-//    func textFieldDidBeginEditing(_ textField: UITextField) {
-//        if let text = textField.text {
-//            delegate?.textFieldDidEndEditing(self, didUpdateText: text)
-//        }
-//    }
-//
-//    func textFieldDidEndEditing(_ textField: UITextField) {
-//        if let text = textField.text {
-//            delegate?.textFieldDidEndEditing(self, didUpdateText: text)
-//        }
-//    }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder() // Hides the keyboard

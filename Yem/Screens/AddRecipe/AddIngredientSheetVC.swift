@@ -39,8 +39,6 @@ class AddIngredientSheetVC: UIViewController {
         return stack
     }()
     
-    
-    
     private let screenWidth = UIScreen.main.bounds.width - 10
     private let screenHeight = UIScreen.main.bounds.height / 2
     
@@ -80,12 +78,10 @@ class AddIngredientSheetVC: UIViewController {
     // MARK: - UI Setup
     
     private func setupUI() {
-        
         view.backgroundColor = .systemBackground
         view.addSubview(stackView)
         view.addSubview(buttonsStackView)
 
-        
         stackView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(12)
             make.leading.trailing.equalToSuperview().inset(12)
@@ -102,7 +98,6 @@ class AddIngredientSheetVC: UIViewController {
         
         buttonsStackView.addArrangedSubview(addButton)
         buttonsStackView.addArrangedSubview(cancelButton)
-        
     }
 }
 
@@ -211,13 +206,13 @@ extension AddIngredientSheetVC: TextfieldWithIconRowDelegate, PickerWithIconRowD
             
             let success = viewModel.addIngredientToList()
             if success {
-                // Pop the view controller from the navigation stack
                 coordinator.dismissVC()
             } else {
-                print("mainAppButtonTapped error: if.succes == false")
+                ingredientNameTextfield.setPlaceholderColor(.red)
+                countTextfield.setPlaceholderColor(.red)
+                valueTypeCell.setPlaceholderColor(.red)
             }
-
-        case 2: 
+        case 2:
             cell.onTapAnimation()
             coordinator.dismissVC()
         default: break

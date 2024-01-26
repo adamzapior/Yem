@@ -11,9 +11,9 @@ import Foundation
 import UIKit
 
 protocol AddRecipeViewModelDelegate: AnyObject {
+    func delegateError(_ type: ValidationErrorTypes)
     func updateEditButtonVisibility(isEmpty: Bool)
     func reloadTable()
-    func pushAlert()
 }
 
 class AddRecipeViewModel {
@@ -66,72 +66,31 @@ class AddRecipeViewModel {
     var instructionList: [InstructionModel] = [
         InstructionModel(index: 1, text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus nec placerat sem. Morbi eget turpis tincidunt, porttitor odio id, dignissim ante. Aenean id viverra tortor. Cras vehicula sapien sed nisl mattis scelerisque. "),
         InstructionModel(index: 2, text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus nec placerat sem. Morbi eget turpis tincidunt, porttitor odio id, dignissim ante. Aenean id viverra tortor. Cras vehicula sapien sed nisl mattis scelerisque. Proin aliquam mi eros, sit amet ultricies lorem convallis nec. Nulla nec ante ornare nisl interdum lobortis. Vivamus varius accumsan metus in pellentesque. Sed ac nunc odio. Cras quis mauris porta, varius quam ut, ultricies ante. Integer ornare molestie mauris, vitae faucibus justo sollicitudin at. Quisque eget lacinia magna."),
-        InstructionModel(index: 3, text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus nec pr odio id, dignissim ante. Aenean id viverra tortor. Cras vehicula sapien sed nisl mattis scelerisque. "),
-        InstructionModel(index: 4, text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus nec placerat sem. Morbi eget turpis tincidunt, porttitor odio id, dignissim ante. Aenean id viverra tortor. Crrisque. "),
-        InstructionModel(index: 5, text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus nec placerat sem. Morbi  tincidunt, porttitor odio id, dignissim ante. Aenean id viverra tortor. Cras vehicula sapien sed nisl mattis scelerisque. ")
+        InstructionModel(index: 3, text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus nec pr odio id, dignissim ante. Aenean id viverra tortor. Cras vehicula sapien sed nisl mattis scelerisque. ")
     ]
+    
+    @Published
+    var instruction: String = ""
     
     /// Error handling
     /// Recepies
     @Published
-    var recipeTitleIsError: Bool = false {
-        didSet {
-            if recipeTitleIsError == true {
-                validationErrors.append(.recipeTitle)
-                delegate?.pushAlert()
-            }
-        }
-    }
+    var recipeTitleIsError: Bool = false
     
     @Published
-    var difficultyIsError: Bool = false {
-        didSet {
-            if difficultyIsError == true {
-                validationErrors.append(.difficulty)
-                delegate?.pushAlert()
-            }
-        }
-    }
+    var difficultyIsError: Bool = false
     
     @Published
-    var servingIsError: Bool = false {
-        didSet {
-            if servingIsError == true {
-                validationErrors.append(.recipeTitle)
-                delegate?.pushAlert()
-            }
-        }
-    }
+    var servingIsError: Bool = false
     
     @Published
-    var perpTimeIsError: Bool = false {
-        didSet {
-            if perpTimeIsError == true {
-                validationErrors.append(.prepTime)
-                delegate?.pushAlert()
-            }
-        }
-    }
+    var perpTimeIsError: Bool = false
     
     @Published
-    var spicyIsError: Bool = false {
-        didSet {
-            if spicyIsError == true {
-                validationErrors.append(.spicy)
-                delegate?.pushAlert()
-            }
-        }
-    }
+    var spicyIsError: Bool = false
     
     @Published
-    var categoryIsError: Bool = false {
-        didSet {
-            if categoryIsError == true {
-                validationErrors.append(.category)
-                delegate?.pushAlert()
-            }
-        }
-    }
+    var categoryIsError: Bool = false
     
     /// Igredient
     @Published
@@ -142,6 +101,15 @@ class AddRecipeViewModel {
     
     @Published
     var igredientValueTypeIsError: Bool = false
+    
+    @Published
+    var ingredientListIsError: Bool = false
+    
+    @Published
+    var instructionIsError: Bool = false
+    
+    @Published
+    var instructionListIsError: Bool = false
     
     /// validation used for validate all recipe
     @Published
@@ -194,102 +162,12 @@ class AddRecipeViewModel {
     
     // MARK: Methods
     
-    /// Validation
-    
-    private func validateRecipeTitle() {
-        if recipeTitle.isEmpty {
-            recipeTitleIsError = true
-        }
-    }
-    
-    private func validateDifficulty() {
-        if difficulty.isEmpty {
-            difficultyIsError = true
-        }
-    }
-    
-    private func validateServing() {
-        if serving == 0 {
-            servingIsError = true
-        }
-    }
-    
-    private func validatePerpTime() {
-        if recipeTitle.isEmpty {
-            recipeTitleIsError = true
-        }
-    }
-
-    private func validateSpicy() {
-        if spicy.isEmpty {
-            spicyIsError = true
-        }
-    }
-
-    private func validateCategory() {
-        if category.isEmpty {
-            categoryIsError = true
-        }
-    }
-    
-    private func validateIgredientName() {
-        if igredientName.isEmpty {
-            igredientNameIsError = true
-        }
-    }
-    
-    private func validateIgredientValue() {
-        if igredientValue.isEmpty {
-            igredientValueIsError = true
-        }
-    }
-    
-    private func validateIgredientValueType() {
-        if igredientValueType.isEmpty {
-            igredientValueTypeIsError = true
-        }
-    }
-    
-    private func validateForms() {
-        validateRecipeTitle()
-        validateDifficulty()
-        validateServing()
-        validatePerpTime()
-        validateSpicy()
-        validateCategory()
-    }
-    
-    private func validateIngredientForm() {
-        validateIgredientName()
-        validateIgredientValue()
-        validateIgredientValueType()
-    }
-    
-    private func resetValidationFlags() {
-        recipeTitleIsError = false
-        difficultyIsError = false
-        servingIsError = false
-        perpTimeIsError = false
-        spicyIsError = false
-        categoryIsError = false
-    }
-    
-    private func resetIgredientValidationFlags() {
-        igredientNameIsError = false
-        igredientValueIsError = false
-        igredientValueTypeIsError = false
-    }
-    
-    
-    
     func addIngredientToList() -> Bool {
+        validationErrors = []
         resetIgredientValidationFlags()
-        
         validateIngredientForm()
         
         if igredientNameIsError || igredientValueIsError || igredientValueTypeIsError {
-            // TODO: push alert on VC
-            // TODO: change item color
             return false
         }
         
@@ -312,14 +190,32 @@ class AddRecipeViewModel {
     func removeInstructionFromList(at index: Int) {
         instructionList.remove(at: index)
     }
-
-        
-    func saveRecipe() -> Bool {
+    
+    func addInstructionToList() -> Bool {
+        validationErrors = []
         resetValidationFlags()
+        validateInstruction()
+        
+        if instructionIsError {
+            return false
+        }
+        
+        let count = instructionList.count
+        let index = count + 1
+        let instruction = InstructionModel(index: index, text: instruction)
+        instructionList.append(instruction)
+        delegate?.reloadTable()
+        return true
+    }
+
+    func saveRecipe() -> Bool {
+        validationErrors = []
+        resetValidationFlags()
+        resetIgredientValidationFlags()
+        resetInstructionValidationFlags()
         validateForms()
         
         if recipeTitleIsError || servingIsError || difficultyIsError || perpTimeIsError || spicyIsError || categoryIsError {
-            pushAlert()
             return false
         }
         
@@ -339,22 +235,148 @@ class AddRecipeViewModel {
         print("New recipe saved")
         return true
     }
-}
-
-extension AddRecipeViewModel: AddRecipeViewModelDelegate {
-    func pushAlert() {
-        DispatchQueue.main.async {
-            self.delegate?.pushAlert()
+    
+    /// Validation
+    
+    private func validateRecipeTitle() {
+        if recipeTitle.isEmpty {
+            recipeTitleIsError = true
+            validationErrors.append(.recipeTitle)
+            delegateError(.recipeTitle)
         }
     }
     
+    private func validateDifficulty() {
+        if difficulty.isEmpty {
+            difficultyIsError = true
+            validationErrors.append(.difficulty)
+        }
+    }
+    
+    private func validateServing() {
+        if serving == 0 {
+            servingIsError = true
+            validationErrors.append(.serving)
+        }
+    }
+    
+    private func validatePerpTime() {
+        if recipeTitle.isEmpty {
+            recipeTitleIsError = true
+            validationErrors.append(.prepTime)
+        }
+    }
+
+    private func validateSpicy() {
+        if spicy.isEmpty {
+            spicyIsError = true
+            validationErrors.append(.spicy)
+        }
+    }
+
+    private func validateCategory() {
+        if category.isEmpty {
+            categoryIsError = true
+            validationErrors.append(.category)
+        }
+    }
+    
+    private func validateIgredientName() {
+        if igredientName.isEmpty {
+            igredientNameIsError = true
+            validationErrors.append(.ingredientName)
+        }
+    }
+    
+    private func validateIgredientValue() {
+        if igredientValue.isEmpty {
+            igredientValueIsError = true
+            validationErrors.append(.ingredientValue)
+        }
+    }
+    
+    private func validateIgredientValueType() {
+        if igredientValueType.isEmpty {
+            igredientValueTypeIsError = true
+            validationErrors.append(.ingredientValueType)
+        }
+    }
+    
+    private func validateIngredientList() {
+        if ingredientsList.isEmpty {
+            ingredientListIsError = true
+            validationErrors.append(.ingredientsList)
+        }
+    }
+    
+    private func validateInstruction() {
+        if instruction.isEmpty {
+            instructionIsError = true
+            validationErrors.append(.instruction)
+        }
+    }
+    
+    private func validateInstructionList() {
+        if instructionList.isEmpty {
+            instructionListIsError = true
+            validationErrors.append(.instructionList)
+        }
+    }
+    
+    private func validateForms() {
+        validateRecipeTitle()
+        validateDifficulty()
+        validateServing()
+        validatePerpTime()
+        validateSpicy()
+        validateCategory()
+        validateIngredientList()
+        validateInstructionList()
+    }
+    
+    private func validateIngredientForm() {
+        validateIgredientName()
+        validateIgredientValue()
+        validateIgredientValueType()
+    }
+    
+    private func resetValidationFlags() {
+        recipeTitleIsError = false
+        difficultyIsError = false
+        servingIsError = false
+        perpTimeIsError = false
+        spicyIsError = false
+        categoryIsError = false
+        ingredientListIsError = false
+        instructionListIsError = false
+    }
+    
+    private func resetIgredientValidationFlags() {
+        igredientNameIsError = false
+        igredientValueIsError = false
+        igredientValueTypeIsError = false
+    }
+    
+    private func resetInstructionValidationFlags() {
+        instructionIsError = false
+        instructionListIsError = false
+    }
+}
+
+extension AddRecipeViewModel: AddRecipeViewModelDelegate {
     func updateEditButtonVisibility(isEmpty: Bool) {
         delegate?.updateEditButtonVisibility(isEmpty: isEmpty)
     }
     
     func reloadTable() {
-        DispatchQueue.main.async {
+        Dispatch.DispatchQueue.main.async {
             self.delegate?.reloadTable()
+        }
+    }
+
+    func delegateError(_ type: ValidationErrorTypes) {
+        DispatchQueue.main.async {
+            self.delegate?.delegateError(type)
         }
     }
     
@@ -370,24 +392,54 @@ enum ValidateRecipeErrors: CustomStringConvertible {
     case prepTime
     case spicy
     case category
+    case ingredientName
+    case ingredientValue
+    case ingredientValueType
     case ingredientsList
+    case instruction
+    case instructionList
 
     var description: String {
         switch self {
         case .recipeTitle:
-            return ""
+            return "Recipe title is required."
         case .difficulty:
-            return ""
+            return "Invalid difficulty level selected."
         case .serving:
-            return ""
+            return "Number of servings must be specified."
         case .prepTime:
-            return ""
+            return "Invalid preparation time format."
         case .spicy:
-            return ""
+            return "Spiciness level must be specified."
         case .category:
-            return ""
+            return "Recipe category is required."
+        case .ingredientName:
+            return "Ingredient name is required."
+        case .ingredientValue:
+            return "Ingredient value must be specified."
+        case .ingredientValueType:
+            return "Ingredient value type must be specified."
         case .ingredientsList:
-            return ""
+            return "At least one ingredient is required."
+        case .instruction:
+            return "Invalid instruction provided."
+        case .instructionList:
+            return "At least one instruction is required."
         }
     }
+}
+
+enum ValidationErrorTypes {
+    case recipeTitle
+    case difficulty
+    case servings
+    case prepTime
+    case spicy
+    case category
+    case ingredientName
+    case ingredientValue
+    case ingredientValueType
+    case ingredientsList
+    case instruction
+    case instructionList
 }

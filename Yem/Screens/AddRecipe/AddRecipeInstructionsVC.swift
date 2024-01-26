@@ -87,7 +87,7 @@ class AddRecipeInstructionsVC: UIViewController {
     }
 }
 
-extension AddRecipeInstructionsVC: UITableViewDelegate, UITableViewDataSource {
+extension AddRecipeInstructionsVC: UITableViewDelegate, UITableViewDataSource, UITableViewDragDelegate, UITableViewDropDelegate, InstructionCellDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.instructionList.count
     }
@@ -96,15 +96,12 @@ extension AddRecipeInstructionsVC: UITableViewDelegate, UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: InstructionCell.id, for: indexPath) as? InstructionCell else {
             fatalError("instructionCell error")
         }
-//                cell.button.tag = indexPath.row
         cell.delegate = self
         cell.configure(with: viewModel.instructionList[indexPath.row])
         
         return cell
     }
-}
-
-extension AddRecipeInstructionsVC: UITableViewDragDelegate {
+    
     func tableView(_ tableView: UITableView,
                    itemsForBeginning session: UIDragSession,
                    at indexPath: IndexPath) -> [UIDragItem]
@@ -114,9 +111,7 @@ extension AddRecipeInstructionsVC: UITableViewDragDelegate {
         let dragItem = UIDragItem(itemProvider: itemProvider)
         return [dragItem]
     }
-}
-
-extension AddRecipeInstructionsVC: UITableViewDropDelegate {
+    
     func tableView(_ tableView: UITableView,
                    performDropWith coordinator: UITableViewDropCoordinator)
     {
@@ -128,7 +123,7 @@ extension AddRecipeInstructionsVC: UITableViewDropDelegate {
                 let draggedItem = self.viewModel.instructionList[sourceIndexPath.row]
                 self.viewModel.instructionList.remove(at: sourceIndexPath.row)
                 self.viewModel.instructionList.insert(draggedItem, at: destinationIndexPath.row)
-
+                
                 // Aktualizacja tableView
                 tableView.performBatchUpdates({
                     tableView.deleteRows(at: [sourceIndexPath], with: .fade)
@@ -140,28 +135,27 @@ extension AddRecipeInstructionsVC: UITableViewDropDelegate {
             }
         }
     }
-
+        
     func tableView(_ tableView: UITableView,
                    dropSessionDidUpdate session: UIDropSession,
                    withDestinationIndexPath destinationIndexPath: IndexPath?) -> UITableViewDropProposal
     {
         return UITableViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
     }
-}
-
-extension AddRecipeInstructionsVC: InstructionCellDelegate, IngredientsTableFooterViewDelegate {
-    func addIconTapped(view: UIView) {
-        addInstructionTapped()
-    }
-  
+    
     func didTapButton(in cell: InstructionCell) {
         DispatchQueue.main.async {
-            print("wow")
             guard let indexPath = self.tableView.indexPath(for: cell) else { return }
             self.viewModel.removeInstructionFromList(at: indexPath.row)
             self.viewModel.updateInstructionIndexes()
             self.tableView.reloadData()
         }
+    }
+}
+
+extension AddRecipeInstructionsVC: IngredientsTableFooterViewDelegate {
+    func addIconTapped(view: UIView) {
+        addInstructionTapped()
     }
 }
 
@@ -174,8 +168,13 @@ extension AddRecipeInstructionsVC {
     }
     
     @objc func saveButtonTapped(_ sender: UIBarButtonItem) {
-        _ = viewModel.saveRecipe()
-        coordinator.dismissVCStack()
+        let result = viewModel.saveRecipe()
+        if result {
+            coordinator.dismissVCStack()
+        } else {
+            let errorMessages = viewModel.validationErrors.map { $0.description }.joined(separator: "\n")
+            coordinator.presentValidationAlert(title: "We can't save your recipe", message: errorMessages)
+        }
     }
     
     private func addInstructionTapped() {

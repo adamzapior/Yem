@@ -21,6 +21,7 @@ class NoteWithIconRow: UIView, UITextFieldDelegate {
     private var nameOfRow = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText)
     private var nameOfRowText: String
     private var textStyle: UIFont.TextStyle
+    private var placeholder = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
     
     let textField = UITextView()
     
@@ -65,6 +66,7 @@ class NoteWithIconRow: UIView, UITextFieldDelegate {
         addSubview(icon)
         addSubview(nameOfRow)
         addSubview(textField)
+        addSubview(placeholder)
         
         layer.cornerRadius = 20
         backgroundColor = .ui.secondaryContainer
@@ -83,20 +85,28 @@ class NoteWithIconRow: UIView, UITextFieldDelegate {
         nameOfRow.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(12)
             make.centerY.equalTo(icon)
-            make.leading.equalTo(icon.snp.trailing).offset(6)
+            make.leading.equalTo(icon.snp.trailing).offset(12)
             make.trailing.equalToSuperview().offset(-18)
         }
         
-        nameOfRow.text = "Add new step"
+        nameOfRow.text = "Instruction"
         
         textField.snp.makeConstraints { make in
             make.top.equalTo(nameOfRow.snp.bottom).offset(6)
             make.leading.trailing.equalToSuperview().inset(18)
             make.bottom.equalToSuperview().offset(-12)
-            make.height.greaterThanOrEqualTo(72)
+            make.height.greaterThanOrEqualTo(172)
         }
         
         textField.font = UIFont.systemFont(ofSize: UIFont.preferredFont(forTextStyle: .body).pointSize, weight: .regular)
+        
+        placeholder.snp.makeConstraints { make in
+            make.centerX.equalTo(textField)
+            make.centerY.equalTo(textField)
+
+        }
+        
+        placeholder.text = "Enter new step..."
     }
     
     // MARK: Delegate textfield

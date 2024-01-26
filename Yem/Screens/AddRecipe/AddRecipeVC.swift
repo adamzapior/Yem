@@ -76,7 +76,8 @@ class AddRecipeVC: UIViewController {
 
         view.backgroundColor = .systemBackground
         title = "Recipe info"
-        
+        viewModel.delegate = self
+
         setupNavigationBarButtons()
         
         setupScrollView()
@@ -90,6 +91,7 @@ class AddRecipeVC: UIViewController {
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
+        
     }
     
     deinit {
@@ -502,6 +504,47 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
     func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
         return 60
     }
+}
+
+extension AddRecipeVC: AddRecipeViewModelDelegate {
+    func updateEditButtonVisibility(isEmpty: Bool) {
+        //
+    }
+    
+    func reloadTable() {
+        //
+    }
+    
+    func delegateError(_ type: ValidationErrorTypes) {
+        switch type {
+        case .recipeTitle:
+            print("aha ok")
+            nameTextfield.setPlaceholderColor(.red)
+        case .servings:
+            servingCell.setPlaceholderColor(.red)
+        case .difficulty:
+            <#code#>
+        case .prepTime:
+            <#code#>
+        case .spicy:
+            <#code#>
+        case .category:
+            <#code#>
+        case .ingredientName:
+            break
+        case .ingredientValue:
+            break
+        case .ingredientValueType:
+            break
+        case .ingredientsList:
+            break
+        case .instruction:
+            break
+        case .instructionList:
+            break
+        }
+    }
+
 }
 
 // MARK: - Navigation
