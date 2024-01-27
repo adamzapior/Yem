@@ -9,7 +9,7 @@ import Combine
 import SnapKit
 import UIKit
 
-class AddRecipeVC: UIViewController {
+final class AddRecipeVC: UIViewController {
     // MARK: - Properties
     
     var coordinator: AddRecipeCoordinator
@@ -507,12 +507,8 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
 }
 
 extension AddRecipeVC: AddRecipeViewModelDelegate {
-    func updateEditButtonVisibility(isEmpty: Bool) {
-        //
-    }
-    
     func reloadTable() {
-        //
+       // nil 
     }
     
     func delegateError(_ type: ValidationErrorTypes) {
@@ -523,13 +519,13 @@ extension AddRecipeVC: AddRecipeViewModelDelegate {
         case .servings:
             servingCell.setPlaceholderColor(.red)
         case .difficulty:
-            <#code#>
+            difficultyCell.setPlaceholderColor(.red)
         case .prepTime:
-            <#code#>
+            prepTimeCell.setPlaceholderColor(.red)
         case .spicy:
-            <#code#>
+            spicyCell.setPlaceholderColor(.red)
         case .category:
-            <#code#>
+            categoryCell.setPlaceholderColor(.red)
         case .ingredientName:
             break
         case .ingredientValue:

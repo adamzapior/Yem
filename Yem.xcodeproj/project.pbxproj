@@ -299,7 +299,6 @@
 			children = (
 				58D5F9BE2B27A7D400A72619 /* Components */,
 				5887468A2B2E073000EC5E11 /* Cells */,
-				58EBB0762B227B82000EB128 /* AddPhotoView.swift */,
 				58BBEB992B5C14980058851C /* TableViewsHeader+Footer */,
 			);
 			path = CustomViews;
@@ -431,6 +430,7 @@
 				589929522B44C5DE00FAB070 /* Labels */,
 				5887468F2B2E3F8300EC5E11 /* Buttons */,
 				589929532B44C5EE00FAB070 /* Images */,
+				58EBB0762B227B82000EB128 /* AddPhotoView.swift */,
 				58D5F9BF2B27A84700A72619 /* PickerWithIconRow.swift */,
 				58D5F9C12B27B3F600A72619 /* TextfieldWithIconRow.swift */,
 				58C66A4E2B5D3E000042C7CD /* NoteWithIconRow.swift */,

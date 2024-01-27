@@ -7,7 +7,7 @@
 
 import UIKit
 
-class AddIngredientSheetVC: UIViewController {
+final class AddIngredientSheetVC: UIViewController {
     // MARK: - Properties
     
     var coordinator: AddRecipeCoordinator
@@ -57,6 +57,7 @@ class AddIngredientSheetVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        viewModel.delegate = self
         
         let smallDetentId = UISheetPresentationController.Detent.Identifier("small")
         let smallDetent = UISheetPresentationController.Detent.custom(identifier: smallDetentId) { _ in
@@ -288,4 +289,43 @@ extension AddIngredientSheetVC: UIPickerViewDelegate, UIPickerViewDataSource {
         alert.addAction(selectAction)
         present(alert, animated: true, completion: nil)
     }
+}
+
+// MARK: - VM Delegate
+
+extension AddIngredientSheetVC: AddRecipeViewModelDelegate {
+    func delegateError(_ type: ValidationErrorTypes) {
+        switch type {
+        case .recipeTitle:
+            break
+        case .servings:
+            break
+        case .difficulty:
+            break
+        case .prepTime:
+            break
+        case .spicy:
+            break
+        case .category:
+            break
+        case .ingredientName:
+            ingredientNameTextfield.setPlaceholderColor(.red)
+        case .ingredientValue:
+            valueTypeCell.setPlaceholderColor(.red)
+        case .ingredientValueType:
+            valueTypeCell.setPlaceholderColor(.red)
+        case .ingredientsList:
+            break
+        case .instruction:
+            break
+        case .instructionList:
+            break
+        }
+    }
+    
+    func reloadTable() {
+        // nil
+    }
+    
+    
 }

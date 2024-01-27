@@ -7,7 +7,7 @@
 
 import UIKit
 
-class AddPhotoView: UIView {
+final class AddPhotoView: UIView {
     
     private let icon = IconImage(systemImage: "camera", color: .ui.theme, textStyle: .largeTitle)
 

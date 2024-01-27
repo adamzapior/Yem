@@ -11,7 +11,7 @@ protocol MainActionButtonDelegate: AnyObject {
     func mainActionButtonTapped(_ button: MainActionButton)
 }
 
-class MainActionButton: UIButton {
+final class MainActionButton: UIButton {
     
     weak var delegate: MainActionButtonDelegate?
     

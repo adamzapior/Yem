@@ -9,7 +9,7 @@
 
 import UIKit
 
-class InstructionTableHeaderView: UIView {
+final class InstructionTableHeaderView: UIView {
     
     private let screenWidth = UIScreen.main.bounds.width
     

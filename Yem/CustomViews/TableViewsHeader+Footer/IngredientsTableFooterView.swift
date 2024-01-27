@@ -11,7 +11,7 @@ protocol IngredientsTableFooterViewDelegate: AnyObject {
     func addIconTapped(view: UIView)
 }
 
-class IngredientsTableFooterView: UIView {
+final class IngredientsTableFooterView: UIView {
     weak var delegate: IngredientsTableFooterViewDelegate?
 
     private let screenWidth = UIScreen.main.bounds.width

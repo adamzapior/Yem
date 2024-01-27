@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ShopingListVC: UIViewController {
+final class ShopingListVC: UIViewController {
     var coordinator: ShopingListCoordinator?
     let repository: DataRepository
 

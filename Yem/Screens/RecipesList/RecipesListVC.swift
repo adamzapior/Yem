@@ -9,7 +9,7 @@ import UIKit
 
 import UIKit
 
-class RecipesListVC: UIViewController {
+final class RecipesListVC: UIViewController {
     var coordinator: RecipesListCoordinator
     var viewModel: RecipesListVM
     

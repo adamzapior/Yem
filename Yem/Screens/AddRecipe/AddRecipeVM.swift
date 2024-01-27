@@ -12,11 +12,10 @@ import UIKit
 
 protocol AddRecipeViewModelDelegate: AnyObject {
     func delegateError(_ type: ValidationErrorTypes)
-    func updateEditButtonVisibility(isEmpty: Bool)
     func reloadTable()
 }
 
-class AddRecipeViewModel {
+final class AddRecipeViewModel {
     weak var delegate: AddRecipeViewModelDelegate?
     var repository: DataRepository
     
@@ -364,10 +363,6 @@ class AddRecipeViewModel {
 }
 
 extension AddRecipeViewModel: AddRecipeViewModelDelegate {
-    func updateEditButtonVisibility(isEmpty: Bool) {
-        delegate?.updateEditButtonVisibility(isEmpty: isEmpty)
-    }
-    
     func reloadTable() {
         Dispatch.DispatchQueue.main.async {
             self.delegate?.reloadTable()

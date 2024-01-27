@@ -11,7 +11,7 @@ protocol InstructionTableFooterViewDelegate: AnyObject {
     func addIconTapped(view: UIView)
 }
 
-class InstructionTableFooterView: UIView {
+final class InstructionTableFooterView: UIView {
     weak var delegate: InstructionTableFooterViewDelegate?
 
     

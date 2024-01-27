@@ -7,7 +7,7 @@
 
 import UIKit
 
-class AddRecipeIngredientsVC: UIViewController {
+final class AddRecipeIngredientsVC: UIViewController {
     // MARK: - ViewModel
     
     let viewModel: AddRecipeViewModel
@@ -47,7 +47,6 @@ class AddRecipeIngredientsVC: UIViewController {
     override func viewDidLoad() {
         view.backgroundColor = .systemBackground
         title = "Ingredients"
-        
         viewModel.delegate = self
         
         setupNavigationBarButtons()
@@ -99,19 +98,9 @@ class AddRecipeIngredientsVC: UIViewController {
     }
 }
 
-extension AddRecipeIngredientsVC: IngredientsTableFooterViewDelegate {
-
-    
-    func addIconTapped(view: UIView) {
-        addIgredientTapped()
-    }
-}
-
 // MARK: -  TableView delegate & data source
 
 extension AddRecipeIngredientsVC: UITableViewDelegate, UITableViewDataSource, IngredientsCellDelegate {
-
-
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.ingredientsList.count
     }
@@ -140,6 +129,25 @@ extension AddRecipeIngredientsVC: UITableViewDelegate, UITableViewDataSource, In
     
 }
 
+extension AddRecipeIngredientsVC: AddRecipeViewModelDelegate {
+    func delegateError(_ type: ValidationErrorTypes) {
+       // do nothing
+    }
+    
+ 
+    func reloadTable() {
+        tableView.reloadData()
+    }
+}
+
+
+extension AddRecipeIngredientsVC: IngredientsTableFooterViewDelegate {
+    func addIconTapped(view: UIView) {
+        addIgredientTapped()
+    }
+}
+
+
 // MARK: - Navigation
 
 extension AddRecipeIngredientsVC {
@@ -156,22 +164,4 @@ extension AddRecipeIngredientsVC {
         coordinator.pushVC(for: .addIngredient)
     }
     
-    private func openIgredientSheet(from view: UIViewController, toView: UIViewController) {}
-}
-
-extension AddRecipeIngredientsVC: AddRecipeViewModelDelegate {
-    
-    func updateEditButtonVisibility(isEmpty: Bool) {
-        //
-    }
-    
-    func pushAlert() {
-        //
-    }
-    
- 
-    func reloadTable() {
-        tableView.reloadData()
-        updateEditButtonVisibility(isEmpty: viewModel.ingredientsList.isEmpty)
-    }
 }

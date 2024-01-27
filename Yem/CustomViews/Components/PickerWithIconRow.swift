@@ -11,7 +11,7 @@ protocol PickerWithIconRowDelegate: AnyObject {
     func pickerWithIconRowTappped(_ cell: PickerWithIconRow)
 }
 
-class PickerWithIconRow: UIView {
+final class PickerWithIconRow: UIView {
     weak var delegate: PickerWithIconRowDelegate?
     
     // MARK: - Properties

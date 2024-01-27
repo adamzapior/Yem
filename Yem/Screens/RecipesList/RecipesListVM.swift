@@ -11,7 +11,7 @@ protocol RecipesListVMDelegate: AnyObject {
     func reloadTable()
 }
 
-class RecipesListVM {
+final class RecipesListVM {
     weak var delegate: RecipesListVMDelegate?
     let repository: DataRepository
 

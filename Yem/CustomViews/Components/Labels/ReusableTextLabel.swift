@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ReusableTextLabel: UILabel {
+final class ReusableTextLabel: UILabel {
     override init(frame: CGRect) {
         super.init(frame: frame)
         configure()

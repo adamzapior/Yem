@@ -11,7 +11,7 @@ protocol InstructionCellDelegate: AnyObject {
     func didTapButton(in cell: InstructionCell)
 }
 
-class InstructionCell: UITableViewCell {
+final class InstructionCell: UITableViewCell {
     static let id: String = "InstructionCell"
     
     weak var delegate: InstructionCellDelegate?

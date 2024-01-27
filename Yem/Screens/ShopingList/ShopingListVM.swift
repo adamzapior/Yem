@@ -7,7 +7,7 @@
 
 import Foundation
 
-class ShopingListVM {
+final class ShopingListVM {
     
     let repository: DataRepository
     

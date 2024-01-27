@@ -6,7 +6,7 @@ protocol TextfieldWithIconRowDelegate: AnyObject {
     func textFieldDidEndEditing(_ textfield: TextfieldWithIconRow, didUpdateText text: String)
 }
 
-class TextfieldWithIconRow: UIView, UITextFieldDelegate {
+final class TextfieldWithIconRow: UIView, UITextFieldDelegate {
     weak var delegate: TextfieldWithIconRowDelegate?
     
     private var icon: IconImage!

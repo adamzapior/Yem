@@ -13,7 +13,7 @@ protocol NoteWithIconRowDelegate: AnyObject {
     func textFieldDidEndEditing(_ textfield: NoteWithIconRow, didUpdateText text: String)
 }
 
-class NoteWithIconRow: UIView, UITextFieldDelegate {
+final class NoteWithIconRow: UIView, UITextFieldDelegate {
     weak var delegate: NoteWithIconRowDelegate?
     
     private var icon: IconImage!

@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-class AddRecipeInstructionsVC: UIViewController {
+final class AddRecipeInstructionsVC: UIViewController {
     // MARK: - Properties
 
     let viewModel: AddRecipeViewModel
@@ -46,6 +46,8 @@ class AddRecipeInstructionsVC: UIViewController {
     
     override func viewDidLoad() {
         view.backgroundColor = .systemBackground
+        viewModel.delegate = self
+
         setupNavigationBarButtons()
         setupTableView()
         setupTableViewFooter()
@@ -119,12 +121,10 @@ extension AddRecipeInstructionsVC: UITableViewDelegate, UITableViewDataSource, U
            let sourceIndexPath = coordinator.items.first?.sourceIndexPath
         {
             coordinator.session.loadObjects(ofClass: NSString.self) { _ in
-                // Aktualizacja modelu danych
                 let draggedItem = self.viewModel.instructionList[sourceIndexPath.row]
                 self.viewModel.instructionList.remove(at: sourceIndexPath.row)
                 self.viewModel.instructionList.insert(draggedItem, at: destinationIndexPath.row)
                 
-                // Aktualizacja tableView
                 tableView.performBatchUpdates({
                     tableView.deleteRows(at: [sourceIndexPath], with: .fade)
                     tableView.insertRows(at: [destinationIndexPath], with: .fade)
@@ -156,6 +156,16 @@ extension AddRecipeInstructionsVC: UITableViewDelegate, UITableViewDataSource, U
 extension AddRecipeInstructionsVC: IngredientsTableFooterViewDelegate {
     func addIconTapped(view: UIView) {
         addInstructionTapped()
+    }
+}
+
+extension AddRecipeInstructionsVC: AddRecipeViewModelDelegate {
+    func delegateError(_ type: ValidationErrorTypes) {
+        // do nothing
+    }
+    
+    func reloadTable() {
+        self.tableView.reloadData()
     }
 }
 

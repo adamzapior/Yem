@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ValidationAlertVC: UIViewController {
+final class ValidationAlertVC: UIViewController {
     let containerView = UIView()
 
     let titleLabel = ReusableTextLabel(fontStyle: .title3, fontWeight: .semibold, textColor: .ui.primaryText, textAlignment: .center)

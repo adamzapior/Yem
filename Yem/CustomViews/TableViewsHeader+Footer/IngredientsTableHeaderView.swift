@@ -7,7 +7,7 @@
 
 import UIKit
 
-class IngredientsTableHeaderView: UIView {
+final class IngredientsTableHeaderView: UIView {
     
     private let screenWidth = UIScreen.main.bounds.width
     

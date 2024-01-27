@@ -7,7 +7,7 @@
 
 import UIKit
 
-class AddInstructionSheetVC: UIViewController {
+final class AddInstructionSheetVC: UIViewController {
     // MARK: - Properties
     
     var coordinator: AddRecipeCoordinator
@@ -43,6 +43,7 @@ class AddInstructionSheetVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        viewModel.delegate = self
 
         let smallDetentId = UISheetPresentationController.Detent.Identifier("small")
         let smallDetent = UISheetPresentationController.Detent.custom(identifier: smallDetentId) { _ in
@@ -97,7 +98,19 @@ class AddInstructionSheetVC: UIViewController {
     }
 }
 
-// MARK: - Gestures
+// MARK: - ViewModel & Button delegate:
+
+extension AddInstructionSheetVC: AddRecipeViewModelDelegate {
+    func delegateError(_ type: ValidationErrorTypes) {
+        if type == .instruction {
+            // TODO: UI red label
+        }
+    }
+    
+    func reloadTable() {
+        // nil
+    }
+}
 
 extension AddInstructionSheetVC: MainActionButtonDelegate {
     func mainActionButtonTapped(_ button: MainActionButton) {
