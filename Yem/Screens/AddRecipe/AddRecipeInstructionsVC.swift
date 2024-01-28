@@ -46,7 +46,7 @@ final class AddRecipeInstructionsVC: UIViewController {
     
     override func viewDidLoad() {
         view.backgroundColor = .systemBackground
-        viewModel.delegate = self
+        viewModel.delegateInstructions = self
 
         setupNavigationBarButtons()
         setupTableView()
@@ -159,13 +159,9 @@ extension AddRecipeInstructionsVC: IngredientsTableFooterViewDelegate {
     }
 }
 
-extension AddRecipeInstructionsVC: AddRecipeViewModelDelegate {
-    func delegateError(_ type: ValidationErrorTypes) {
-        // do nothing
-    }
-    
-    func reloadTable() {
-        self.tableView.reloadData()
+extension AddRecipeInstructionsVC: AddRecipeInstructionsVCDelegate {
+    func reloadInstructionTable() {
+        tableView.reloadData()
     }
 }
 

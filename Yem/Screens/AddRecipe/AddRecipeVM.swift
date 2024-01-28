@@ -10,16 +10,36 @@ import CoreData
 import Foundation
 import UIKit
 
-protocol AddRecipeViewModelDelegate: AnyObject {
-    func delegateError(_ type: ValidationErrorTypes)
-    func reloadTable()
+protocol AddRecipeVCDelegate: AnyObject {
+    func delegateDetailsError(_ type: ValidationErrorTypes)
+}
+
+protocol AddRecipeIngredientsVCDelegate: AnyObject {
+    func reloadIngredientsTable()
+}
+
+protocol AddIngredientSheetVCDelegate: AnyObject {
+    func delegateIngredientError(_ type: ValidationErrorTypes)
+}
+
+protocol AddRecipeInstructionsVCDelegate: AnyObject {
+    func reloadInstructionTable()
+}
+
+protocol AddInstructionSheetVCDelegate: AnyObject {
+    func delegateInstructionError(_ type: ValidationErrorTypes)
 }
 
 final class AddRecipeViewModel {
-    weak var delegate: AddRecipeViewModelDelegate?
     var repository: DataRepository
     
-    // MARK: Observable properties
+    weak var delegateDetails: AddRecipeVCDelegate?
+    weak var delegateIngredients: AddRecipeIngredientsVCDelegate?
+    weak var delegateIngredientSheet: AddIngredientSheetVCDelegate?
+    weak var delegateInstructions: AddRecipeInstructionsVCDelegate?
+    weak var delegateInstructionSheet: AddInstructionSheetVCDelegate?
+        
+    // MARK: - Observable properties
     
     @Published
     var recipeTitle: String = ""
@@ -44,11 +64,9 @@ final class AddRecipeViewModel {
     
     /// Igredient sheet and vc variables
     @Published
-    var ingredientsList: [IngredientModel] = [IngredientModel(id: UUID(), value: "100", valueType: "Grams (g)", name: "Sugar"),
-                                              IngredientModel(id: UUID(), value: "100", valueType: "Grams (g)", name: "Sugar")]
-    {
+    var ingredientsList: [IngredientModel] = [IngredientModel(id: UUID(), value: "12", valueType: "12", name: "12")] {
         didSet {
-            reloadTable()
+            reloadIngredientsTable()
         }
     }
     
@@ -62,11 +80,11 @@ final class AddRecipeViewModel {
     var igredientValueType: String = ""
     
     @Published
-    var instructionList: [InstructionModel] = [
-        InstructionModel(index: 1, text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus nec placerat sem. Morbi eget turpis tincidunt, porttitor odio id, dignissim ante. Aenean id viverra tortor. Cras vehicula sapien sed nisl mattis scelerisque. "),
-        InstructionModel(index: 2, text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus nec placerat sem. Morbi eget turpis tincidunt, porttitor odio id, dignissim ante. Aenean id viverra tortor. Cras vehicula sapien sed nisl mattis scelerisque. Proin aliquam mi eros, sit amet ultricies lorem convallis nec. Nulla nec ante ornare nisl interdum lobortis. Vivamus varius accumsan metus in pellentesque. Sed ac nunc odio. Cras quis mauris porta, varius quam ut, ultricies ante. Integer ornare molestie mauris, vitae faucibus justo sollicitudin at. Quisque eget lacinia magna."),
-        InstructionModel(index: 3, text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus nec pr odio id, dignissim ante. Aenean id viverra tortor. Cras vehicula sapien sed nisl mattis scelerisque. ")
-    ]
+    var instructionList: [InstructionModel] = [] {
+        didSet {
+            reloadInstructionTable()
+        }
+    }
     
     @Published
     var instruction: String = ""
@@ -114,7 +132,7 @@ final class AddRecipeViewModel {
     @Published
     var validationErrors: [ValidateRecipeErrors] = []
 
-    // MARK: Properties
+    // MARK: - Properties
     
     /// UIPickerView properties
     var difficultyRowArray: [String] = ["Easy", "Medium", "Hard"]
@@ -149,7 +167,7 @@ final class AddRecipeViewModel {
     
     lazy var valueTypeArray: [String] = ["Unit", "Grams (g)", "Kilograms (kg)", "Milliliters (ml)", "Liters (L)", "Teaspoons (tsp)", "Tablespoons (Tbsp)", "Cups (c)", "Pinch"]
     
-    // MARK: Initialization
+    // MARK: - Initialization
     
     init(repository: DataRepository) {
         self.repository = repository
@@ -159,8 +177,10 @@ final class AddRecipeViewModel {
         print("AddRecipe viewmodel deinit")
     }
     
-    // MARK: Methods
+    // MARK: - Public methods
     
+    /// Add methods:
+
     func addIngredientToList() -> Bool {
         validationErrors = []
         resetIgredientValidationFlags()
@@ -172,22 +192,8 @@ final class AddRecipeViewModel {
         
         let ingredient = IngredientModel(id: UUID(), value: igredientValue, valueType: igredientValueType, name: igredientName)
         ingredientsList.append(ingredient)
+        clearIngredientProperties()
         return true
-    }
-    
-    func removeIngredientFromList(at index: Int) {
-        ingredientsList.remove(at: index)
-    }
-    
-    func updateInstructionIndexes() {
-        for (index, var instruction) in instructionList.enumerated() {
-            instruction.index = index + 1
-            instructionList[index] = instruction
-        }
-    }
-    
-    func removeInstructionFromList(at index: Int) {
-        instructionList.remove(at: index)
     }
     
     func addInstructionToList() -> Bool {
@@ -203,10 +209,36 @@ final class AddRecipeViewModel {
         let index = count + 1
         let instruction = InstructionModel(index: index, text: instruction)
         instructionList.append(instruction)
-        delegate?.reloadTable()
         return true
     }
+    
+    /// Update method:
 
+    func updateInstructionIndexes() {
+        for (index, var instruction) in instructionList.enumerated() {
+            instruction.index = index + 1
+            instructionList[index] = instruction
+        }
+    }
+    
+    func clearIngredientProperties() {
+        igredientName = ""
+        igredientValue = ""
+        igredientValueType = ""
+    }
+
+    /// Delete methods:
+    
+    func removeIngredientFromList(at index: Int) {
+        ingredientsList.remove(at: index)
+    }
+    
+    func removeInstructionFromList(at index: Int) {
+        instructionList.remove(at: index)
+    }
+    
+    /// Save method:
+    
     func saveRecipe() -> Bool {
         validationErrors = []
         resetValidationFlags()
@@ -235,13 +267,16 @@ final class AddRecipeViewModel {
         return true
     }
     
+    // MARK: - Private methods
+    
     /// Validation
     
     private func validateRecipeTitle() {
         if recipeTitle.isEmpty {
             recipeTitleIsError = true
             validationErrors.append(.recipeTitle)
-            delegateError(.recipeTitle)
+            delegateDetailsError(.recipeTitle)
+            print("called")
         }
     }
     
@@ -249,6 +284,7 @@ final class AddRecipeViewModel {
         if difficulty.isEmpty {
             difficultyIsError = true
             validationErrors.append(.difficulty)
+            delegateDetailsError(.difficulty)
         }
     }
     
@@ -256,13 +292,16 @@ final class AddRecipeViewModel {
         if serving == 0 {
             servingIsError = true
             validationErrors.append(.serving)
+            delegateDetailsError(.servings)
         }
     }
     
+    // TODO: fix
     private func validatePerpTime() {
         if recipeTitle.isEmpty {
             recipeTitleIsError = true
             validationErrors.append(.prepTime)
+            delegateDetailsError(.prepTime)
         }
     }
 
@@ -270,6 +309,7 @@ final class AddRecipeViewModel {
         if spicy.isEmpty {
             spicyIsError = true
             validationErrors.append(.spicy)
+            delegateDetailsError(.spicy)
         }
     }
 
@@ -277,27 +317,28 @@ final class AddRecipeViewModel {
         if category.isEmpty {
             categoryIsError = true
             validationErrors.append(.category)
+            delegateDetailsError(.category)
         }
     }
     
     private func validateIgredientName() {
         if igredientName.isEmpty {
             igredientNameIsError = true
-            validationErrors.append(.ingredientName)
+            delegateDetailsError(.ingredientName)
         }
     }
     
     private func validateIgredientValue() {
         if igredientValue.isEmpty {
             igredientValueIsError = true
-            validationErrors.append(.ingredientValue)
+            delegateDetailsError(.ingredientValue)
         }
     }
     
     private func validateIgredientValueType() {
         if igredientValueType.isEmpty {
             igredientValueTypeIsError = true
-            validationErrors.append(.ingredientValueType)
+            delegateDetailsError(.ingredientValueType)
         }
     }
     
@@ -312,6 +353,7 @@ final class AddRecipeViewModel {
         if instruction.isEmpty {
             instructionIsError = true
             validationErrors.append(.instruction)
+            delegateDetailsError(.instruction)
         }
     }
     
@@ -362,23 +404,49 @@ final class AddRecipeViewModel {
     }
 }
 
-extension AddRecipeViewModel: AddRecipeViewModelDelegate {
-    func reloadTable() {
-        Dispatch.DispatchQueue.main.async {
-            self.delegate?.reloadTable()
-        }
-    }
+// MARK: - Delegate methods
 
-    func delegateError(_ type: ValidationErrorTypes) {
+extension AddRecipeViewModel: AddRecipeVCDelegate {
+    func delegateDetailsError(_ type: ValidationErrorTypes) {
         DispatchQueue.main.async {
-            self.delegate?.delegateError(type)
+            self.delegateDetails?.delegateDetailsError(type)
         }
     }
-    
-    // TODO: push to previous viewcontroller and clear data in textfields or something
 }
 
-// TODO: add validate errors
+extension AddRecipeViewModel: AddRecipeIngredientsVCDelegate {
+    func reloadIngredientsTable() {
+        DispatchQueue.main.async {
+            self.delegateIngredients?.reloadIngredientsTable()
+        }
+    }
+}
+
+extension AddRecipeViewModel: AddIngredientSheetVCDelegate {
+    func delegateIngredientError(_ type: ValidationErrorTypes) {
+        DispatchQueue.main.async {
+            self.delegateIngredientSheet?.delegateIngredientError(type)
+        }
+    }
+}
+
+extension AddRecipeViewModel: AddRecipeInstructionsVCDelegate {
+    func reloadInstructionTable() {
+        DispatchQueue.main.async {
+            self.delegateInstructions?.reloadInstructionTable()
+        }
+    }
+}
+
+extension AddRecipeViewModel: AddInstructionSheetVCDelegate {
+    func delegateInstructionError(_ type: ValidationErrorTypes) {
+        DispatchQueue.main.async {
+            self.delegateInstructionSheet?.delegateInstructionError(type)
+        }
+    }
+}
+
+// MARK: - Enums
 
 enum ValidateRecipeErrors: CustomStringConvertible {
     case recipeTitle
@@ -434,7 +502,5 @@ enum ValidationErrorTypes {
     case ingredientName
     case ingredientValue
     case ingredientValueType
-    case ingredientsList
     case instruction
-    case instructionList
 }

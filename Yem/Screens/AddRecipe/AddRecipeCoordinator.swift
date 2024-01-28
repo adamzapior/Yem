@@ -24,7 +24,6 @@ final class AddRecipeCoordinator {
 
     func pushVC(for route: AddRecipeRoute) {
         let viewModel = viewModel
-        let coordinator = self
         switch route {
         case .ingredientsList:
             let controller = AddRecipeIngredientsVC(viewModel: viewModel, coordinator: self)

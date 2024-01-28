@@ -59,8 +59,6 @@ extension IngredientsTableFooterView: MainActionButtonDelegate {
         case 1:
             button.onTapAnimation()
             delegate?.addIconTapped(view: self)
-            print("worked")
-
         default:
             break
         }

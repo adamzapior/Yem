@@ -38,12 +38,12 @@ final class AddRecipeVC: UIViewController {
     
     private  let addPhotoView = AddPhotoView()
    
-    private var nameTextfield = TextfieldWithIconRow(iconImage: "info.square", placeholderText: "Enter your recipe name", textColor: .ui.secondaryText)
-    private var difficultyCell = PickerWithIconRow(iconImage: "puzzlepiece.extension", textOnButton: "Select difficulty")
-    private var servingCell = PickerWithIconRow(iconImage: "person", textOnButton: "Select servings count")
-    private var prepTimeCell = PickerWithIconRow(iconImage: "timer", textOnButton: "Select prep time")
-    private var spicyCell = PickerWithIconRow(iconImage: "leaf", textOnButton: "Select spicy")
-    private var categoryCell = PickerWithIconRow(iconImage: "book", textOnButton: "Select category")
+    private var nameTextfield = TextfieldWithIconRow(iconImage: "info.square", placeholderText: "Enter your recipe name*", textColor: .ui.secondaryText)
+    private var difficultyCell = PickerWithIconRow(iconImage: "puzzlepiece.extension", textOnButton: "Select difficulty*")
+    private var servingCell = PickerWithIconRow(iconImage: "person", textOnButton: "Select servings count*")
+    private var prepTimeCell = PickerWithIconRow(iconImage: "timer", textOnButton: "Select prep time*")
+    private var spicyCell = PickerWithIconRow(iconImage: "leaf", textOnButton: "Select spicy*")
+    private var categoryCell = PickerWithIconRow(iconImage: "book", textOnButton: "Select category*")
     
     private lazy var difficultyPickerView = UIPickerView()
     private lazy var servingsPickerView = UIPickerView()
@@ -75,8 +75,8 @@ final class AddRecipeVC: UIViewController {
         super.viewDidLoad()
 
         view.backgroundColor = .systemBackground
-        title = "Recipe info"
-        viewModel.delegate = self
+        title = "Details"
+        viewModel.delegateDetails = self
 
         setupNavigationBarButtons()
         
@@ -347,7 +347,7 @@ extension AddRecipeVC: PickerWithIconRowDelegate {
     func pickerWithIconRowTappped(_ cell: PickerWithIconRow) {
         switch cell.tag {
         case 1:
-            popUpPicker(for: difficultyPickerView, title: "Wybierz opcję")
+            popUpPicker(for: difficultyPickerView, title: "Select difficulty")
         case 2:
             popUpPicker(for: servingsPickerView, title: "Select servings count")
         case 3:
@@ -506,37 +506,30 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
     }
 }
 
-extension AddRecipeVC: AddRecipeViewModelDelegate {
-    func reloadTable() {
-       // nil 
-    }
+extension AddRecipeVC: AddRecipeVCDelegate {
     
-    func delegateError(_ type: ValidationErrorTypes) {
+    func delegateDetailsError(_ type: ValidationErrorTypes) {
         switch type {
         case .recipeTitle:
             print("aha ok")
-            nameTextfield.setPlaceholderColor(.red)
+            nameTextfield.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
         case .servings:
-            servingCell.setPlaceholderColor(.red)
+            servingCell.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
         case .difficulty:
-            difficultyCell.setPlaceholderColor(.red)
+            difficultyCell.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
         case .prepTime:
-            prepTimeCell.setPlaceholderColor(.red)
+            prepTimeCell.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
         case .spicy:
-            spicyCell.setPlaceholderColor(.red)
+            spicyCell.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
         case .category:
-            categoryCell.setPlaceholderColor(.red)
+            categoryCell.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
         case .ingredientName:
             break
         case .ingredientValue:
             break
         case .ingredientValueType:
             break
-        case .ingredientsList:
-            break
         case .instruction:
-            break
-        case .instructionList:
             break
         }
     }

@@ -30,17 +30,15 @@ final class InstructionCell: UITableViewCell {
 //    private let deleteIcon: IconImage = {
 //        let icon = IconImage(systemImage: "trash", color: .red, textStyle: .body)
 //        // Zmieniony selektor na metodę instancji
-//       
+//
 //        icon.isUserInteractionEnabled = true
 //        return icon
 //    }()
 
-    
     private let moveIcon: IconImage = {
         let icon = IconImage(systemImage: "text.justify", color: .ui.secondaryText, textStyle: .body)
         return icon
     }()
-
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -66,14 +64,12 @@ final class InstructionCell: UITableViewCell {
     }
     
     private func setupUI() {
-        
         let deleteIcon = IconImage(systemImage: "trash", color: .red, textStyle: .body)
-            deleteIcon.isUserInteractionEnabled = true
-            content.addSubview(deleteIcon)
+        deleteIcon.isUserInteractionEnabled = true
+        content.addSubview(deleteIcon)
 
-            // Dodanie tap gesture recognizer
-            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapButtonAction))
-            deleteIcon.addGestureRecognizer(tapGesture)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapButtonAction))
+        deleteIcon.addGestureRecognizer(tapGesture)
         
         addSubview(content)
         
@@ -107,9 +103,6 @@ final class InstructionCell: UITableViewCell {
             make.leading.trailing.equalToSuperview().inset(24)
             make.bottom.equalToSuperview().offset(-12)
         }
-        
-//        let tapGesture = UITapGestureRecognizer(target: InstructionCell.self, action: #selector(didTapButtonAction))
-//        deleteIcon.addGestureRecognizer(tapGesture)
     }
 
     @objc func didTapButtonAction() {
@@ -117,4 +110,3 @@ final class InstructionCell: UITableViewCell {
         delegate?.didTapButton(in: self)
     }
 }
-

@@ -43,7 +43,7 @@ final class AddInstructionSheetVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel.delegate = self
+        viewModel.delegateInstructionSheet = self
 
         let smallDetentId = UISheetPresentationController.Detent.Identifier("small")
         let smallDetent = UISheetPresentationController.Detent.custom(identifier: smallDetentId) { _ in
@@ -100,15 +100,11 @@ final class AddInstructionSheetVC: UIViewController {
 
 // MARK: - ViewModel & Button delegate:
 
-extension AddInstructionSheetVC: AddRecipeViewModelDelegate {
-    func delegateError(_ type: ValidationErrorTypes) {
+extension AddInstructionSheetVC: AddInstructionSheetVCDelegate {
+    func delegateInstructionError(_ type: ValidationErrorTypes) {
         if type == .instruction {
             // TODO: UI red label
         }
-    }
-    
-    func reloadTable() {
-        // nil
     }
 }
 
@@ -121,9 +117,7 @@ extension AddInstructionSheetVC: MainActionButtonDelegate {
             let success = viewModel.addInstructionToList()
             if success {
                 coordinator.dismissVC()
-            } else {
-               
-            }
+            } else {}
         case 2:
             button.onTapAnimation()
             coordinator.dismissVC()

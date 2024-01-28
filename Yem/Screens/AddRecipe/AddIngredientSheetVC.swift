@@ -15,9 +15,9 @@ final class AddIngredientSheetVC: UIViewController {
     
     // MARK: - View properties
     
-    private let ingredientNameTextfield = TextfieldWithIconRow(backgroundColor: .ui.secondaryContainer, iconImage: "info.square", placeholderText: "Enter your igredient name", textColor: .ui.secondaryText)
-    private let countTextfield = TextfieldWithIconRow(backgroundColor: .ui.secondaryContainer, iconImage: "bag.badge.plus", placeholderText: "Enter value", textColor: .ui.secondaryText)
-    private let valueTypeCell = PickerWithIconRow(backgroundColor: .ui.secondaryContainer, iconImage: "note.text.badge.plus", textOnButton: "Select value type")
+    private let ingredientNameTextfield = TextfieldWithIconRow(backgroundColor: .ui.secondaryContainer, iconImage: "info.square", placeholderText: "Enter your igredient name*", textColor: .ui.secondaryText)
+    private let countTextfield = TextfieldWithIconRow(backgroundColor: .ui.secondaryContainer, iconImage: "bag.badge.plus", placeholderText: "Enter value*", textColor: .ui.secondaryText)
+    private let valueTypeCell = PickerWithIconRow(backgroundColor: .ui.secondaryContainer, iconImage: "note.text.badge.plus", textOnButton: "Select value type*")
     private let addButton = MainActionButton(title: "Add", backgroundColor: .ui.addBackground!)
     private let cancelButton = MainActionButton(title: "Cancel", backgroundColor: .ui.cancelBackground ?? .ui.theme)
     
@@ -57,7 +57,7 @@ final class AddIngredientSheetVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel.delegate = self
+        viewModel.delegateIngredientSheet = self
         
         let smallDetentId = UISheetPresentationController.Detent.Identifier("small")
         let smallDetent = UISheetPresentationController.Detent.custom(identifier: smallDetentId) { _ in
@@ -291,16 +291,16 @@ extension AddIngredientSheetVC: UIPickerViewDelegate, UIPickerViewDataSource {
     }
 }
 
-// MARK: - VM Delegate
+// MARK: - Ingredient delegate from ViewModel
 
-extension AddIngredientSheetVC: AddRecipeViewModelDelegate {
-    func delegateError(_ type: ValidationErrorTypes) {
+extension AddIngredientSheetVC: AddIngredientSheetVCDelegate {
+    func delegateIngredientError(_ type: ValidationErrorTypes) {
         switch type {
         case .recipeTitle:
             break
-        case .servings:
-            break
         case .difficulty:
+            break
+        case .servings:
             break
         case .prepTime:
             break
@@ -309,23 +309,13 @@ extension AddIngredientSheetVC: AddRecipeViewModelDelegate {
         case .category:
             break
         case .ingredientName:
-            ingredientNameTextfield.setPlaceholderColor(.red)
+            ingredientNameTextfield.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
         case .ingredientValue:
-            valueTypeCell.setPlaceholderColor(.red)
+            valueTypeCell.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
         case .ingredientValueType:
-            valueTypeCell.setPlaceholderColor(.red)
-        case .ingredientsList:
-            break
+            valueTypeCell.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
         case .instruction:
-            break
-        case .instructionList:
             break
         }
     }
-    
-    func reloadTable() {
-        // nil
-    }
-    
-    
 }

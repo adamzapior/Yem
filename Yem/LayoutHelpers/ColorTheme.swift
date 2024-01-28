@@ -18,6 +18,7 @@ struct ColorTheme {
     var addBackground = UIColor(named: "addBackground")
     var cancelBackground = UIColor(named: "cancelBackground")
     var divider = UIColor(named: "divider")
+    var placeholderError = UIColor(named: "placeholderError")
 }
 
 extension UIColor {

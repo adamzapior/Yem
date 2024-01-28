@@ -30,7 +30,6 @@ final class AddRecipeIngredientsVC: UIViewController {
     private let tableViewHeader = IngredientsTableHeaderView()
     private let tableViewFooter = IngredientsTableFooterView()
     
-    
     // MARK: - Lifecycle
     
     init(viewModel: AddRecipeViewModel, coordinator: AddRecipeCoordinator) {
@@ -47,14 +46,14 @@ final class AddRecipeIngredientsVC: UIViewController {
     override func viewDidLoad() {
         view.backgroundColor = .systemBackground
         title = "Ingredients"
-        viewModel.delegate = self
+    
+        viewModel.delegateIngredients = self
         
         setupNavigationBarButtons()
         
         setupTableView()
         setupTableViewHeader()
         setupTableViewFooter()
-        
     }
     
     override func viewDidLayoutSubviews() {
@@ -87,7 +86,6 @@ final class AddRecipeIngredientsVC: UIViewController {
         tableViewFooter.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 200)
         tableViewFooter.backgroundColor = UIColor.ui.background
         tableView.tableFooterView = tableViewFooter
-        
     }
     
     private func setupTableViewHeader() {
@@ -126,27 +124,19 @@ extension AddRecipeIngredientsVC: UITableViewDelegate, UITableViewDataSource, In
             self.viewModel.removeIngredientFromList(at: indexPath.row)
         }
     }
-    
 }
 
-extension AddRecipeIngredientsVC: AddRecipeViewModelDelegate {
-    func delegateError(_ type: ValidationErrorTypes) {
-       // do nothing
-    }
-    
- 
-    func reloadTable() {
+extension AddRecipeIngredientsVC: AddRecipeIngredientsVCDelegate {
+    func reloadIngredientsTable() {
         tableView.reloadData()
     }
 }
-
 
 extension AddRecipeIngredientsVC: IngredientsTableFooterViewDelegate {
     func addIconTapped(view: UIView) {
         addIgredientTapped()
     }
 }
-
 
 // MARK: - Navigation
 
@@ -163,5 +153,4 @@ extension AddRecipeIngredientsVC {
     func addIgredientTapped() {
         coordinator.pushVC(for: .addIngredient)
     }
-    
 }
