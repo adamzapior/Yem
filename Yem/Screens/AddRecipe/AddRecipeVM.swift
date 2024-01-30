@@ -175,6 +175,7 @@ final class AddRecipeViewModel {
     
     deinit {
         print("AddRecipe viewmodel deinit")
+        print(instruction)
     }
     
     // MARK: - Public methods
@@ -209,6 +210,7 @@ final class AddRecipeViewModel {
         let index = count + 1
         let instruction = InstructionModel(index: index, text: instruction)
         instructionList.append(instruction)
+        clearInstructionProperties()
         return true
     }
     
@@ -225,6 +227,10 @@ final class AddRecipeViewModel {
         igredientName = ""
         igredientValue = ""
         igredientValueType = ""
+    }
+    
+    func clearInstructionProperties() {
+        instruction = ""
     }
 
     /// Delete methods:
@@ -352,8 +358,7 @@ final class AddRecipeViewModel {
     private func validateInstruction() {
         if instruction.isEmpty {
             instructionIsError = true
-            validationErrors.append(.instruction)
-            delegateDetailsError(.instruction)
+            delegateInstructionError(.instruction)
         }
     }
     

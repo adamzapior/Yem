@@ -13,7 +13,7 @@ protocol NoteWithIconRowDelegate: AnyObject {
     func textFieldDidEndEditing(_ textfield: NoteWithIconRow, didUpdateText text: String)
 }
 
-final class NoteWithIconRow: UIView, UITextFieldDelegate {
+final class NoteWithIconRow: UIView {
     weak var delegate: NoteWithIconRowDelegate?
     
     private var icon: IconImage!
@@ -21,9 +21,14 @@ final class NoteWithIconRow: UIView, UITextFieldDelegate {
     private var nameOfRow = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText)
     private var nameOfRowText: String
     private var textStyle: UIFont.TextStyle
-    private var placeholder = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
+    var placeholder = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
     
-    let textField = UITextView()
+    lazy var textField: UITextView = {
+        let text = UITextView()
+        text.backgroundColor = .ui.secondaryContainer
+        text.keyboardType = keyboardType
+        return text
+    }()
     
     var keyboardType: UIKeyboardType = .default {
         didSet {
@@ -71,9 +76,7 @@ final class NoteWithIconRow: UIView, UITextFieldDelegate {
         layer.cornerRadius = 20
         backgroundColor = .ui.secondaryContainer
 
-//        textField.delegate = self
-        textField.backgroundColor = .ui.secondaryContainer
-        textField.keyboardType = keyboardType
+
         
         icon.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(12)
@@ -100,6 +103,7 @@ final class NoteWithIconRow: UIView, UITextFieldDelegate {
         
         textField.font = UIFont.systemFont(ofSize: UIFont.preferredFont(forTextStyle: .body).pointSize, weight: .regular)
         
+        
         placeholder.snp.makeConstraints { make in
             make.centerX.equalTo(textField)
             make.centerY.equalTo(textField)
@@ -108,30 +112,21 @@ final class NoteWithIconRow: UIView, UITextFieldDelegate {
         
         placeholder.text = "Enter new step..."
     }
-    
-    // MARK: Delegate textfield
-    
-    @objc private func textFieldEditingChanged(_ textField: UITextField) {
-        if let text = textField.text {
-            delegate?.textFieldDidChange(self, didUpdateText: text)
-        }
+
+}
+
+
+extension NoteWithIconRow: UITextViewDelegate {
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        print("smth")
+        delegate?.textFieldDidBeginEditing(self, didUpdateText: textView.text)
     }
 
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        if let text = textField.text {
-            delegate?.textFieldDidBeginEditing(self, didUpdateText: text)
-        }
+    func textViewDidChange(_ textView: UITextView) {
+        delegate?.textFieldDidChange(self, didUpdateText: textView.text)
     }
 
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        if let text = textField.text {
-            delegate?.textFieldDidEndEditing(self, didUpdateText: text)
-        }
-    }
-
-    
-    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-        onTapAnimation()
-        return true
+    func textViewDidEndEditing(_ textView: UITextView) {
+        delegate?.textFieldDidEndEditing(self, didUpdateText: textView.text)
     }
 }

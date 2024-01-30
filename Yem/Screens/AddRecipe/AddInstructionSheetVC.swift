@@ -15,6 +15,26 @@ final class AddInstructionSheetVC: UIViewController {
     
     // MARK: - View properties
     
+    private var icon: IconImage!
+    private var iconImage: String
+    private var nameOfRow = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText)
+    private var nameOfRowText: String
+    private var textStyle: UIFont.TextStyle
+    var placeholder = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
+    
+    lazy var textField: UITextView = {
+        let text = UITextView()
+        text.backgroundColor = .ui.secondaryContainer
+        text.keyboardType = keyboardType
+        return text
+    }()
+    
+    var keyboardType: UIKeyboardType = .default {
+        didSet {
+            textField.keyboardType = keyboardType
+        }
+    }
+    
     private let noteRow = NoteWithIconRow(nameOfRowText: "Add new instruction", iconImage: "note", placeholderText: "Enter new step", textColor: .ui.primaryText)
     
     private let addButton = MainActionButton(title: "Add", backgroundColor: .ui.addBackground!)
@@ -33,6 +53,10 @@ final class AddInstructionSheetVC: UIViewController {
     init(viewModel: AddRecipeViewModel, coordinator: AddRecipeCoordinator) {
         self.viewModel = viewModel
         self.coordinator = coordinator
+        self.iconImage = "note"
+        self.textStyle = .body
+        self.nameOfRowText = "Add new instruction"
+        self.icon = IconImage(systemImage: iconImage, color: .ui.theme, textStyle: textStyle)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -69,6 +93,7 @@ final class AddInstructionSheetVC: UIViewController {
     }
     
     private func configureDelegate() {
+        noteRow.delegate = self
         addButton.delegate = self
         cancelButton.delegate = self
     }
@@ -103,7 +128,27 @@ final class AddInstructionSheetVC: UIViewController {
 extension AddInstructionSheetVC: AddInstructionSheetVCDelegate {
     func delegateInstructionError(_ type: ValidationErrorTypes) {
         if type == .instruction {
-            // TODO: UI red label
+            noteRow.placeholder.textColor = .ui.placeholderError
+        }
+    }
+}
+
+extension AddInstructionSheetVC: NoteWithIconRowDelegate {
+    func textFieldDidBeginEditing(_ textfield: NoteWithIconRow, didUpdateText text: String) {
+        if let text = textfield.textField.text {
+            viewModel.instruction = text
+        }
+    }
+    
+    func textFieldDidChange(_ textfield: NoteWithIconRow, didUpdateText text: String) {
+        if let text = textfield.textField.text {
+            viewModel.instruction = text
+        }
+    }
+    
+    func textFieldDidEndEditing(_ textfield: NoteWithIconRow, didUpdateText text: String) {
+        if let text = textfield.textField.text {
+            viewModel.instruction = text
         }
     }
 }

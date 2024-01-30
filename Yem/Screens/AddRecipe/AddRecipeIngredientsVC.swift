@@ -91,7 +91,7 @@ final class AddRecipeIngredientsVC: UIViewController {
     private func setupTableViewHeader() {
         tableView.addSubview(tableViewHeader)
         tableView.tableHeaderView = tableViewHeader
-        tableViewHeader.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 36)
+        tableViewHeader.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 30)
         tableViewHeader.backgroundColor = UIColor.ui.background
     }
 }

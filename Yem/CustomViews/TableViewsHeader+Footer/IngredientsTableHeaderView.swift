@@ -21,8 +21,6 @@ final class IngredientsTableHeaderView: UIView {
     
     private let pageCount = 3
     private var pageViews = [UIView]()
-    
-    
 
     override init (frame: CGRect) {
         super.init(frame: frame)
