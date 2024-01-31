@@ -15,6 +15,13 @@ final class AddInstructionSheetVC: UIViewController {
     
     // MARK: - View properties
     
+    private var textFieldContentView: UIView = {
+        let content = UIView()
+        content.layer.cornerRadius = 20
+        content.backgroundColor = .ui.secondaryContainer
+        return content
+    }()
+    
     private var icon: IconImage!
     private var iconImage: String
     private var nameOfRow = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText)
@@ -34,8 +41,6 @@ final class AddInstructionSheetVC: UIViewController {
             textField.keyboardType = keyboardType
         }
     }
-    
-    private let noteRow = NoteWithIconRow(nameOfRowText: "Add new instruction", iconImage: "note", placeholderText: "Enter new step", textColor: .ui.primaryText)
     
     private let addButton = MainActionButton(title: "Add", backgroundColor: .ui.addBackground!)
     private let cancelButton = MainActionButton(title: "Cancel", backgroundColor: .ui.cancelBackground ?? .ui.theme)
@@ -93,7 +98,7 @@ final class AddInstructionSheetVC: UIViewController {
     }
     
     private func configureDelegate() {
-        noteRow.delegate = self
+        textField.delegate = self
         addButton.delegate = self
         cancelButton.delegate = self
     }
@@ -101,18 +106,57 @@ final class AddInstructionSheetVC: UIViewController {
     private func setupUI() {
         view.backgroundColor = .systemBackground
         
-        view.addSubview(noteRow)
         view.addSubview(addButton)
         view.addSubview(cancelButton)
         
-        noteRow.snp.makeConstraints { make in
+        view.addSubview(textFieldContentView)
+        textFieldContentView.addSubview(icon)
+        textFieldContentView.addSubview(nameOfRow)
+        textFieldContentView.addSubview(textField)
+        textFieldContentView.addSubview(placeholder)
+        
+        textFieldContentView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(12)
             make.leading.trailing.equalToSuperview().inset(12)
-            make.height.greaterThanOrEqualTo(150)
+            make.height.greaterThanOrEqualTo(240.VAdapted)
         }
         
+        icon.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(12)
+            make.leading.equalToSuperview().offset(18)
+            make.width.equalTo(24)
+            make.height.equalTo(24)
+        }
+        
+        nameOfRow.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(12)
+            make.centerY.equalTo(icon)
+            make.leading.equalTo(icon.snp.trailing).offset(12)
+            make.trailing.equalToSuperview().offset(-18)
+        }
+        
+        nameOfRow.text = "Instruction"
+        
+        textField.snp.makeConstraints { make in
+            make.top.equalTo(nameOfRow.snp.bottom).offset(6)
+            make.leading.trailing.equalToSuperview().inset(18)
+            make.bottom.equalToSuperview().offset(-12)
+            make.height.greaterThanOrEqualTo(172)
+        }
+        
+        textField.font = UIFont.systemFont(ofSize: UIFont.preferredFont(forTextStyle: .body).pointSize, weight: .regular)
+        
+        
+        placeholder.snp.makeConstraints { make in
+            make.centerX.equalTo(textField)
+            make.centerY.equalTo(textField)
+
+        }
+        
+        placeholder.text = "Enter new step..."
+        
         addButton.snp.makeConstraints { make in
-            make.top.equalTo(noteRow.snp.bottom).offset(12)
+            make.top.equalTo(textFieldContentView.snp.bottom).offset(12)
             make.leading.trailing.equalToSuperview().inset(12)
         }
         
@@ -128,30 +172,36 @@ final class AddInstructionSheetVC: UIViewController {
 extension AddInstructionSheetVC: AddInstructionSheetVCDelegate {
     func delegateInstructionError(_ type: ValidationErrorTypes) {
         if type == .instruction {
-            noteRow.placeholder.textColor = .ui.placeholderError
+//            noteRow.placeholder.textColor = .ui.placeholderError
         }
     }
 }
 
-extension AddInstructionSheetVC: NoteWithIconRowDelegate {
-    func textFieldDidBeginEditing(_ textfield: NoteWithIconRow, didUpdateText text: String) {
-        if let text = textfield.textField.text {
+extension AddInstructionSheetVC: UITextViewDelegate {
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        
+        if let text = textView.text {
+            viewModel.instruction = text
+        }
+        print("smth")
+        if viewModel.instruction.isEmpty {
+            placeholder.textColor = .clear
+        }
+    }
+
+    func textViewDidChange(_ textView: UITextView) {
+        if let text = textView.text {
             viewModel.instruction = text
         }
     }
-    
-    func textFieldDidChange(_ textfield: NoteWithIconRow, didUpdateText text: String) {
-        if let text = textfield.textField.text {
-            viewModel.instruction = text
-        }
-    }
-    
-    func textFieldDidEndEditing(_ textfield: NoteWithIconRow, didUpdateText text: String) {
-        if let text = textfield.textField.text {
-            viewModel.instruction = text
+
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if viewModel.instruction.isEmpty {
+            placeholder.textColor = .ui.secondaryText
         }
     }
 }
+
 
 extension AddInstructionSheetVC: MainActionButtonDelegate {
     func mainActionButtonTapped(_ button: MainActionButton) {
