@@ -19,3 +19,19 @@ struct RecipeModel {
     var ingredientList: [IngredientModel]
     var instructionList: [InstructionModel]
 }
+
+
+enum RecipeCategory: String {
+    case breakfast = "Breakfast"
+    case lunch = "Lunch"
+    case dinner = "Dinner"
+    case desserts = "Desserts"
+    case snacks = "Snacks"
+    case beverages = "Beverages"
+    case appetizers = "Appetizers"
+    case sideDishes = "Side Dishes"
+    case vegan = "Vegan"
+    case vegetarian = "Vegetarian"
+}
+
+//lazy var categoryRowArray: [String] = ["Breakfast", "Lunch", "Dinner", "Desserts", "Snacks", "Beverages", "Appetizers", "Side Dishes", "Vegan", "Vegetarian"]

@@ -25,19 +25,27 @@ final class RecipesListCoordinator {
         return rootViewController
     }
     
-    
     func goToAddRecipeScreen() {
         let viewModel = AddRecipeViewModel(repository: repository)
         
-        // Utwórz koordynatora, przekazując istniejący UINavigationController.
         let coordinator = AddRecipeCoordinator(navigationController: rootViewController as? UINavigationController, viewModel: viewModel)
         coordinator.parentCoordinator = self
 
-        // Wywołanie start na koordynatorze, aby rozpocząć przepływ.
         let addRecipeVC = coordinator.start()
         addRecipeVC.hidesBottomBarWhenPushed = true
 
-        // Użyj istniejącego UINavigationController do push.
         (rootViewController as? UINavigationController)?.pushViewController(addRecipeVC, animated: true)
+    }
+    
+    func navigateToRecipeDetail(with recipe: RecipeModel) {
+        let viewModel = RecipeDetailsVM()
+        
+        let coordinator = RecipeDetailsCoordinator(navigationController: rootViewController as? UINavigationController, viewModel: viewModel, recipe: recipe)        
+        coordinator.parentCoordinator = self
+
+        let detailsVC = coordinator.start()
+        detailsVC.hidesBottomBarWhenPushed = true
+        
+        (rootViewController as? UINavigationController)?.pushViewController(detailsVC, animated: true)
     }
 }
