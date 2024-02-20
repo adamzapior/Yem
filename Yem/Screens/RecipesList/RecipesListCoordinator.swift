@@ -22,6 +22,7 @@ final class RecipesListCoordinator {
     
     func start() -> UIViewController {
         rootViewController = UINavigationController(rootViewController: RecipesListVC(coordinator: self, viewModel: viewModel))
+
         return rootViewController
     }
     

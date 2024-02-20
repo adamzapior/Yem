@@ -28,6 +28,7 @@ final class ShopingListVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        title = "Shoping list"
 
         print("shoping list vc did load")
     }

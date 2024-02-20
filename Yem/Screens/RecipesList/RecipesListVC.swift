@@ -15,8 +15,6 @@ final class RecipesListVC: UIViewController {
 
     var collectionView: UICollectionView!
 
-//    var dataSource: UICollectionViewDiffableDataSource<RecipeSection, RecipeModel>!
-
     // MARK: - Lifecycle
 
     init(coordinator: RecipesListCoordinator, viewModel: RecipesListVM) {
@@ -33,9 +31,9 @@ final class RecipesListVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        title = "Recipes"
 
         setupNavigationBar()
-
         setupCollectionView()
 
 //        Task {
@@ -90,23 +88,21 @@ extension RecipesListVC: UICollectionViewDelegate, UICollectionViewDataSource, U
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let padding: CGFloat = 5 // Marginesy po bokach
-        let spacing: CGFloat = 1 // Odstęp między elementami
+        let padding: CGFloat = 5
+        let spacing: CGFloat = 1
 
-        // Dostosowanie szerokości do nowego odstępu między elementami
-        let totalSpacing = spacing * (2 - 1) // Dla dwóch komórek w jednym rzędzie
+        let totalSpacing = spacing * (2 - 1)
         let availableWidth = collectionView.bounds.width - (padding * 2) - totalSpacing
         let widthPerItem = availableWidth / 2
 
-        // Przykładowa wysokość, może być zmieniona
         let height: CGFloat = 170
 
         return CGSize(width: widthPerItem, height: height)
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let selectedRecipe = viewModel.recipes[indexPath.row]
-        
+
         coordinator.navigateToRecipeDetail(with: selectedRecipe)
     }
 }

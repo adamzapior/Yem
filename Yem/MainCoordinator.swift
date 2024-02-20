@@ -66,11 +66,11 @@ class MainCoordinator: MainBaseCoordinator {
         
         let recipesListController = recipesListCoordinator.start()
         recipesListCoordinator.parentCoordinator = self
-        recipesListController.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "book"), tag: 0)
+        recipesListController.tabBarItem = UITabBarItem(title: "Recipes", image: UIImage(systemName: "book"), tag: 0)
         
         let shopingListController = shopingListCoordinator.start()
         shopingListCoordinator.parentCoordinator = self
-        shopingListController.tabBarItem = UITabBarItem(title: "Orders", image: UIImage(systemName: "basket"), tag: 1)
+        shopingListController.tabBarItem = UITabBarItem(title: "Shoping list", image: UIImage(systemName: "basket"), tag: 1)
         
         (rootViewController as? UITabBarController)?.viewControllers = [recipesListController, shopingListController]
       
