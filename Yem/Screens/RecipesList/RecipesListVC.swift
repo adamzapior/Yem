@@ -106,6 +106,7 @@ extension RecipesListVC: UICollectionViewDelegate, UICollectionViewDataSource, U
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let selectedRecipe = viewModel.recipes[indexPath.row]
+        
         coordinator.navigateToRecipeDetail(with: selectedRecipe)
     }
 }
