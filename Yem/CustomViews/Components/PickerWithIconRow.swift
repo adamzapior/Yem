@@ -85,7 +85,7 @@ final class PickerWithIconRow: UIView {
         }
     }
     
-    // MARK: - Methods
+    // MARK: - Delegate methods
     
     @objc private func buttonTapped() {
         self.onTapAnimation()

@@ -42,6 +42,9 @@ final class AddRecipeViewModel {
     // MARK: - Observable properties
     
     @Published
+    var selectedImage: UIImage?
+    
+    @Published
     var recipeTitle: String = ""
     
     @Published

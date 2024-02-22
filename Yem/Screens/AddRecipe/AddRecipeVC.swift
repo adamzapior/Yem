@@ -36,7 +36,8 @@ final class AddRecipeVC: UIViewController {
     private let screenWidth = UIScreen.main.bounds.width - 10
     private let screenHeight = UIScreen.main.bounds.height / 2
     
-    private  let addPhotoView = AddPhotoView()
+    private let addPhotoView = AddPhotoView()
+    private let addPhotoImagePicker = UIImagePickerController()
    
     private var nameTextfield = TextfieldWithIconRow(iconImage: "info.square", placeholderText: "Enter your recipe name*", textColor: .ui.secondaryText)
     private var difficultyCell = PickerWithIconRow(iconImage: "puzzlepiece.extension", textOnButton: "Select difficulty*")
@@ -67,6 +68,7 @@ final class AddRecipeVC: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -91,7 +93,6 @@ final class AddRecipeVC: UIViewController {
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
-        
     }
     
     deinit {
@@ -169,7 +170,7 @@ final class AddRecipeVC: UIViewController {
     
     // MARK: - Pop Up Picker method
 
-    func popUpPicker(for pickerView: UIPickerView, title: String) {
+    private func popUpPicker(for pickerView: UIPickerView, title: String) {
         view.endEditing(true)
         
         pickerView.dataSource = self
@@ -186,7 +187,7 @@ final class AddRecipeVC: UIViewController {
         alert.setValue(vc, forKey: "contentViewController")
 
         let selectAction = UIAlertAction(title: "Select", style: .default, handler: { _ in
-        let selectedRow = pickerView.selectedRow(inComponent: 0)
+            let selectedRow = pickerView.selectedRow(inComponent: 0)
                    
             switch pickerView.tag {
             case 1:
@@ -256,12 +257,22 @@ final class AddRecipeVC: UIViewController {
 
 extension AddRecipeVC {
     private func setupDelegateOfViewItems() {
+        setupAddPhotoPicker()
         setupNameTextfield()
         setupDifficultyCell()
         setupServingCell()
         setupPrepTimeCell()
         setupSpicyCell()
         setupCategoryCell()
+    }
+    
+    private func setupAddPhotoPicker() {
+        addPhotoView.delegate = self
+        
+        // picker delegate
+        addPhotoImagePicker.delegate = self
+        addPhotoImagePicker.allowsEditing = false
+        addPhotoImagePicker.mediaTypes = ["public.image"]
     }
     
     private func setupNameTextfield() {
@@ -314,7 +325,25 @@ extension AddRecipeVC {
     }
 }
 
-// MARK: - Textfield delegate/dataSource
+// MARK: - AddPhotoView delegate
+
+extension AddRecipeVC: AddPhotoViewDelegate, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
+    func addPhotoViewTapped() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.present(self.addPhotoImagePicker, animated: true, completion: nil)
+        }
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let image = info[.originalImage] as? UIImage {
+            viewModel.selectedImage = image
+            addPhotoView.updatePhoto(with: image)
+        }
+        picker.dismiss(animated: true, completion: nil)
+    }}
+
+// MARK: - Textfield delegate
 
 extension AddRecipeVC: TextfieldWithIconRowDelegate {
     func textFieldDidChange(_ textfield: TextfieldWithIconRow, didUpdateText text: String) {
@@ -344,6 +373,7 @@ extension AddRecipeVC: TextfieldWithIconRowDelegate {
 // MARK: - Button delegate/dataSource
 
 extension AddRecipeVC: PickerWithIconRowDelegate {
+    
     func pickerWithIconRowTappped(_ cell: PickerWithIconRow) {
         switch cell.tag {
         case 1:
@@ -371,7 +401,7 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
             label = reuseLabel
         } else {
             label = UILabel(frame: CGRect(x: 0, y: 0, width: screenWidth, height: 30))
-            label.textAlignment = .center 
+            label.textAlignment = .center
         }
         switch pickerView.tag {
         case 1:
@@ -507,7 +537,6 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
 }
 
 extension AddRecipeVC: AddRecipeVCDelegate {
-    
     func delegateDetailsError(_ type: ValidationErrorTypes) {
         switch type {
         case .recipeTitle:
@@ -533,7 +562,6 @@ extension AddRecipeVC: AddRecipeVCDelegate {
             break
         }
     }
-
 }
 
 // MARK: - Navigation
