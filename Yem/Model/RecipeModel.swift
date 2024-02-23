@@ -18,6 +18,7 @@ struct RecipeModel {
     var difficulty: String
     var ingredientList: [IngredientModel]
     var instructionList: [InstructionModel]
+    var isImageSaved: Bool
 }
 
 

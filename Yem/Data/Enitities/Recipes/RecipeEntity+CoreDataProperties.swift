@@ -26,6 +26,7 @@ extension RecipeEntity {
     @NSManaged public var difficulty: String
     @NSManaged public var ingredients: Set<IngredientEntity>
     @NSManaged public var instructions: Set<InstructionEntity>
+    @NSManaged public var isImageSaved: Bool
 
 
 }

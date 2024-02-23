@@ -12,18 +12,22 @@ class LocalFileManager: FileManager {
 
     override private init() {}
 
-    func saveImage(with id: String, image: UIImage) {
-        if let data = image.jpegData(compressionQuality: 0.5) {
-            do {
-                let url = URL.documentsDirectory.appendingPathComponent("\(id).jpg")
-                try data.write(to: url)
-            } catch {
-                print(error.localizedDescription)
-            }
-        } else {
-            print("Could not save image")
+    func saveImage(with id: String, image: UIImage) -> Bool {
+        guard let data = image.jpegData(compressionQuality: 0.5) else {
+            print("Could not convert image to JPEG")
+            return false
+        }
+        
+        do {
+            let url = URL.documentsDirectory.appendingPathComponent("\(id).jpg")
+            try data.write(to: url)
+            return true
+        } catch {
+            print(error.localizedDescription)
+            return false
         }
     }
+
 
     func loadImage(with id: String) -> UIImage? {
         let url = URL.documentsDirectory.appendingPathComponent("\(id).jpg")

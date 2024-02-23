@@ -257,12 +257,12 @@ final class AddRecipeViewModel {
         resetIgredientValidationFlags()
         resetInstructionValidationFlags()
         validateForms()
-        
+
         if recipeTitleIsError || servingIsError || difficultyIsError || perpTimeIsError || spicyIsError || categoryIsError {
             return false
         }
-        
-        let recipe = RecipeModel(id: recipeID,
+
+        var recipe = RecipeModel(id: recipeID,
                                  name: recipeTitle,
                                  serving: serving.description,
                                  perpTimeHours: prepTimeHours,
@@ -271,24 +271,33 @@ final class AddRecipeViewModel {
                                  category: category,
                                  difficulty: difficulty,
                                  ingredientList: ingredientsList,
-                                 instructionList: instructionList)
-        
+                                 instructionList: instructionList,
+                                 isImageSaved: false) // Początkowo ustawiamy, że obraz nie został zapisany
+
         repository.beginTransaction()
+
         repository.addRecipe(recipe: recipe)
         if !repository.save() {
             repository.rollbackTransaction()
             return false
         }
-        
-        if !saveSelectedImage() {
+
+        let isImageSaved = saveSelectedImage()
+        if !isImageSaved {
             repository.rollbackTransaction()
             return false
         }
 
+        recipe.isImageSaved = isImageSaved
+        repository.updateRecipe(recipe: recipe)
+
         repository.endTransaction()
-        print("New recipe saved")
+        print("New recipe saved with image")
         return true
     }
+
+    // Reszta metod klasy...
+
     
     // MARK: - Private methods
     
@@ -299,8 +308,7 @@ final class AddRecipeViewModel {
             print("No image selected to save")
             return false
         }
-        LocalFileManager.instance.saveImage(with: recipeID.uuidString, image: image)
-        return true
+        return LocalFileManager.instance.saveImage(with: recipeID.uuidString, image: image)
     }
 
     /// Validation
