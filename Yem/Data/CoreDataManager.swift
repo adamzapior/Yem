@@ -36,6 +36,22 @@ final class CoreDataManager {
             }
         }
     }
+    
+    func beginTransaction() {
+        context.undoManager = UndoManager()
+        context.undoManager?.beginUndoGrouping()
+    }
+
+    func endTransaction() {
+        context.undoManager?.endUndoGrouping()
+        context.undoManager = nil
+    }
+
+    func rollbackTransaction() {
+        context.undoManager?.endUndoGrouping()
+        context.undoManager?.undo()
+        context.undoManager = nil
+    }
 
     func fetchAllRecipes() throws -> [RecipeEntity] {
         let request: NSFetchRequest<RecipeEntity> = RecipeEntity.fetchRequest()

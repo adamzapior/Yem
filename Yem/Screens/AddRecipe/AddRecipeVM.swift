@@ -42,6 +42,9 @@ final class AddRecipeViewModel {
     // MARK: - Observable properties
     
     @Published
+    var recipeID: UUID = .init()
+    
+    @Published
     var selectedImage: UIImage?
     
     @Published
@@ -259,7 +262,7 @@ final class AddRecipeViewModel {
             return false
         }
         
-        let recipe = RecipeModel(id: UUID(),
+        let recipe = RecipeModel(id: recipeID,
                                  name: recipeTitle,
                                  serving: serving.description,
                                  perpTimeHours: prepTimeHours,
@@ -270,8 +273,19 @@ final class AddRecipeViewModel {
                                  ingredientList: ingredientsList,
                                  instructionList: instructionList)
         
+        repository.beginTransaction()
         repository.addRecipe(recipe: recipe)
-        repository.save()
+        if !repository.save() {
+            repository.rollbackTransaction()
+            return false
+        }
+        
+        if !saveSelectedImage() {
+            repository.rollbackTransaction()
+            return false
+        }
+
+        repository.endTransaction()
         print("New recipe saved")
         return true
     }
@@ -280,11 +294,15 @@ final class AddRecipeViewModel {
     
     /// Add selectedImage to FileManager
     
-    func saveSelectedImageToFileManager() {
-        
+    private func saveSelectedImage() -> Bool {
+        guard let image = selectedImage else {
+            print("No image selected to save")
+            return false
+        }
+        LocalFileManager.instance.saveImage(with: recipeID.uuidString, image: image)
+        return true
     }
-    
-    
+
     /// Validation
     
     private func validateRecipeTitle() {
@@ -519,5 +537,3 @@ enum ValidationErrorTypes {
     case ingredientValueType
     case instruction
 }
-
-

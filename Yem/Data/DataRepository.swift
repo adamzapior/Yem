@@ -20,8 +20,21 @@ final class DataRepository {
 
     // MARK: Save method
 
-    func save() {
-        return moc.saveContext()
+    func save() -> Bool {
+        moc.saveContext()
+        return true
+    }
+
+    func beginTransaction() {
+        moc.beginTransaction()
+    }
+
+    func endTransaction() {
+        moc.endTransaction()
+    }
+
+    func rollbackTransaction() {
+        moc.rollbackTransaction()
     }
 
     func addRecipe(recipe: RecipeModel) {
