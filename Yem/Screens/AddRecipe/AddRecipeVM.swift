@@ -278,6 +278,13 @@ final class AddRecipeViewModel {
     
     // MARK: - Private methods
     
+    /// Add selectedImage to FileManager
+    
+    func saveSelectedImageToFileManager() {
+        
+    }
+    
+    
     /// Validation
     
     private func validateRecipeTitle() {
@@ -512,3 +519,5 @@ enum ValidationErrorTypes {
     case ingredientValueType
     case instruction
 }
+
+
