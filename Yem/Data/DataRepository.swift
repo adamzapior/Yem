@@ -45,6 +45,7 @@ final class DataRepository {
         data.spicy = recipe.spicy
         data.category = recipe.category
         data.difficulty = recipe.difficulty
+        data.isImageSaved = recipe.isImageSaved
 
         var ingredientEntities = Set<IngredientEntity>()
         for ingredientModel in recipe.ingredientList {
@@ -87,6 +88,7 @@ final class DataRepository {
         recipeEntity.spicy = recipe.spicy
         recipeEntity.category = recipe.category
         recipeEntity.difficulty = recipe.difficulty
+        recipeEntity.isImageSaved = recipe.isImageSaved
 
         // ingredients update to fix
         recipeEntity.ingredients.forEach { moc.context.delete($0) }

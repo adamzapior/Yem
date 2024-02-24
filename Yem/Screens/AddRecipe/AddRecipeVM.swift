@@ -289,7 +289,7 @@ final class AddRecipeViewModel {
             repository.endTransaction()
             print("New recipe saved without image")
         } else {
-            recipe.isImageSaved = isImageSaved
+            recipe.isImageSaved = true
             repository.updateRecipe(recipe: recipe)
 
             repository.endTransaction()
@@ -300,7 +300,6 @@ final class AddRecipeViewModel {
 
     // Reszta metod klasy...
 
-    
     // MARK: - Private methods
     
     /// Add selectedImage to FileManager

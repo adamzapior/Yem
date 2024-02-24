@@ -29,22 +29,26 @@ final class RecipesListVM {
             for x in self.recipes {
                 print(x.name)
             }
+
+            for x in self.recipes {
+                print(x.isImageSaved)
+            }
             reloadTable()
         case .failure:
             break
         }
     }
-    
-    func searchRecipesByName(_ query: String) async {
-        let result = await repository.fetchRecipesWithName(query)
-        switch result {
-        case .success(let recipes):
-            self.recipes = recipes ?? []
-            reloadTable()
-        case .failure:
-            break
-        }
-    }
+
+//    func searchRecipesByName(_ query: String) async {
+//        let result = await repository.fetchRecipesWithName(query)
+//        switch result {
+//        case .success(let recipes):
+//            self.recipes = recipes ?? []
+//            reloadTable()
+//        case .failure:
+//            break
+//        }
+//    }
 }
 
 // MARK: Delegate

@@ -32,29 +32,27 @@ final class RecipesListVC: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         title = "Recipes"
+        viewModel.delegate = self
 
         setupNavigationBar()
         setupCollectionView()
 
         Task {
             await viewModel.loadRecipes()
-
-            await viewModel.searchRecipesByName("XD")
         }
     }
 
     // MARK: UI Setup
 
     private func setupCollectionView() {
-        var layout = setupCollectionViewLayout() // Use the custom layout method
+        let layout = setupCollectionViewLayout() // Use the custom layout method
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: layout)
 
         collectionView.delegate = self
         collectionView.dataSource = self
-
-        collectionView.showsHorizontalScrollIndicator = false
-
         collectionView.register(RecipeCell.self, forCellWithReuseIdentifier: RecipeCell.id)
+
+        collectionView.showsVerticalScrollIndicator = false
 
         view.addSubview(collectionView)
     }
@@ -82,8 +80,21 @@ extension RecipesListVC: UICollectionViewDelegate, UICollectionViewDataSource, U
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecipeCell.id, for: indexPath) as! RecipeCell
         let data = viewModel.recipes[indexPath.row]
-        cell.configure(with: data)
+//        cell.configure(with: data)
 
+        if data.isImageSaved {
+            Task {
+                if let image = await LocalFileManager.instance.loadImageAsync(with: data.id.uuidString) {
+                    DispatchQueue.main.async {
+                        cell.configure(with: data, image: image)
+                    }
+                }
+            }
+        } else {
+            DispatchQueue.main.async {
+                cell.configure(with: data, image: nil)
+            }
+        }
         return cell
     }
 

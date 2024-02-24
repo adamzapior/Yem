@@ -39,6 +39,25 @@ class LocalFileManager: FileManager {
             return nil
         }
     }
+    
+    func loadImageAsync(with id: String) async -> UIImage? {
+        if let cachedImage = ImageCache.shared.getImage(for: id) {
+            return cachedImage
+        } else {
+            let url = URL.documentsDirectory.appendingPathComponent("\(id).jpg")
+            do {
+                let imageData = try Data(contentsOf: url)
+                if let image = UIImage(data: imageData) {
+                    ImageCache.shared.setImage(image, for: id)
+                    return image
+                }
+            } catch {
+                print(error.localizedDescription)
+            }
+            return nil
+        }
+    }
+
 
     func updateImage(with id: String, newImage: UIImage) {
         if let data = newImage.jpegData(compressionQuality: 0.5) {
@@ -70,5 +89,21 @@ class LocalFileManager: FileManager {
         } else {
             print("Image doesn't exists")
         }
+    }
+}
+
+
+class ImageCache {
+    static let shared = ImageCache()
+    private init() {}
+
+    var cache = NSCache<NSString, UIImage>()
+
+    func setImage(_ image: UIImage, for key: String) {
+        cache.setObject(image, forKey: key as NSString)
+    }
+
+    func getImage(for key: String) -> UIImage? {
+        return cache.object(forKey: key as NSString)
     }
 }
