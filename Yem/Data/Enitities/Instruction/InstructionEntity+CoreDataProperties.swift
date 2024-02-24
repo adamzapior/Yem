@@ -17,7 +17,7 @@ extension InstructionEntity {
     }
 
     @NSManaged public var id: UUID
-    @NSManaged public var indexPath: String
+    @NSManaged public var indexPath: Int
     @NSManaged public var text: String
     @NSManaged public var origin: RecipeEntity
 

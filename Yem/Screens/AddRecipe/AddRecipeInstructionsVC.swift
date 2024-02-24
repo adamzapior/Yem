@@ -61,7 +61,7 @@ final class AddRecipeInstructionsVC: UIViewController {
         
         tableView.dragDelegate = self
         tableView.dropDelegate = self
-        tableView.dragInteractionEnabled = true // Włącza interakcje przeciągania
+        tableView.dragInteractionEnabled = true 
 
         tableView.backgroundColor = UIColor.ui.background
         tableView.showsVerticalScrollIndicator = false

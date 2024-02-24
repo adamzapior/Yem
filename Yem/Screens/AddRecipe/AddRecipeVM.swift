@@ -214,7 +214,7 @@ final class AddRecipeViewModel {
         
         let count = instructionList.count
         let index = count + 1
-        let instruction = InstructionModel(index: index, text: instruction)
+        let instruction = InstructionModel(id: UUID(), index: index, text: instruction)
         instructionList.append(instruction)
         clearInstructionProperties()
         return true
@@ -259,6 +259,7 @@ final class AddRecipeViewModel {
         validateForms()
 
         if recipeTitleIsError || servingIsError || difficultyIsError || perpTimeIsError || spicyIsError || categoryIsError {
+            print("Validation failed: Title, serving, difficulty, preparation time, spicy, or category error")
             return false
         }
 
@@ -272,27 +273,28 @@ final class AddRecipeViewModel {
                                  difficulty: difficulty,
                                  ingredientList: ingredientsList,
                                  instructionList: instructionList,
-                                 isImageSaved: false) // Początkowo ustawiamy, że obraz nie został zapisany
+                                 isImageSaved: false)
 
         repository.beginTransaction()
 
         repository.addRecipe(recipe: recipe)
         if !repository.save() {
+            print("Failed to save recipe to Core Data")
             repository.rollbackTransaction()
             return false
         }
 
         let isImageSaved = saveSelectedImage()
         if !isImageSaved {
-            repository.rollbackTransaction()
-            return false
+            repository.endTransaction()
+            print("New recipe saved without image")
+        } else {
+            recipe.isImageSaved = isImageSaved
+            repository.updateRecipe(recipe: recipe)
+
+            repository.endTransaction()
+            print("New recipe saved with image")
         }
-
-        recipe.isImageSaved = isImageSaved
-        repository.updateRecipe(recipe: recipe)
-
-        repository.endTransaction()
-        print("New recipe saved with image")
         return true
     }
 

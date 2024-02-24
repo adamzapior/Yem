@@ -15,7 +15,7 @@ final class RecipesListVM {
     weak var delegate: RecipesListVMDelegate?
     let repository: DataRepository
 
-    lazy var recipes: [RecipeModel] = [RecipeModel(id: UUID(), name: "gugu", serving: "gugu", perpTimeHours: "gugu", perpTimeMinutes: "gugu", spicy: "gugu", category: "gugu", difficulty: "gugu", ingredientList: [IngredientModel(id: UUID(), value: "saf", valueType: "asf", name: "asfsaf")], instructionList: [InstructionModel(index: 1, text: "gugugu")]), RecipeModel(id: UUID(), name: "gugu", serving: "gugu", perpTimeHours: "gugu", perpTimeMinutes: "gugu", spicy: "gugu", category: "gugu", difficulty: "gugu", ingredientList: [IngredientModel(id: UUID(), value: "saf", valueType: "asf", name: "asfsaf")], instructionList: [InstructionModel(index: 1, text: "gugugu")]), RecipeModel(id: UUID(), name: "gugu", serving: "gugu", perpTimeHours: "gugu", perpTimeMinutes: "gugu", spicy: "asfa", category: "gugu", difficulty: "gugu", ingredientList: [IngredientModel(id: UUID(), value: "saf", valueType: "asf", name: "asfsaf")], instructionList: [InstructionModel(index: 1, text: "gugugu")]), RecipeModel(id: UUID(), name: "gugu", serving: "gugu", perpTimeHours: "gugu", perpTimeMinutes: "gugu", spicy: "asfa", category: "gugu", difficulty: "gugu", ingredientList: [IngredientModel(id: UUID(), value: "saf", valueType: "asf", name: "asfsaf")], instructionList: [InstructionModel(index: 1, text: "gugugu")]), RecipeModel(id: UUID(), name: "gugu", serving: "gugu", perpTimeHours: "gugu", perpTimeMinutes: "gugu", spicy: "asfa", category: "gugu", difficulty: "gugu", ingredientList: [IngredientModel(id: UUID(), value: "saf", valueType: "asf", name: "asfsaf")], instructionList: [InstructionModel(index: 1, text: "gugugu")]), RecipeModel(id: UUID(), name: "gugu", serving: "gugu", perpTimeHours: "gugu", perpTimeMinutes: "gugu", spicy: "asfa", category: "gugu", difficulty: "gugu", ingredientList: [IngredientModel(id: UUID(), value: "saf", valueType: "asf", name: "asfsaf")], instructionList: [InstructionModel(index: 1, text: "gugugu")]), RecipeModel(id: UUID(), name: "gugu", serving: "gugu", perpTimeHours: "gugu", perpTimeMinutes: "gugu", spicy: "asfa", category: "gugu", difficulty: "gugu", ingredientList: [IngredientModel(id: UUID(), value: "saf", valueType: "asf", name: "asfsaf")], instructionList: [InstructionModel(index: 1, text: "gugugu")]), RecipeModel(id: UUID(), name: "gugu", serving: "gugu", perpTimeHours: "gugu", perpTimeMinutes: "gugu", spicy: "asfa", category: "gugu", difficulty: "gugu", ingredientList: [IngredientModel(id: UUID(), value: "saf", valueType: "asf", name: "asfsaf")], instructionList: [InstructionModel(index: 1, text: "gugugu")]), RecipeModel(id: UUID(), name: "gugu", serving: "gugu", perpTimeHours: "gugu", perpTimeMinutes: "gugu", spicy: "asfa", category: "gugu", difficulty: "gugu", ingredientList: [IngredientModel(id: UUID(), value: "saf", valueType: "asf", name: "asfsaf")], instructionList: [InstructionModel(index: 1, text: "gugugu")]), RecipeModel(id: UUID(), name: "gugu", serving: "gugu", perpTimeHours: "gugu", perpTimeMinutes: "gugu", spicy: "asfa", category: "gugu", difficulty: "gugu", ingredientList: [IngredientModel(id: UUID(), value: "saf", valueType: "asf", name: "asfsaf")], instructionList: [InstructionModel(index: 1, text: "gugugu")]), RecipeModel(id: UUID(), name: "gugu", serving: "gugu", perpTimeHours: "gugu", perpTimeMinutes: "gugu", spicy: "asfa", category: "gugu", difficulty: "gugu", ingredientList: [IngredientModel(id: UUID(), value: "saf", valueType: "asf", name: "asfsaf")], instructionList: [InstructionModel(index: 1, text: "gugugu")]), RecipeModel(id: UUID(), name: "gugu", serving: "gugu", perpTimeHours: "gugu", perpTimeMinutes: "gugu", spicy: "asfa", category: "gugu", difficulty: "gugu", ingredientList: [IngredientModel(id: UUID(), value: "saf", valueType: "asf", name: "asfsaf")], instructionList: [InstructionModel(index: 1, text: "gugugu")])]
+    lazy var recipes: [RecipeModel] = []
 
     init(repository: DataRepository) {
         self.repository = repository
@@ -26,7 +26,9 @@ final class RecipesListVM {
         switch result {
         case .success(let result):
             self.recipes = result
-            
+            for x in self.recipes {
+                print(x.name)
+            }
             reloadTable()
         case .failure:
             break
@@ -36,8 +38,8 @@ final class RecipesListVM {
     func searchRecipesByName(_ query: String) async {
         let result = await repository.fetchRecipesWithName(query)
         switch result {
-        case .success(let recepies):
-            self.recipes = recipes
+        case .success(let recipes):
+            self.recipes = recipes ?? []
             reloadTable()
         case .failure:
             break

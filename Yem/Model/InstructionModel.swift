@@ -8,6 +8,7 @@
 import Foundation
 
 struct InstructionModel {
+    var id: UUID
     var index: Int
     var text: String
 }

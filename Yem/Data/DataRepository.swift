@@ -18,8 +18,6 @@ protocol DataRepositoryProtocol {
 final class DataRepository {
     let moc = CoreDataManager.shared
 
-    // MARK: Save method
-
     func save() -> Bool {
         moc.saveContext()
         return true
@@ -66,7 +64,7 @@ final class DataRepository {
             let entity = InstructionEntity(context: moc.context)
 
             entity.id = UUID()
-            entity.indexPath = instructionList.index.description
+            entity.indexPath = instructionList.index
             entity.text = instructionList.text
 
             instructionEntities.insert(entity)
@@ -81,23 +79,36 @@ final class DataRepository {
             return
         }
 
+        recipeEntity.id = recipe.id
         recipeEntity.name = recipe.name
         recipeEntity.servings = recipe.serving
+        recipeEntity.prepTimeHours = recipe.perpTimeHours
+        recipeEntity.prepTimeMinutes = recipe.perpTimeMinutes
+        recipeEntity.spicy = recipe.spicy
+        recipeEntity.category = recipe.category
+        recipeEntity.difficulty = recipe.difficulty
 
-        // ingredients update
+        // ingredients update to fix
         recipeEntity.ingredients.forEach { moc.context.delete($0) }
         var ingredientEntities = Set<IngredientEntity>()
         for ingredientModel in recipe.ingredientList {
             let ingredientEntity = IngredientEntity(context: moc.context)
+            ingredientEntity.id = ingredientModel.id
+            ingredientEntity.name = ingredientModel.name
+            ingredientEntity.value = ingredientModel.value
+            ingredientEntity.valueType = ingredientModel.valueType
             ingredientEntities.insert(ingredientEntity)
         }
         recipeEntity.ingredients = ingredientEntities
 
-        // instruction update
+        // instruction update to fix
         recipeEntity.instructions.forEach { moc.context.delete($0) }
         var instructionEntities = Set<InstructionEntity>()
         for instructionModel in recipe.instructionList {
             let instructionEntity = InstructionEntity(context: moc.context)
+            instructionEntity.id = instructionModel.id
+            instructionEntity.indexPath = instructionModel.index
+            instructionEntity.text = instructionModel.text
             instructionEntities.insert(instructionEntity)
         }
         recipeEntity.instructions = instructionEntities
@@ -131,8 +142,11 @@ final class DataRepository {
                                                 valueType: list.valueType,
                                                 name: list.name)
                             }, instructionList: recipe.instructions.map { step in
-                                InstructionModel(index: 1, text: step.text)
-                            }, isImageSaved: recipe.isImageSaved)
+                                InstructionModel(id: step.id,
+                                                 index: step.indexPath,
+                                                 text: step.text)
+                            },
+                            isImageSaved: recipe.isImageSaved)
             }
             return .success(result)
         } catch {
@@ -143,7 +157,7 @@ final class DataRepository {
     func fetchRecipesWithName(_ name: String) async -> Result<[RecipeModel]?, Error> {
         do {
             guard let recipe = try moc.fetchRecipesWithName(name) else {
-                return .success(nil) // If no recipe is found, return nil
+                return .success(nil)
             }
 
             let result = recipe.map { recipe -> RecipeModel in
@@ -161,8 +175,11 @@ final class DataRepository {
                                                 valueType: list.valueType,
                                                 name: list.name)
                             }, instructionList: recipe.instructions.map { step in
-                                InstructionModel(index: 1, text: step.text)
-                            }, isImageSaved: recipe.isImageSaved)
+                                InstructionModel(id: step.id,
+                                                 index: step.indexPath,
+                                                 text: step.text)
+                            },
+                            isImageSaved: recipe.isImageSaved)
             }
             return .success(result)
         } catch {
@@ -171,10 +188,6 @@ final class DataRepository {
     }
 
     // MARK: Update methods
-
-    func addIngredientsToShopingList() {
-//        let ingredients = ShopingList(contex: moc.context)
-    }
 
     // MARK: Delete methods
 

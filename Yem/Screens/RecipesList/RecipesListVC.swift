@@ -36,11 +36,11 @@ final class RecipesListVC: UIViewController {
         setupNavigationBar()
         setupCollectionView()
 
-//        Task {
-//            await viewModel.loadRecipes()
-//
-//            await viewModel.searchRecipesByName("XD")
-//        }
+        Task {
+            await viewModel.loadRecipes()
+
+            await viewModel.searchRecipesByName("XD")
+        }
     }
 
     // MARK: UI Setup
