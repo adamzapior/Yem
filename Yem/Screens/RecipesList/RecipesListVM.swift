@@ -5,6 +5,7 @@
 //  Created by Adam Zapiór on 09/12/2023.
 //
 
+import Combine
 import Foundation
 
 protocol RecipesListVMDelegate: AnyObject {
@@ -14,44 +15,60 @@ protocol RecipesListVMDelegate: AnyObject {
 final class RecipesListVM {
     weak var delegate: RecipesListVMDelegate?
     let repository: DataRepository
+    private var cancellables: Set<AnyCancellable> = []
 
     lazy var recipes: [RecipeModel] = []
 
     init(repository: DataRepository) {
         self.repository = repository
+        observeDataChanges()
     }
+
+    // MARK: - Public methods
 
     func loadRecipes() async {
         let result = await repository.fetchAllRecipes()
         switch result {
         case .success(let result):
-            self.recipes = result
-            for x in self.recipes {
-                print(x.name)
+            DispatchQueue.main.async {
+                self.recipes = result
+                self.reloadTable()
             }
-
-            for x in self.recipes {
-                print(x.isImageSaved)
-            }
-            reloadTable()
-        case .failure:
-            break
+        case .failure(let error):
+            print("Error loading recipes: \(error)")
         }
     }
 
-//    func searchRecipesByName(_ query: String) async {
-//        let result = await repository.fetchRecipesWithName(query)
-//        switch result {
-//        case .success(let recipes):
-//            self.recipes = recipes ?? []
-//            reloadTable()
-//        case .failure:
-//            break
-//        }
-//    }
+    // MARK: - Private methods
+
+    private func observeDataChanges() {
+        repository.observeDataChanges()
+            .sink { [weak self] updatedRecipes in
+                guard let self = self else { return }
+
+                // Create a dictionary for quick access
+                let updatedRecipesDict = Dictionary(uniqueKeysWithValues: updatedRecipes.map { ($0.id, $0) })
+
+                // Update existing recipes or add new ones
+                self.recipes = self.recipes.compactMap { existingRecipe -> RecipeModel? in
+                    updatedRecipesDict[existingRecipe.id] ?? existingRecipe
+                }
+
+                // Add new recipes that are not already in `recipes`
+                updatedRecipes.forEach { updatedRecipe in
+                    if !self.recipes.contains(where: { $0.id == updatedRecipe.id }) {
+                        self.recipes.append(updatedRecipe)
+                    }
+                }
+
+                self.reloadTable()
+                print("RecipesList view refreshed")
+            }
+            .store(in: &cancellables)
+    }
 }
 
-// MARK: Delegate
+// MARK: - Delegates
 
 extension RecipesListVM: RecipesListVMDelegate {
     func reloadTable() {

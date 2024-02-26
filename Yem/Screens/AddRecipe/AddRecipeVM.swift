@@ -251,6 +251,53 @@ final class AddRecipeViewModel {
     
     /// Save method:
     
+//    func saveRecipe() -> Bool {
+//        validationErrors = []
+//        resetValidationFlags()
+//        resetIgredientValidationFlags()
+//        resetInstructionValidationFlags()
+//        validateForms()
+//
+//        if recipeTitleIsError || servingIsError || difficultyIsError || perpTimeIsError || spicyIsError || categoryIsError {
+//            print("Validation failed: Title, serving, difficulty, preparation time, spicy, or category error")
+//            return false
+//        }
+//
+//        var recipe = RecipeModel(id: recipeID,
+//                                 name: recipeTitle,
+//                                 serving: serving.description,
+//                                 perpTimeHours: prepTimeHours,
+//                                 perpTimeMinutes: prepTimeMinutes,
+//                                 spicy: spicy,
+//                                 category: category,
+//                                 difficulty: difficulty,
+//                                 ingredientList: ingredientsList,
+//                                 instructionList: instructionList,
+//                                 isImageSaved: false)
+//
+//        repository.beginTransaction()
+//
+//        repository.addRecipe(recipe: recipe)
+//        if !repository.save() {
+//            print("Failed to save recipe to Core Data")
+//            repository.rollbackTransaction()
+//            return false
+//        }
+//
+//        let isImageSaved = saveSelectedImage()
+//        if !isImageSaved {
+//            repository.endTransaction()
+//            print("New recipe saved without image")
+//        } else {
+//            recipe.isImageSaved = true
+//            repository.updateRecipe(recipe: recipe)
+//
+//            repository.endTransaction()
+//            print("New recipe saved with image")
+//        }
+//        return true
+//    }
+    
     func saveRecipe() -> Bool {
         validationErrors = []
         resetValidationFlags()
@@ -263,6 +310,9 @@ final class AddRecipeViewModel {
             return false
         }
 
+        repository.beginTransaction()
+
+        let isImageSaved = selectedImage != nil
         var recipe = RecipeModel(id: recipeID,
                                  name: recipeTitle,
                                  serving: serving.description,
@@ -273,32 +323,34 @@ final class AddRecipeViewModel {
                                  difficulty: difficulty,
                                  ingredientList: ingredientsList,
                                  instructionList: instructionList,
-                                 isImageSaved: false)
-
-        repository.beginTransaction()
+                                 isImageSaved: isImageSaved)
 
         repository.addRecipe(recipe: recipe)
+
+        if let image = selectedImage {
+            let imageSaved = LocalFileManager.instance.saveImage(with: recipeID.uuidString, image: image)
+            if !imageSaved {
+                print("Failed to save image")
+                repository.rollbackTransaction()
+                return false
+            }
+        }
+
         if !repository.save() {
             print("Failed to save recipe to Core Data")
             repository.rollbackTransaction()
             return false
         }
 
-        let isImageSaved = saveSelectedImage()
-        if !isImageSaved {
-            repository.endTransaction()
-            print("New recipe saved without image")
-        } else {
-            recipe.isImageSaved = true
-            repository.updateRecipe(recipe: recipe)
-
-            repository.endTransaction()
-            print("New recipe saved with image")
-        }
+        repository.endTransaction()
+        print("New recipe saved successfully")
         return true
     }
 
-    // Reszta metod klasy...
+    
+    
+    
+
 
     // MARK: - Private methods
     
