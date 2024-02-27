@@ -14,12 +14,6 @@ final class CoreDataManager {
 
     let persistentContainer: NSPersistentContainer
     let context: NSManagedObjectContext
-    
-    private var changesPublisherSubject = PassthroughSubject<Set<NSManagedObjectID>, Never>()
-    
-    var changesPublisher: AnyPublisher<Set<NSManagedObjectID>, Never> {
-         changesPublisherSubject.eraseToAnyPublisher()
-     }
 
     init() {
         persistentContainer = NSPersistentContainer(name: "YemData")
@@ -30,25 +24,6 @@ final class CoreDataManager {
         }
 
         context = persistentContainer.viewContext
-        
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(contextObjectsDidChange(notification:)), name: .NSManagedObjectContextObjectsDidChange, object: context)
-        
-        
-        NotificationCenter.default.addObserver(forName: .NSManagedObjectContextDidSave, object: nil, queue: nil) { notification in
-            print("NSManagedObjectContextDidSave notification received")
-        }
-        
-        NotificationCenter.default.addObserver(forName: .NSManagedObjectContextDidSave, object: nil, queue: nil) { notification in
-            print("NSManagedObjectContextDidSave notification received")
-
-            if let insertedObjectIDs = notification.userInfo?[NSInsertedObjectIDsKey] as? Set<NSManagedObjectID> {
-                print("Inserted Object IDs: \(insertedObjectIDs)")
-            } else {
-                print("No inserted object IDs in the notification")
-            }
-        }
-
     }
 
     func saveContext() {
@@ -65,7 +40,6 @@ final class CoreDataManager {
             print("No unsaved changes in context")
         }
     }
-
 
     func beginTransaction() {
         context.undoManager = UndoManager()
@@ -85,6 +59,8 @@ final class CoreDataManager {
 
     func fetchAllRecipes() throws -> [RecipeEntity] {
         let request: NSFetchRequest<RecipeEntity> = RecipeEntity.fetchRequest()
+        let sortDescriptor = NSSortDescriptor(key: "name", ascending: true)
+        request.sortDescriptors = [sortDescriptor]
         do {
             return try CoreDataManager.shared.context.fetch(request)
         } catch {
@@ -107,41 +83,30 @@ final class CoreDataManager {
 }
 
 extension CoreDataManager {
-//    func changesPublisher() -> AnyPublisher<Set<NSManagedObjectID>, Never> {
-//        NotificationCenter.default.publisher(for: .NSManagedObjectContextDidSave, object: context)
-//            .compactMap { notification in
-//                var objectIDs = Set<NSManagedObjectID>()
-//                if let insertedIDs = notification.userInfo?[NSInsertedObjectIDsKey] as? Set<NSManagedObjectID> {
-//                    objectIDs.formUnion(insertedIDs)
-//                }
-//                if let updatedIDs = notification.userInfo?[NSUpdatedObjectIDsKey] as? Set<NSManagedObjectID> {
-//                    objectIDs.formUnion(updatedIDs)
-//                }
-//                if let deletedIDs = notification.userInfo?[NSDeletedObjectIDsKey] as? Set<NSManagedObjectID> {
-//                    objectIDs.formUnion(deletedIDs)
-//                }
-//                return objectIDs.isEmpty ? nil : objectIDs
-//            }
-//            .eraseToAnyPublisher()
-//    }
+    func allRecipesPublisher() -> AnyPublisher<Void, Never> {
+        NotificationCenter.default.publisher(for: NSNotification.Name.NSManagedObjectContextObjectsDidChange, object: context)
+            .compactMap { notification in
+                guard let userInfo = notification.userInfo else { return nil }
 
-    
-    @objc private func contextObjectsDidChange(notification: Notification) {
-          var objectIDs = Set<NSManagedObjectID>()
+                // Sprawdzanie, czy jakiekolwiek `RecipeEntity` zostało zmienione
+                if let inserts = userInfo[NSInsertedObjectsKey] as? Set<NSManagedObject>,
+                   inserts.contains(where: { $0 is RecipeEntity })
+                {
+                    return ()
+                }
+                if let deletes = userInfo[NSDeletedObjectsKey] as? Set<NSManagedObject>,
+                   deletes.contains(where: { $0 is RecipeEntity })
+                {
+                    return ()
+                }
+                if let updates = userInfo[NSUpdatedObjectsKey] as? Set<NSManagedObject>,
+                   updates.contains(where: { $0 is RecipeEntity })
+                {
+                    return ()
+                }
 
-          if let insertedObjects = notification.userInfo?[NSInsertedObjectsKey] as? Set<NSManagedObject>, !insertedObjects.isEmpty {
-              objectIDs.formUnion(insertedObjects.map { $0.objectID })
-          }
-
-          if let updatedObjects = notification.userInfo?[NSUpdatedObjectsKey] as? Set<NSManagedObject>, !updatedObjects.isEmpty {
-              objectIDs.formUnion(updatedObjects.map { $0.objectID })
-          }
-
-          if let deletedObjects = notification.userInfo?[NSDeletedObjectsKey] as? Set<NSManagedObject>, !deletedObjects.isEmpty {
-              objectIDs.formUnion(deletedObjects.map { $0.objectID })
-          }
-
-          changesPublisherSubject.send(objectIDs)
-      }
-    
+                return nil
+            }
+            .eraseToAnyPublisher()
+    }
 }
