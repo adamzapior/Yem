@@ -25,16 +25,11 @@ final class DataRepository {
     init() {
         moc.allRecipesPublisher()
             .sink(receiveValue: { [weak self] _ in
-                // Ponownie załaduj przepisy, jeśli wystąpiła zmiana
                 Task { [weak self] in
-                    self?.notifyDataChanged()
+                    self?.recipesChangedPublisher.send(())
                 }
             })
             .store(in: &cancellables)
-    }
-
-    func notifyDataChanged() {
-        recipesChangedPublisher.send(())
     }
 
     func save() -> Bool {
