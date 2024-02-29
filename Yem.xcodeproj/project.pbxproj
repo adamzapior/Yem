@@ -69,6 +69,7 @@
 		58D5F9C22B27B3F600A72619 /* TextfieldWithIconRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D5F9C12B27B3F600A72619 /* TextfieldWithIconRow.swift */; };
 		58D644192B56F4AD0008413A /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D644182B56F4AD0008413A /* CoreDataManager.swift */; };
 		58EBB0772B227B82000EB128 /* AddPhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58EBB0762B227B82000EB128 /* AddPhotoView.swift */; };
+		58F2F8442B9131D700ACE336 /* RecipeDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58F2F8432B9131D700ACE336 /* RecipeDetailsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -154,6 +155,7 @@
 		58D5F9C12B27B3F600A72619 /* TextfieldWithIconRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextfieldWithIconRow.swift; sourceTree = "<group>"; };
 		58D644182B56F4AD0008413A /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		58EBB0762B227B82000EB128 /* AddPhotoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPhotoView.swift; sourceTree = "<group>"; };
+		58F2F8432B9131D700ACE336 /* RecipeDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeDetailsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -451,6 +453,7 @@
 				589929522B44C5DE00FAB070 /* Labels */,
 				5887468F2B2E3F8300EC5E11 /* Buttons */,
 				589929532B44C5EE00FAB070 /* Images */,
+				58F2F8432B9131D700ACE336 /* RecipeDetailsView.swift */,
 				58EBB0762B227B82000EB128 /* AddPhotoView.swift */,
 				58D5F9BF2B27A84700A72619 /* PickerWithIconRow.swift */,
 				58D5F9C12B27B3F600A72619 /* TextfieldWithIconRow.swift */,
@@ -669,6 +672,7 @@
 				58BBEB7F2B5AD1C80058851C /* ShopingListEntity+CoreDataClass.swift in Sources */,
 				58D644192B56F4AD0008413A /* CoreDataManager.swift in Sources */,
 				58102DE02B24AB9E0090EAE8 /* UITextFieldExt.swift in Sources */,
+				58F2F8442B9131D700ACE336 /* RecipeDetailsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
