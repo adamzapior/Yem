@@ -14,8 +14,6 @@ final class AddRecipeVC: UIViewController {
     
     var coordinator: AddRecipeCoordinator
     var viewModel: AddRecipeViewModel
-
-    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - View properties
     
@@ -36,7 +34,7 @@ final class AddRecipeVC: UIViewController {
     private let screenWidth = UIScreen.main.bounds.width - 10
     private let screenHeight = UIScreen.main.bounds.height / 2
     
-    private let addPhotoView = AddPhotoView()
+    private let addPhotoView = PhotoView()
     private let addPhotoImagePicker = UIImagePickerController()
    
     private var nameTextfield = TextfieldWithIconRow(iconImage: "info.square", placeholderText: "Enter your recipe name*", textColor: .ui.secondaryText)
@@ -96,7 +94,7 @@ final class AddRecipeVC: UIViewController {
     }
     
     deinit {
-        print("Add recipeVC deinit")
+        print("AddRecipeVC deinit")
     }
     
     // MARK: - UI Setup

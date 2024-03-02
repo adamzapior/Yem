@@ -11,25 +11,40 @@ protocol AddPhotoViewDelegate: AnyObject {
     func addPhotoViewTapped()
 }
 
-final class AddPhotoView: UIView {
+final class PhotoView: UIView {
     weak var delegate: AddPhotoViewDelegate?
 
-    private let icon = IconImage(systemImage: "camera", color: .ui.theme, textStyle: .largeTitle)
+    private var icon: IconImage
     private let imageView = UIImageView()
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setupUI()
+    var iconString: String
 
+    override init(frame: CGRect) {
+        self.iconString = "camera" // Default icon string
+        self.icon = IconImage(systemImage: iconString, color: .ui.theme, textStyle: .largeTitle)
+        super.init(frame: frame)
+
+        commonInit()
+    }
+
+    convenience init(frame: CGRect, iconString: String) {
+        self.init(frame: frame)
+        self.iconString = iconString
+        self.icon = IconImage(systemImage: iconString, color: .ui.theme, textStyle: .largeTitle)
+        commonInit()
+    }
+
+    @available(*, unavailable)
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private func commonInit() {
+        setupUI()
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(addPhotoViewTapped))
         addGestureRecognizer(tapGesture)
     }
 
-    @available(*, unavailable)
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     func updatePhoto(with image: UIImage) {
         icon.isHidden = true
         imageView.image = image
