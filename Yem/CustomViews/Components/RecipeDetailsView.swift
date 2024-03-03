@@ -10,7 +10,7 @@ import SnapKit
 import UIKit
 
 class RecipeDetailsView: UIView {
-    private let titleTextLabel = ReusableTextLabel(fontStyle: .footnote, fontWeight: .regular, textColor: .ui.theme)
+    private let titleTextLabel = ReusableTextLabel(fontStyle: .footnote, fontWeight: .semibold, textColor: .ui.theme)
     private let valueTextLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText)
     
     override init(frame: CGRect) {
