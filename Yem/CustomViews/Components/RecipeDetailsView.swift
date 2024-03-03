@@ -10,8 +10,8 @@ import SnapKit
 import UIKit
 
 class RecipeDetailsView: UIView {
-    private let titleTextLabel = UILabel()
-    private let valueTextLabel = UILabel()
+    private let titleTextLabel = ReusableTextLabel(fontStyle: .footnote, fontWeight: .regular, textColor: .ui.theme)
+    private let valueTextLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText)
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -26,8 +26,9 @@ class RecipeDetailsView: UIView {
         titleTextLabel.text = titleText
         valueTextLabel.text = valueText
         
-//        titleTextLabel.setupHyphenation()
-//        titleTextLabel.setupHyphenation()
+        titleTextLabel.text = titleTextLabel.text!.uppercased()
+
+        valueTextLabel.setupHyphenation()
     }
     
     private func setupUI() {
@@ -41,32 +42,22 @@ class RecipeDetailsView: UIView {
     
     private func setupTitleTextLabel() {
         addSubview(titleTextLabel)
-        
-        titleTextLabel.numberOfLines = 0
-        titleTextLabel.font = UIFont.systemFont(ofSize: UIFont.preferredFont(forTextStyle: .footnote).pointSize, weight: .regular)
-        titleTextLabel.adjustsFontForContentSizeCategory = true
-        titleTextLabel.textColor = .ui.secondaryText
-        
+
         titleTextLabel.snp.makeConstraints { make in
-            make.top.equalTo(self.snp.top).offset(12)
-            make.leading.equalTo(self.snp.leading).offset(12)
-            make.trailing.equalTo(self.snp.trailing).offset(-12)
+            make.top.equalToSuperview().offset(12)
+            make.leading.equalToSuperview().offset(12)
+            make.trailing.equalToSuperview().offset(-12)
         }
     }
     
     private func setupValueTextLabel() {
         addSubview(valueTextLabel)
-        
-        valueTextLabel.numberOfLines = 0
-        valueTextLabel.font = UIFont.systemFont(ofSize: UIFont.preferredFont(forTextStyle: .body).pointSize, weight: .regular)
-        valueTextLabel.adjustsFontForContentSizeCategory = true
-        valueTextLabel.textColor = .ui.primaryText
-        
+
         valueTextLabel.snp.makeConstraints { make in
             make.top.equalTo(titleTextLabel.snp.bottom).offset(8)
-            make.leading.equalTo(self.snp.leading).offset(12)
-            make.trailing.equalTo(self.snp.trailing).offset(-12)
-            make.bottom.equalTo(self.snp.bottom).offset(-12)
+            make.leading.equalToSuperview().offset(12)
+            make.trailing.equalToSuperview().offset(-12)
+            make.bottom.equalToSuperview().offset(-12)
         }
     }
 }
