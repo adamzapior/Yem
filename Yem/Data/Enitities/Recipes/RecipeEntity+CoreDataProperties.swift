@@ -25,6 +25,7 @@ public extension RecipeEntity {
     @NSManaged var ingredients: Set<IngredientEntity>
     @NSManaged var instructions: Set<InstructionEntity>
     @NSManaged var isImageSaved: Bool
+    @NSManaged var isFavourite: Bool
 }
 
 // MARK: Generated accessors for ingredients

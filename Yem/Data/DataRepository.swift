@@ -60,6 +60,7 @@ final class DataRepository {
         data.category = recipe.category
         data.difficulty = recipe.difficulty
         data.isImageSaved = recipe.isImageSaved
+        data.isFavourite = recipe.isFavourite
 
         var ingredientEntities = Set<IngredientEntity>()
         for ingredientModel in recipe.ingredientList {
@@ -94,6 +95,61 @@ final class DataRepository {
             print("Context saved after adding RecipeEntity")
         } catch {
             print("Error saving context: \(error)")
+        }
+    }
+
+//    func updateRecipe(recipe: RecipeModel) {
+//        let fetchRequest: NSFetchRequest<RecipeEntity> = RecipeEntity.fetchRequest()
+//        fetchRequest.predicate = NSPredicate(format: "id == %@", recipe.id as CVarArg)
+//
+//        do {
+//            let results = try moc.context.fetch(fetchRequest)
+//            if let recipeToUpdate = results.first {
+//                // Update the fields
+//                recipeToUpdate.name = recipe.name
+//                recipeToUpdate.servings = recipe.serving
+//                recipeToUpdate.prepTimeHours = recipe.perpTimeHours
+//                recipeToUpdate.prepTimeMinutes = recipe.perpTimeMinutes
+//                recipeToUpdate.spicy = recipe.spicy
+//                recipeToUpdate.category = recipe.category
+//                recipeToUpdate.difficulty = recipe.difficulty
+//                recipeToUpdate.isImageSaved = recipe.isImageSaved
+//                recipeToUpdate.isFavourite = recipe.isFavourite
+//
+//                // Update ingredients
+//                updateIngredients(for: recipeToUpdate, with: recipe.ingredientList)
+//
+//                // Update instructions
+//                updateInstructions(for: recipeToUpdate, with: recipe.instructionList)
+//
+//                // Save the updated context
+//                try moc.context.save()
+//                print("RecipeEntity updated and context saved.")
+//            } else {
+//                print("No RecipeEntity found with the specified ID to update.")
+//            }
+//        } catch {
+//            print("Error updating recipe: \(error)")
+//        }
+//    }
+
+    func updateRecipeFavouriteStatus(recipeId: UUID, isFavourite: Bool) {
+        let fetchRequest: NSFetchRequest<RecipeEntity> = RecipeEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", recipeId as CVarArg)
+
+        do {
+            let recipesToUpdate = try moc.context.fetch(fetchRequest)
+            guard let recipeToUpdate = recipesToUpdate.first else {
+                print("No RecipeEntity found with the specified ID to update.")
+                return
+            }
+
+            recipeToUpdate.isFavourite = isFavourite
+
+            try moc.context.save()
+            print("RecipeEntity favourite status updated and context saved.")
+        } catch {
+            print("Error updating recipe's favourite status: \(error)")
         }
     }
 
@@ -173,7 +229,8 @@ extension DataRepository {
                     index: instruction.indexPath,
                     text: instruction.text)
             },
-            isImageSaved: recipeEntity.isImageSaved)
+            isImageSaved: recipeEntity.isImageSaved,
+            isFavourite: recipeEntity.isFavourite)
     }
 }
 

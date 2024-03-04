@@ -40,14 +40,15 @@ final class RecipeDetailsVC: UIViewController {
 
 //    private var isBookmarked = false
     
-//    var bookmarkIconString: String
+    var bookmarkIconString: String
+
+    let bookmarkIconFilled: String = "bookmark.fill"
+    let bookmarkIconEmpty: String = "bookmark"
     
     lazy var basketNavItem = UIBarButtonItem(image: UIImage(systemName: "basket"), style: .plain, target: self, action: #selector(basketButtonTapped))
     
-//    lazy var bookmarkNavItem = UIBarButtonItem(image: UIImage(systemName: "\(bookmarkIconString)"), style: .plain, target: self, action: #selector(bookmarkButtonTapped))
-    
-    lazy var bookmarkNavItem = UIBarButtonItem(image: UIImage(systemName: "bookmark"), style: .plain, target: self, action: #selector(bookmarkButtonTapped))
-    
+    lazy var bookmarkNavItem = UIBarButtonItem(image: UIImage(systemName: "\(bookmarkIconString)"), style: .plain, target: self, action: #selector(bookmarkButtonTapped))
+
     lazy var pencilNavItem = UIBarButtonItem(image: UIImage(systemName: "pencil"), style: .plain, target: self, action: #selector(pencilButtonTapped))
 
     lazy var trashNavItem = UIBarButtonItem(image: UIImage(systemName: "trash"), style: .plain, target: self, action: #selector(trashButtonTapped))
@@ -57,12 +58,11 @@ final class RecipeDetailsVC: UIViewController {
         self.viewModel = viewModel
         self.coordinator = coordinator
         
-        // TODO: set up icon based on recipe.isFavourite
-//        if recipe.isFavourite {
-//            bookmarkIconString = "bookmark.fill"
-//        } else {
-//            bookmarkIconString = "bookmark"
-//        }
+        if recipe.isFavourite {
+            bookmarkIconString = bookmarkIconFilled
+        } else {
+            bookmarkIconString = bookmarkIconEmpty
+        }
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -74,6 +74,7 @@ final class RecipeDetailsVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        viewModel.delegate = self
         
         setupNavigationBarButtons()
         
@@ -320,6 +321,7 @@ extension RecipeDetailsVC {
     }
 
     @objc func bookmarkButtonTapped(_ sender: UIBarButtonItem) {
+        viewModel.toggleFavouriteStatus(recipe: recipe)
 //        isBookmarked.toggle()
         // TODO: add recipie to favourites list
     }
@@ -331,5 +333,18 @@ extension RecipeDetailsVC {
     @objc func trashButtonTapped(_ sender: UIBarButtonItem) {
         viewModel.deleteRecipe(recipe)
         coordinator.dismissVC()
+    }
+}
+
+// MARK: Delegate methods
+
+extension RecipeDetailsVC: RecipeDetailsVMDelegate {
+    func isFavouriteValueChanged(to: Bool) {
+        switch to {
+        case true:
+            bookmarkNavItem.image = UIImage(systemName: bookmarkIconFilled)
+        case false:
+            bookmarkNavItem.image = UIImage(systemName: bookmarkIconEmpty)
+        }
     }
 }

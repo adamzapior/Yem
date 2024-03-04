@@ -19,6 +19,7 @@ struct RecipeModel {
     var ingredientList: [IngredientModel]
     var instructionList: [InstructionModel]
     var isImageSaved: Bool
+    var isFavourite: Bool
 }
 
 
@@ -34,25 +35,6 @@ enum RecipeCategory: String {
     case vegan = "Vegan"
     case vegetarian = "Vegetarian"
 }
-
-//extension RecipeModel {
-//    init(from entity: RecipeEntity) {
-//        self.id = entity.id
-//        self.name = entity.name
-//        self.serving = entity.servings
-//        self.perpTimeHours = entity.prepTimeHours
-//        self.perpTimeMinutes = entity.prepTimeMinutes
-//        self.spicy = entity.spicy
-//        self.category = entity.category
-//        self.difficulty = entity.difficulty
-//        self.ingredientList = entity.ingredients.
-//        self.instructionList: [InstructionModel]
-//        self.isImageSaved = entity.isImageSaved
-//    }
-//}
-
-//lazy var categoryRowArray: [String] = ["Breakfast", "Lunch", "Dinner", "Desserts", "Snacks", "Beverages", "Appetizers", "Side Dishes", "Vegan", "Vegetarian"]
-
 
 extension RecipeModel {
     static func mapToModel(entity: RecipeEntity) -> RecipeModel {
@@ -74,6 +56,7 @@ extension RecipeModel {
                                                 index: step.indexPath,
                                                 text: step.text)
                            },
-                           isImageSaved: entity.isImageSaved)
+                           isImageSaved: entity.isImageSaved, 
+                           isFavourite: entity.isFavourite)
     }
 }

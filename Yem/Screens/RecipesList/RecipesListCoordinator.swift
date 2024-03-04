@@ -39,7 +39,7 @@ final class RecipesListCoordinator {
     }
     
     func navigateToRecipeDetail(with recipe: RecipeModel) {
-        let viewModel = RecipeDetailsVM(repository: repository)
+        let viewModel = RecipeDetailsVM(recipe: recipe, repository: repository)
         
         let coordinator = RecipeDetailsCoordinator(navigationController: rootViewController as? UINavigationController, viewModel: viewModel, recipe: recipe, repository: repository)        
         coordinator.parentCoordinator = self

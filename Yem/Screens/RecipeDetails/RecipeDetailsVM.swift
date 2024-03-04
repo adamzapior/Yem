@@ -7,12 +7,31 @@
 
 import Foundation
 
+protocol RecipeDetailsVMDelegate: AnyObject {
+    func isFavouriteValueChanged(to: Bool)
+}
+
 final class RecipeDetailsVM {
     
+    weak var delegate: RecipeDetailsVMDelegate?
+    
+    let recipe: RecipeModel
     let repository: DataRepository
     
-    init(repository: DataRepository) {
+    init(recipe: RecipeModel, repository: DataRepository) {
+        self.recipe = recipe
         self.repository = repository
+    }
+    
+    func toggleFavouriteStatus(recipe: RecipeModel) {
+        switch recipe.isFavourite {
+        case true:
+            repository.updateRecipeFavouriteStatus(recipeId: recipe.id, isFavourite: false)
+            delegate?.isFavouriteValueChanged(to: false)
+        case false:
+            repository.updateRecipeFavouriteStatus(recipeId: recipe.id, isFavourite: true)
+            delegate?.isFavouriteValueChanged(to: true)
+        }
     }
     
     func deleteRecipe(_ recipe: RecipeModel) {
