@@ -20,13 +20,31 @@ final class DataRepository {
     let moc = CoreDataManager.shared
     var cancellables = Set<AnyCancellable>()
 
-    var recipesChangedPublisher = PassthroughSubject<Void, Never>()
+    var recipesInsertedPublisher = PassthroughSubject<RecipeChange, Never>()
+
+    var recipesDeletedPublisher = PassthroughSubject<RecipeChange, Never>()
+
+    var recipesUpdatedPublisher = PassthroughSubject<RecipeChange, Never>()
+
+    enum RecipeChange {
+        case inserted(NSManagedObject)
+        case deleted(NSManagedObject)
+        case updated(NSManagedObject)
+    }
 
     init() {
         moc.allRecipesPublisher()
-            .sink(receiveValue: { [weak self] _ in
+            .sink(receiveValue: { [weak self] updatedRecipe in
                 Task { [weak self] in
-                    self?.recipesChangedPublisher.send(())
+                    if let updatedRecipe = updatedRecipe {
+                        if self?.moc.context.insertedObjects.contains(updatedRecipe) ?? false {
+                            self?.recipesInsertedPublisher.send(.inserted(updatedRecipe))
+                        } else if self?.moc.context.deletedObjects.contains(updatedRecipe) ?? false {
+                            self?.recipesDeletedPublisher.send(.deleted(updatedRecipe))
+                        } else if self?.moc.context.updatedObjects.contains(updatedRecipe) ?? false {
+                            self?.recipesUpdatedPublisher.send(.updated(updatedRecipe))
+                        }
+                    }
                 }
             })
             .store(in: &cancellables)

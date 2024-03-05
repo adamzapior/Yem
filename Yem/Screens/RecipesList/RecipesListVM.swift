@@ -21,14 +21,32 @@ final class RecipesListVM {
 
     init(repository: DataRepository) {
         self.repository = repository
-
-        repository.recipesChangedPublisher
+        
+        repository.recipesInsertedPublisher
             .sink(receiveValue: { [weak self] _ in
                 Task { [weak self] in
                     await self?.loadRecipes()
                 }
             })
             .store(in: &cancellables)
+
+        
+        repository.recipesUpdatedPublisher
+            .sink(receiveValue: { [weak self] _ in
+                Task { [weak self] in
+                    await self?.loadRecipes()
+                }
+            })
+            .store(in: &cancellables)
+        
+        repository.recipesDeletedPublisher
+            .sink(receiveValue: { [weak self] _ in
+                Task { [weak self] in
+                    await self?.loadRecipes()
+                }
+            })
+            .store(in: &cancellables)
+
     }
 
     // MARK: - Public methods

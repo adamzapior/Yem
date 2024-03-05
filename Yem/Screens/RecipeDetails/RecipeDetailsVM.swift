@@ -23,6 +23,10 @@ final class RecipeDetailsVM {
         self.repository = repository
     }
     
+    deinit {
+        print("DEBUG: RecipeDetailsVM deinit")
+    }
+    
     func toggleFavouriteStatus(recipe: RecipeModel) {
         switch recipe.isFavourite {
         case true:

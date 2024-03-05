@@ -83,7 +83,7 @@ final class CoreDataManager {
 }
 
 extension CoreDataManager {
-    func allRecipesPublisher() -> AnyPublisher<Void, Never> {
+    func allRecipesPublisher() -> AnyPublisher<NSManagedObject?, Never> {
         NotificationCenter.default.publisher(for: NSNotification.Name.NSManagedObjectContextObjectsDidChange, object: context)
             .compactMap { notification in
                 guard let userInfo = notification.userInfo else { return nil }
@@ -92,17 +92,17 @@ extension CoreDataManager {
                 if let inserts = userInfo[NSInsertedObjectsKey] as? Set<NSManagedObject>,
                    inserts.contains(where: { $0 is RecipeEntity })
                 {
-                    return ()
+                    return nil
                 }
                 if let deletes = userInfo[NSDeletedObjectsKey] as? Set<NSManagedObject>,
                    deletes.contains(where: { $0 is RecipeEntity })
                 {
-                    return ()
+                    return nil
                 }
                 if let updates = userInfo[NSUpdatedObjectsKey] as? Set<NSManagedObject>,
-                   updates.contains(where: { $0 is RecipeEntity })
+                   let updatedRecipe = updates.first(where: { $0 is RecipeEntity })
                 {
-                    return ()
+                    return updatedRecipe
                 }
 
                 return nil
