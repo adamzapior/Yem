@@ -17,7 +17,7 @@ class LocalFileManager: FileManager {
             print("Could not convert image to JPEG")
             return false
         }
-        
+
         do {
             let url = URL.documentsDirectory.appendingPathComponent("\(id).jpg")
             try data.write(to: url)
@@ -27,7 +27,6 @@ class LocalFileManager: FileManager {
             return false
         }
     }
-
 
     func loadImage(with id: String) -> UIImage? {
         let url = URL.documentsDirectory.appendingPathComponent("\(id).jpg")
@@ -39,25 +38,32 @@ class LocalFileManager: FileManager {
             return nil
         }
     }
-    
+
     func loadImageAsync(with id: String) async -> UIImage? {
-        if let cachedImage = ImageCache.shared.getImage(for: id) {
-            return cachedImage
-        } else {
-            let url = URL.documentsDirectory.appendingPathComponent("\(id).jpg")
-            do {
+        let url = URL.documentsDirectory.appendingPathComponent("\(id).jpg")
+
+        do {
+            let fileAttributes = try FileManager.default.attributesOfItem(atPath: url.path)
+            let fileModificationDate = fileAttributes[.modificationDate] as? Date
+
+            if let cachedImage = ImageCache.shared.cache.object(forKey: id as NSString),
+               let modificationDate = fileModificationDate,
+               modificationDate <= cachedImage.modificationDate
+            {
+                return cachedImage.image
+            } else {
                 let imageData = try Data(contentsOf: url)
                 if let image = UIImage(data: imageData) {
                     ImageCache.shared.setImage(image, for: id)
                     return image
                 }
-            } catch {
-                print(error.localizedDescription)
             }
-            return nil
+        } catch {
+            print(error.localizedDescription)
         }
-    }
 
+        return nil
+    }
 
     func updateImage(with id: String, newImage: UIImage) -> Bool {
         if let data = newImage.jpegData(compressionQuality: 0.5) {
@@ -91,18 +97,28 @@ class LocalFileManager: FileManager {
     }
 }
 
+class CachedImage {
+    let image: UIImage
+    let modificationDate: Date
+
+    init(image: UIImage, modificationDate: Date) {
+        self.image = image
+        self.modificationDate = modificationDate
+    }
+}
 
 class ImageCache {
     static let shared = ImageCache()
     private init() {}
 
-    var cache = NSCache<NSString, UIImage>()
+    var cache = NSCache<NSString, CachedImage>()
 
     func setImage(_ image: UIImage, for key: String) {
-        cache.setObject(image, forKey: key as NSString)
+        let cachedImage = CachedImage(image: image, modificationDate: Date())
+        cache.setObject(cachedImage, forKey: key as NSString)
     }
 
     func getImage(for key: String) -> UIImage? {
-        return cache.object(forKey: key as NSString)
+        return cache.object(forKey: key as NSString)?.image
     }
 }
