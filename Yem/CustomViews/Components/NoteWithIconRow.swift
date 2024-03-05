@@ -118,7 +118,6 @@ final class NoteWithIconRow: UIView {
 
 extension NoteWithIconRow: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
-        print("smth")
         delegate?.textFieldDidBeginEditing(self, didUpdateText: textView.text)
     }
 

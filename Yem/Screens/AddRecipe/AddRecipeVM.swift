@@ -180,8 +180,7 @@ final class AddRecipeViewModel {
     }
     
     deinit {
-        print("AddRecipe viewmodel deinit")
-        print(instruction)
+        print("DEBUG: AddRecipe viewmodel deinit")
     }
     
     // MARK: - Public methods
@@ -306,7 +305,7 @@ final class AddRecipeViewModel {
         validateForms()
 
         if recipeTitleIsError || servingIsError || difficultyIsError || perpTimeIsError || spicyIsError || categoryIsError {
-            print("Validation failed: Title, serving, difficulty, preparation time, spicy, or category error")
+            print("DEBUG: Validation failed: Title, serving, difficulty, preparation time, spicy, or category error")
             return false
         }
 
@@ -330,25 +329,19 @@ final class AddRecipeViewModel {
         if let image = selectedImage {
             let imageSaved = LocalFileManager.instance.saveImage(with: recipeID.uuidString, image: image)
             if !imageSaved {
-                print("Failed to save image")
                 repository.rollbackTransaction()
                 return false
             }
         }
 
         if !repository.save() {
-            print("Failed to save recipe to Core Data")
             repository.rollbackTransaction()
             return false
         }
 
         repository.endTransaction()
-        print("New recipe saved successfully")
         return true
     }
-
-    
-    
     
 
 
@@ -358,7 +351,6 @@ final class AddRecipeViewModel {
     
     private func saveSelectedImage() -> Bool {
         guard let image = selectedImage else {
-            print("No image selected to save")
             return false
         }
         return LocalFileManager.instance.saveImage(with: recipeID.uuidString, image: image)
@@ -371,7 +363,6 @@ final class AddRecipeViewModel {
             recipeTitleIsError = true
             validationErrors.append(.recipeTitle)
             delegateDetailsError(.recipeTitle)
-            print("called")
         }
     }
     

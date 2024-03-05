@@ -146,11 +146,9 @@ final class AddInstructionSheetVC: UIViewController {
         
         textField.font = UIFont.systemFont(ofSize: UIFont.preferredFont(forTextStyle: .body).pointSize, weight: .regular)
         
-        
         placeholder.snp.makeConstraints { make in
             make.centerX.equalTo(textField)
             make.centerY.equalTo(textField)
-
         }
         
         placeholder.text = "Enter new step..."
@@ -179,11 +177,10 @@ extension AddInstructionSheetVC: AddInstructionSheetVCDelegate {
 
 extension AddInstructionSheetVC: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
-        
         if let text = textView.text {
             viewModel.instruction = text
         }
-        print("smth")
+        
         if viewModel.instruction.isEmpty {
             placeholder.textColor = .clear
         }
@@ -201,7 +198,6 @@ extension AddInstructionSheetVC: UITextViewDelegate {
         }
     }
 }
-
 
 extension AddInstructionSheetVC: MainActionButtonDelegate {
     func mainActionButtonTapped(_ button: MainActionButton) {
