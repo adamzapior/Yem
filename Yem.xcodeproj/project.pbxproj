@@ -320,10 +320,10 @@
 			isa = PBXGroup;
 			children = (
 				58FEC9F52B5880C5005B4C8F /* Enitities */,
-				58D644182B56F4AD0008413A /* CoreDataManager.swift */,
-				58AB57BC2B588E8400053C74 /* DataRepository.swift */,
-				58BBEB962B5B28390058851C /* YemData.xcdatamodeld */,
 				58AA17602B88136000C44578 /* LocalFileManager.swift */,
+				58AB57BC2B588E8400053C74 /* DataRepository.swift */,
+				58D644182B56F4AD0008413A /* CoreDataManager.swift */,
+				58BBEB962B5B28390058851C /* YemData.xcdatamodeld */,
 			);
 			path = Data;
 			sourceTree = "<group>";

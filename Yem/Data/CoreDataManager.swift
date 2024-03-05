@@ -83,30 +83,37 @@ final class CoreDataManager {
 }
 
 extension CoreDataManager {
-    func allRecipesPublisher() -> AnyPublisher<NSManagedObject?, Never> {
+    func allRecipesPublisher() -> AnyPublisher<RecipeChange?, Never> {
         NotificationCenter.default.publisher(for: NSNotification.Name.NSManagedObjectContextObjectsDidChange, object: context)
             .compactMap { notification in
                 guard let userInfo = notification.userInfo else { return nil }
 
-                // Sprawdzanie, czy jakiekolwiek `RecipeEntity` zostało zmienione
+                var recipeChange: RecipeChange?
+
                 if let inserts = userInfo[NSInsertedObjectsKey] as? Set<NSManagedObject>,
-                   inserts.contains(where: { $0 is RecipeEntity })
+                   let insertedRecipe = inserts.first(where: { $0 is RecipeEntity })
                 {
-                    return nil
+                    recipeChange = .inserted(insertedRecipe)
                 }
                 if let deletes = userInfo[NSDeletedObjectsKey] as? Set<NSManagedObject>,
-                   deletes.contains(where: { $0 is RecipeEntity })
+                   let deletedRecipe = deletes.first(where: { $0 is RecipeEntity })
                 {
-                    return nil
+                    recipeChange = .deleted(deletedRecipe)
                 }
                 if let updates = userInfo[NSUpdatedObjectsKey] as? Set<NSManagedObject>,
                    let updatedRecipe = updates.first(where: { $0 is RecipeEntity })
                 {
-                    return updatedRecipe
+                    recipeChange = .updated(updatedRecipe)
                 }
 
-                return nil
+                return recipeChange
             }
             .eraseToAnyPublisher()
     }
+}
+
+enum RecipeChange {
+    case inserted(NSManagedObject)
+    case deleted(NSManagedObject)
+    case updated(NSManagedObject)
 }
