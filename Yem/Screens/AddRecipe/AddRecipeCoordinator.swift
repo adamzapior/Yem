@@ -7,8 +7,9 @@
 
 import UIKit
 
+
 final class AddRecipeCoordinator {
-    var parentCoordinator: RecipesListCoordinator?
+    var parentCoordinator: AddRecipeParentCoordinator?
     var viewModel: AddRecipeViewModel
     weak var navigationController: UINavigationController?
 
@@ -61,4 +62,16 @@ enum AddRecipeRoute {
     case addIngredient
     case instructions
     case addInstruction
+}
+
+protocol AddRecipeParentCoordinator {
+    // Define common functionalities or properties here
+}
+
+// Extend your existing coordinators to conform to this protocol
+extension RecipesListCoordinator: AddRecipeParentCoordinator {
+}
+
+extension RecipeDetailsCoordinator: AddRecipeParentCoordinator {
+    // Implement any required methods or properties
 }

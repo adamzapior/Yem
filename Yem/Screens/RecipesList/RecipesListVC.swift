@@ -134,6 +134,6 @@ extension RecipesListVC {
     }
 
     @objc func addRecipeButtonTapped() {
-        coordinator.goToAddRecipeScreen()
+        coordinator.navigateToAddRecipeScreen()
     }
 }

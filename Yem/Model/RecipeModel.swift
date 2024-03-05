@@ -13,17 +13,27 @@ struct RecipeModel {
     var serving: String
     var perpTimeHours: String
     var perpTimeMinutes: String
-    var spicy: String
-    var category: String
-    var difficulty: String
+    var spicy: RecipeSpicy
+    var category: RecipeCategory
+    var difficulty: RecipeDifficulty
     var ingredientList: [IngredientModel]
     var instructionList: [InstructionModel]
     var isImageSaved: Bool
     var isFavourite: Bool
 }
 
+enum RecipeSpicy: String, CaseIterable {
+    case mild = "Mild"
+    case medium = "Medium"
+    case hot = "Hot"
+    case veryHot = "Very hot"
 
-enum RecipeCategory: String {
+    var displayName: String {
+        return self.rawValue
+    }
+}
+
+enum RecipeCategory: String, CaseIterable {
     case breakfast = "Breakfast"
     case lunch = "Lunch"
     case dinner = "Dinner"
@@ -34,29 +44,19 @@ enum RecipeCategory: String {
     case sideDishes = "Side Dishes"
     case vegan = "Vegan"
     case vegetarian = "Vegetarian"
+    case none = "Not selected" // used only to handle potencial errors in map method
+
+    var displayName: String {
+        return self.rawValue
+    }
 }
 
-extension RecipeModel {
-    static func mapToModel(entity: RecipeEntity) -> RecipeModel {
-        return RecipeModel(id: entity.id,
-                           name: entity.name,
-                           serving: entity.servings,
-                           perpTimeHours: entity.prepTimeHours,
-                           perpTimeMinutes: entity.prepTimeMinutes,
-                           spicy: entity.spicy,
-                           category: entity.category,
-                           difficulty: entity.difficulty,
-                           ingredientList: entity.ingredients.map { list in
-                               IngredientModel(id: list.id,
-                                               value: list.value,
-                                               valueType: list.valueType,
-                                               name: list.name)
-                           }, instructionList: entity.instructions.map { step in
-                               InstructionModel(id: step.id,
-                                                index: step.indexPath,
-                                                text: step.text)
-                           },
-                           isImageSaved: entity.isImageSaved, 
-                           isFavourite: entity.isFavourite)
+enum RecipeDifficulty: String, CaseIterable {
+    case easy = "Easy"
+    case medium = "Medium"
+    case hot = "Hard"
+
+    var displayName: String {
+        return self.rawValue
     }
 }

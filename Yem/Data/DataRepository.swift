@@ -49,6 +49,20 @@ final class DataRepository {
         moc.rollbackTransaction()
     }
 
+    func doesRecipeExist(with id: UUID) -> Bool {
+        let fetchRequest: NSFetchRequest<RecipeEntity> = RecipeEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        fetchRequest.fetchLimit = 1
+
+        do {
+            let count = try moc.context.count(for: fetchRequest)
+            return count > 0
+        } catch {
+            print("Error checking if recipe exists: \(error)")
+            return false
+        }
+    }
+
     func addRecipe(recipe: RecipeModel) {
         let data = RecipeEntity(context: moc.context)
         data.id = recipe.id
@@ -56,9 +70,9 @@ final class DataRepository {
         data.servings = recipe.serving
         data.prepTimeHours = recipe.perpTimeHours
         data.prepTimeMinutes = recipe.perpTimeMinutes
-        data.spicy = recipe.spicy
-        data.category = recipe.category
-        data.difficulty = recipe.difficulty
+        data.spicy = recipe.spicy.rawValue
+        data.category = recipe.category.rawValue
+        data.difficulty = recipe.difficulty.rawValue
         data.isImageSaved = recipe.isImageSaved
         data.isFavourite = recipe.isFavourite
 
@@ -88,8 +102,6 @@ final class DataRepository {
 
         data.instructions = instructionEntities
 
-        print("RecipeEntity created and added to context. Is new object: \(data.isInserted)")
-
         do {
             try moc.context.save() // Zapisz kontekst po dodaniu obiektu
             print("Context saved after adding RecipeEntity")
@@ -98,40 +110,62 @@ final class DataRepository {
         }
     }
 
-//    func updateRecipe(recipe: RecipeModel) {
-//        let fetchRequest: NSFetchRequest<RecipeEntity> = RecipeEntity.fetchRequest()
-//        fetchRequest.predicate = NSPredicate(format: "id == %@", recipe.id as CVarArg)
-//
-//        do {
-//            let results = try moc.context.fetch(fetchRequest)
-//            if let recipeToUpdate = results.first {
-//                // Update the fields
-//                recipeToUpdate.name = recipe.name
-//                recipeToUpdate.servings = recipe.serving
-//                recipeToUpdate.prepTimeHours = recipe.perpTimeHours
-//                recipeToUpdate.prepTimeMinutes = recipe.perpTimeMinutes
-//                recipeToUpdate.spicy = recipe.spicy
-//                recipeToUpdate.category = recipe.category
-//                recipeToUpdate.difficulty = recipe.difficulty
-//                recipeToUpdate.isImageSaved = recipe.isImageSaved
-//                recipeToUpdate.isFavourite = recipe.isFavourite
-//
-//                // Update ingredients
-//                updateIngredients(for: recipeToUpdate, with: recipe.ingredientList)
-//
-//                // Update instructions
-//                updateInstructions(for: recipeToUpdate, with: recipe.instructionList)
-//
-//                // Save the updated context
-//                try moc.context.save()
-//                print("RecipeEntity updated and context saved.")
-//            } else {
-//                print("No RecipeEntity found with the specified ID to update.")
-//            }
-//        } catch {
-//            print("Error updating recipe: \(error)")
-//        }
-//    }
+    func updateRecipe(recipe: RecipeModel) {
+        let fetchRequest: NSFetchRequest<RecipeEntity> = RecipeEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", recipe.id as CVarArg)
+
+        do {
+            let results = try moc.context.fetch(fetchRequest)
+            if let recipeToUpdate = results.first {
+                // Update the fields
+                recipeToUpdate.name = recipe.name
+                recipeToUpdate.servings = recipe.serving
+                recipeToUpdate.prepTimeHours = recipe.perpTimeHours
+                recipeToUpdate.prepTimeMinutes = recipe.perpTimeMinutes
+                recipeToUpdate.spicy = recipe.spicy.rawValue
+                recipeToUpdate.category = recipe.category.rawValue
+                recipeToUpdate.difficulty = recipe.difficulty.rawValue
+                recipeToUpdate.isImageSaved = recipe.isImageSaved
+                recipeToUpdate.isFavourite = recipe.isFavourite
+
+                // Update ingredients
+                var ingredientEntities = Set<IngredientEntity>()
+                for ingredientModel in recipe.ingredientList {
+                    let ingredientEntity = IngredientEntity(context: moc.context)
+                    ingredientEntity.id = ingredientModel.id
+                    ingredientEntity.name = ingredientModel.name
+                    ingredientEntity.value = ingredientModel.value
+                    ingredientEntity.valueType = ingredientModel.valueType
+
+                    ingredientEntities.insert(ingredientEntity)
+                }
+
+                recipeToUpdate.ingredients = ingredientEntities
+
+                // Update instructions
+                var instructionEntities = Set<InstructionEntity>()
+                for instructionList in recipe.instructionList {
+                    let entity = InstructionEntity(context: moc.context)
+
+                    entity.id = UUID()
+                    entity.indexPath = instructionList.index
+                    entity.text = instructionList.text
+
+                    instructionEntities.insert(entity)
+                }
+
+                recipeToUpdate.instructions = instructionEntities
+
+                // Save the updated context
+                try moc.context.save()
+                print("RecipeEntity updated and context saved.")
+            } else {
+                print("No RecipeEntity found with the specified ID to update.")
+            }
+        } catch {
+            print("Error updating recipe: \(error)")
+        }
+    }
 
     func updateRecipeFavouriteStatus(recipeId: UUID, isFavourite: Bool) {
         let fetchRequest: NSFetchRequest<RecipeEntity> = RecipeEntity.fetchRequest()
@@ -213,9 +247,9 @@ extension DataRepository {
             serving: recipeEntity.servings,
             perpTimeHours: recipeEntity.prepTimeHours,
             perpTimeMinutes: recipeEntity.prepTimeMinutes,
-            spicy: recipeEntity.spicy,
-            category: recipeEntity.category,
-            difficulty: recipeEntity.difficulty,
+            spicy: RecipeSpicy(rawValue: recipeEntity.spicy) ?? .medium,
+            category: RecipeCategory(rawValue: recipeEntity.category) ?? .none,
+            difficulty: RecipeDifficulty(rawValue: recipeEntity.difficulty) ?? .medium,
             ingredientList: recipeEntity.ingredients.map { ingredient in
                 IngredientModel(
                     id: ingredient.id,

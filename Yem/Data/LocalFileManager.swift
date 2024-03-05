@@ -59,7 +59,7 @@ class LocalFileManager: FileManager {
     }
 
 
-    func updateImage(with id: String, newImage: UIImage) {
+    func updateImage(with id: String, newImage: UIImage) -> Bool {
         if let data = newImage.jpegData(compressionQuality: 0.5) {
             let url = URL.documentsDirectory.appendingPathComponent("\(id).jpg")
             if fileExists(atPath: url.path) {
@@ -69,12 +69,11 @@ class LocalFileManager: FileManager {
                 } catch {
                     print(error.localizedDescription)
                 }
-            } else {
-                print("Image to update does not exist, saving as new image")
-                saveImage(with: id, image: newImage)
             }
+            return true
         } else {
             print("Could not process new image")
+            return false
         }
     }
 

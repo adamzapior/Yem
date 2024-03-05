@@ -26,6 +26,18 @@ final class RecipeDetailsCoordinator {
         return detailsVC
     }
     
+    func navigateToRecipeEditor() {
+        let viewModel = AddRecipeViewModel(repository: repository, existingRecipe: recipe)
+        
+        let coordinator = AddRecipeCoordinator(navigationController: navigationController, viewModel: viewModel)
+        coordinator.parentCoordinator = self
+
+        let addRecipeVC = coordinator.start()
+        addRecipeVC.hidesBottomBarWhenPushed = true
+
+        (navigationController)?.pushViewController(addRecipeVC, animated: true)
+    }
+    
     func dismissVC() {
         navigationController?.popToRootViewController(animated: true)
     }

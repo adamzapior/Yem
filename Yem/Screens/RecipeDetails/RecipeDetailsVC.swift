@@ -299,12 +299,12 @@ final class RecipeDetailsVC: UIViewController {
     
     private func configureRecipeViewData() {
         nameView.configure(titleText: "Name", valueText: recipe.name)
-        categoryView.configure(titleText: "Category", valueText: recipe.category)
+        categoryView.configure(titleText: "Category", valueText: recipe.category.rawValue)
         servingView.configure(titleText: "Serving", valueText: recipe.serving)
         
         prepTiemView.configure(titleText: "Prep time", valueText: "\(recipe.perpTimeHours)h \(recipe.perpTimeMinutes)min")
-        spicyView.configure(titleText: "Spicy", valueText: recipe.spicy)
-        difficultyView.configure(titleText: "Difficulty", valueText: recipe.difficulty)
+        spicyView.configure(titleText: "Spicy", valueText: recipe.spicy.rawValue)
+        difficultyView.configure(titleText: "Difficulty", valueText: recipe.difficulty.rawValue)
     }
 }
 
@@ -327,6 +327,7 @@ extension RecipeDetailsVC {
     }
     
     @objc func pencilButtonTapped(_ sender: UIBarButtonItem) {
+        coordinator.navigateToRecipeEditor()
         // TODO: edit recipie
     }
 

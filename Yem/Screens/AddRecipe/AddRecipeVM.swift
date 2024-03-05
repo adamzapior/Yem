@@ -11,6 +11,7 @@ import Foundation
 import UIKit
 
 protocol AddRecipeVCDelegate: AnyObject {
+    func loadData()
     func delegateDetailsError(_ type: ValidationErrorTypes)
 }
 
@@ -54,7 +55,7 @@ final class AddRecipeViewModel {
     var difficulty: String = ""
     
     @Published
-    var serving: Int = 0
+    var serving: String = ""
     
     @Published
     var prepTimeHours: String = ""
@@ -70,7 +71,7 @@ final class AddRecipeViewModel {
     
     /// Igredient sheet and vc variables
     @Published
-    var ingredientsList: [IngredientModel] = [IngredientModel(id: UUID(), value: "12", valueType: "12", name: "12")] {
+    var ingredientsList: [IngredientModel] = [] {
         didSet {
             reloadIngredientsTable()
         }
@@ -94,6 +95,9 @@ final class AddRecipeViewModel {
     
     @Published
     var instruction: String = ""
+    
+    @Published
+    var isFavourite: Bool = false
     
     /// Error handling
     /// Recepies
@@ -141,42 +145,37 @@ final class AddRecipeViewModel {
     // MARK: - Properties
     
     /// UIPickerView properties
-    var difficultyRowArray: [String] = ["Easy", "Medium", "Hard"]
+    var servingRowArray: [Int] {
+        return Array(1...36)
+    }
+
+    var timeHoursArray: [Int] {
+        return Array(0...48)
+    }
+
+    var timeMinutesArray: [Int] {
+        return Array(0...59)
+    }
+        
+    var spicyRowArray: [RecipeSpicy] = RecipeSpicy.allCases
     
-    lazy var servingRowArray: [Int] = {
-        var array: [Int] = []
-        for i in 1...36 {
-            array.append(i)
-        }
-        return array
-    }()
+    var categoryRowArray: [RecipeCategory] = RecipeCategory.allCases
     
-    lazy var timeHoursArray: [Int] = {
-        var array: [Int] = []
-        for i in 0...48 {
-            array.append(i)
-        }
-        return array
-    }()
-    
-    lazy var timeMinutesArray: [Int] = {
-        var array: [Int] = []
-        for i in 0...59 {
-            array.append(i)
-        }
-        return array
-    }()
-    
-    lazy var spicyRowArray: [String] = ["Mild", "Medium", "Hot", "Very hot"]
-    
-    lazy var categoryRowArray: [String] = ["Breakfast", "Lunch", "Dinner", "Desserts", "Snacks", "Beverages", "Appetizers", "Side Dishes", "Vegan", "Vegetarian"]
+    var difficultyRowArray: [RecipeDifficulty] = RecipeDifficulty.allCases
     
     lazy var valueTypeArray: [String] = ["Unit", "Grams (g)", "Kilograms (kg)", "Milliliters (ml)", "Liters (L)", "Teaspoons (tsp)", "Tablespoons (Tbsp)", "Cups (c)", "Pinch"]
     
+    var didRecipeExist: Bool = false
+    
     // MARK: - Initialization
     
-    init(repository: DataRepository) {
+    init(repository: DataRepository, existingRecipe: RecipeModel? = nil) {
         self.repository = repository
+        
+        if let recipe = existingRecipe {
+            loadRecipeData(recipe)
+            didRecipeExist = true
+        }
     }
     
     deinit {
@@ -250,53 +249,6 @@ final class AddRecipeViewModel {
     
     /// Save method:
     
-//    func saveRecipe() -> Bool {
-//        validationErrors = []
-//        resetValidationFlags()
-//        resetIgredientValidationFlags()
-//        resetInstructionValidationFlags()
-//        validateForms()
-//
-//        if recipeTitleIsError || servingIsError || difficultyIsError || perpTimeIsError || spicyIsError || categoryIsError {
-//            print("Validation failed: Title, serving, difficulty, preparation time, spicy, or category error")
-//            return false
-//        }
-//
-//        var recipe = RecipeModel(id: recipeID,
-//                                 name: recipeTitle,
-//                                 serving: serving.description,
-//                                 perpTimeHours: prepTimeHours,
-//                                 perpTimeMinutes: prepTimeMinutes,
-//                                 spicy: spicy,
-//                                 category: category,
-//                                 difficulty: difficulty,
-//                                 ingredientList: ingredientsList,
-//                                 instructionList: instructionList,
-//                                 isImageSaved: false)
-//
-//        repository.beginTransaction()
-//
-//        repository.addRecipe(recipe: recipe)
-//        if !repository.save() {
-//            print("Failed to save recipe to Core Data")
-//            repository.rollbackTransaction()
-//            return false
-//        }
-//
-//        let isImageSaved = saveSelectedImage()
-//        if !isImageSaved {
-//            repository.endTransaction()
-//            print("New recipe saved without image")
-//        } else {
-//            recipe.isImageSaved = true
-//            repository.updateRecipe(recipe: recipe)
-//
-//            repository.endTransaction()
-//            print("New recipe saved with image")
-//        }
-//        return true
-//    }
-    
     func saveRecipe() -> Bool {
         validationErrors = []
         resetValidationFlags()
@@ -308,21 +260,59 @@ final class AddRecipeViewModel {
             print("DEBUG: Validation failed: Title, serving, difficulty, preparation time, spicy, or category error")
             return false
         }
+        
+        if repository.doesRecipeExist(with: recipeID) {
+            return updateRecipe()
+        } else {
+            return addNewRecipe()
+        }
+    }
 
+    // MARK: - Private methods
+    
+    /// Load recipe if exsists - method usued when ViewModel is initializated by editing recipe
+    ///
+    
+    private func loadRecipeData(_ recipe: RecipeModel) {
+        recipeID = recipe.id
+        recipeTitle = recipe.name
+        serving = recipe.serving
+        prepTimeHours = recipe.perpTimeHours
+        prepTimeMinutes = recipe.perpTimeMinutes
+        spicy = recipe.spicy.displayName
+        category = recipe.category.displayName
+        difficulty = recipe.difficulty.displayName
+        ingredientsList = recipe.ingredientList
+        instructionList = recipe.instructionList
+        isFavourite = recipe.isFavourite
+        
+        if recipe.isImageSaved {
+            Task {
+                if let image = await LocalFileManager.instance.loadImageAsync(with: recipe.id.uuidString) {
+                    DispatchQueue.main.async { [weak self] in
+                        self?.selectedImage = image
+                    }
+                }
+            }
+        }
+    }
+
+    private func addNewRecipe() -> Bool {
         repository.beginTransaction()
 
         let isImageSaved = selectedImage != nil
-        var recipe = RecipeModel(id: recipeID,
+        let recipe = RecipeModel(id: recipeID,
                                  name: recipeTitle,
                                  serving: serving.description,
                                  perpTimeHours: prepTimeHours,
                                  perpTimeMinutes: prepTimeMinutes,
-                                 spicy: spicy,
-                                 category: category,
-                                 difficulty: difficulty,
+                                 spicy: RecipeSpicy(rawValue: spicy) ?? .medium,
+                                 category: RecipeCategory(rawValue: category) ?? .none,
+                                 difficulty: RecipeDifficulty(rawValue: difficulty) ?? .medium,
                                  ingredientList: ingredientsList,
                                  instructionList: instructionList,
-                                 isImageSaved: isImageSaved)
+                                 isImageSaved: isImageSaved,
+                                 isFavourite: isFavourite)
 
         repository.addRecipe(recipe: recipe)
 
@@ -340,12 +330,46 @@ final class AddRecipeViewModel {
         }
 
         repository.endTransaction()
+        print("DEBUG: New recipe saved successfully")
         return true
     }
     
+    private func updateRecipe() -> Bool {
+        repository.beginTransaction()
 
+        let isImageSaved = selectedImage != nil
+        let recipe = RecipeModel(id: recipeID,
+                                 name: recipeTitle,
+                                 serving: serving.description,
+                                 perpTimeHours: prepTimeHours,
+                                 perpTimeMinutes: prepTimeMinutes,
+                                 spicy: RecipeSpicy(rawValue: spicy) ?? .medium,
+                                 category: RecipeCategory(rawValue: category) ?? .none,
+                                 difficulty: RecipeDifficulty(rawValue: difficulty) ?? .medium,
+                                 ingredientList: ingredientsList,
+                                 instructionList: instructionList,
+                                 isImageSaved: isImageSaved,
+                                 isFavourite: isFavourite)
 
-    // MARK: - Private methods
+        repository.updateRecipe(recipe: recipe)
+
+        if let image = selectedImage {
+            let imageSaved = LocalFileManager.instance.updateImage(with: recipeID.uuidString, newImage: image)
+            if !imageSaved {
+                repository.rollbackTransaction()
+                return false
+            }
+        }
+
+        if !repository.save() {
+            repository.rollbackTransaction()
+            return false
+        }
+
+        repository.endTransaction()
+        print("DEBUG: Recipe updated successfully")
+        return true
+    }
     
     /// Add selectedImage to FileManager
     
@@ -375,7 +399,7 @@ final class AddRecipeViewModel {
     }
     
     private func validateServing() {
-        if serving == 0 {
+        if serving.isEmpty {
             servingIsError = true
             validationErrors.append(.serving)
             delegateDetailsError(.servings)
@@ -492,6 +516,15 @@ final class AddRecipeViewModel {
 // MARK: - Delegate methods
 
 extension AddRecipeViewModel: AddRecipeVCDelegate {
+    func loadData() {
+        if didRecipeExist {
+            DispatchQueue.main.async {
+                self.delegateDetails?.loadData()
+            }
+            print("DEBUG: loadData() from AddRecipeViewModel celled")
+        }
+    }
+    
     func delegateDetailsError(_ type: ValidationErrorTypes) {
         DispatchQueue.main.async {
             self.delegateDetails?.delegateDetailsError(type)

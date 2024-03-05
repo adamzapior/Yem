@@ -77,6 +77,7 @@ final class AddRecipeVC: UIViewController {
         view.backgroundColor = .systemBackground
         title = "Details"
         viewModel.delegateDetails = self
+        viewModel.loadData()
 
         setupNavigationBarButtons()
         
@@ -190,15 +191,15 @@ final class AddRecipeVC: UIViewController {
             switch pickerView.tag {
             case 1:
                 let selectedDifficulty = self.viewModel.difficultyRowArray[selectedRow]
-                self.difficultyCell.textOnButton.text = selectedDifficulty
+                self.difficultyCell.textOnButton.text = selectedDifficulty.displayName
                 self.difficultyCell.textOnButton.textColor = .ui.primaryText
-                self.viewModel.difficulty = selectedDifficulty
+                self.viewModel.difficulty = selectedDifficulty.displayName
             case 2:
                 
                 let selectedServing = self.viewModel.servingRowArray[selectedRow]
                 self.servingCell.textOnButton.text = "\(selectedServing.description) (serving)"
                 self.servingCell.textOnButton.textColor = .ui.primaryText
-                self.viewModel.serving = selectedServing
+                self.viewModel.serving = selectedServing.description
                 
             case 3:
                 let selectedHoursRow = pickerView.selectedRow(inComponent: 0) // Komponent dla godzin
@@ -227,14 +228,14 @@ final class AddRecipeVC: UIViewController {
 
             case 4:
                 let selectedSpicy = self.viewModel.spicyRowArray[selectedRow]
-                self.spicyCell.textOnButton.text = selectedSpicy
+                self.spicyCell.textOnButton.text = selectedSpicy.displayName
                 self.spicyCell.textOnButton.textColor = .ui.primaryText
-                self.viewModel.spicy = selectedSpicy
+                self.viewModel.spicy = selectedSpicy.displayName
             case 5:
                 let selectedCategory = self.viewModel.categoryRowArray[selectedRow]
-                self.categoryCell.textOnButton.text = selectedCategory
+                self.categoryCell.textOnButton.text = selectedCategory.displayName
                 self.categoryCell.textOnButton.textColor = .ui.primaryText
-                self.viewModel.category = selectedCategory
+                self.viewModel.category = selectedCategory.displayName
             default:
                 break
             }
@@ -403,7 +404,7 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
         }
         switch pickerView.tag {
         case 1:
-            label.text = viewModel.difficultyRowArray[row]
+            label.text = viewModel.difficultyRowArray[row].displayName
         case 2:
             label.text = viewModel.servingRowArray[row].description
         case 3:
@@ -416,9 +417,9 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
                 break
             }
         case 4:
-            label.text = viewModel.spicyRowArray[row]
+            label.text = viewModel.spicyRowArray[row].displayName
         case 5:
-            label.text = viewModel.categoryRowArray[row]
+            label.text = viewModel.categoryRowArray[row].displayName
         default:
             label.text = ""
         }
@@ -429,14 +430,14 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
         switch pickerView.tag {
         case 1: // For difficulty
             let selectedDifficulty = viewModel.difficultyRowArray[row]
-            difficultyCell.textOnButton.text = selectedDifficulty
+            difficultyCell.textOnButton.text = selectedDifficulty.displayName
             difficultyCell.textOnButton.textColor = .ui.primaryText
-            viewModel.difficulty = selectedDifficulty
+            viewModel.difficulty = selectedDifficulty.displayName
         case 2:
             let selectedServing = viewModel.servingRowArray[row]
             servingCell.textOnButton.text = "\(selectedServing.description) (serving)"
             servingCell.textOnButton.textColor = .ui.primaryText
-            viewModel.serving = selectedServing
+            viewModel.serving = selectedServing.description
         case 3:
             if component == 0 {
                 let selectedHours = viewModel.timeHoursArray[row].description
@@ -473,14 +474,14 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
             prepTimeCell.textOnButton.textColor = .ui.primaryText
         case 4:
             let selectedSpicy = viewModel.spicyRowArray[row]
-            spicyCell.textOnButton.text = selectedSpicy
+            spicyCell.textOnButton.text = selectedSpicy.displayName
             spicyCell.textOnButton.textColor = .ui.primaryText
-            viewModel.spicy = selectedSpicy
+            viewModel.spicy = selectedSpicy.displayName
         case 5:
             let selectedCategory = viewModel.categoryRowArray[row]
-            categoryCell.textOnButton.text = selectedCategory
+            categoryCell.textOnButton.text = selectedCategory.displayName
             categoryCell.textOnButton.textColor = .ui.primaryText
-            viewModel.category = selectedCategory
+            viewModel.category = selectedCategory.displayName
         default:
             break
         }
@@ -535,6 +536,30 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
 }
 
 extension AddRecipeVC: AddRecipeVCDelegate {
+    func loadData() {
+        if let image = viewModel.selectedImage {
+            addPhotoView.updatePhoto(with: image)
+
+        }
+        
+        self.nameTextfield.textField.text = viewModel.recipeTitle
+        
+        self.servingCell.textOnButton.text = viewModel.serving
+        self.servingCell.textOnButton.textColor = .ui.primaryText
+        
+        self.difficultyCell.textOnButton.text = viewModel.difficulty
+        self.difficultyCell.textOnButton.textColor = .ui.primaryText
+        
+        self.prepTimeCell.textOnButton.text = viewModel.serving.description
+        
+        self.spicyCell.textOnButton.text = viewModel.spicy
+        self.spicyCell.textOnButton.textColor = .ui.primaryText
+        
+        self.categoryCell.textOnButton.text = viewModel.category
+        self.categoryCell.textOnButton.textColor = .ui.primaryText
+        
+    }
+    
     func delegateDetailsError(_ type: ValidationErrorTypes) {
         switch type {
         case .recipeTitle:

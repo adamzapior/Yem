@@ -26,7 +26,7 @@ final class RecipesListCoordinator {
         return rootViewController
     }
     
-    func goToAddRecipeScreen() {
+    func navigateToAddRecipeScreen() {
         let viewModel = AddRecipeViewModel(repository: repository)
         
         let coordinator = AddRecipeCoordinator(navigationController: rootViewController as? UINavigationController, viewModel: viewModel)

@@ -37,4 +37,5 @@ final class RecipeDetailsVM {
     func deleteRecipe(_ recipe: RecipeModel) {
         repository.deleteRecipe(withId: recipe.id)
     }
+    
 }
