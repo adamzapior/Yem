@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 protocol RecipeDetailsVMDelegate: AnyObject {
     func isFavouriteValueChanged(to: Bool)
@@ -26,6 +27,17 @@ final class RecipeDetailsVM {
     deinit {
         print("DEBUG: RecipeDetailsVM deinit")
     }
+    
+    func loadRecipeImage() async -> UIImage? {
+        guard recipe.isImageSaved else {
+            return nil
+        }
+
+        do {
+            return await LocalFileManager.instance.loadImageAsync(with: recipe.id.uuidString)
+        }
+    }
+    
     
     func toggleFavouriteStatus(recipe: RecipeModel) {
         switch recipe.isFavourite {

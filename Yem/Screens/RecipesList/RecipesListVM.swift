@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import UIKit
 
 protocol RecipesListVMDelegate: AnyObject {
     func reloadTable()
@@ -63,6 +64,17 @@ final class RecipesListVM {
             print("Error loading recipes: \(error)")
         }
     }
+    
+    func loadRecipeImage(recipe: RecipeModel) async -> UIImage? {
+        guard recipe.isImageSaved else {
+            return nil
+        }
+
+        do {
+            return await LocalFileManager.instance.loadImageAsync(with: recipe.id.uuidString)
+        }
+    }
+    
 
     // MARK: - Private methods
 }

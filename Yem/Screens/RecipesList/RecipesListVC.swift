@@ -82,19 +82,18 @@ extension RecipesListVC: UICollectionViewDelegate, UICollectionViewDataSource, U
         let data = viewModel.recipes[indexPath.row]
 //        cell.configure(with: data)
 
-        if data.isImageSaved {
-            Task {
-                if let image = await LocalFileManager.instance.loadImageAsync(with: data.id.uuidString) {
-                    DispatchQueue.main.async {
-                        cell.configure(with: data, image: image)
-                    }
-                }
-            }
-        } else {
-            DispatchQueue.main.async {
-                cell.configure(with: data, image: nil)
-            }
-        }
+        Task {
+               if let image = await viewModel.loadRecipeImage(recipe: data) {
+                   DispatchQueue.main.async {
+                       cell.configure(with: data, image: image)
+                   }
+               } else {
+                   DispatchQueue.main.async {
+                       cell.configure(with: data, image: nil)
+                   }
+               }
+           }
+        
         return cell
     }
 

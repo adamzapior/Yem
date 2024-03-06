@@ -83,6 +83,10 @@ final class RecipeDetailsVC: UIViewController {
         
         setupPhotoView()
         
+        Task {
+            await loadPhotoView()
+        }
+        
         setupDetailsSubtitleLabel()
         setupDetailsContainer()
         setupRecipeDetailsViews()
@@ -128,14 +132,12 @@ final class RecipeDetailsVC: UIViewController {
             make.leading.trailing.equalToSuperview().inset(18)
             make.height.equalTo(200)
         }
-        
-        if recipe.isImageSaved {
-            Task {
-                if let image = await LocalFileManager.instance.loadImageAsync(with: recipe.id.uuidString) {
-                    DispatchQueue.main.async { [weak self] in
-                        self?.photoView.updatePhoto(with: image)
-                    }
-                }
+    }
+    
+    private func loadPhotoView() async {
+        do {
+            if let image = await viewModel.loadRecipeImage() {
+                photoView.updatePhoto(with: image)
             }
         }
     }
