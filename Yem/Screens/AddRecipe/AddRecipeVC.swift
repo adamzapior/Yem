@@ -202,8 +202,8 @@ final class AddRecipeVC: UIViewController {
                 self.viewModel.serving = selectedServing.description
                 
             case 3:
-                let selectedHoursRow = pickerView.selectedRow(inComponent: 0) // Komponent dla godzin
-                let selectedMinutesRow = pickerView.selectedRow(inComponent: 1) // Komponent dla minut
+                let selectedHoursRow = pickerView.selectedRow(inComponent: 0)
+                let selectedMinutesRow = pickerView.selectedRow(inComponent: 1)
 
                 let selectedHours = self.viewModel.timeHoursArray[selectedHoursRow].description
                 self.viewModel.prepTimeHours = selectedHours
@@ -334,13 +334,14 @@ extension AddRecipeVC: AddPhotoViewDelegate, UIImagePickerControllerDelegate & U
         }
     }
     
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
         if let image = info[.originalImage] as? UIImage {
             viewModel.selectedImage = image
             addPhotoView.updatePhoto(with: image)
         }
         picker.dismiss(animated: true, completion: nil)
-    }}
+    }
+}
 
 // MARK: - Textfield delegate
 
@@ -372,7 +373,6 @@ extension AddRecipeVC: TextfieldWithIconRowDelegate {
 // MARK: - Button delegate/dataSource
 
 extension AddRecipeVC: PickerWithIconRowDelegate {
-    
     func pickerWithIconRowTappped(_ cell: PickerWithIconRow) {
         switch cell.tag {
         case 1:
@@ -539,25 +539,37 @@ extension AddRecipeVC: AddRecipeVCDelegate {
     func loadData() {
         if let image = viewModel.selectedImage {
             addPhotoView.updatePhoto(with: image)
-
         }
         
-        self.nameTextfield.textField.text = viewModel.recipeTitle
+        nameTextfield.textField.text = viewModel.recipeTitle
         
-        self.servingCell.textOnButton.text = viewModel.serving
-        self.servingCell.textOnButton.textColor = .ui.primaryText
+        servingCell.textOnButton.text = "\(viewModel.serving) (serving)"
+        servingCell.textOnButton.textColor = .ui.primaryText
         
-        self.difficultyCell.textOnButton.text = viewModel.difficulty
-        self.difficultyCell.textOnButton.textColor = .ui.primaryText
+        difficultyCell.textOnButton.text = viewModel.difficulty
+        difficultyCell.textOnButton.textColor = .ui.primaryText
         
-        self.prepTimeCell.textOnButton.text = viewModel.serving.description
+        /// prep time cell
+        var hours = ""
+        var minutes = ""
         
-        self.spicyCell.textOnButton.text = viewModel.spicy
-        self.spicyCell.textOnButton.textColor = .ui.primaryText
+        if viewModel.prepTimeHours != "0", viewModel.prepTimeHours != "1", viewModel.prepTimeHours != "" {
+            hours = "\(viewModel.prepTimeHours) hours"
+        } else if viewModel.prepTimeHours == "1" {
+            hours = "\(viewModel.prepTimeHours) hour"
+        }
+
+        if viewModel.prepTimeMinutes != "0", viewModel.prepTimeMinutes != "" {
+            minutes = "\(viewModel.prepTimeMinutes) min"
+        }
+        prepTimeCell.textOnButton.text = "\(hours) \(minutes)".trimmingCharacters(in: .whitespaces)
+        prepTimeCell.textOnButton.textColor = .ui.primaryText
         
-        self.categoryCell.textOnButton.text = viewModel.category
-        self.categoryCell.textOnButton.textColor = .ui.primaryText
+        spicyCell.textOnButton.text = viewModel.spicy
+        spicyCell.textOnButton.textColor = .ui.primaryText
         
+        categoryCell.textOnButton.text = viewModel.category
+        categoryCell.textOnButton.textColor = .ui.primaryText
     }
     
     func delegateDetailsError(_ type: ValidationErrorTypes) {
