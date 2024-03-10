@@ -12,6 +12,7 @@ struct IngredientModel {
     var value: String
     var valueType: String
     var name: String
+    var isChecked: Bool?
 }
 
 enum IngredientValueType: String, CaseIterable {

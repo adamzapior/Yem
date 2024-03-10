@@ -3,10 +3,12 @@
     <entity name="Entity" representedClassName="Entity" syncable="YES"/>
     <entity name="IngredientEntity" representedClassName="IngredientEntity" syncable="YES">
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isChecked" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="name" attributeType="String"/>
         <attribute name="value" attributeType="String"/>
         <attribute name="valueType" attributeType="String"/>
         <relationship name="recipe" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RecipeEntity" inverseName="ingredients" inverseEntity="RecipeEntity"/>
+        <relationship name="shopingList" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ShopingListEntity" inverseName="ingredient" inverseEntity="ShopingListEntity"/>
     </entity>
     <entity name="InstructionEntity" representedClassName="InstructionEntity" syncable="YES">
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
@@ -29,6 +31,6 @@
         <relationship name="instructions" toMany="YES" deletionRule="Nullify" destinationEntity="InstructionEntity" inverseName="recipe" inverseEntity="InstructionEntity"/>
     </entity>
     <entity name="ShopingListEntity" representedClassName="ShopingListEntity" syncable="YES">
-        <relationship name="list" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="IngredientEntity"/>
+        <relationship name="ingredient" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="IngredientEntity" inverseName="shopingList" inverseEntity="IngredientEntity"/>
     </entity>
 </model>

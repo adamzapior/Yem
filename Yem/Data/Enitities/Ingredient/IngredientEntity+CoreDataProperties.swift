@@ -21,6 +21,7 @@ extension IngredientEntity {
     @NSManaged public var valueType: String
     @NSManaged public var id: UUID
     @NSManaged public var recipe: RecipeEntity
+    @NSManaged public var isChecked: Bool
 
 }
 

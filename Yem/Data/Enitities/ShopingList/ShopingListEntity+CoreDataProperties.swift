@@ -16,7 +16,7 @@ extension ShopingListEntity {
         return NSFetchRequest<ShopingListEntity>(entityName: "ShopingListEntity")
     }
 
-    @NSManaged public var list: NSSet?
+    @NSManaged public var ingredient: Set<IngredientEntity>?
 
 }
 

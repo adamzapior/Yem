@@ -80,6 +80,17 @@ final class CoreDataManager {
             throw error
         }
     }
+    
+    func fetchShopingList() throws -> [ShopingListEntity]? {
+        let request: NSFetchRequest<ShopingListEntity> = ShopingListEntity.fetchRequest()
+
+        do {
+            let results = try context.fetch(request)
+            return results
+        } catch {
+            throw error
+        }
+    }
 }
 
 extension CoreDataManager {

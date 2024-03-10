@@ -94,10 +94,6 @@ final class AddRecipeVC: UIViewController {
         view.addGestureRecognizer(tapGesture)
     }
     
-    deinit {
-        print("AddRecipeVC deinit")
-    }
-    
     // MARK: - UI Setup
 
     private func setupScrollView() {

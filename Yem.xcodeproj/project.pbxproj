@@ -19,6 +19,7 @@
 		58102DE02B24AB9E0090EAE8 /* UITextFieldExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58102DDF2B24AB9E0090EAE8 /* UITextFieldExt.swift */; };
 		5812ADED2B5927E90035EAA5 /* RecipeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5812ADEC2B5927E90035EAA5 /* RecipeModel.swift */; };
 		582E71AE2B62C7BC002D3164 /* ValidationAlertVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 582E71AD2B62C7BC002D3164 /* ValidationAlertVC.swift */; };
+		58354B552B992B1C002C7A40 /* ShopingListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58354B542B992B1C002C7A40 /* ShopingListCell.swift */; };
 		58356AFB2B1FB9E5000AC548 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356AFA2B1FB9E5000AC548 /* AppDelegate.swift */; };
 		58356AFD2B1FB9E5000AC548 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356AFC2B1FB9E5000AC548 /* SceneDelegate.swift */; };
 		58356B072B1FB9E7000AC548 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 58356B062B1FB9E7000AC548 /* Assets.xcassets */; };
@@ -102,6 +103,7 @@
 		58102DDF2B24AB9E0090EAE8 /* UITextFieldExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextFieldExt.swift; sourceTree = "<group>"; };
 		5812ADEC2B5927E90035EAA5 /* RecipeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeModel.swift; sourceTree = "<group>"; };
 		582E71AD2B62C7BC002D3164 /* ValidationAlertVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidationAlertVC.swift; sourceTree = "<group>"; };
+		58354B542B992B1C002C7A40 /* ShopingListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopingListCell.swift; sourceTree = "<group>"; };
 		58356AF72B1FB9E5000AC548 /* Yem.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yem.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		58356AFA2B1FB9E5000AC548 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		58356AFC2B1FB9E5000AC548 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -345,6 +347,7 @@
 				5887468B2B2E075C00EC5E11 /* IngredientsCell.swift */,
 				58BBEB842B5AEDAE0058851C /* InstructionCell.swift */,
 				5858B7402B6B05E3005CB438 /* RecipeCell.swift */,
+				58354B542B992B1C002C7A40 /* ShopingListCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -477,8 +480,8 @@
 			children = (
 				58BBEB8B2B5AF5BC0058851C /* Instruction */,
 				58BBEB782B59C9900058851C /* Ingredient */,
-				58BBEB812B5AD1DF0058851C /* ShopingList */,
 				58BBEB772B59C9860058851C /* Recipes */,
+				58BBEB812B5AD1DF0058851C /* ShopingList */,
 			);
 			path = Enitities;
 			sourceTree = "<group>";
@@ -662,6 +665,7 @@
 				58AB57BD2B588E8400053C74 /* DataRepository.swift in Sources */,
 				586932152B252D1800379C8C /* UIViewExt.swift in Sources */,
 				58BBEB7C2B59C9EB0058851C /* RecipeEntity+CoreDataProperties.swift in Sources */,
+				58354B552B992B1C002C7A40 /* ShopingListCell.swift in Sources */,
 				5812ADED2B5927E90035EAA5 /* RecipeModel.swift in Sources */,
 				58AA17612B88136000C44578 /* LocalFileManager.swift in Sources */,
 				584D1D512B2F396F009D5F28 /* UIViewControllerExt.swift in Sources */,

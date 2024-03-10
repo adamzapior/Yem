@@ -250,6 +250,29 @@ final class DataRepository {
             return .failure(error)
         }
     }
+
+    func fetchShopingList() async -> Result<[IngredientModel], Error> {
+        do {
+            guard let shopingListEntity = try moc.fetchShopingList()?.first else {
+                return .success([]) // Return an empty array if list is empty
+            }
+
+            let ingredientEntities = Array(shopingListEntity.ingredient ?? Set<IngredientEntity>())
+            let result = ingredientEntities.map { ingredientEntity -> IngredientModel in
+                IngredientModel(
+                    id: ingredientEntity.id,
+                    value: ingredientEntity.value,
+                    valueType: ingredientEntity.valueType,
+                    name: ingredientEntity.name,
+                    isChecked: ingredientEntity.isChecked
+                )
+            }
+
+            return .success(result)
+        } catch {
+            return .failure(error)
+        }
+    }
 }
 
 extension DataRepository {

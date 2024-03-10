@@ -22,7 +22,7 @@ final class ShopingListCoordinator {
     }
     
     func start() -> UIViewController {
-        rootViewController = UINavigationController(rootViewController: ShopingListVC(coordinator: self, repository: repository, viewModel: viewModel))
+        rootViewController = UINavigationController(rootViewController: ShopingListVC(coordinator: self, viewModel: viewModel))
         return rootViewController
     }
     
