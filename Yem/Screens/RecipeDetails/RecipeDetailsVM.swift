@@ -38,8 +38,7 @@ final class RecipeDetailsVM {
         }
     }
     
-    
-    func toggleFavouriteStatus(recipe: RecipeModel) {
+    func toggleFavouriteStatus() {
         switch recipe.isFavourite {
         case true:
             repository.updateRecipeFavouriteStatus(recipeId: recipe.id, isFavourite: false)
@@ -49,9 +48,14 @@ final class RecipeDetailsVM {
             delegate?.isFavouriteValueChanged(to: true)
         }
     }
-    
-    func deleteRecipe(_ recipe: RecipeModel) {
+
+    func addIngredientsToShopingList() {
+        repository.addIngredientsToShopingList(ingredients: recipe.ingredientList)
+    }
+
+    func deleteRecipe() {
         repository.deleteRecipe(withId: recipe.id)
     }
+
     
 }

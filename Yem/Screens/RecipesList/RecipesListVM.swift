@@ -26,7 +26,7 @@ final class RecipesListVM {
         repository.recipesInsertedPublisher
             .sink(receiveValue: { [weak self] _ in
                 Task { [weak self] in
-                    await self?.loadRecipes()
+                    self?.loadRecipes()
                 }
             })
             .store(in: &cancellables)
@@ -35,7 +35,7 @@ final class RecipesListVM {
         repository.recipesUpdatedPublisher
             .sink(receiveValue: { [weak self] _ in
                 Task { [weak self] in
-                    await self?.loadRecipes()
+                    self?.loadRecipes()
                 }
             })
             .store(in: &cancellables)
@@ -43,7 +43,7 @@ final class RecipesListVM {
         repository.recipesDeletedPublisher
             .sink(receiveValue: { [weak self] _ in
                 Task { [weak self] in
-                    await self?.loadRecipes()
+                    self?.loadRecipes()
                 }
             })
             .store(in: &cancellables)
@@ -52,8 +52,8 @@ final class RecipesListVM {
 
     // MARK: - Public methods
 
-    func loadRecipes() async {
-        let result = await repository.fetchAllRecipes()
+    func loadRecipes() {
+        let result = repository.fetchAllRecipes()
         switch result {
         case .success(let result):
             DispatchQueue.main.async {

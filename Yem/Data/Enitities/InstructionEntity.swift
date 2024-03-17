@@ -9,8 +9,9 @@
 import Foundation
 import CoreData
 
+@objc(InstructionEntity)
+public class InstructionEntity: NSManagedObject {
 
-extension InstructionEntity {
 
     @nonobjc public class func fetchRequest() -> NSFetchRequest<InstructionEntity> {
         return NSFetchRequest<InstructionEntity>(entityName: "InstructionEntity")
@@ -20,9 +21,5 @@ extension InstructionEntity {
     @NSManaged public var indexPath: Int
     @NSManaged public var text: String
     @NSManaged public var origin: RecipeEntity
-
-}
-
-extension InstructionEntity : Identifiable {
 
 }

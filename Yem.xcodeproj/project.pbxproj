@@ -31,10 +31,12 @@
 		58356B5B2B2267BE000AC548 /* AddRecipeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B5A2B2267BE000AC548 /* AddRecipeVC.swift */; };
 		584D1D512B2F396F009D5F28 /* UIViewControllerExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584D1D502B2F396F009D5F28 /* UIViewControllerExt.swift */; };
 		5858B7412B6B05E3005CB438 /* RecipeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5858B7402B6B05E3005CB438 /* RecipeCell.swift */; };
+		58614D172BA123EF007AD868 /* ShopingListEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58614D152BA123EF007AD868 /* ShopingListEntity.swift */; };
 		586932152B252D1800379C8C /* UIViewExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 586932142B252D1800379C8C /* UIViewExt.swift */; };
 		586932172B25351A00379C8C /* AddRecipeIngredientsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 586932162B25351A00379C8C /* AddRecipeIngredientsVC.swift */; };
 		5869321B2B253AB300379C8C /* AddRecipeInstructionsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5869321A2B253AB300379C8C /* AddRecipeInstructionsVC.swift */; };
 		5869321D2B26112000379C8C /* IconImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5869321C2B26112000379C8C /* IconImage.swift */; };
+		587F971A2BA71A0900F5B937 /* ShopingListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 587F97192BA71A0900F5B937 /* ShopingListModel.swift */; };
 		5887468C2B2E075C00EC5E11 /* IngredientsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5887468B2B2E075C00EC5E11 /* IngredientsCell.swift */; };
 		5887468E2B2E1AA000EC5E11 /* AddIngredientSheetVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5887468D2B2E1AA000EC5E11 /* AddIngredientSheetVC.swift */; };
 		588746912B2E400000EC5E11 /* MainActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 588746902B2E400000EC5E11 /* MainActionButton.swift */; };
@@ -50,15 +52,10 @@
 		58A38F8A2B5D1CFD00007AC1 /* AddInstructionSheetVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A38F892B5D1CFD00007AC1 /* AddInstructionSheetVC.swift */; };
 		58AA17612B88136000C44578 /* LocalFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58AA17602B88136000C44578 /* LocalFileManager.swift */; };
 		58AB57BD2B588E8400053C74 /* DataRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58AB57BC2B588E8400053C74 /* DataRepository.swift */; };
-		58BBEB752B59C94B0058851C /* IngredientEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB732B59C94B0058851C /* IngredientEntity+CoreDataClass.swift */; };
-		58BBEB762B59C94B0058851C /* IngredientEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB742B59C94B0058851C /* IngredientEntity+CoreDataProperties.swift */; };
-		58BBEB7B2B59C9EB0058851C /* RecipeEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB792B59C9EB0058851C /* RecipeEntity+CoreDataClass.swift */; };
-		58BBEB7C2B59C9EB0058851C /* RecipeEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB7A2B59C9EB0058851C /* RecipeEntity+CoreDataProperties.swift */; };
-		58BBEB7F2B5AD1C80058851C /* ShopingListEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB7D2B5AD1C80058851C /* ShopingListEntity+CoreDataClass.swift */; };
-		58BBEB802B5AD1C80058851C /* ShopingListEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB7E2B5AD1C80058851C /* ShopingListEntity+CoreDataProperties.swift */; };
+		58BBEB762B59C94B0058851C /* IngredientEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB742B59C94B0058851C /* IngredientEntity.swift */; };
+		58BBEB7C2B59C9EB0058851C /* RecipeEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB7A2B59C9EB0058851C /* RecipeEntity.swift */; };
 		58BBEB852B5AEDAF0058851C /* InstructionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB842B5AEDAE0058851C /* InstructionCell.swift */; };
-		58BBEB922B5AF5D10058851C /* InstructionEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB8E2B5AF5D10058851C /* InstructionEntity+CoreDataClass.swift */; };
-		58BBEB932B5AF5D10058851C /* InstructionEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB8F2B5AF5D10058851C /* InstructionEntity+CoreDataProperties.swift */; };
+		58BBEB932B5AF5D10058851C /* InstructionEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB8F2B5AF5D10058851C /* InstructionEntity.swift */; };
 		58BBEB952B5B0C3A0058851C /* InstructionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB942B5B0C3A0058851C /* InstructionModel.swift */; };
 		58BBEB982B5B28390058851C /* YemData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB962B5B28390058851C /* YemData.xcdatamodeld */; };
 		58BBEB9B2B5C14C70058851C /* InstructionTableFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB9A2B5C14C70058851C /* InstructionTableFooterView.swift */; };
@@ -119,10 +116,12 @@
 		58356B5A2B2267BE000AC548 /* AddRecipeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRecipeVC.swift; sourceTree = "<group>"; };
 		584D1D502B2F396F009D5F28 /* UIViewControllerExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerExt.swift; sourceTree = "<group>"; };
 		5858B7402B6B05E3005CB438 /* RecipeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeCell.swift; sourceTree = "<group>"; };
+		58614D152BA123EF007AD868 /* ShopingListEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopingListEntity.swift; sourceTree = "<group>"; };
 		586932142B252D1800379C8C /* UIViewExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewExt.swift; sourceTree = "<group>"; };
 		586932162B25351A00379C8C /* AddRecipeIngredientsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRecipeIngredientsVC.swift; sourceTree = "<group>"; };
 		5869321A2B253AB300379C8C /* AddRecipeInstructionsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRecipeInstructionsVC.swift; sourceTree = "<group>"; };
 		5869321C2B26112000379C8C /* IconImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconImage.swift; sourceTree = "<group>"; };
+		587F97192BA71A0900F5B937 /* ShopingListModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopingListModel.swift; sourceTree = "<group>"; };
 		5887468B2B2E075C00EC5E11 /* IngredientsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientsCell.swift; sourceTree = "<group>"; };
 		5887468D2B2E1AA000EC5E11 /* AddIngredientSheetVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddIngredientSheetVC.swift; sourceTree = "<group>"; };
 		588746902B2E400000EC5E11 /* MainActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainActionButton.swift; sourceTree = "<group>"; };
@@ -138,15 +137,10 @@
 		58A38F892B5D1CFD00007AC1 /* AddInstructionSheetVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddInstructionSheetVC.swift; sourceTree = "<group>"; };
 		58AA17602B88136000C44578 /* LocalFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFileManager.swift; sourceTree = "<group>"; };
 		58AB57BC2B588E8400053C74 /* DataRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataRepository.swift; sourceTree = "<group>"; };
-		58BBEB732B59C94B0058851C /* IngredientEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IngredientEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
-		58BBEB742B59C94B0058851C /* IngredientEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IngredientEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		58BBEB792B59C9EB0058851C /* RecipeEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RecipeEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
-		58BBEB7A2B59C9EB0058851C /* RecipeEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RecipeEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		58BBEB7D2B5AD1C80058851C /* ShopingListEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ShopingListEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
-		58BBEB7E2B5AD1C80058851C /* ShopingListEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ShopingListEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		58BBEB742B59C94B0058851C /* IngredientEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientEntity.swift; sourceTree = "<group>"; };
+		58BBEB7A2B59C9EB0058851C /* RecipeEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeEntity.swift; sourceTree = "<group>"; };
 		58BBEB842B5AEDAE0058851C /* InstructionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionCell.swift; sourceTree = "<group>"; };
-		58BBEB8E2B5AF5D10058851C /* InstructionEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "InstructionEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
-		58BBEB8F2B5AF5D10058851C /* InstructionEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "InstructionEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		58BBEB8F2B5AF5D10058851C /* InstructionEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionEntity.swift; sourceTree = "<group>"; };
 		58BBEB942B5B0C3A0058851C /* InstructionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionModel.swift; sourceTree = "<group>"; };
 		58BBEB972B5B28390058851C /* YemData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = YemData.xcdatamodel; sourceTree = "<group>"; };
 		58BBEB9A2B5C14C70058851C /* InstructionTableFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionTableFooterView.swift; sourceTree = "<group>"; };
@@ -215,6 +209,7 @@
 				5812ADEC2B5927E90035EAA5 /* RecipeModel.swift */,
 				580ED3832B2513C000B4A9F0 /* IngredientModel.swift */,
 				58BBEB942B5B0C3A0058851C /* InstructionModel.swift */,
+				587F97192BA71A0900F5B937 /* ShopingListModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -396,42 +391,6 @@
 			path = RecipeDetails;
 			sourceTree = "<group>";
 		};
-		58BBEB772B59C9860058851C /* Recipes */ = {
-			isa = PBXGroup;
-			children = (
-				58BBEB792B59C9EB0058851C /* RecipeEntity+CoreDataClass.swift */,
-				58BBEB7A2B59C9EB0058851C /* RecipeEntity+CoreDataProperties.swift */,
-			);
-			path = Recipes;
-			sourceTree = "<group>";
-		};
-		58BBEB782B59C9900058851C /* Ingredient */ = {
-			isa = PBXGroup;
-			children = (
-				58BBEB732B59C94B0058851C /* IngredientEntity+CoreDataClass.swift */,
-				58BBEB742B59C94B0058851C /* IngredientEntity+CoreDataProperties.swift */,
-			);
-			path = Ingredient;
-			sourceTree = "<group>";
-		};
-		58BBEB812B5AD1DF0058851C /* ShopingList */ = {
-			isa = PBXGroup;
-			children = (
-				58BBEB7D2B5AD1C80058851C /* ShopingListEntity+CoreDataClass.swift */,
-				58BBEB7E2B5AD1C80058851C /* ShopingListEntity+CoreDataProperties.swift */,
-			);
-			path = ShopingList;
-			sourceTree = "<group>";
-		};
-		58BBEB8B2B5AF5BC0058851C /* Instruction */ = {
-			isa = PBXGroup;
-			children = (
-				58BBEB8E2B5AF5D10058851C /* InstructionEntity+CoreDataClass.swift */,
-				58BBEB8F2B5AF5D10058851C /* InstructionEntity+CoreDataProperties.swift */,
-			);
-			path = Instruction;
-			sourceTree = "<group>";
-		};
 		58BBEB992B5C14980058851C /* TableViewsHeader+Footer */ = {
 			isa = PBXGroup;
 			children = (
@@ -478,10 +437,10 @@
 		58FEC9F52B5880C5005B4C8F /* Enitities */ = {
 			isa = PBXGroup;
 			children = (
-				58BBEB8B2B5AF5BC0058851C /* Instruction */,
-				58BBEB782B59C9900058851C /* Ingredient */,
-				58BBEB772B59C9860058851C /* Recipes */,
-				58BBEB812B5AD1DF0058851C /* ShopingList */,
+				58BBEB7A2B59C9EB0058851C /* RecipeEntity.swift */,
+				58BBEB742B59C94B0058851C /* IngredientEntity.swift */,
+				58BBEB8F2B5AF5D10058851C /* InstructionEntity.swift */,
+				58614D152BA123EF007AD868 /* ShopingListEntity.swift */,
 			);
 			path = Enitities;
 			sourceTree = "<group>";
@@ -625,7 +584,6 @@
 				589A65CC2B85607D0018779B /* RecipeDetailsVM.swift in Sources */,
 				58BBEB982B5B28390058851C /* YemData.xcdatamodeld in Sources */,
 				58C5814E2B94BB49000D3B7D /* IngredientView.swift in Sources */,
-				58BBEB752B59C94B0058851C /* IngredientEntity+CoreDataClass.swift in Sources */,
 				58D5F9C02B27A84700A72619 /* PickerWithIconRow.swift in Sources */,
 				58356B472B20E0DB000AC548 /* ShopingListVC.swift in Sources */,
 				58BBEB9B2B5C14C70058851C /* InstructionTableFooterView.swift in Sources */,
@@ -640,8 +598,7 @@
 				58356B492B20E0ED000AC548 /* RecipesListVC.swift in Sources */,
 				58D5E7D92B3C6FE2007FC9E8 /* OnTapAnimation.swift in Sources */,
 				58356AFB2B1FB9E5000AC548 /* AppDelegate.swift in Sources */,
-				58BBEB7B2B59C9EB0058851C /* RecipeEntity+CoreDataClass.swift in Sources */,
-				58BBEB922B5AF5D10058851C /* InstructionEntity+CoreDataClass.swift in Sources */,
+				58614D172BA123EF007AD868 /* ShopingListEntity.swift in Sources */,
 				5858B7412B6B05E3005CB438 /* RecipeCell.swift in Sources */,
 				58BBEB9D2B5C18840058851C /* InstructionTableHeaderView.swift in Sources */,
 				580ED3822B25068100B4A9F0 /* ColorTheme.swift in Sources */,
@@ -658,26 +615,25 @@
 				5899294C2B44851F00FAB070 /* ShopingListCoordinator.swift in Sources */,
 				589929482B44843A00FAB070 /* MainCoordinator.swift in Sources */,
 				5887468E2B2E1AA000EC5E11 /* AddIngredientSheetVC.swift in Sources */,
-				58BBEB802B5AD1C80058851C /* ShopingListEntity+CoreDataProperties.swift in Sources */,
 				58356B5B2B2267BE000AC548 /* AddRecipeVC.swift in Sources */,
 				58C66A4F2B5D3E000042C7CD /* NoteWithIconRow.swift in Sources */,
 				588746912B2E400000EC5E11 /* MainActionButton.swift in Sources */,
 				58AB57BD2B588E8400053C74 /* DataRepository.swift in Sources */,
 				586932152B252D1800379C8C /* UIViewExt.swift in Sources */,
-				58BBEB7C2B59C9EB0058851C /* RecipeEntity+CoreDataProperties.swift in Sources */,
+				58BBEB7C2B59C9EB0058851C /* RecipeEntity.swift in Sources */,
 				58354B552B992B1C002C7A40 /* ShopingListCell.swift in Sources */,
 				5812ADED2B5927E90035EAA5 /* RecipeModel.swift in Sources */,
 				58AA17612B88136000C44578 /* LocalFileManager.swift in Sources */,
 				584D1D512B2F396F009D5F28 /* UIViewControllerExt.swift in Sources */,
-				58BBEB932B5AF5D10058851C /* InstructionEntity+CoreDataProperties.swift in Sources */,
+				58BBEB932B5AF5D10058851C /* InstructionEntity.swift in Sources */,
 				58D5F9C22B27B3F600A72619 /* TextfieldWithIconRow.swift in Sources */,
-				58BBEB762B59C94B0058851C /* IngredientEntity+CoreDataProperties.swift in Sources */,
+				58BBEB762B59C94B0058851C /* IngredientEntity.swift in Sources */,
 				58102DDB2B249F900090EAE8 /* AddRecipeVM.swift in Sources */,
 				5887468C2B2E075C00EC5E11 /* IngredientsCell.swift in Sources */,
 				580ED3842B2513C000B4A9F0 /* IngredientModel.swift in Sources */,
 				5899294E2B44946000FAB070 /* AddRecipeCoordinator.swift in Sources */,
+				587F971A2BA71A0900F5B937 /* ShopingListModel.swift in Sources */,
 				582E71AE2B62C7BC002D3164 /* ValidationAlertVC.swift in Sources */,
-				58BBEB7F2B5AD1C80058851C /* ShopingListEntity+CoreDataClass.swift in Sources */,
 				58D644192B56F4AD0008413A /* CoreDataManager.swift in Sources */,
 				58102DE02B24AB9E0090EAE8 /* UITextFieldExt.swift in Sources */,
 				58F2F8442B9131D700ACE336 /* RecipeDetailsView.swift in Sources */,

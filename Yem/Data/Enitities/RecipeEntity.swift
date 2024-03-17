@@ -9,6 +9,12 @@
 import CoreData
 import Foundation
 
+@objc(RecipeEntity)
+public class RecipeEntity: NSManagedObject {
+
+}
+
+
 public extension RecipeEntity {
     @nonobjc class func fetchRequest() -> NSFetchRequest<RecipeEntity> {
         return NSFetchRequest<RecipeEntity>(entityName: "RecipeEntity")

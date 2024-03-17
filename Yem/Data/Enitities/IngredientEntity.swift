@@ -9,8 +9,8 @@
 import Foundation
 import CoreData
 
-
-extension IngredientEntity {
+@objc(IngredientEntity)
+public class IngredientEntity: NSManagedObject {
 
     @nonobjc public class func fetchRequest() -> NSFetchRequest<IngredientEntity> {
         return NSFetchRequest<IngredientEntity>(entityName: "IngredientEntity")
@@ -21,10 +21,10 @@ extension IngredientEntity {
     @NSManaged public var valueType: String
     @NSManaged public var id: UUID
     @NSManaged public var recipe: RecipeEntity
-    @NSManaged public var isChecked: Bool
 
 }
 
 extension IngredientEntity: Identifiable {
 
 }
+

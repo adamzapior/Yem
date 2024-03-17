@@ -32,7 +32,7 @@ final class ShopingListVC: UIViewController {
         viewModel.delegate = self
 
         Task {
-            await viewModel.loadIngredients()
+            await viewModel.loadShopingList()
         }
 
         setupTableView()
@@ -115,7 +115,7 @@ extension ShopingListVC: ShopingListCellDelegate {
             return
         }
 
-        var ingredient: IngredientModel
+        var ingredient: ShopingListModel
         switch indexPath.section {
         case ShopingListType.unchecked.rawValue:
             ingredient = viewModel.uncheckedList[indexPath.row]

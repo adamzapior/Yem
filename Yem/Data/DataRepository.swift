@@ -9,22 +9,25 @@ import Combine
 import CoreData
 import Foundation
 
-protocol DataRepositoryProtocol {
-    func save()
-    func fetchAllRecipes() async -> Result<[RecipeEntity], DataRepositoryError>
-    func searchByQuery()
-    func delete()
-}
+//protocol DataRepositoryProtocol {
+//    func save()
+//    func fetchAllRecipes() async -> Result<[RecipeEntity], DataRepositoryError>
+//    func searchByQuery()
+//    func delete()
+//}
 
 final class DataRepository {
     let moc = CoreDataManager.shared
     var cancellables = Set<AnyCancellable>()
 
-    var recipesInsertedPublisher = PassthroughSubject<RecipeChange, Never>()
+    var recipesInsertedPublisher = PassthroughSubject<ObjectChange, Never>()
 
-    var recipesDeletedPublisher = PassthroughSubject<RecipeChange, Never>()
+    var recipesDeletedPublisher = PassthroughSubject<ObjectChange, Never>()
 
-    var recipesUpdatedPublisher = PassthroughSubject<RecipeChange, Never>()
+    var recipesUpdatedPublisher = PassthroughSubject<ObjectChange, Never>()
+
+    var shopingListPublisher = PassthroughSubject<ObjectChange, Never>()
+
 
     init() {
         moc.allRecipesPublisher()
@@ -38,6 +41,23 @@ final class DataRepository {
                             self?.recipesDeletedPublisher.send(.deleted(deletedRecipe))
                         case .updated(let updatedRecipe):
                             self?.recipesUpdatedPublisher.send(.updated(updatedRecipe))
+                        }
+                    }
+                }
+            })
+            .store(in: &cancellables)
+
+        moc.shopingListPublisher()
+            .sink(receiveValue: { [weak self] recipeChange in
+                Task { [weak self] in
+                    if let recipeChange = recipeChange {
+                        switch recipeChange {
+                        case .inserted(let insertedRecipe):
+                            self?.shopingListPublisher.send(.inserted(insertedRecipe))
+                        case .deleted(let deletedRecipe):
+                            self?.shopingListPublisher.send(.deleted(deletedRecipe))
+                        case .updated(let updatedRecipe):
+                            self?.shopingListPublisher.send(.updated(updatedRecipe))
                         }
                     }
                 }
@@ -71,7 +91,7 @@ final class DataRepository {
             let count = try moc.context.count(for: fetchRequest)
             return count > 0
         } catch {
-            print("Error checking if recipe exists: \(error)")
+            print("DEBUG: Error checking if recipe exists: \(error)")
             return false
         }
     }
@@ -116,10 +136,10 @@ final class DataRepository {
         data.instructions = instructionEntities
 
         do {
-            try moc.context.save() // Zapisz kontekst po dodaniu obiektu
-            print("Context saved after adding RecipeEntity")
+            try moc.context.save()
+            print("DEBUG: Context saved after adding RecipeEntity")
         } catch {
-            print("Error saving context: \(error)")
+            print("DEBUG: Error saving context: \(error)")
         }
     }
 
@@ -171,12 +191,12 @@ final class DataRepository {
 
                 // Save the updated context
                 try moc.context.save()
-                print("RecipeEntity updated and context saved.")
+                print("DEBUG: RecipeEntity updated and context saved.")
             } else {
-                print("No RecipeEntity found with the specified ID to update.")
+                print("DEBUG: No RecipeEntity found with the specified ID to update.")
             }
         } catch {
-            print("Error updating recipe: \(error)")
+            print("DEBUG: Error updating recipe: \(error)")
         }
     }
 
@@ -187,16 +207,16 @@ final class DataRepository {
         do {
             let recipesToUpdate = try moc.context.fetch(fetchRequest)
             guard let recipeToUpdate = recipesToUpdate.first else {
-                print("No RecipeEntity found with the specified ID to update.")
+                print("DEBUG: No RecipeEntity found with the specified ID to update.")
                 return
             }
 
             recipeToUpdate.isFavourite = isFavourite
 
             try moc.context.save()
-            print("RecipeEntity favourite status updated and context saved.")
+            print("DEBUG: RecipeEntity favourite status updated and context saved.")
         } catch {
-            print("Error updating recipe's favourite status: \(error)")
+            print("DEBUG: Error updating recipe's favourite status: \(error)")
         }
     }
 
@@ -211,18 +231,18 @@ final class DataRepository {
             if let recipeToDelete = results.first {
                 moc.context.delete(recipeToDelete)
                 try moc.context.save()
-                print("RecipeEntity deleted and context saved.")
+                print("DEBUG: RecipeEntity deleted and context saved.")
             } else {
-                print("No RecipeEntity found with the specified ID.")
+                print("DEBUG: No RecipeEntity found with the specified ID.")
             }
         } catch {
-            print("Error deleting recipe: \(error)")
+            print("DEBUG: Error deleting recipe: \(error)")
         }
     }
 
     // MARK: Fetch methods
 
-    func fetchAllRecipes() async -> Result<[RecipeModel], Error> {
+    func fetchAllRecipes() -> Result<[RecipeModel], Error> {
         do {
             let recipes = try moc.fetchAllRecipes()
 
@@ -235,7 +255,7 @@ final class DataRepository {
         }
     }
 
-    func fetchRecipesWithName(_ name: String) async -> Result<[RecipeModel]?, Error> {
+    func fetchRecipesWithName(_ name: String) -> Result<[RecipeModel]?, Error> {
         do {
             guard let recipes = try moc.fetchRecipesWithName(name) else {
                 return .success(nil)
@@ -251,26 +271,41 @@ final class DataRepository {
         }
     }
 
-    func fetchShopingList() async -> Result<[IngredientModel], Error> {
+    // MARK: Shoping list
+
+    func fetchShopingList(isChecked: Bool) -> Result<[ShopingListModel], Error> {
         do {
-            guard let shopingListEntity = try moc.fetchShopingList()?.first else {
-                return .success([]) // Return an empty array if list is empty
-            }
+            let list = try moc.fetchShopingList(isChecked: isChecked).compactMap { $0 }
 
-            let ingredientEntities = Array(shopingListEntity.ingredient ?? Set<IngredientEntity>())
-            let result = ingredientEntities.map { ingredientEntity -> IngredientModel in
-                IngredientModel(
-                    id: ingredientEntity.id,
-                    value: ingredientEntity.value,
-                    valueType: ingredientEntity.valueType,
-                    name: ingredientEntity.name,
-                    isChecked: ingredientEntity.isChecked
-                )
+            let result = list.map { list -> ShopingListModel in
+                ShopingListModel(id: list.id,
+                                 isChecked: list.isChecked,
+                                 name: list.name,
+                                 value: list.value,
+                                 valueType: list.valueType)
             }
-
             return .success(result)
         } catch {
             return .failure(error)
+        }
+    }
+
+    func addIngredientsToShopingList(ingredients: [IngredientModel]) {
+        let data = ShopingListEntity(context: moc.context)
+        data.id = UUID()
+        data.isChecked = false
+
+        for ingredient in ingredients {
+            data.name = ingredient.name
+            data.value = ingredient.value
+            data.valueType = ingredient.valueType
+        }
+
+        do {
+            try moc.context.save()
+            print("DEBUG: Ingredients added to shopping list and context saved.")
+        } catch {
+            print("DEBUG: Error adding ingredients to shopping list: \(error)")
         }
     }
 }

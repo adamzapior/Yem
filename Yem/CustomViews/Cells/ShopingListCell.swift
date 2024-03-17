@@ -68,14 +68,14 @@ class ShopingListCell: UITableViewCell {
         }
     }
     
-    func configure(with model: IngredientModel, type: ShopingListCellType) {
+    func configure(with model: ShopingListModel, type: ShopingListCellType) {
         cellType = type
         
         valueLabel.text = model.value
         valueTypeLabel.text = model.valueType
         ingredientNameLabel.text = model.name
         
-        if model.isChecked ?? false {
+        if model.isChecked {
             checklistIcon.image = UIImage(systemName: filledCircleIconString)
         } else {
             checklistIcon.image = UIImage(systemName: checklistIconString)

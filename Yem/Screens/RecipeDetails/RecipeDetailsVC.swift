@@ -319,22 +319,19 @@ extension RecipeDetailsVC {
     }
     
     @objc func basketButtonTapped(_ sender: UIBarButtonItem) {
-        // TODO: add ingredients from recipie to shoping list
+        viewModel.addIngredientsToShopingList()
     }
 
     @objc func bookmarkButtonTapped(_ sender: UIBarButtonItem) {
-        viewModel.toggleFavouriteStatus(recipe: recipe)
-//        isBookmarked.toggle()
-        // TODO: add recipie to favourites list
+        viewModel.toggleFavouriteStatus()
     }
     
     @objc func pencilButtonTapped(_ sender: UIBarButtonItem) {
         coordinator.navigateToRecipeEditor()
-        // TODO: edit recipie
     }
 
     @objc func trashButtonTapped(_ sender: UIBarButtonItem) {
-        viewModel.deleteRecipe(recipe)
+        viewModel.deleteRecipe()
         coordinator.dismissVC()
     }
 }
