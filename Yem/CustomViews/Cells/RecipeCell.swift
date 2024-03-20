@@ -35,7 +35,7 @@ class RecipeCell: UICollectionViewCell {
     }()
     
     var titleLabel = ReusableTextLabel(fontStyle: .title3, fontWeight: .semibold, textColor: .ui.primaryText)
-    var perpTimeLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
+    var perpTimeLabel = ReusableTextLabel(fontStyle: .footnote, fontWeight: .regular, textColor: .ui.secondaryText)
     var spicyIcon = IconImage(systemImage: "leaf", color: .ui.theme, textStyle: .body)
 
     override init(frame: CGRect) {
@@ -52,7 +52,6 @@ class RecipeCell: UICollectionViewCell {
     
     func configure(with model: RecipeModel, image: UIImage?) {
         titleLabel.text = model.name
-        perpTimeLabel.text = model.perpTimeHours
         
         if let image = image {
             recipeImage.image = image
@@ -60,6 +59,20 @@ class RecipeCell: UICollectionViewCell {
         } else {
             recipeImage.isHidden = true
         }
+        
+        var hours = ""
+        var minutes = ""
+        
+        if model.perpTimeHours != "0", model.perpTimeHours != "1", model.perpTimeHours != "" {
+            hours = "\(model.perpTimeHours) hours"
+        } else if model.perpTimeHours == "1" {
+            hours = "\(model.perpTimeHours) hour"
+        }
+
+        if model.perpTimeMinutes != "0", model.perpTimeMinutes != "" {
+            minutes = "\(model.perpTimeMinutes) min"
+        }
+        self.perpTimeLabel.text = "\(hours) \(minutes)".trimmingCharacters(in: .whitespaces)
     }
     
     private func setupUI() {
@@ -91,20 +104,29 @@ class RecipeCell: UICollectionViewCell {
             make.leading.equalTo(containerView.snp.leading).offset(6)
             make.trailing.equalTo(containerView.snp.trailing).offset(-6)
             make.bottom.equalTo(containerView.snp.bottom).offset(-4)
+            make.height.greaterThanOrEqualTo(40)
         }
         
         spicyIcon.snp.makeConstraints { make in
-            make.top.equalTo(cookingInfoContainerView.snp.top).offset(4)
+            make.top.equalTo(cookingInfoContainerView.snp.top).offset(6)
             make.leading.equalTo(cookingInfoContainerView.snp.leading).offset(9)
             make.height.width.equalTo(24)
-            make.bottom.equalTo(cookingInfoContainerView.snp.bottom).offset(-6)
+            make.bottom.lessThanOrEqualTo(cookingInfoContainerView.snp.bottom).offset(-6)
         }
         
         perpTimeLabel.snp.makeConstraints { make in
             make.top.equalTo(cookingInfoContainerView.snp.top).offset(6)
             make.leading.equalTo(spicyIcon.snp.trailing).offset(6)
             make.bottom.equalTo(cookingInfoContainerView.snp.bottom).offset(-6)
+            make.trailing.equalTo(cookingInfoContainerView.snp.trailing).offset(-2)
         }
+
+        
+        cookingInfoContainerView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        cookingInfoContainerView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+
+        perpTimeLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        perpTimeLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
     }
     
     private func addTextShadow() {
