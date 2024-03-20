@@ -19,6 +19,10 @@ struct ColorTheme {
     var cancelBackground = UIColor(named: "cancelBackground")
     var divider = UIColor(named: "divider")
     var placeholderError = UIColor(named: "placeholderError")
+    var spicyMild = UIColor(named: "spicyMild")
+    var spicyMedium = UIColor(named: "spicyMedium")
+    var spicyHot = UIColor(named: "spicyHot")
+    var spicyVeryHot = UIColor(named: "spicyVeryHot")
 }
 
 extension UIColor {

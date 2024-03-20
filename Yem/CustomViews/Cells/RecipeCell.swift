@@ -72,7 +72,18 @@ class RecipeCell: UICollectionViewCell {
         if model.perpTimeMinutes != "0", model.perpTimeMinutes != "" {
             minutes = "\(model.perpTimeMinutes) min"
         }
-        self.perpTimeLabel.text = "\(hours) \(minutes)".trimmingCharacters(in: .whitespaces)
+        perpTimeLabel.text = "\(hours) \(minutes)".trimmingCharacters(in: .whitespaces)
+        
+        switch model.spicy {
+        case .mild:
+            spicyIcon.tintColor = .ui.spicyMild
+        case .medium:
+            spicyIcon.tintColor = .ui.spicyMedium
+        case .hot:
+            spicyIcon.tintColor = .ui.spicyHot
+        case .veryHot:
+            spicyIcon.tintColor = .ui.spicyVeryHot
+        }
     }
     
     private func setupUI() {
@@ -121,7 +132,6 @@ class RecipeCell: UICollectionViewCell {
             make.trailing.equalTo(cookingInfoContainerView.snp.trailing).offset(-2)
         }
 
-        
         cookingInfoContainerView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         cookingInfoContainerView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
 
