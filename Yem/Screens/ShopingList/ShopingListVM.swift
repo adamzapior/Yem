@@ -28,7 +28,6 @@ final class ShopingListVM {
             .sink(receiveValue: { [weak self] _ in
                 Task { [weak self] in
                     self?.loadShopingList()
-                    print("called")
                 }
             })
             .store(in: &cancellables)
@@ -65,9 +64,8 @@ final class ShopingListVM {
             ingredient.isChecked = false
             uncheckedList.append(ingredient)
         }
-
-        _ = repository.save()
-
+        
+        repository.updateShopingList(shopingList: ingredient)
         reloadTable()
     }
 }

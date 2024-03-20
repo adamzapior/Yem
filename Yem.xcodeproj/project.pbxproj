@@ -18,6 +18,7 @@
 		58102DDE2B24A3150090EAE8 /* ShopingListVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58102DDD2B24A3150090EAE8 /* ShopingListVM.swift */; };
 		58102DE02B24AB9E0090EAE8 /* UITextFieldExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58102DDF2B24AB9E0090EAE8 /* UITextFieldExt.swift */; };
 		5812ADED2B5927E90035EAA5 /* RecipeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5812ADEC2B5927E90035EAA5 /* RecipeModel.swift */; };
+		581F14212BA8AC3B0046FFA8 /* DualOptionAlertVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581F14202BA8AC3B0046FFA8 /* DualOptionAlertVC.swift */; };
 		582E71AE2B62C7BC002D3164 /* ValidationAlertVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 582E71AD2B62C7BC002D3164 /* ValidationAlertVC.swift */; };
 		58354B552B992B1C002C7A40 /* ShopingListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58354B542B992B1C002C7A40 /* ShopingListCell.swift */; };
 		58356AFB2B1FB9E5000AC548 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356AFA2B1FB9E5000AC548 /* AppDelegate.swift */; };
@@ -99,6 +100,7 @@
 		58102DDD2B24A3150090EAE8 /* ShopingListVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopingListVM.swift; sourceTree = "<group>"; };
 		58102DDF2B24AB9E0090EAE8 /* UITextFieldExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextFieldExt.swift; sourceTree = "<group>"; };
 		5812ADEC2B5927E90035EAA5 /* RecipeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeModel.swift; sourceTree = "<group>"; };
+		581F14202BA8AC3B0046FFA8 /* DualOptionAlertVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DualOptionAlertVC.swift; sourceTree = "<group>"; };
 		582E71AD2B62C7BC002D3164 /* ValidationAlertVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidationAlertVC.swift; sourceTree = "<group>"; };
 		58354B542B992B1C002C7A40 /* ShopingListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopingListCell.swift; sourceTree = "<group>"; };
 		58356AF72B1FB9E5000AC548 /* Yem.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yem.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -242,6 +244,7 @@
 			isa = PBXGroup;
 			children = (
 				582E71AD2B62C7BC002D3164 /* ValidationAlertVC.swift */,
+				581F14202BA8AC3B0046FFA8 /* DualOptionAlertVC.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -610,6 +613,7 @@
 				58356AFD2B1FB9E5000AC548 /* SceneDelegate.swift in Sources */,
 				58BBEB852B5AEDAF0058851C /* InstructionCell.swift in Sources */,
 				58EBB0772B227B82000EB128 /* PhotoView.swift in Sources */,
+				581F14212BA8AC3B0046FFA8 /* DualOptionAlertVC.swift in Sources */,
 				589929502B44A28100FAB070 /* NavigationBarAppearanceManager.swift in Sources */,
 				588746932B2E6D4B00EC5E11 /* AdaptiveLayoutHelper.swift in Sources */,
 				5899294C2B44851F00FAB070 /* ShopingListCoordinator.swift in Sources */,

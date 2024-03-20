@@ -289,6 +289,33 @@ final class DataRepository {
             return .failure(error)
         }
     }
+    
+    func updateShopingList(shopingList: ShopingListModel) {
+        let fetchRequest: NSFetchRequest<ShopingListEntity> = ShopingListEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", shopingList.id as CVarArg)
+
+        do {
+            let results = try moc.context.fetch(fetchRequest)
+            if let shopingListToUpdate = results.first {
+                // Update the fields
+                shopingListToUpdate.name = shopingList.name
+                shopingListToUpdate.value = shopingList.value
+                shopingListToUpdate.valueType = shopingList.valueType
+                shopingListToUpdate.isChecked = shopingList.isChecked
+
+                // Save the updated context
+                if save() {
+                    print("DEBUG: ShopingListEntity updated and context saved.")
+                }
+            } else {
+                print("DEBUG: No ShopingListEntity found with the specified ID to update.")
+            }
+        } catch {
+            print("DEBUG: Error updating shoping list: \(error)")
+        }
+    }
+
+    
 
     func addIngredientsToShopingList(ingredients: [IngredientModel]) {
         let data = ShopingListEntity(context: moc.context)
