@@ -7,24 +7,24 @@
 
 import UIKit
 
-class RecipeCell: UICollectionViewCell {
+final class RecipeCell: UICollectionViewCell {
     static let id = "RecipeCell"
     
-    var containerView: UIView = {
+    private var containerView: UIView = {
         let view = UIView()
         view.backgroundColor = .ui.primaryContainer
         view.layer.cornerRadius = 20
         return view
     }()
     
-    var cookingInfoContainerView: UIView = {
+    private var cookingInfoContainerView: UIView = {
         let view = UIView()
         view.backgroundColor = .ui.secondaryContainer
         view.layer.cornerRadius = 20
         return view
     }()
     
-    var recipeImage: UIImageView = {
+    private var recipeImage: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
@@ -34,9 +34,9 @@ class RecipeCell: UICollectionViewCell {
         return imageView
     }()
     
-    var titleLabel = ReusableTextLabel(fontStyle: .title3, fontWeight: .semibold, textColor: .ui.primaryText)
-    var perpTimeLabel = ReusableTextLabel(fontStyle: .footnote, fontWeight: .regular, textColor: .ui.secondaryText)
-    var spicyIcon = IconImage(systemImage: "leaf", color: .ui.theme, textStyle: .body)
+    private var titleLabel = ReusableTextLabel(fontStyle: .title3, fontWeight: .semibold, textColor: .ui.primaryText)
+    private var perpTimeLabel = ReusableTextLabel(fontStyle: .footnote, fontWeight: .regular, textColor: .ui.secondaryText)
+    private var spicyIcon = IconImage(systemImage: "leaf", color: .ui.theme, textStyle: .body)
 
     override init(frame: CGRect) {
         super.init(frame: frame)
