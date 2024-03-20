@@ -76,7 +76,7 @@ final class AddInstructionSheetVC: UIViewController {
 
         let smallDetentId = UISheetPresentationController.Detent.Identifier("small")
         let smallDetent = UISheetPresentationController.Detent.custom(identifier: smallDetentId) { _ in
-            380
+            430
         }
         
         if let presentationController = presentationController as? UISheetPresentationController {

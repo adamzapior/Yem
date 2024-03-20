@@ -77,11 +77,10 @@ final class IngredientsCell: UITableViewCell {
         valueLabel.snp.makeConstraints { make in
             make.leading.equalTo(content.snp.leading).offset(24)
             make.top.equalToSuperview().offset(12)
-            make.width.greaterThanOrEqualTo(36)
         }
         
         valueTypeLabel.snp.makeConstraints { make in
-            make.leading.equalTo(valueLabel.snp.trailing).offset(4)
+            make.leading.equalTo(valueLabel.snp.trailing).offset(6)
             make.top.equalToSuperview().offset(12)
             make.width.greaterThanOrEqualTo(84)
         }
@@ -101,7 +100,6 @@ final class IngredientsCell: UITableViewCell {
     }
     
     @objc func didTapButtonAction() {
-        print("button tapped")
         delegate?.didTapButton(in: self)
     }
 }
