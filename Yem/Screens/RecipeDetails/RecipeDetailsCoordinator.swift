@@ -13,6 +13,7 @@ final class RecipeDetailsCoordinator {
     var repository: DataRepository
     var viewModel: RecipeDetailsVM
     weak var navigationController: UINavigationController?
+    
 
     init(navigationController: UINavigationController?, viewModel: RecipeDetailsVM, recipe: RecipeModel, repository: DataRepository) {
         self.navigationController = navigationController
@@ -26,9 +27,64 @@ final class RecipeDetailsCoordinator {
         return detailsVC
     }
     
+    func presentAddIngredientsToShopingListAlert() {
+        let title: String = "Add ingredients to list"
+        let message: String = "Do you want o add all ingredients to shoping list?"
+        
+        let alertVC = DualOptionAlertVC(title: title, message: message) {
+            self.viewModel.addIngredientsToShopingList()
+            self.dismissAlert()
+        } cancelAction: {
+            self.dismissAlert()
+        }
+            alertVC.modalPresentationStyle = .overFullScreen
+            alertVC.modalTransitionStyle = .crossDissolve
+            navigationController?.present(alertVC, animated: true, completion: nil)
+    }
+
+    func presentAddToFavouritesAlert() {
+        let isFavorite = viewModel.isFavourite
+
+        let title: String
+        let message: String
+
+        if isFavorite {
+            title = "Remove from favorites"
+            message = "Do you want to remove this recipe from your favorites?"
+        } else {
+            title = "Add to favorites"
+            message = "Do you want to add this recipe to your favorites?"
+        }
+
+        let alertVC = DualOptionAlertVC(title: title, message: message) {
+            self.viewModel.toggleFavouriteStatus()
+            self.dismissAlert()
+        } cancelAction: {
+            self.dismissAlert()
+        }
+            alertVC.modalPresentationStyle = .overFullScreen
+            alertVC.modalTransitionStyle = .crossDissolve
+            navigationController?.present(alertVC, animated: true, completion: nil)
+    }
+    
+    func presentDeleteRecipeAlert() {
+        let title: String = "Remove recipe"
+        let message: String = "Do you want to remove this recipe from your recipes list?"
+        
+        let alertVC = DualOptionAlertVC(title: title, message: message) {
+            self.viewModel.deleteRecipe()
+            self.dismissAlert()
+        } cancelAction: {
+            self.dismissAlert()
+        }
+            alertVC.modalPresentationStyle = .overFullScreen
+            alertVC.modalTransitionStyle = .crossDissolve
+            navigationController?.present(alertVC, animated: true, completion: nil)
+    }
+
     func navigateToRecipeEditor() {
         let viewModel = AddRecipeViewModel(repository: repository, existingRecipe: recipe)
-        
+
         let coordinator = AddRecipeCoordinator(navigationController: navigationController, viewModel: viewModel)
         coordinator.parentCoordinator = self
 
@@ -38,9 +94,11 @@ final class RecipeDetailsCoordinator {
         (navigationController)?.pushViewController(addRecipeVC, animated: true)
     }
     
+    func dismissAlert() {
+        navigationController?.dismiss(animated: true)
+    }
+
     func dismissVC() {
         navigationController?.popToRootViewController(animated: true)
     }
-
-
 }

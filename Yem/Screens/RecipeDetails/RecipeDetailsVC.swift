@@ -21,7 +21,7 @@ final class RecipeDetailsVC: UIViewController {
     private let scrollView = UIScrollView()
     private let contentView = UIView()
     
-    var photoView = PhotoView(frame: .zero, iconString: "photo")
+    private var photoView = PhotoView(frame: .zero, iconString: "photo")
     
     private let detailsSubtitleLabel = UILabel()
     private let detailsContainer = UIView()
@@ -38,13 +38,12 @@ final class RecipeDetailsVC: UIViewController {
     private let instructionsSubtitleLabel = UILabel()
     private let instructionsContainer = UIView()
 
-//    private var isBookmarked = false
     
     var bookmarkIconString: String
 
     let bookmarkIconFilled: String = "bookmark.fill"
     let bookmarkIconEmpty: String = "bookmark"
-    
+        
     lazy var basketNavItem = UIBarButtonItem(image: UIImage(systemName: "basket"), style: .plain, target: self, action: #selector(basketButtonTapped))
     
     lazy var bookmarkNavItem = UIBarButtonItem(image: UIImage(systemName: "\(bookmarkIconString)"), style: .plain, target: self, action: #selector(bookmarkButtonTapped))
@@ -319,11 +318,11 @@ extension RecipeDetailsVC {
     }
     
     @objc func basketButtonTapped(_ sender: UIBarButtonItem) {
-        viewModel.addIngredientsToShopingList()
+        coordinator.presentAddIngredientsToShopingListAlert()
     }
 
     @objc func bookmarkButtonTapped(_ sender: UIBarButtonItem) {
-        viewModel.toggleFavouriteStatus()
+        coordinator.presentAddToFavouritesAlert()
     }
     
     @objc func pencilButtonTapped(_ sender: UIBarButtonItem) {
@@ -331,20 +330,21 @@ extension RecipeDetailsVC {
     }
 
     @objc func trashButtonTapped(_ sender: UIBarButtonItem) {
-        viewModel.deleteRecipe()
-        coordinator.dismissVC()
+        coordinator.presentDeleteRecipeAlert()
     }
 }
 
 // MARK: Delegate methods
 
 extension RecipeDetailsVC: RecipeDetailsVMDelegate {
-    func isFavouriteValueChanged(to: Bool) {
-        switch to {
-        case true:
-            bookmarkNavItem.image = UIImage(systemName: bookmarkIconFilled)
-        case false:
-            bookmarkNavItem.image = UIImage(systemName: bookmarkIconEmpty)
+    func isFavouriteValueChanged(to: Bool) {        
+        DispatchQueue.main.async {
+            switch to {
+            case true:
+                self.bookmarkNavItem.image = UIImage(systemName: self.bookmarkIconFilled)
+            case false:
+                self.bookmarkNavItem.image = UIImage(systemName: self.bookmarkIconEmpty)
+            }
         }
     }
 }

@@ -16,12 +16,16 @@ final class RecipeDetailsVM {
     
     weak var delegate: RecipeDetailsVMDelegate?
     
-    let recipe: RecipeModel
+    var recipe: RecipeModel
     let repository: DataRepository
+    
+    var isFavourite: Bool
     
     init(recipe: RecipeModel, repository: DataRepository) {
         self.recipe = recipe
         self.repository = repository
+        
+        isFavourite = recipe.isFavourite
     }
     
     deinit {
@@ -39,14 +43,11 @@ final class RecipeDetailsVM {
     }
     
     func toggleFavouriteStatus() {
-        switch recipe.isFavourite {
-        case true:
-            repository.updateRecipeFavouriteStatus(recipeId: recipe.id, isFavourite: false)
-            delegate?.isFavouriteValueChanged(to: false)
-        case false:
-            repository.updateRecipeFavouriteStatus(recipeId: recipe.id, isFavourite: true)
-            delegate?.isFavouriteValueChanged(to: true)
-        }
+        let newFavouriteStatus = !recipe.isFavourite
+        repository.updateRecipeFavouriteStatus(recipeId: recipe.id, isFavourite: newFavouriteStatus)
+        recipe.isFavourite = newFavouriteStatus
+        self.isFavourite = newFavouriteStatus
+        delegate?.isFavouriteValueChanged(to: newFavouriteStatus)
     }
 
     func addIngredientsToShopingList() {
