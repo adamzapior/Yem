@@ -38,7 +38,7 @@ final class RecipesListVC: UIViewController {
         setupCollectionView()
 
         Task {
-            await viewModel.loadRecipes()
+            viewModel.loadRecipes()
         }
     }
 
