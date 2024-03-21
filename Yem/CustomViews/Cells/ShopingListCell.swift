@@ -72,7 +72,7 @@ class ShopingListCell: UITableViewCell {
         cellType = type
         
         valueLabel.text = model.value
-        valueTypeLabel.text = model.valueType
+        valueTypeLabel.text = model.valueType.lowercased()
         ingredientNameLabel.text = model.name
         
         if model.isChecked {
@@ -99,7 +99,6 @@ class ShopingListCell: UITableViewCell {
         valueLabel.snp.makeConstraints { make in
             make.leading.equalTo(content.snp.leading).offset(24)
             make.top.equalToSuperview().offset(12)
-            make.width.greaterThanOrEqualTo(36)
         }
         
         valueTypeLabel.snp.makeConstraints { make in

@@ -56,7 +56,7 @@ final class IngredientsCell: UITableViewCell {
     
     func configure(with model: IngredientModel) {
         valueLabel.text = model.value
-        valueTypeLabel.text = model.valueType
+        valueTypeLabel.text = model.valueType.lowercased()
         ingredientNameLabel.text = model.name
     }
     
