@@ -13,6 +13,8 @@ final class ShopingListVC: UIViewController {
 
     let tableView = UITableView()
 
+    lazy var trashNavItem = UIBarButtonItem(image: UIImage(systemName: "trash"), style: .plain, target: self, action: #selector(trashButtonTapped))
+
     init(coordinator: ShopingListCoordinator, viewModel: ShopingListVM) {
         self.coordinator = coordinator
         self.viewModel = viewModel
@@ -31,11 +33,12 @@ final class ShopingListVC: UIViewController {
 
         viewModel.delegate = self
 
-        Task {
-            await viewModel.loadShopingList()
-        }
-
+        setupNavigationBarButtons()
         setupTableView()
+
+        Task {
+            viewModel.loadShopingList()
+        }
     }
 
     // MARK: - Setup UI
@@ -135,4 +138,14 @@ extension ShopingListVC: ShopingListVMDelegate {
     func reloadTable() {
         tableView.reloadData()
     }
+}
+
+// MARK: - Navigation bar
+
+extension ShopingListVC {
+    func setupNavigationBarButtons() {
+        navigationItem.setRightBarButtonItems([trashNavItem], animated: true)
+        trashNavItem.tintColor = .red
+    }
+
 }

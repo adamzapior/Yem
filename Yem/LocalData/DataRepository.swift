@@ -315,6 +315,20 @@ final class DataRepository {
         }
     }
 
+    func clearShopingList() {
+        let fetchRequest: NSFetchRequest<ShopingListEntity> = ShopingListEntity.fetchRequest()
+
+           do {
+               let results = try moc.context.fetch(fetchRequest)
+               for object in results {
+                   moc.context.delete(object)
+               }
+               try moc.context.save()
+               print("DEBUG: All objects removed from ShopingListEntity and context saved.")
+           } catch {
+               print("DEBUG: Error clearing shopping list: \(error)")
+           }
+    }
     
 
     func addIngredientsToShopingList(ingredients: [IngredientModel]) {

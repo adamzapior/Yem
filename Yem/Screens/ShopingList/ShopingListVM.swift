@@ -68,6 +68,11 @@ final class ShopingListVM {
         repository.updateShopingList(shopingList: ingredient)
         reloadTable()
     }
+    
+    func clearShopingList() {
+        repository.clearShopingList()
+        reloadTable()
+    }
 }
 
 extension ShopingListVM: ShopingListVMDelegate {
