@@ -10,10 +10,10 @@ import UIKit
 import UIKit
 
 final class RecipesListVC: UIViewController {
-    var coordinator: RecipesListCoordinator
-    var viewModel: RecipesListVM
+    let coordinator: RecipesListCoordinator
+    let viewModel: RecipesListVM
 
-    var collectionView: UICollectionView!
+    private var collectionView: UICollectionView!
 
     // MARK: - Lifecycle
 

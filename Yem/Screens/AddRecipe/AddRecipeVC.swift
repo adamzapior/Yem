@@ -12,8 +12,8 @@ import UIKit
 final class AddRecipeVC: UIViewController {
     // MARK: - Properties
     
-    var coordinator: AddRecipeCoordinator
-    var viewModel: AddRecipeViewModel
+    let coordinator: AddRecipeCoordinator
+    let viewModel: AddRecipeViewModel
     
     // MARK: - View properties
     
@@ -50,7 +50,7 @@ final class AddRecipeVC: UIViewController {
     private lazy var spicyPickerView = UIPickerView()
     private lazy var categoryPickerView = UIPickerView()
     
-    let recipeDataStack: UIStackView = {
+    private let recipeDataStack: UIStackView = {
         let sv = UIStackView()
         sv.axis = .vertical
         sv.distribution = .fillEqually

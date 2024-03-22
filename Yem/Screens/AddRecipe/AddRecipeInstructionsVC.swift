@@ -16,7 +16,7 @@ final class AddRecipeInstructionsVC: UIViewController {
     
     // MARK: - View properties
 
-    let pageStackView: UIStackView = {
+    private let pageStackView: UIStackView = {
         let sv = UIStackView()
         sv.axis = .horizontal
         sv.distribution = .fillEqually
@@ -24,10 +24,10 @@ final class AddRecipeInstructionsVC: UIViewController {
         return sv
     }()
     
-    let pageCount = 3
-    var pageViews = [UIView]()
+    private let pageCount = 3
+    private var pageViews = [UIView]()
     
-    let tableView = UITableView()
+    private let tableView = UITableView()
     private let tableViewHeader = InstructionTableHeaderView()
     private let tableViewFooter = IngredientsTableFooterView()
     

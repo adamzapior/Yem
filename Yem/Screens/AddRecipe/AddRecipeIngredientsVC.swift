@@ -11,7 +11,7 @@ final class AddRecipeIngredientsVC: UIViewController {
     // MARK: - ViewModel
     
     let viewModel: AddRecipeViewModel
-    var coordinator: AddRecipeCoordinator
+    let coordinator: AddRecipeCoordinator
     
     // MARK: - View properties
     

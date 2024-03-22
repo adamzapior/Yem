@@ -8,13 +8,13 @@
 import UIKit
 
 final class ShopingListVC: UIViewController {
-    let coordinator: ShopingListCoordinator?
-    let viewModel: ShopingListVM
+    private let coordinator: ShopingListCoordinator?
+    private let viewModel: ShopingListVM
 
-    let tableView = UITableView()
-    let emptyTableLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
+    private let tableView = UITableView()
+    private let emptyTableLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
 
-    lazy var trashNavItem = UIBarButtonItem(image: UIImage(systemName: "trash"), style: .plain, target: self, action: #selector(trashButtonTapped))
+    private lazy var trashNavItem = UIBarButtonItem(image: UIImage(systemName: "trash"), style: .plain, target: self, action: #selector(trashButtonTapped))
 
     init(coordinator: ShopingListCoordinator, viewModel: ShopingListVM) {
         self.coordinator = coordinator

@@ -17,7 +17,7 @@ final class PhotoView: UIView {
     private var icon: IconImage
     private let imageView = UIImageView()
 
-    var iconString: String
+    private var iconString: String
 
     override init(frame: CGRect) {
         self.iconString = "camera" // Default icon string

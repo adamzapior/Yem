@@ -10,8 +10,8 @@ import UIKit
 final class AddIngredientSheetVC: UIViewController {
     // MARK: - Properties
     
-    var coordinator: AddRecipeCoordinator
-    var viewModel: AddRecipeViewModel
+    let coordinator: AddRecipeCoordinator
+    let viewModel: AddRecipeViewModel
     
     // MARK: - View properties
     

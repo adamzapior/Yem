@@ -8,17 +8,17 @@
 import UIKit
 
 final class DualOptionAlertVC: UIViewController {
-    let containerView = UIView()
+    private let containerView = UIView()
 
-    let titleLabel = ReusableTextLabel(fontStyle: .title3, fontWeight: .semibold, textColor: .ui.primaryText, textAlignment: .center)
-    let errorLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText, textAlignment: .center)
-    let okButton = MainActionButton(title: "OK", backgroundColor: .ui.theme)
-    let cancelButton = MainActionButton(title: "Cancel", backgroundColor: .ui.cancelBackground ?? .red)
+    private let titleLabel = ReusableTextLabel(fontStyle: .title3, fontWeight: .semibold, textColor: .ui.primaryText, textAlignment: .center)
+    private let errorLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText, textAlignment: .center)
+    private let okButton = MainActionButton(title: "OK", backgroundColor: .ui.theme)
+    private let cancelButton = MainActionButton(title: "Cancel", backgroundColor: .ui.cancelBackground ?? .red)
 
-    var alertTitle: String?
-    var message: String?
-    var okAction: (() -> Void)?
-    var cancelAction: (() -> Void)?
+    private var alertTitle: String?
+    private var message: String?
+    private var okAction: (() -> Void)?
+    private var cancelAction: (() -> Void)?
 
     init(title: String, message: String, okAction: (() -> Void)? = nil, cancelAction: (() -> Void)? = nil) {
         super.init(nibName: nil, bundle: nil)
