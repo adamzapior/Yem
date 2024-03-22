@@ -30,6 +30,9 @@ final class AddRecipeIngredientsVC: UIViewController {
     private let tableViewHeader = IngredientsTableHeaderView()
     private let tableViewFooter = IngredientsTableFooterView()
     
+    private let emptyTableLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
+
+    
     // MARK: - Lifecycle
     
     init(viewModel: AddRecipeViewModel, coordinator: AddRecipeCoordinator) {
@@ -54,6 +57,7 @@ final class AddRecipeIngredientsVC: UIViewController {
         setupTableView()
         setupTableViewHeader()
         setupTableViewFooter()
+        setupEmptyTableLabel()
     }
     
     override func viewDidLayoutSubviews() {
@@ -94,6 +98,17 @@ final class AddRecipeIngredientsVC: UIViewController {
         tableViewHeader.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 30)
         tableViewHeader.backgroundColor = UIColor.ui.background
     }
+    
+    private func setupEmptyTableLabel() {
+        view.addSubview(emptyTableLabel)
+        emptyTableLabel.text = "Your ingredient list is empty"
+
+        emptyTableLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview()
+        }
+    }
+
 }
 
 // MARK: -  TableView delegate & data source
@@ -107,7 +122,7 @@ extension AddRecipeIngredientsVC: UITableViewDelegate, UITableViewDataSource, In
         guard let cell = tableView.dequeueReusableCell(withIdentifier: IngredientsCell.id, for: indexPath) as? IngredientsCell else {
             fatalError("IngredientsCell error")
         }
-//        cell.button.tag = indexPath.row
+
         cell.delegate = self
         cell.configure(with: viewModel.ingredientsList[indexPath.row])
 
@@ -129,6 +144,12 @@ extension AddRecipeIngredientsVC: UITableViewDelegate, UITableViewDataSource, In
 extension AddRecipeIngredientsVC: AddRecipeIngredientsVCDelegate {
     func reloadIngredientsTable() {
         tableView.reloadData()
+        
+        if viewModel.ingredientsList.isEmpty {
+            emptyTableLabel.isHidden = false
+        } else {
+            emptyTableLabel.isHidden = true
+        }
     }
 }
 

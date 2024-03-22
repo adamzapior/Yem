@@ -31,6 +31,9 @@ final class AddRecipeInstructionsVC: UIViewController {
     private let tableViewHeader = InstructionTableHeaderView()
     private let tableViewFooter = IngredientsTableFooterView()
     
+    private let emptyTableLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
+
+    
     // MARK: - Lifecycle
     
     init(viewModel: AddRecipeViewModel, coordinator: AddRecipeCoordinator) {
@@ -52,6 +55,7 @@ final class AddRecipeInstructionsVC: UIViewController {
         setupTableView()
         setupTableViewFooter()
         setupTableViewHeader()
+        setupEmptyTableLabel()
     }
     
     private func setupTableView() {
@@ -86,6 +90,16 @@ final class AddRecipeInstructionsVC: UIViewController {
         tableView.tableHeaderView = tableViewHeader
         tableViewHeader.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 36)
         tableViewHeader.backgroundColor = UIColor.ui.background
+    }
+    
+    private func setupEmptyTableLabel() {
+        view.addSubview(emptyTableLabel)
+        emptyTableLabel.text = "Your instructopn list is empty"
+
+        emptyTableLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview()
+        }
     }
 }
 
@@ -162,6 +176,12 @@ extension AddRecipeInstructionsVC: IngredientsTableFooterViewDelegate {
 extension AddRecipeInstructionsVC: AddRecipeInstructionsVCDelegate {
     func reloadInstructionTable() {
         tableView.reloadData()
+        
+        if viewModel.instructionList.isEmpty {
+            emptyTableLabel.isHidden = false
+        } else {
+            emptyTableLabel.isHidden = true
+        }
     }
 }
 
