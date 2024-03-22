@@ -12,6 +12,7 @@ final class ShopingListVC: UIViewController {
     let viewModel: ShopingListVM
 
     let tableView = UITableView()
+    let emptyTableLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
 
     lazy var trashNavItem = UIBarButtonItem(image: UIImage(systemName: "trash"), style: .plain, target: self, action: #selector(trashButtonTapped))
 
@@ -35,6 +36,7 @@ final class ShopingListVC: UIViewController {
 
         setupNavigationBarButtons()
         setupTableView()
+        setupEmptyTableLabel()
 
         Task {
             viewModel.loadShopingList()
@@ -56,6 +58,16 @@ final class ShopingListVC: UIViewController {
         view.addSubview(tableView)
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+        }
+    }
+
+    private func setupEmptyTableLabel() {
+        view.addSubview(emptyTableLabel)
+        emptyTableLabel.text = "Your shopping list is empty"
+
+        emptyTableLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview()
         }
     }
 }
@@ -137,6 +149,12 @@ extension ShopingListVC: ShopingListCellDelegate {
 extension ShopingListVC: ShopingListVMDelegate {
     func reloadTable() {
         tableView.reloadData()
+        
+        if viewModel.uncheckedList.isEmpty && viewModel.checkedList.isEmpty {
+            emptyTableLabel.isHidden = false
+        } else {
+            emptyTableLabel.isHidden = true
+        }
     }
 }
 
@@ -148,4 +166,7 @@ extension ShopingListVC {
         trashNavItem.tintColor = .red
     }
 
+    @objc func trashButtonTapped(_ sender: UIBarButtonItem) {
+        coordinator?.presentClearShopingListAlert()
+    }
 }
