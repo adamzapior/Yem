@@ -120,9 +120,7 @@ class ShopingListCell: UITableViewCell {
         }
     }
     
-    @objc func didTapButtonAction() {
-        print("button tapped")
-        
+    @objc func didTapButtonAction() {        
         let currentImage = checklistIcon.image
         
         if currentImage == UIImage(systemName: checklistIconString) {

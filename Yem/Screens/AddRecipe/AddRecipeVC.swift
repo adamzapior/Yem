@@ -571,7 +571,6 @@ extension AddRecipeVC: AddRecipeVCDelegate {
     func delegateDetailsError(_ type: ValidationErrorTypes) {
         switch type {
         case .recipeTitle:
-            print("aha ok")
             nameTextfield.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
         case .servings:
             servingCell.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)

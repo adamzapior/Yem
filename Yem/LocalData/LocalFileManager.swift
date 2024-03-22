@@ -14,7 +14,7 @@ class LocalFileManager: FileManager {
 
     func saveImage(with id: String, image: UIImage) -> Bool {
         guard let data = image.jpegData(compressionQuality: 0.5) else {
-            print("Could not convert image to JPEG")
+            print("DEBUG: Could not convert image to JPEG")
             return false
         }
 
@@ -71,14 +71,14 @@ class LocalFileManager: FileManager {
             if fileExists(atPath: url.path) {
                 do {
                     try data.write(to: url)
-                    print("Image updated successfully")
+                    print("DEBUG: Image updated successfully")
                 } catch {
                     print(error.localizedDescription)
                 }
             }
             return true
         } else {
-            print("Could not process new image")
+            print("DEBUG: Could not process new image")
             return false
         }
     }
@@ -92,7 +92,7 @@ class LocalFileManager: FileManager {
                 print(error.localizedDescription)
             }
         } else {
-            print("Image doesn't exists")
+            print("DEBUG: Image doesn't exists")
         }
     }
 }

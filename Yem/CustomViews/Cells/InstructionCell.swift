@@ -106,7 +106,6 @@ final class InstructionCell: UITableViewCell {
     }
 
     @objc func didTapButtonAction() {
-        print("button tapped")
         delegate?.didTapButton(in: self)
     }
 }

@@ -19,7 +19,7 @@ final class CoreDataManager {
         persistentContainer = NSPersistentContainer(name: "YemData")
         persistentContainer.loadPersistentStores { _, error in
             if let error = error as NSError? {
-                fatalError("Unresolved error \(error), \(error.userInfo)")
+                fatalError("DEBUG: Unresolved error \(error), \(error.userInfo)")
             }
         }
 
@@ -30,16 +30,16 @@ final class CoreDataManager {
 
     func saveContext() {
         if context.hasChanges {
-            print("Context has unsaved changes")
+            print("DEBUG: Context has unsaved changes")
             do {
                 try context.save()
-                print("Core Data context has saved")
+                print("DEBUG: Core Data context has saved")
             } catch {
                 let nserror = error as NSError
-                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+                fatalError("DEBUG: Unresolved error \(nserror), \(nserror.userInfo)")
             }
         } else {
-            print("No unsaved changes in context")
+            print("DEBUG: No unsaved changes in context")
         }
     }
 

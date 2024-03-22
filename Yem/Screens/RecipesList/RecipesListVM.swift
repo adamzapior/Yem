@@ -61,7 +61,7 @@ final class RecipesListVM {
                 self.reloadTable()
             }
         case .failure(let error):
-            print("Error loading recipes: \(error)")
+            print("DEBUG: Error loading recipes: \(error)")
         }
     }
     
