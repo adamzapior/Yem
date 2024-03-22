@@ -28,17 +28,6 @@ class LocalFileManager: FileManager {
         }
     }
 
-    func loadImage(with id: String) -> UIImage? {
-        let url = URL.documentsDirectory.appendingPathComponent("\(id).jpg")
-        do {
-            let imageData = try Data(contentsOf: url)
-            return UIImage(data: imageData)
-        } catch {
-            print(error.localizedDescription)
-            return nil
-        }
-    }
-
     func loadImageAsync(with id: String) async -> UIImage? {
         let url = URL.documentsDirectory.appendingPathComponent("\(id).jpg")
 
