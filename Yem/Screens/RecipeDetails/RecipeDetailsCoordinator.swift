@@ -73,7 +73,7 @@ final class RecipeDetailsCoordinator {
         
         let alertVC = DualOptionAlertVC(title: title, message: message) {
             self.viewModel.deleteRecipe()
-            self.dismissAlert()
+            self.dismissVC()
         } cancelAction: {
             self.dismissAlert()
         }
