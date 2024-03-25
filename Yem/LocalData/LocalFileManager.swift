@@ -54,23 +54,41 @@ class LocalFileManager: FileManager {
         return nil
     }
 
+//    func updateImage(with id: String, newImage: UIImage) -> Bool {
+//        if let data = newImage.jpegData(compressionQuality: 0.5) {
+//            let url = URL.documentsDirectory.appendingPathComponent("\(id).jpg")
+//            if fileExists(atPath: url.path) {
+//                do {
+//                    try data.write(to: url)
+//                    print("DEBUG: Image updated successfully")
+//                } catch {
+//                    print(error.localizedDescription)
+//                }
+//            }
+//            return true
+//        } else {
+//            print("DEBUG: Could not process new image")
+//            return false
+//        }
+//    }
+    
     func updateImage(with id: String, newImage: UIImage) -> Bool {
         if let data = newImage.jpegData(compressionQuality: 0.5) {
             let url = URL.documentsDirectory.appendingPathComponent("\(id).jpg")
-            if fileExists(atPath: url.path) {
-                do {
-                    try data.write(to: url)
-                    print("DEBUG: Image updated successfully")
-                } catch {
-                    print(error.localizedDescription)
-                }
+            do {
+                try data.write(to: url)
+                print("DEBUG: Image updated successfully")
+                return true
+            } catch {
+                print(error.localizedDescription)
+                return false
             }
-            return true
         } else {
             print("DEBUG: Could not process new image")
             return false
         }
     }
+
 
     func deleteImage(with id: String) {
         let url = URL.documentsDirectory.appendingPathComponent("\(id).jpg")
