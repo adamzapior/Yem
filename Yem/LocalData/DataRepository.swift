@@ -360,7 +360,7 @@ extension DataRepository {
             perpTimeHours: recipeEntity.prepTimeHours,
             perpTimeMinutes: recipeEntity.prepTimeMinutes,
             spicy: RecipeSpicy(rawValue: recipeEntity.spicy) ?? .medium,
-            category: RecipeCategory(rawValue: recipeEntity.category) ?? .none,
+            category: RecipeCategory(rawValue: recipeEntity.category) ?? .notSelected,
             difficulty: RecipeDifficulty(rawValue: recipeEntity.difficulty) ?? .medium,
             ingredientList: recipeEntity.ingredients.map { ingredient in
                 IngredientModel(

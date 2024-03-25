@@ -37,14 +37,14 @@ enum RecipeCategory: String, CaseIterable {
     case breakfast = "Breakfast"
     case lunch = "Lunch"
     case dinner = "Dinner"
+    case vegan = "Vegan"
+    case vegetarian = "Vegetarian"
     case desserts = "Desserts"
     case snacks = "Snacks"
     case beverages = "Beverages"
     case appetizers = "Appetizers"
     case sideDishes = "Side Dishes"
-    case vegan = "Vegan"
-    case vegetarian = "Vegetarian"
-    case none = "Not selected" // used only to handle potencial errors in map method
+    case notSelected = "Not selected" 
 
     var displayName: String {
         return self.rawValue
