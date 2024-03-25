@@ -17,9 +17,11 @@ final class RecipesListVM {
     weak var delegate: RecipesListVMDelegate?
     let repository: DataRepository
     
-    lazy var recipes: [RecipeModel] = []
+    var sections: [Section] = []
+    var recipes: [RecipeModel] = []
+    
     private var cancellables: Set<AnyCancellable> = []
-
+    
     init(repository: DataRepository) {
         self.repository = repository
         
@@ -30,7 +32,6 @@ final class RecipesListVM {
                 }
             })
             .store(in: &cancellables)
-
         
         repository.recipesUpdatedPublisher
             .sink(receiveValue: { [weak self] _ in
@@ -47,17 +48,17 @@ final class RecipesListVM {
                 }
             })
             .store(in: &cancellables)
-
     }
-
+    
     // MARK: - Public methods
-
+    
     func loadRecipes() {
         let result = repository.fetchAllRecipes()
         switch result {
         case .success(let result):
             DispatchQueue.main.async {
                 self.recipes = result
+                self.groupRecipesByCategory()
                 self.reloadTable()
             }
         case .failure(let error):
@@ -69,14 +70,25 @@ final class RecipesListVM {
         guard recipe.isImageSaved else {
             return nil
         }
-
+        
         do {
             return await LocalFileManager.instance.loadImageAsync(with: recipe.id.uuidString)
         }
     }
     
-
     // MARK: - Private methods
+
+    private func groupRecipesByCategory() {
+        sections.removeAll()
+        
+        let groupedRecipes = Dictionary(grouping: recipes, by: { $0.category })
+        
+        for category in RecipeCategory.allCases {
+            let recipesForCategory = groupedRecipes[category] ?? []
+            let section = Section(title: RecipeCategory(rawValue: category.rawValue) ?? .notSelected, items: recipesForCategory)
+            sections.append(section)
+        }
+    }
 }
 
 // MARK: - Delegates
@@ -87,4 +99,9 @@ extension RecipesListVM: RecipesListVMDelegate {
             self.delegate?.reloadTable()
         }
     }
+}
+
+struct Section {
+    let title: RecipeCategory
+    let items: [RecipeModel]
 }
