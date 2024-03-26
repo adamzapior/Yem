@@ -19,12 +19,6 @@
 		58102DE02B24AB9E0090EAE8 /* UITextFieldExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58102DDF2B24AB9E0090EAE8 /* UITextFieldExt.swift */; };
 		5812ADED2B5927E90035EAA5 /* RecipeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5812ADEC2B5927E90035EAA5 /* RecipeModel.swift */; };
 		581F14212BA8AC3B0046FFA8 /* DualOptionAlertVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581F14202BA8AC3B0046FFA8 /* DualOptionAlertVC.swift */; };
-		581F14242BAB69AB0046FFA8 /* OnboardingVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581F14232BAB69AB0046FFA8 /* OnboardingVM.swift */; };
-		581F14262BAB69CF0046FFA8 /* OnboardingCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581F14252BAB69CF0046FFA8 /* OnboardingCoordinator.swift */; };
-		581F14282BAB6A580046FFA8 /* UnloggedOnboardingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581F14272BAB6A580046FFA8 /* UnloggedOnboardingVC.swift */; };
-		581F142A2BAB6A7E0046FFA8 /* LoginOnboardingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581F14292BAB6A7E0046FFA8 /* LoginOnboardingVC.swift */; };
-		581F142C2BAB6AAA0046FFA8 /* RegisterOnboardingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581F142B2BAB6AAA0046FFA8 /* RegisterOnboardingVC.swift */; };
-		581F142E2BAB6B0C0046FFA8 /* ResetPasswordVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581F142D2BAB6B0C0046FFA8 /* ResetPasswordVC.swift */; };
 		582E71AE2B62C7BC002D3164 /* ValidationAlertVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 582E71AD2B62C7BC002D3164 /* ValidationAlertVC.swift */; };
 		58354B552B992B1C002C7A40 /* ShopingListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58354B542B992B1C002C7A40 /* ShopingListCell.swift */; };
 		58356AFB2B1FB9E5000AC548 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356AFA2B1FB9E5000AC548 /* AppDelegate.swift */; };
@@ -59,6 +53,12 @@
 		589A65CA2B85600C0018779B /* RecipeDetailsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589A65C92B85600C0018779B /* RecipeDetailsCoordinator.swift */; };
 		589A65CC2B85607D0018779B /* RecipeDetailsVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589A65CB2B85607D0018779B /* RecipeDetailsVM.swift */; };
 		589CA8002BB2E8720008DFC3 /* RecipesSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589CA7FF2BB2E8720008DFC3 /* RecipesSectionHeaderView.swift */; };
+		589CA8082BB2EB160008DFC3 /* UnloggedOnboardingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589CA8022BB2EB160008DFC3 /* UnloggedOnboardingVC.swift */; };
+		589CA8092BB2EB160008DFC3 /* ResetPasswordVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589CA8032BB2EB160008DFC3 /* ResetPasswordVC.swift */; };
+		589CA80A2BB2EB160008DFC3 /* OnboardingVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589CA8042BB2EB160008DFC3 /* OnboardingVM.swift */; };
+		589CA80B2BB2EB160008DFC3 /* OnboardingCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589CA8052BB2EB160008DFC3 /* OnboardingCoordinator.swift */; };
+		589CA80C2BB2EB160008DFC3 /* RegisterOnboardingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589CA8062BB2EB160008DFC3 /* RegisterOnboardingVC.swift */; };
+		589CA80D2BB2EB160008DFC3 /* LoginOnboardingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589CA8072BB2EB160008DFC3 /* LoginOnboardingVC.swift */; };
 		58A38F8A2B5D1CFD00007AC1 /* AddInstructionSheetVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A38F892B5D1CFD00007AC1 /* AddInstructionSheetVC.swift */; };
 		58AA17612B88136000C44578 /* LocalFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58AA17602B88136000C44578 /* LocalFileManager.swift */; };
 		58AB57BD2B588E8400053C74 /* DataRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58AB57BC2B588E8400053C74 /* DataRepository.swift */; };
@@ -110,12 +110,6 @@
 		58102DDF2B24AB9E0090EAE8 /* UITextFieldExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextFieldExt.swift; sourceTree = "<group>"; };
 		5812ADEC2B5927E90035EAA5 /* RecipeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeModel.swift; sourceTree = "<group>"; };
 		581F14202BA8AC3B0046FFA8 /* DualOptionAlertVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DualOptionAlertVC.swift; sourceTree = "<group>"; };
-		581F14232BAB69AB0046FFA8 /* OnboardingVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingVM.swift; sourceTree = "<group>"; };
-		581F14252BAB69CF0046FFA8 /* OnboardingCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCoordinator.swift; sourceTree = "<group>"; };
-		581F14272BAB6A580046FFA8 /* UnloggedOnboardingVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnloggedOnboardingVC.swift; sourceTree = "<group>"; };
-		581F14292BAB6A7E0046FFA8 /* LoginOnboardingVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginOnboardingVC.swift; sourceTree = "<group>"; };
-		581F142B2BAB6AAA0046FFA8 /* RegisterOnboardingVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterOnboardingVC.swift; sourceTree = "<group>"; };
-		581F142D2BAB6B0C0046FFA8 /* ResetPasswordVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordVC.swift; sourceTree = "<group>"; };
 		582E71AD2B62C7BC002D3164 /* ValidationAlertVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidationAlertVC.swift; sourceTree = "<group>"; };
 		58354B542B992B1C002C7A40 /* ShopingListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopingListCell.swift; sourceTree = "<group>"; };
 		58356AF72B1FB9E5000AC548 /* Yem.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yem.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -152,6 +146,12 @@
 		589A65C92B85600C0018779B /* RecipeDetailsCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeDetailsCoordinator.swift; sourceTree = "<group>"; };
 		589A65CB2B85607D0018779B /* RecipeDetailsVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeDetailsVM.swift; sourceTree = "<group>"; };
 		589CA7FF2BB2E8720008DFC3 /* RecipesSectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipesSectionHeaderView.swift; sourceTree = "<group>"; };
+		589CA8022BB2EB160008DFC3 /* UnloggedOnboardingVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnloggedOnboardingVC.swift; sourceTree = "<group>"; };
+		589CA8032BB2EB160008DFC3 /* ResetPasswordVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResetPasswordVC.swift; sourceTree = "<group>"; };
+		589CA8042BB2EB160008DFC3 /* OnboardingVM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingVM.swift; sourceTree = "<group>"; };
+		589CA8052BB2EB160008DFC3 /* OnboardingCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingCoordinator.swift; sourceTree = "<group>"; };
+		589CA8062BB2EB160008DFC3 /* RegisterOnboardingVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterOnboardingVC.swift; sourceTree = "<group>"; };
+		589CA8072BB2EB160008DFC3 /* LoginOnboardingVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginOnboardingVC.swift; sourceTree = "<group>"; };
 		58A38F892B5D1CFD00007AC1 /* AddInstructionSheetVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddInstructionSheetVC.swift; sourceTree = "<group>"; };
 		58AA17602B88136000C44578 /* LocalFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFileManager.swift; sourceTree = "<group>"; };
 		58AB57BC2B588E8400053C74 /* DataRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataRepository.swift; sourceTree = "<group>"; };
@@ -205,7 +205,7 @@
 		58102DD22B2494BC0090EAE8 /* Screens */ = {
 			isa = PBXGroup;
 			children = (
-				581F14222BAB696F0046FFA8 /* Onboarding */,
+				589CA8012BB2EB070008DFC3 /* Onboarding */,
 				58102DD32B2494C20090EAE8 /* RecipesList */,
 				589A65C62B855E2E0018779B /* RecipeDetails */,
 				58102DD72B24961B0090EAE8 /* AddRecipe */,
@@ -257,19 +257,6 @@
 				5899294B2B44851F00FAB070 /* ShopingListCoordinator.swift */,
 			);
 			path = ShopingList;
-			sourceTree = "<group>";
-		};
-		581F14222BAB696F0046FFA8 /* Onboarding */ = {
-			isa = PBXGroup;
-			children = (
-				581F14272BAB6A580046FFA8 /* UnloggedOnboardingVC.swift */,
-				581F14292BAB6A7E0046FFA8 /* LoginOnboardingVC.swift */,
-				581F142B2BAB6AAA0046FFA8 /* RegisterOnboardingVC.swift */,
-				581F142D2BAB6B0C0046FFA8 /* ResetPasswordVC.swift */,
-				581F14232BAB69AB0046FFA8 /* OnboardingVM.swift */,
-				581F14252BAB69CF0046FFA8 /* OnboardingCoordinator.swift */,
-			);
-			path = Onboarding;
 			sourceTree = "<group>";
 		};
 		582E71AC2B62C7A3002D3164 /* ViewControllers */ = {
@@ -424,6 +411,19 @@
 				589A65C92B85600C0018779B /* RecipeDetailsCoordinator.swift */,
 			);
 			path = RecipeDetails;
+			sourceTree = "<group>";
+		};
+		589CA8012BB2EB070008DFC3 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				589CA8072BB2EB160008DFC3 /* LoginOnboardingVC.swift */,
+				589CA8052BB2EB160008DFC3 /* OnboardingCoordinator.swift */,
+				589CA8042BB2EB160008DFC3 /* OnboardingVM.swift */,
+				589CA8062BB2EB160008DFC3 /* RegisterOnboardingVC.swift */,
+				589CA8032BB2EB160008DFC3 /* ResetPasswordVC.swift */,
+				589CA8022BB2EB160008DFC3 /* UnloggedOnboardingVC.swift */,
+			);
+			path = Onboarding;
 			sourceTree = "<group>";
 		};
 		58BBEB992B5C14980058851C /* Headers+Footers */ = {
@@ -626,9 +626,10 @@
 				58C5814E2B94BB49000D3B7D /* IngredientView.swift in Sources */,
 				58D5F9C02B27A84700A72619 /* PickerWithIconRow.swift in Sources */,
 				58356B472B20E0DB000AC548 /* ShopingListVC.swift in Sources */,
-				581F14282BAB6A580046FFA8 /* UnloggedOnboardingVC.swift in Sources */,
 				58BBEB9B2B5C14C70058851C /* InstructionTableFooterView.swift in Sources */,
+				589CA80A2BB2EB160008DFC3 /* OnboardingVM.swift in Sources */,
 				5899294A2B4484FD00FAB070 /* RecipesListCoordinator.swift in Sources */,
+				589CA8092BB2EB160008DFC3 /* ResetPasswordVC.swift in Sources */,
 				5869321D2B26112000379C8C /* IconImage.swift in Sources */,
 				58094EBE2B267E6300D4D2FC /* IngredientsTableHeaderView.swift in Sources */,
 				58A38F8A2B5D1CFD00007AC1 /* AddInstructionSheetVC.swift in Sources */,
@@ -641,23 +642,23 @@
 				58356AFB2B1FB9E5000AC548 /* AppDelegate.swift in Sources */,
 				58614D172BA123EF007AD868 /* ShopingListEntity.swift in Sources */,
 				5858B7412B6B05E3005CB438 /* RecipeCell.swift in Sources */,
+				589CA80C2BB2EB160008DFC3 /* RegisterOnboardingVC.swift in Sources */,
 				58BBEB9D2B5C18840058851C /* InstructionTableHeaderView.swift in Sources */,
 				580ED3822B25068100B4A9F0 /* ColorTheme.swift in Sources */,
-				581F14242BAB69AB0046FFA8 /* OnboardingVM.swift in Sources */,
 				5869321B2B253AB300379C8C /* AddRecipeInstructionsVC.swift in Sources */,
+				589CA80D2BB2EB160008DFC3 /* LoginOnboardingVC.swift in Sources */,
 				589CA8002BB2E8720008DFC3 /* RecipesSectionHeaderView.swift in Sources */,
 				58C5814C2B93D884000D3B7D /* UILabelExt.swift in Sources */,
 				586932172B25351A00379C8C /* AddRecipeIngredientsVC.swift in Sources */,
 				589A65C82B855EFF0018779B /* RecipeDetailsVC.swift in Sources */,
 				580ED3802B24C2F300B4A9F0 /* ReusableTextLabel.swift in Sources */,
 				58356AFD2B1FB9E5000AC548 /* SceneDelegate.swift in Sources */,
+				589CA80B2BB2EB160008DFC3 /* OnboardingCoordinator.swift in Sources */,
 				58BBEB852B5AEDAF0058851C /* InstructionCell.swift in Sources */,
-				581F142E2BAB6B0C0046FFA8 /* ResetPasswordVC.swift in Sources */,
+				589CA8082BB2EB160008DFC3 /* UnloggedOnboardingVC.swift in Sources */,
 				58EBB0772B227B82000EB128 /* PhotoView.swift in Sources */,
 				581F14212BA8AC3B0046FFA8 /* DualOptionAlertVC.swift in Sources */,
-				581F142A2BAB6A7E0046FFA8 /* LoginOnboardingVC.swift in Sources */,
 				589929502B44A28100FAB070 /* NavigationBarAppearanceManager.swift in Sources */,
-				581F142C2BAB6AAA0046FFA8 /* RegisterOnboardingVC.swift in Sources */,
 				588746932B2E6D4B00EC5E11 /* AdaptiveLayoutHelper.swift in Sources */,
 				5899294C2B44851F00FAB070 /* ShopingListCoordinator.swift in Sources */,
 				589929482B44843A00FAB070 /* MainCoordinator.swift in Sources */,
@@ -674,7 +675,6 @@
 				584D1D512B2F396F009D5F28 /* UIViewControllerExt.swift in Sources */,
 				58BBEB932B5AF5D10058851C /* InstructionEntity.swift in Sources */,
 				58D5F9C22B27B3F600A72619 /* TextfieldWithIconRow.swift in Sources */,
-				581F14262BAB69CF0046FFA8 /* OnboardingCoordinator.swift in Sources */,
 				58BBEB762B59C94B0058851C /* IngredientEntity.swift in Sources */,
 				58102DDB2B249F900090EAE8 /* AddRecipeVM.swift in Sources */,
 				5887468C2B2E075C00EC5E11 /* IngredientsCell.swift in Sources */,
