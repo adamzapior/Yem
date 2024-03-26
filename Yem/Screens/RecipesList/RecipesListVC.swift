@@ -52,7 +52,7 @@ final class RecipesListVC: UIViewController {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.register(RecipeCell.self, forCellWithReuseIdentifier: RecipeCell.id)
-        collectionView.register(CustomHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: CustomHeaderView.reuseIdentifier)
+        collectionView.register(RecipesSectionHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: RecipesSectionHeaderView.reuseIdentifier)
 
         collectionView.showsVerticalScrollIndicator = false
 
@@ -137,7 +137,6 @@ extension RecipesListVC: UICollectionViewDelegate, UICollectionViewDataSource, U
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecipeCell.id, for: indexPath) as! RecipeCell
 
         cell.configure(with: recipe, image: nil)
-      
 
         return cell
     }
@@ -154,7 +153,7 @@ extension RecipesListVC: UICollectionViewDelegate, UICollectionViewDataSource, U
         if viewModel.sections[indexPath.section].items.isEmpty {
             return UICollectionReusableView(frame: .zero)
         } else {
-            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: CustomHeaderView.reuseIdentifier, for: indexPath) as! CustomHeaderView
+            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: RecipesSectionHeaderView.reuseIdentifier, for: indexPath) as! RecipesSectionHeaderView
 
             let section = viewModel.sections[indexPath.section]
             let sectionTitle = section.title
@@ -194,41 +193,5 @@ extension RecipesListVC {
 
     @objc func addRecipeButtonTapped() {
         coordinator.navigateToAddRecipeScreen()
-    }
-}
-
-class CustomHeaderView: UICollectionReusableView {
-    static let reuseIdentifier = "CustomHeaderView"
-
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .black
-        label.font = UIFont.systemFont(ofSize: 18, weight: .bold)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setupSubviews()
-    }
-
-    @available(*, unavailable)
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    private func setupSubviews() {
-        addSubview(titleLabel)
-        titleLabel.textColor = .ui.secondaryText
-
-        titleLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.top.bottom.equalToSuperview()
-        }
-    }
-
-    func configure(title: String) {
-        titleLabel.text = title
     }
 }
