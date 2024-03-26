@@ -590,6 +590,10 @@ extension AddRecipeVC: AddRecipeVCDelegate {
             break
         case .instruction:
             break
+        case .ingredientList:
+            break
+        case .instructionList:
+            break
         }
     }
 }

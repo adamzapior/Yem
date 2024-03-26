@@ -8,6 +8,7 @@
 import Combine
 import CoreData
 import Foundation
+import Kingfisher
 import UIKit
 
 protocol AddRecipeVCDelegate: AnyObject {
@@ -17,6 +18,7 @@ protocol AddRecipeVCDelegate: AnyObject {
 
 protocol AddRecipeIngredientsVCDelegate: AnyObject {
     func reloadIngredientsTable()
+    func delegateIngredientsError(_ type: ValidationErrorTypes)
 }
 
 protocol AddIngredientSheetVCDelegate: AnyObject {
@@ -25,6 +27,7 @@ protocol AddIngredientSheetVCDelegate: AnyObject {
 
 protocol AddRecipeInstructionsVCDelegate: AnyObject {
     func reloadInstructionTable()
+    func delegateInstructionsError(_ type: ValidationErrorTypes)
 }
 
 protocol AddInstructionSheetVCDelegate: AnyObject {
@@ -175,6 +178,9 @@ final class AddRecipeViewModel {
         if let recipe = existingRecipe {
             loadRecipeData(recipe)
             didRecipeExist = true
+            print("DEBUG: loadRecipeData called with existing recipe")
+        } else {
+            print("DEBUG: existingRecipe is nil")
         }
     }
     
@@ -256,8 +262,8 @@ final class AddRecipeViewModel {
         resetInstructionValidationFlags()
         validateForms()
 
-        if recipeTitleIsError || servingIsError || difficultyIsError || perpTimeIsError || spicyIsError || categoryIsError {
-            print("DEBUG: Validation failed: Title, serving, difficulty, preparation time, spicy, or category error")
+        if recipeTitleIsError || servingIsError || difficultyIsError || perpTimeIsError || spicyIsError || categoryIsError || ingredientListIsError || instructionIsError {
+            print("DEBUG: Validation failed: Title, serving, difficulty, preparation time, spicy, category, ingredients, instruction error")
             return false
         }
         
@@ -468,13 +474,14 @@ final class AddRecipeViewModel {
         if ingredientsList.isEmpty {
             ingredientListIsError = true
             validationErrors.append(.ingredientsList)
+            delegateIngredientsError(.ingredientList)
         }
     }
     
     private func validateInstruction() {
         if instruction.isEmpty {
             instructionIsError = true
-            delegateInstructionError(.instruction)
+            delegateInstructionError(.instructionList)
         }
     }
     
@@ -482,6 +489,7 @@ final class AddRecipeViewModel {
         if instructionList.isEmpty {
             instructionListIsError = true
             validationErrors.append(.instructionList)
+            delegateInstructionsError(.instructionList)
         }
     }
     
@@ -550,6 +558,12 @@ extension AddRecipeViewModel: AddRecipeIngredientsVCDelegate {
             self.delegateIngredients?.reloadIngredientsTable()
         }
     }
+    
+    func delegateIngredientsError(_ type: ValidationErrorTypes) {
+        DispatchQueue.main.async {
+            self.delegateIngredients?.delegateIngredientsError(type)
+        }
+    }
 }
 
 extension AddRecipeViewModel: AddIngredientSheetVCDelegate {
@@ -564,6 +578,12 @@ extension AddRecipeViewModel: AddRecipeInstructionsVCDelegate {
     func reloadInstructionTable() {
         DispatchQueue.main.async {
             self.delegateInstructions?.reloadInstructionTable()
+        }
+    }
+    
+    func delegateInstructionsError(_ type: ValidationErrorTypes) {
+        DispatchQueue.main.async {
+            self.delegateInstructions?.delegateInstructionsError(type)
         }
     }
 }
@@ -632,5 +652,7 @@ enum ValidationErrorTypes {
     case ingredientName
     case ingredientValue
     case ingredientValueType
+    case ingredientList
     case instruction
+    case instructionList
 }

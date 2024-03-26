@@ -314,8 +314,13 @@ extension AddIngredientSheetVC: AddIngredientSheetVCDelegate {
             valueTypeCell.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
         case .ingredientValueType:
             valueTypeCell.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
+        case .ingredientList:
+            break
         case .instruction:
             break
+        case .instructionList:
+            break
+
         }
     }
 }

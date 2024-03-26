@@ -56,6 +56,7 @@ final class AddRecipeInstructionsVC: UIViewController {
         setupTableViewFooter()
         setupTableViewHeader()
         setupEmptyTableLabel()
+        setupEmptyTableLabelisHidden()
     }
     
     private func setupTableView() {
@@ -94,12 +95,22 @@ final class AddRecipeInstructionsVC: UIViewController {
     
     private func setupEmptyTableLabel() {
         view.addSubview(emptyTableLabel)
-        emptyTableLabel.text = "Your instructopn list is empty"
+        emptyTableLabel.text = "Your instruction list is empty"
 
         emptyTableLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.centerY.equalToSuperview()
         }
+    }
+    
+    private func setupEmptyTableLabelisHidden() {
+        if viewModel.instructionList.isEmpty {
+            emptyTableLabel.isHidden = false
+        } else {
+            emptyTableLabel.isHidden = true
+        }
+        
+        emptyTableLabel.textColor = .ui.secondaryText
     }
 }
 
@@ -176,13 +187,15 @@ extension AddRecipeInstructionsVC: IngredientsTableFooterViewDelegate {
 extension AddRecipeInstructionsVC: AddRecipeInstructionsVCDelegate {
     func reloadInstructionTable() {
         tableView.reloadData()
-        
-        if viewModel.instructionList.isEmpty {
-            emptyTableLabel.isHidden = false
-        } else {
-            emptyTableLabel.isHidden = true
+        setupEmptyTableLabelisHidden()
+    }
+    
+    func delegateInstructionsError(_ type: ValidationErrorTypes) {
+        if type == .instructionList {
+            emptyTableLabel.textColor = .ui.placeholderError
         }
     }
+    
 }
 
 // MARK: - Navigation

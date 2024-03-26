@@ -58,6 +58,7 @@ final class AddRecipeIngredientsVC: UIViewController {
         setupTableViewHeader()
         setupTableViewFooter()
         setupEmptyTableLabel()
+        setupEmptyTableLabelisHidden()
     }
     
     override func viewDidLayoutSubviews() {
@@ -108,6 +109,17 @@ final class AddRecipeIngredientsVC: UIViewController {
             make.centerY.equalToSuperview()
         }
     }
+    
+    private func setupEmptyTableLabelisHidden() {
+        if viewModel.ingredientsList.isEmpty {
+            emptyTableLabel.isHidden = false
+        } else {
+            emptyTableLabel.isHidden = true
+        }
+        
+        emptyTableLabel.textColor = .ui.secondaryText
+        
+    }
 
 }
 
@@ -142,14 +154,15 @@ extension AddRecipeIngredientsVC: UITableViewDelegate, UITableViewDataSource, In
 }
 
 extension AddRecipeIngredientsVC: AddRecipeIngredientsVCDelegate {
+    func delegateIngredientsError(_ type: ValidationErrorTypes) {
+        if type == .ingredientList {
+            emptyTableLabel.textColor = .ui.placeholderError
+        }
+    }
+    
     func reloadIngredientsTable() {
         tableView.reloadData()
-        
-        if viewModel.ingredientsList.isEmpty {
-            emptyTableLabel.isHidden = false
-        } else {
-            emptyTableLabel.isHidden = true
-        }
+        setupEmptyTableLabelisHidden()
     }
 }
 
