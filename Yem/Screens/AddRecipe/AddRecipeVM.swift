@@ -46,7 +46,7 @@ final class AddRecipeViewModel {
     var recipeID: UUID = .init()
     
     @Published
-    var selectedImage: UIImage?
+    var selectedImage: UIImageView?
     
     @Published
     var recipeTitle: String = ""
@@ -287,11 +287,23 @@ final class AddRecipeViewModel {
         isFavourite = recipe.isFavourite
         
         if recipe.isImageSaved {
-            Task {
-                if let image = await LocalFileManager.instance.loadImageAsync(with: recipe.id.uuidString) {
-                    DispatchQueue.main.async { [weak self] in
-                        self?.selectedImage = image
-                    }
+            let imageUrl = LocalFileManager.instance.imageUrl(for: recipe.id.uuidString)
+            let provider = LocalFileImageDataProvider(fileURL: imageUrl!)
+            
+            if selectedImage == nil {
+                selectedImage = UIImageView()
+            }
+            
+            selectedImage?.kf.setImage(with: provider) { result in
+                switch result {
+                case .success(let result):
+                    print(result.cacheType)
+                    print(result.source)
+                    self.selectedImage?.image = result.image
+                    print("success here")
+                case .failure(let error):
+                    print(error)
+                    print("error here")
                 }
             }
         }
@@ -317,7 +329,7 @@ final class AddRecipeViewModel {
         repository.addRecipe(recipe: recipe)
 
         if let image = selectedImage {
-            let imageSaved = LocalFileManager.instance.saveImage(with: recipeID.uuidString, image: image)
+            let imageSaved = LocalFileManager.instance.saveImage(with: recipeID.uuidString, image: image.image!)
             if !imageSaved {
                 repository.rollbackTransaction()
                 return false
@@ -354,7 +366,7 @@ final class AddRecipeViewModel {
         repository.updateRecipe(recipe: recipe)
 
         if let image = selectedImage {
-            let imageSaved = LocalFileManager.instance.updateImage(with: recipeID.uuidString, newImage: image)
+            let imageSaved = LocalFileManager.instance.updateImage(with: recipeID.uuidString, newImage: image.image!)
             if !imageSaved {
                 repository.rollbackTransaction()
                 return false
@@ -377,7 +389,7 @@ final class AddRecipeViewModel {
         guard let image = selectedImage else {
             return false
         }
-        return LocalFileManager.instance.saveImage(with: recipeID.uuidString, image: image)
+        return LocalFileManager.instance.saveImage(with: recipeID.uuidString, image: image.image!)
     }
 
     /// Validation

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Kingfisher
 import UIKit
 
 protocol RecipeDetailsVMDelegate: AnyObject {
@@ -13,7 +14,6 @@ protocol RecipeDetailsVMDelegate: AnyObject {
 }
 
 final class RecipeDetailsVM {
-    
     weak var delegate: RecipeDetailsVMDelegate?
     
     var recipe: RecipeModel
@@ -31,14 +31,27 @@ final class RecipeDetailsVM {
     deinit {
         print("DEBUG: RecipeDetailsVM deinit")
     }
-    
-    func loadRecipeImage() async -> UIImage? {
-        guard recipe.isImageSaved else {
-            return nil
-        }
 
-        do {
-            return await LocalFileManager.instance.loadImageAsync(with: recipe.id.uuidString)
+    func loadRecipeImage(recipe: RecipeModel, completion: @escaping (UIImage?) -> Void) {
+        guard recipe.isImageSaved else {
+            completion(nil)
+            return
+        }
+    
+        let imageUrl = LocalFileManager.instance.imageUrl(for: recipe.id.uuidString)
+        let provider = LocalFileImageDataProvider(fileURL: imageUrl!)
+        let newImage = UIImageView()
+    
+        newImage.kf.setImage(with: provider) { result in
+            switch result {
+            case .success(let result):
+                DispatchQueue.main.async {
+                    completion(result.image)
+                }
+            case .failure(let error):
+                print(error)
+                completion(nil)
+            }
         }
     }
     
@@ -46,7 +59,7 @@ final class RecipeDetailsVM {
         let newFavouriteStatus = !recipe.isFavourite
         repository.updateRecipeFavouriteStatus(recipeId: recipe.id, isFavourite: newFavouriteStatus)
         recipe.isFavourite = newFavouriteStatus
-        self.isFavourite = newFavouriteStatus
+        isFavourite = newFavouriteStatus
         delegate?.isFavouriteValueChanged(to: newFavouriteStatus)
     }
 
@@ -57,6 +70,4 @@ final class RecipeDetailsVM {
     func deleteRecipe() {
         repository.deleteRecipe(withId: recipe.id)
     }
-
-    
 }

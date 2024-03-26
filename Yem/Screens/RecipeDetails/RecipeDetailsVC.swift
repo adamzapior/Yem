@@ -5,8 +5,9 @@
 //  Created by Adam Zapiór on 20/02/2024.
 //
 
-import SnapKit
 import UIKit
+import SnapKit
+
 
 final class RecipeDetailsVC: UIViewController {
     // MARK: - Properties
@@ -81,10 +82,7 @@ final class RecipeDetailsVC: UIViewController {
         setupContentView()
         
         setupPhotoView()
-        
-        Task {
-            await loadPhotoView()
-        }
+        loadPhotoView()
         
         setupDetailsSubtitleLabel()
         setupDetailsContainer()
@@ -133,11 +131,12 @@ final class RecipeDetailsVC: UIViewController {
         }
     }
     
-    private func loadPhotoView() async {
-        do {
-            if let image = await viewModel.loadRecipeImage() {
-                photoView.updatePhoto(with: image)
+    private func loadPhotoView() {
+        viewModel.loadRecipeImage(recipe: recipe) { image in
+            guard let image = image else {
+                return
             }
+            self.photoView.updatePhoto(with: image)
         }
     }
     
@@ -348,3 +347,5 @@ extension RecipeDetailsVC: RecipeDetailsVMDelegate {
         }
     }
 }
+
+

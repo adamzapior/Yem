@@ -5,6 +5,7 @@
 //  Created by Adam Zapiór on 31/01/2024.
 //
 
+import Kingfisher
 import UIKit
 
 final class RecipeCell: UICollectionViewCell {
@@ -19,12 +20,12 @@ final class RecipeCell: UICollectionViewCell {
     
     private var cookingInfoContainerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .ui.secondaryContainer
+        view.backgroundColor = .ui.secondaryContainer?.withAlphaComponent(0.85)
         view.layer.cornerRadius = 20
         return view
     }()
     
-    private var recipeImage: UIImageView = {
+    var recipeImage: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
@@ -50,16 +51,16 @@ final class RecipeCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+
+        recipeImage.image = nil
+        recipeImage.kf.cancelDownloadTask()
+    }
+    
     func configure(with model: RecipeModel, image: UIImage?) {
         titleLabel.text = model.name
-        
-        if let image = image {
-            recipeImage.image = image
-            recipeImage.isHidden = false
-        } else {
-            recipeImage.isHidden = true
-        }
-        
+
         var hours = ""
         var minutes = ""
         
@@ -83,6 +84,24 @@ final class RecipeCell: UICollectionViewCell {
             spicyIcon.tintColor = .ui.spicyHot
         case .veryHot:
             spicyIcon.tintColor = .ui.spicyVeryHot
+        }
+        
+        if model.isImageSaved {
+            let imageUrl = LocalFileManager.instance.imageUrl(for: model.id.uuidString)
+            let provider = LocalFileImageDataProvider(fileURL: imageUrl!)
+            
+            recipeImage.kf.setImage(with: provider) { result in
+                switch result {
+                case .success(let result):
+                    print(result.cacheType)
+                    print(result.source)
+                    self.recipeImage.image = result.image
+                    self.recipeImage.isHidden = false
+                case .failure(let error):
+                    self.recipeImage.isHidden = true
+                    print(error)
+                }
+            }
         }
     }
     

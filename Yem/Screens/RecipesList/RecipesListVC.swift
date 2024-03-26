@@ -5,8 +5,8 @@
 //  Created by Adam Zapiór on 06/12/2023.
 //
 
-import UIKit
-
+import LifetimeTracker
+import SnapKit
 import UIKit
 
 final class RecipesListVC: UIViewController {
@@ -136,17 +136,8 @@ extension RecipesListVC: UICollectionViewDelegate, UICollectionViewDataSource, U
 
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecipeCell.id, for: indexPath) as! RecipeCell
 
-        Task {
-            if let image = await viewModel.loadRecipeImage(recipe: recipe) {
-                DispatchQueue.main.async {
-                    cell.configure(with: recipe, image: image)
-                }
-            } else {
-                DispatchQueue.main.async {
-                    cell.configure(with: recipe, image: nil)
-                }
-            }
-        }
+        cell.configure(with: recipe, image: nil)
+      
 
         return cell
     }

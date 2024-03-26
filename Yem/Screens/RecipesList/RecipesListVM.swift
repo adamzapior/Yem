@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import Kingfisher
 import UIKit
 
 protocol RecipesListVMDelegate: AnyObject {
@@ -65,17 +66,7 @@ final class RecipesListVM {
             print("DEBUG: Error loading recipes: \(error)")
         }
     }
-    
-    func loadRecipeImage(recipe: RecipeModel) async -> UIImage? {
-        guard recipe.isImageSaved else {
-            return nil
-        }
-        
-        do {
-            return await LocalFileManager.instance.loadImageAsync(with: recipe.id.uuidString)
-        }
-    }
-    
+
     // MARK: - Private methods
 
     private func groupRecipesByCategory() {

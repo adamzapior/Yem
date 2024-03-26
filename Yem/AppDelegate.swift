@@ -7,6 +7,7 @@
 
 import UIKit
 import CoreData
+import Kingfisher
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -15,6 +16,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         NavigationBarAppearanceManager.setupGlobalAppearance()
+        
+        let cache = ImageCache.default
+        cache.diskStorage.config.sizeLimit = 1024 * 1024 * 100
+        
         return true
     }
 
