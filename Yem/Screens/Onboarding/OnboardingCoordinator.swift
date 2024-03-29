@@ -6,24 +6,60 @@
 //
 
 import Foundation
+import UIKit
+import LifetimeTracker
 
-final class OnboardingCoordinator {
+final class OnboardingCoordinator: ChildCoordinator {
+    var viewControllerRef: UIViewController?
+    var navigationController: UINavigationController
+
+    var parentCoordinator: AppCoordinator?
+    let authManager: AuthenticationManager
+    let viewModel: OnboardingVM
+        
+    init(navigationController: UINavigationController, parentCoordinator: AppCoordinator? = nil, authManager: AuthenticationManager, viewModel: OnboardingVM) {
+        self.navigationController = navigationController
+        self.parentCoordinator = parentCoordinator
+        self.authManager = authManager
+        self.viewModel = viewModel
+#if DEBUG
+        trackLifetime()
+#endif
+    }
     
-//    var parentCoordinator: MainBaseCoordinator?
-////    let repository: RemoteDataRepository
-//    let viewModel: OnboardingVM
-//    
-//    lazy var rootViewController: UIViewController = UIViewController()
-//    
-//    init(parentCoordinator: MainBaseCoordinator? = nil, repository: RemoteDataRepository, viewModel: OnboardingVM) {
-//        self.parentCoordinator = parentCoordinator
-//        self.repository = repository
-//        self.viewModel = viewModel
-//    }
-//    
-//    func start() -> UIViewController {
-//        rootViewController = UINavigationController(rootViewController: UnloggedOnboardingVC(coordinator: self, viewModel: viewModel))
-//        return rootViewController
-//    }
-//    
+    func start(animated: Bool) {
+        let viewModel = OnboardingVM()
+        let onboardingVC = UnloggedOnboardingVC(viewModel: viewModel, coordinator: self)
+        onboardingVC.viewModel = viewModel
+        
+        viewControllerRef = onboardingVC
+
+        navigationController.customPushViewController(viewController: onboardingVC)
+    }
+    
+    func coordinatorDidFinish() {
+//        parentCoordinator?.logisterFinished(user: User(), animated: true)
+        
+        if let viewController = viewControllerRef as? DisposableViewController {
+            viewController.cleanUp()
+        }
+
+        parentCoordinator?.childDidFinish(self)
+        viewControllerRef = nil
+        parentCoordinator = nil
+        
+    }
+    
+    func registerFinished() {
+        parentCoordinator?.logisterFinished(user: User(), animated: true)
+
+    }
 }
+
+#if DEBUG
+extension OnboardingCoordinator: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "Coordinators")
+    }
+}
+#endif

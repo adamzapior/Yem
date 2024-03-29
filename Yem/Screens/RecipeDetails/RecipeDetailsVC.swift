@@ -63,6 +63,8 @@ final class RecipeDetailsVC: UIViewController {
         } else {
             bookmarkIconString = bookmarkIconEmpty
         }
+        
+        print(recipe.isImageSaved.description)
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -95,6 +97,11 @@ final class RecipeDetailsVC: UIViewController {
         setupInstructionsContainer()
         
         configureRecipeViewData()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        coordinator.coordinatorDidFinish()
     }
 
     // MARK: - UI Setup

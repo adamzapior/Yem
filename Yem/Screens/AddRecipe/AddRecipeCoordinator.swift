@@ -5,22 +5,42 @@
 //  Created by Adam Zapiór on 02/01/2024.
 //
 
+import LifetimeTracker
 import UIKit
 
-
-final class AddRecipeCoordinator {
+final class AddRecipeCoordinator: ChildCoordinator {
     var parentCoordinator: AddRecipeParentCoordinator?
-    var viewModel: AddRecipeViewModel
-    weak var navigationController: UINavigationController?
+    var viewControllerRef: UIViewController?
+    var navigationController: UINavigationController
 
-    init(navigationController: UINavigationController?, viewModel: AddRecipeViewModel) {
+    var viewModel: AddRecipeViewModel
+
+    init(navigationController: UINavigationController, viewModel: AddRecipeViewModel, parentCoordinator: AddRecipeParentCoordinator) {
         self.navigationController = navigationController
         self.viewModel = viewModel
+        self.parentCoordinator = parentCoordinator
+
+#if DEBUG
+        trackLifetime()
+#endif
     }
 
-    func start() -> UIViewController {
+    func start(animated: Bool) {
         let addRecipeVC = AddRecipeVC(coordinator: self, viewModel: viewModel)
-        return addRecipeVC
+        viewControllerRef = addRecipeVC
+        addRecipeVC.hidesBottomBarWhenPushed = true
+        navigationController.customPushViewController(viewController: addRecipeVC)
+    }
+
+    func coordinatorDidFinish() {
+        if let viewController = viewControllerRef as? DisposableViewController {
+            viewController.cleanUp()
+        }
+
+        parentCoordinator?.childDidFinish(self)
+        viewControllerRef = nil
+        parentCoordinator = nil
+        print("DEBUG: AddRecipeCoordinator: coordinatorDidFinish() called")
     }
 
     func pushVC(for route: AddRecipeRoute) {
@@ -28,16 +48,16 @@ final class AddRecipeCoordinator {
         switch route {
         case .ingredientsList:
             let controller = AddRecipeIngredientsVC(viewModel: viewModel, coordinator: self)
-            navigationController?.pushViewController(controller, animated: true)
+            navigationController.pushViewController(controller, animated: true)
         case .addIngredient:
             let controller = AddIngredientSheetVC(viewModel: viewModel, coordinator: self)
-            navigationController?.present(controller, animated: true)
+            navigationController.present(controller, animated: true)
         case .instructions:
             let controller = AddRecipeInstructionsVC(viewModel: viewModel, coordinator: self)
-            navigationController?.pushViewController(controller, animated: true)
+            navigationController.pushViewController(controller, animated: true)
         case .addInstruction:
             let controller = AddInstructionSheetVC(viewModel: viewModel, coordinator: self)
-            navigationController?.present(controller, animated: true)
+            navigationController.present(controller, animated: true)
         }
     }
 
@@ -45,15 +65,15 @@ final class AddRecipeCoordinator {
         let alertVC = ValidationAlertVC(title: title, message: message)
         alertVC.modalPresentationStyle = .overFullScreen
         alertVC.modalTransitionStyle = .crossDissolve
-        navigationController?.present(alertVC, animated: true, completion: nil)
+        navigationController.present(alertVC, animated: true, completion: nil)
     }
 
     func dismissVC() {
-        navigationController?.dismiss(animated: true)
+        navigationController.dismiss(animated: true)
     }
 
     func dismissVCStack() {
-        navigationController?.popToRootViewController(animated: true)
+        navigationController.popToRootViewController(animated: true)
     }
 }
 
@@ -65,13 +85,15 @@ enum AddRecipeRoute {
 }
 
 protocol AddRecipeParentCoordinator {
-    // Define common functionalities or properties here
+    func childDidFinish(_ child: Coordinator)
 }
 
-// Extend your existing coordinators to conform to this protocol
-extension RecipesListCoordinator: AddRecipeParentCoordinator {
-}
+extension RecipesListCoordinator: AddRecipeParentCoordinator {}
 
-extension RecipeDetailsCoordinator: AddRecipeParentCoordinator {
-    // Implement any required methods or properties
+#if DEBUG
+extension AddRecipeCoordinator: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "Coordinators")
+    }
 }
+#endif

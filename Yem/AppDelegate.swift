@@ -8,6 +8,8 @@
 import UIKit
 import CoreData
 import Kingfisher
+import FirebaseCore
+import LifetimeTracker
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -15,10 +17,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        FirebaseApp.configure()
         NavigationBarAppearanceManager.setupGlobalAppearance()
         
         let cache = ImageCache.default
         cache.diskStorage.config.sizeLimit = 1024 * 1024 * 100
+        
+#if DEBUG
+        LifetimeTracker.setup(
+                onUpdate: LifetimeTrackerDashboardIntegration(
+                    visibility: .alwaysVisible,
+                    style: .bar,
+                    textColorForNoIssues: .systemGreen,
+                    textColorForLeakDetected: .systemRed
+                ).refreshUI
+            )
+#endif
         
         return true
     }

@@ -10,6 +10,7 @@ import CoreData
 import Foundation
 import Kingfisher
 import UIKit
+import LifetimeTracker
 
 protocol AddRecipeVCDelegate: AnyObject {
     func loadData()
@@ -49,7 +50,10 @@ final class AddRecipeViewModel {
     var recipeID: UUID = .init()
     
     @Published
-    var selectedImage: UIImageView?
+    var selectedImage: UIImage?
+//    
+//    @Published
+//    var slectedImageView: UIImageView?
     
     @Published
     var recipeTitle: String = ""
@@ -182,10 +186,10 @@ final class AddRecipeViewModel {
         } else {
             print("DEBUG: existingRecipe is nil")
         }
-    }
-    
-    deinit {
-        print("DEBUG: AddRecipe viewmodel deinit")
+        
+#if DEBUG
+        trackLifetime()
+#endif
     }
     
     // MARK: - Public methods
@@ -296,16 +300,23 @@ final class AddRecipeViewModel {
             let imageUrl = LocalFileManager.instance.imageUrl(for: recipe.id.uuidString)
             let provider = LocalFileImageDataProvider(fileURL: imageUrl!)
             
-            if selectedImage == nil {
-                selectedImage = UIImageView()
-            }
+            let fetchImageView = UIImageView()
             
-            selectedImage?.kf.setImage(with: provider) { result in
+//            if slectedImageView == nil {
+//                slectedImageView = UIImageView()
+//            }
+
+            
+//            if selectedImage == nil {
+//                selectedImage = UIImageView()
+//            }
+            
+            fetchImageView.kf.setImage(with: provider) { result in
                 switch result {
                 case .success(let result):
                     print(result.cacheType)
                     print(result.source)
-                    self.selectedImage?.image = result.image
+                    self.selectedImage = result.image
                     print("success here")
                 case .failure(let error):
                     print(error)
@@ -335,7 +346,7 @@ final class AddRecipeViewModel {
         repository.addRecipe(recipe: recipe)
 
         if let image = selectedImage {
-            let imageSaved = LocalFileManager.instance.saveImage(with: recipeID.uuidString, image: image.image!)
+            let imageSaved = LocalFileManager.instance.saveImage(with: recipeID.uuidString, image: image)
             if !imageSaved {
                 repository.rollbackTransaction()
                 return false
@@ -372,7 +383,7 @@ final class AddRecipeViewModel {
         repository.updateRecipe(recipe: recipe)
 
         if let image = selectedImage {
-            let imageSaved = LocalFileManager.instance.updateImage(with: recipeID.uuidString, newImage: image.image!)
+            let imageSaved = LocalFileManager.instance.updateImage(with: recipeID.uuidString, newImage: image)
             if !imageSaved {
                 repository.rollbackTransaction()
                 return false
@@ -385,6 +396,7 @@ final class AddRecipeViewModel {
         }
 
         repository.endTransaction()
+        print(selectedImage?.cgImage)
         print("DEBUG: Recipe updated successfully")
         return true
     }
@@ -395,7 +407,7 @@ final class AddRecipeViewModel {
         guard let image = selectedImage else {
             return false
         }
-        return LocalFileManager.instance.saveImage(with: recipeID.uuidString, image: image.image!)
+        return LocalFileManager.instance.saveImage(with: recipeID.uuidString, image: image)
     }
 
     /// Validation
@@ -656,3 +668,12 @@ enum ValidationErrorTypes {
     case instruction
     case instructionList
 }
+
+
+#if DEBUG
+extension AddRecipeViewModel: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "AddRecipeViewModel")
+    }
+}
+#endif

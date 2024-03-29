@@ -8,8 +8,8 @@
 import UIKit
 
 final class ShopingListVC: UIViewController {
-    private let coordinator: ShopingListCoordinator?
-    private let viewModel: ShopingListVM
+    var coordinator: ShopingListCoordinator?
+    var viewModel: ShopingListVM
 
     private let tableView = UITableView()
     private let emptyTableLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)

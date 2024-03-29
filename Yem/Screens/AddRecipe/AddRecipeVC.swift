@@ -94,6 +94,11 @@ final class AddRecipeVC: UIViewController {
         view.addGestureRecognizer(tapGesture)
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        coordinator.coordinatorDidFinish()
+    }
+    
     // MARK: - UI Setup
 
     private func setupScrollView() {
@@ -332,7 +337,7 @@ extension AddRecipeVC: AddPhotoViewDelegate, UIImagePickerControllerDelegate & U
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
         if let image = info[.originalImage] as? UIImage {
-            viewModel.selectedImage?.image = image
+            viewModel.selectedImage = image
             addPhotoView.updatePhoto(with: image)
         }
         picker.dismiss(animated: true, completion: nil)
@@ -534,7 +539,7 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
 extension AddRecipeVC: AddRecipeVCDelegate {
     func loadData() {
         if let image = viewModel.selectedImage {
-            addPhotoView.updatePhoto(with: image.image!)
+            addPhotoView.updatePhoto(with: image)
         }
         
         nameTextfield.textField.text = viewModel.recipeTitle

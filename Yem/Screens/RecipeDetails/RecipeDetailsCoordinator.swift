@@ -5,41 +5,67 @@
 //  Created by Adam Zapiór on 20/02/2024.
 //
 
+import LifetimeTracker
 import UIKit
 
-final class RecipeDetailsCoordinator {
-    var recipe: RecipeModel
+final class RecipeDetailsCoordinator: ParentCoordinator, ChildCoordinator, AddRecipeParentCoordinator {
     var parentCoordinator: RecipesListCoordinator?
+    var childCoordinators: [Coordinator] = []
+    var viewControllerRef: UIViewController?
+    var navigationController: UINavigationController
+
+    var recipe: RecipeModel
     var repository: DataRepository
     var viewModel: RecipeDetailsVM
-    weak var navigationController: UINavigationController?
-    
 
-    init(navigationController: UINavigationController?, viewModel: RecipeDetailsVM, recipe: RecipeModel, repository: DataRepository) {
+    init(navigationController: UINavigationController, parentCoordinator: RecipesListCoordinator, viewModel: RecipeDetailsVM, recipe: RecipeModel, repository: DataRepository) {
         self.navigationController = navigationController
+        self.parentCoordinator = parentCoordinator
         self.viewModel = viewModel
         self.recipe = recipe
         self.repository = repository
+
+#if DEBUG
+        trackLifetime()
+#endif
     }
 
-    func start() -> UIViewController {
-        let detailsVC = RecipeDetailsVC(recipe: recipe, viewModel: viewModel, coordinator: self)
-        return detailsVC
+    func start(animated: Bool) {
+        let recipesDetailsController = RecipeDetailsVC(recipe: recipe, viewModel: viewModel, coordinator: self)
+
+        viewControllerRef = recipesDetailsController
+        navigationController.customPushViewController(viewController: recipesDetailsController, direction: .fromRight, transitionType: .moveIn)
     }
-    
+
+    func coordinatorDidFinish() {
+        if let viewController = viewControllerRef as? DisposableViewController {
+            viewController.cleanUp()
+        }
+        parentCoordinator?.childDidFinish(self)
+        viewControllerRef = nil
+        parentCoordinator = nil
+        print("DEBUG: coordinatorDidFinish() called")
+    }
+
+    func childDidFinish(_ child: Coordinator) {
+        if let index = childCoordinators.firstIndex(where: { $0 === child }) {
+            childCoordinators.remove(at: index)
+        }
+    }
+
     func presentAddIngredientsToShopingListAlert() {
-        let title: String = "Add ingredients to list"
-        let message: String = "Do you want o add all ingredients to shoping list?"
-        
+        let title = "Add ingredients to list"
+        let message = "Do you want o add all ingredients to shoping list?"
+
         let alertVC = DualOptionAlertVC(title: title, message: message) {
             self.viewModel.addIngredientsToShopingList()
             self.dismissAlert()
         } cancelAction: {
             self.dismissAlert()
         }
-            alertVC.modalPresentationStyle = .overFullScreen
-            alertVC.modalTransitionStyle = .crossDissolve
-            navigationController?.present(alertVC, animated: true, completion: nil)
+        alertVC.modalPresentationStyle = .overFullScreen
+        alertVC.modalTransitionStyle = .crossDissolve
+        navigationController.present(alertVC, animated: true, completion: nil)
     }
 
     func presentAddToFavouritesAlert() {
@@ -62,43 +88,50 @@ final class RecipeDetailsCoordinator {
         } cancelAction: {
             self.dismissAlert()
         }
-            alertVC.modalPresentationStyle = .overFullScreen
-            alertVC.modalTransitionStyle = .crossDissolve
-            navigationController?.present(alertVC, animated: true, completion: nil)
+        alertVC.modalPresentationStyle = .overFullScreen
+        alertVC.modalTransitionStyle = .crossDissolve
+        navigationController.present(alertVC, animated: true, completion: nil)
     }
-    
+
     func presentDeleteRecipeAlert() {
-        let title: String = "Remove recipe"
-        let message: String = "Do you want to remove this recipe from your recipes list?"
-        
+        let title = "Remove recipe"
+        let message = "Do you want to remove this recipe from your recipes list?"
+
         let alertVC = DualOptionAlertVC(title: title, message: message) {
             self.viewModel.deleteRecipe()
             self.dismissVC()
         } cancelAction: {
             self.dismissAlert()
         }
-            alertVC.modalPresentationStyle = .overFullScreen
-            alertVC.modalTransitionStyle = .crossDissolve
-            navigationController?.present(alertVC, animated: true, completion: nil)
+        alertVC.modalPresentationStyle = .overFullScreen
+        alertVC.modalTransitionStyle = .crossDissolve
+        navigationController.present(alertVC, animated: true, completion: nil)
     }
 
     func navigateToRecipeEditor() {
         let viewModel = AddRecipeViewModel(repository: repository, existingRecipe: recipe)
 
-        let coordinator = AddRecipeCoordinator(navigationController: navigationController, viewModel: viewModel)
+        let coordinator = AddRecipeCoordinator(navigationController: navigationController, viewModel: viewModel, parentCoordinator: self)
         coordinator.parentCoordinator = self
 
-        let addRecipeVC = coordinator.start()
-        addRecipeVC.hidesBottomBarWhenPushed = true
+        coordinator.start(animated: true)
 
-        (navigationController)?.pushViewController(addRecipeVC, animated: true)
+//        (navigationController).pushViewController(addRecipeVC, animated: true)
     }
-    
+
     func dismissAlert() {
-        navigationController?.dismiss(animated: true)
+        navigationController.dismiss(animated: true)
     }
 
     func dismissVC() {
-        navigationController?.popToRootViewController(animated: true)
+        navigationController.customPopToRootViewController()
     }
 }
+
+#if DEBUG
+extension RecipeDetailsCoordinator: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "Coordinators")
+    }
+}
+#endif

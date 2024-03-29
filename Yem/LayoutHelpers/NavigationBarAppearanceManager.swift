@@ -16,5 +16,10 @@ final class NavigationBarAppearanceManager {
         navigationBarAppearance.tintColor = UIColor.ui.theme
         navigationBarAppearance.barTintColor = .systemBackground
         navigationBarAppearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.ui.theme]
+        
+//        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.ui.theme], for: .normal)
+        
+        UITabBar.appearance().tintColor = .ui.theme
+        
     }
 }

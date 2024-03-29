@@ -11,7 +11,7 @@ import UIKit
 
 final class RecipesListVC: UIViewController {
     let coordinator: RecipesListCoordinator
-    let viewModel: RecipesListVM
+    var viewModel: RecipesListVM
 
     private var collectionView: UICollectionView!
 
@@ -135,6 +135,7 @@ extension RecipesListVC: UICollectionViewDelegate, UICollectionViewDataSource, U
         let recipe = section.items[indexPath.item]
 
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecipeCell.id, for: indexPath) as! RecipeCell
+        cell.recipeImage.image = nil
 
         cell.configure(with: recipe, image: nil)
 
@@ -179,6 +180,7 @@ extension RecipesListVC: UICollectionViewDelegate, UICollectionViewDataSource, U
 extension RecipesListVC: RecipesListVMDelegate {
     func reloadTable() {
         collectionView.reloadData()
+        
     }
 }
 
