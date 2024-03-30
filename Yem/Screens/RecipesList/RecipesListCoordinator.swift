@@ -29,7 +29,6 @@ final class RecipesListCoordinator: ParentCoordinator, ChildCoordinator {
     }
     
     func start(animated: Bool = false) {
-        let viewModel = RecipesListVM(repository: repository)
         let recipesListController = RecipesListVC(coordinator: self, viewModel: viewModel)
         recipesListController.viewModel = viewModel
         

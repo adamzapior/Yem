@@ -673,7 +673,7 @@ enum ValidationErrorTypes {
 #if DEBUG
 extension AddRecipeViewModel: LifetimeTrackable {
     class var lifetimeConfiguration: LifetimeConfiguration {
-        return LifetimeConfiguration(maxCount: 1, groupName: "AddRecipeViewModel")
+        return LifetimeConfiguration(maxCount: 1, groupName: "ViewModels")
     }
 }
 #endif

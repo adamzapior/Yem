@@ -28,14 +28,8 @@ final class ShopingListCoordinator: ParentCoordinator, ChildCoordinator {
         trackLifetime()
 #endif
     }
-    
-    func start() -> UIViewController {
-        rootViewController = UINavigationController(rootViewController: ShopingListVC(coordinator: self, viewModel: viewModel))
-        return rootViewController
-    }
-    
+
     func start(animated: Bool) {
-        let viewModel = ShopingListVM(repository: repository)
         let shopingListController = ShopingListVC(coordinator: self, viewModel: viewModel)
         shopingListController.viewModel = viewModel
         

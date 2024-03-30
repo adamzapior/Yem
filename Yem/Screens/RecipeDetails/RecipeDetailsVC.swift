@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import LifetimeTracker
 
 
 final class RecipeDetailsVC: UIViewController {
@@ -66,6 +67,10 @@ final class RecipeDetailsVC: UIViewController {
         
         print(recipe.isImageSaved.description)
         super.init(nibName: nil, bundle: nil)
+        
+#if DEBUG
+        trackLifetime()
+#endif
     }
 
     @available(*, unavailable)
@@ -356,3 +361,10 @@ extension RecipeDetailsVC: RecipeDetailsVMDelegate {
 }
 
 
+#if DEBUG
+extension RecipeDetailsVC: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "ViewControllers")
+    }
+}
+#endif

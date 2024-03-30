@@ -8,6 +8,7 @@
 import Foundation
 import Kingfisher
 import UIKit
+import LifetimeTracker
 
 protocol RecipeDetailsVMDelegate: AnyObject {
     func isFavouriteValueChanged(to: Bool)
@@ -26,6 +27,10 @@ final class RecipeDetailsVM {
         self.repository = repository
         
         isFavourite = recipe.isFavourite
+        
+#if DEBUG
+        trackLifetime()
+#endif
     }
     
     deinit {
@@ -73,3 +78,11 @@ final class RecipeDetailsVM {
         repository.deleteRecipe(withId: recipe.id)
     }
 }
+
+#if DEBUG
+extension RecipeDetailsVM: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "ViewModels")
+    }
+}
+#endif

@@ -7,6 +7,8 @@
 
 import SnapKit
 import UIKit
+import LifetimeTracker
+
 
 final class UnloggedOnboardingVC: UIViewController {
     var viewModel: OnboardingVM
@@ -16,6 +18,10 @@ final class UnloggedOnboardingVC: UIViewController {
         self.viewModel = viewModel
         self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
+        
+#if DEBUG
+        trackLifetime()
+#endif
     }
     
     @available(*, unavailable)
@@ -74,3 +80,11 @@ final class UnloggedOnboardingVC: UIViewController {
      }
      */
 }
+
+#if DEBUG
+extension UnloggedOnboardingVC: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "ViewControllers")
+    }
+}
+#endif

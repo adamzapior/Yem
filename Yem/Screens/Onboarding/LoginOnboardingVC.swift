@@ -6,9 +6,23 @@
 //
 
 import UIKit
+import LifetimeTracker
+
 
 final class LoginOnboardingVC: UIViewController {
 
+    init() {
+        super.init(nibName: nil, bundle: nil)
+
+#if DEBUG
+        trackLifetime()
+#endif
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -27,3 +41,11 @@ final class LoginOnboardingVC: UIViewController {
     */
 
 }
+
+#if DEBUG
+extension LoginOnboardingVC: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "ViewControllers")
+    }
+}
+#endif

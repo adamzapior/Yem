@@ -21,6 +21,10 @@ final class RecipesListVC: UIViewController {
         self.coordinator = coordinator
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        
+#if DEBUG
+        trackLifetime()
+#endif
     }
 
     @available(*, unavailable)
@@ -197,3 +201,11 @@ extension RecipesListVC {
         coordinator.navigateToAddRecipeScreen()
     }
 }
+
+#if DEBUG
+extension RecipesListVC: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "ViewControllers")
+    }
+}
+#endif

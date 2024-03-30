@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import LifetimeTracker
+
 
 final class ShopingListVC: UIViewController {
     var coordinator: ShopingListCoordinator?
@@ -170,3 +172,11 @@ extension ShopingListVC {
         coordinator?.presentClearShopingListAlert()
     }
 }
+
+#if DEBUG
+extension ShopingListVC: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "ViewControllers")
+    }
+}
+#endif

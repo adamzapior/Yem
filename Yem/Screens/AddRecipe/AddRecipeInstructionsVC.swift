@@ -7,6 +7,8 @@
 
 import Foundation
 import UIKit
+import LifetimeTracker
+
 
 final class AddRecipeInstructionsVC: UIViewController {
     // MARK: - Properties
@@ -40,6 +42,10 @@ final class AddRecipeInstructionsVC: UIViewController {
         self.viewModel = viewModel
         self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
+        
+#if DEBUG
+        trackLifetime()
+#endif
     }
     
     @available(*, unavailable)
@@ -221,3 +227,12 @@ extension AddRecipeInstructionsVC {
         coordinator.pushVC(for: .addInstruction)
     }
 }
+
+
+#if DEBUG
+extension AddRecipeInstructionsVC: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "ViewControllers")
+    }
+}
+#endif

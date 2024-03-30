@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import LifetimeTracker
+
 
 final class AddInstructionSheetVC: UIViewController {
     // MARK: - Properties
@@ -63,6 +65,10 @@ final class AddInstructionSheetVC: UIViewController {
         self.nameOfRowText = "Add new instruction"
         self.icon = IconImage(systemImage: iconImage, color: .ui.theme, textStyle: textStyle)
         super.init(nibName: nil, bundle: nil)
+        
+#if DEBUG
+        trackLifetime()
+#endif
     }
     
     @available(*, unavailable)
@@ -221,3 +227,11 @@ extension AddInstructionSheetVC: MainActionButtonDelegate {
         view.endEditing(true)
     }
 }
+
+#if DEBUG
+extension AddInstructionSheetVC: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "ViewControllers")
+    }
+}
+#endif

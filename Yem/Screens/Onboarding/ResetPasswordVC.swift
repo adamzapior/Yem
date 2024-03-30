@@ -6,9 +6,22 @@
 //
 
 import UIKit
+import LifetimeTracker
+
 
 class ResetPasswordVC: UIViewController {
-
+    
+    init() {
+        super.init(nibName: nil, bundle: nil)
+#if DEBUG
+        trackLifetime()
+#endif
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -27,3 +40,11 @@ class ResetPasswordVC: UIViewController {
     */
 
 }
+
+#if DEBUG
+extension ResetPasswordVC: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "ViewControllers")
+    }
+}
+#endif
