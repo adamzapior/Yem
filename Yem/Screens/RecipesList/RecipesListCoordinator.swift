@@ -5,48 +5,91 @@
 //  Created by Adam Zapiór on 02/01/2024.
 //
 
+import LifetimeTracker
 import UIKit
 
-final class RecipesListCoordinator {
-    var parentCoordinator: MainBaseCoordinator?
+final class RecipesListCoordinator: ParentCoordinator, ChildCoordinator {
+    var parentCoordinator: TabBarCoordinator?
+    var childCoordinators = [Coordinator]()
+    var navigationController: UINavigationController
+    var viewControllerRef: UIViewController?
     
     lazy var rootViewController: UIViewController = .init()
     let repository: DataRepository
-    let viewModel: RecipesListVM
+    var viewModel: RecipesListVM
     
-    init(parentCoordinator: MainBaseCoordinator? = nil, repository: DataRepository, viewModel: RecipesListVM) {
+    init(parentCoordinator: TabBarCoordinator? = nil, repository: DataRepository, viewModel: RecipesListVM, navigationController: UINavigationController) {
         self.parentCoordinator = parentCoordinator
         self.repository = repository
         self.viewModel = viewModel
+        self.navigationController = navigationController
+#if DEBUG
+        trackLifetime()
+#endif
     }
     
-    func start() -> UIViewController {
-        rootViewController = UINavigationController(rootViewController: RecipesListVC(coordinator: self, viewModel: viewModel))
+    func start(animated: Bool = false) {
+        let recipesListController = RecipesListVC(coordinator: self, viewModel: viewModel)
+        recipesListController.viewModel = viewModel
+        
+        viewControllerRef = recipesListController
 
-        return rootViewController
+        recipesListController.tabBarItem = UITabBarItem(title: "Recipes",
+                                                        image: UIImage(systemName: "book"),
+                                                        selectedImage: nil)
+        
+        navigationController.customPushViewController(viewController: recipesListController)
     }
+
+    func coordinatorDidFinish() {
+        if let viewController = viewControllerRef as? DisposableViewController {
+            viewController.cleanUp()
+        }
+        if let index = childCoordinators.firstIndex(where: { $0 === self }) {
+            childCoordinators.remove(at: index)
+        }
+//        parentCoordinator?.childDidFinish(self)
+        
+        print("Coordinator did finish")
+    }
+    
+    func childDidFinish(_ child: Coordinator) {
+        if let index = childCoordinators.firstIndex(where: { $0 === child }) {
+            childCoordinators.remove(at: index)
+        }
+    }
+    
+    // MARK: Navigation
     
     func navigateToAddRecipeScreen() {
         let viewModel = AddRecipeViewModel(repository: repository)
-        
-        let coordinator = AddRecipeCoordinator(navigationController: rootViewController as? UINavigationController, viewModel: viewModel)
+
+        let coordinator = AddRecipeCoordinator(navigationController: navigationController, viewModel: viewModel, parentCoordinator: self)
         coordinator.parentCoordinator = self
 
-        let addRecipeVC = coordinator.start()
-        addRecipeVC.hidesBottomBarWhenPushed = true
-
-        (rootViewController as? UINavigationController)?.pushViewController(addRecipeVC, animated: true)
+        coordinator.start(animated: true)
+        
+//        (navigationController).pushViewController(addRecipeVC, animated: true)
     }
     
     func navigateToRecipeDetail(with recipe: RecipeModel) {
         let viewModel = RecipeDetailsVM(recipe: recipe, repository: repository)
         
-        let coordinator = RecipeDetailsCoordinator(navigationController: rootViewController as? UINavigationController, viewModel: viewModel, recipe: recipe, repository: repository)        
+        let coordinator = RecipeDetailsCoordinator(navigationController: navigationController, parentCoordinator: self, viewModel: viewModel, recipe: recipe, repository: repository)
         coordinator.parentCoordinator = self
 
-        let detailsVC = coordinator.start()
-        detailsVC.hidesBottomBarWhenPushed = true
+        let detailsVC: () = coordinator.start(animated: true)
+//        detailsVC.hidesBottomBarWhenPushed = true
         
-        (rootViewController as? UINavigationController)?.pushViewController(detailsVC, animated: true)
+//        navigationController.popToViewController(detailsVC, animated: true)
+//        navigationController.pushViewController(detailsVC, animated: true)
     }
 }
+
+#if DEBUG
+extension RecipesListCoordinator: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "Coordinators")
+    }
+}
+#endif

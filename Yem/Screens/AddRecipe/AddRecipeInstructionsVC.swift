@@ -7,6 +7,8 @@
 
 import Foundation
 import UIKit
+import LifetimeTracker
+
 
 final class AddRecipeInstructionsVC: UIViewController {
     // MARK: - Properties
@@ -40,6 +42,10 @@ final class AddRecipeInstructionsVC: UIViewController {
         self.viewModel = viewModel
         self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
+        
+#if DEBUG
+        trackLifetime()
+#endif
     }
     
     @available(*, unavailable)
@@ -209,6 +215,7 @@ extension AddRecipeInstructionsVC {
     @objc func saveButtonTapped(_ sender: UIBarButtonItem) {
         let result = viewModel.saveRecipe()
         if result {
+            coordinator.coordinatorDidFinish()
             coordinator.dismissVCStack()
         } else {
             let errorMessages = viewModel.validationErrors.map { $0.description }.joined(separator: "\n")
@@ -220,3 +227,12 @@ extension AddRecipeInstructionsVC {
         coordinator.pushVC(for: .addInstruction)
     }
 }
+
+
+#if DEBUG
+extension AddRecipeInstructionsVC: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "ViewControllers")
+    }
+}
+#endif

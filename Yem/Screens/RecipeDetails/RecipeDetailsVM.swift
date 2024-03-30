@@ -8,6 +8,7 @@
 import Foundation
 import Kingfisher
 import UIKit
+import LifetimeTracker
 
 protocol RecipeDetailsVMDelegate: AnyObject {
     func isFavouriteValueChanged(to: Bool)
@@ -26,6 +27,10 @@ final class RecipeDetailsVM {
         self.repository = repository
         
         isFavourite = recipe.isFavourite
+        
+#if DEBUG
+        trackLifetime()
+#endif
     }
     
     deinit {
@@ -40,11 +45,13 @@ final class RecipeDetailsVM {
     
         let imageUrl = LocalFileManager.instance.imageUrl(for: recipe.id.uuidString)
         let provider = LocalFileImageDataProvider(fileURL: imageUrl!)
-        let newImage = UIImageView()
+        let fetchImageView = UIImageView()
     
-        newImage.kf.setImage(with: provider) { result in
+        fetchImageView.kf.setImage(with: provider) { result in
             switch result {
             case .success(let result):
+                print(result.cacheType)
+                print(result.source)
                 DispatchQueue.main.async {
                     completion(result.image)
                 }
@@ -71,3 +78,11 @@ final class RecipeDetailsVM {
         repository.deleteRecipe(withId: recipe.id)
     }
 }
+
+#if DEBUG
+extension RecipeDetailsVM: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "ViewModels")
+    }
+}
+#endif

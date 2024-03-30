@@ -89,8 +89,12 @@ final class RecipeCell: UICollectionViewCell {
         if model.isImageSaved {
             let imageUrl = LocalFileManager.instance.imageUrl(for: model.id.uuidString)
             let provider = LocalFileImageDataProvider(fileURL: imageUrl!)
+            let options: KingfisherOptionsInfo = [
+                .cacheOriginalImage,
+                .forceRefresh
+            ]
             
-            recipeImage.kf.setImage(with: provider) { result in
+            recipeImage.kf.setImage(with: provider, options: options) { result in
                 switch result {
                 case .success(let result):
                     print(result.cacheType)

@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import LifetimeTracker
 
 
 final class RecipeDetailsVC: UIViewController {
@@ -63,7 +64,13 @@ final class RecipeDetailsVC: UIViewController {
         } else {
             bookmarkIconString = bookmarkIconEmpty
         }
+        
+        print(recipe.isImageSaved.description)
         super.init(nibName: nil, bundle: nil)
+        
+#if DEBUG
+        trackLifetime()
+#endif
     }
 
     @available(*, unavailable)
@@ -95,6 +102,11 @@ final class RecipeDetailsVC: UIViewController {
         setupInstructionsContainer()
         
         configureRecipeViewData()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        coordinator.coordinatorDidFinish()
     }
 
     // MARK: - UI Setup
@@ -349,3 +361,10 @@ extension RecipeDetailsVC: RecipeDetailsVMDelegate {
 }
 
 
+#if DEBUG
+extension RecipeDetailsVC: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "ViewControllers")
+    }
+}
+#endif

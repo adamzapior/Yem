@@ -9,6 +9,7 @@ import Combine
 import Foundation
 import Kingfisher
 import UIKit
+import LifetimeTracker
 
 protocol RecipesListVMDelegate: AnyObject {
     func reloadTable()
@@ -49,6 +50,10 @@ final class RecipesListVM {
                 }
             })
             .store(in: &cancellables)
+        
+#if DEBUG
+        trackLifetime()
+#endif
     }
     
     // MARK: - Public methods
@@ -96,3 +101,11 @@ struct Section {
     let title: RecipeCategory
     let items: [RecipeModel]
 }
+
+#if DEBUG
+extension RecipesListVM: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "ViewModels")
+    }
+}
+#endif

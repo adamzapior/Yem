@@ -8,6 +8,8 @@
 import Combine
 import SnapKit
 import UIKit
+import LifetimeTracker
+
 
 final class AddRecipeVC: UIViewController {
     // MARK: - Properties
@@ -64,6 +66,10 @@ final class AddRecipeVC: UIViewController {
         self.coordinator = coordinator
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        
+#if DEBUG
+        trackLifetime()
+#endif
     }
     
     @available(*, unavailable)
@@ -92,6 +98,11 @@ final class AddRecipeVC: UIViewController {
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        coordinator.coordinatorDidFinish()
     }
     
     // MARK: - UI Setup
@@ -332,7 +343,7 @@ extension AddRecipeVC: AddPhotoViewDelegate, UIImagePickerControllerDelegate & U
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
         if let image = info[.originalImage] as? UIImage {
-            viewModel.selectedImage?.image = image
+            viewModel.selectedImage = image
             addPhotoView.updatePhoto(with: image)
         }
         picker.dismiss(animated: true, completion: nil)
@@ -534,7 +545,7 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
 extension AddRecipeVC: AddRecipeVCDelegate {
     func loadData() {
         if let image = viewModel.selectedImage {
-            addPhotoView.updatePhoto(with: image.image!)
+            addPhotoView.updatePhoto(with: image)
         }
         
         nameTextfield.textField.text = viewModel.recipeTitle
@@ -610,3 +621,11 @@ extension AddRecipeVC {
         coordinator.pushVC(for: .ingredientsList)
     }
 }
+
+#if DEBUG
+extension AddRecipeVC: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "ViewControllers")
+    }
+}
+#endif

@@ -6,10 +6,12 @@
 //
 
 import UIKit
+import LifetimeTracker
+
 
 final class ShopingListVC: UIViewController {
-    private let coordinator: ShopingListCoordinator?
-    private let viewModel: ShopingListVM
+    var coordinator: ShopingListCoordinator?
+    var viewModel: ShopingListVM
 
     private let tableView = UITableView()
     private let emptyTableLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
@@ -170,3 +172,11 @@ extension ShopingListVC {
         coordinator?.presentClearShopingListAlert()
     }
 }
+
+#if DEBUG
+extension ShopingListVC: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "ViewControllers")
+    }
+}
+#endif

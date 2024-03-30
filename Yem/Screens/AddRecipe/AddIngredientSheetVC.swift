@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import LifetimeTracker
+
 
 final class AddIngredientSheetVC: UIViewController {
     // MARK: - Properties
@@ -48,6 +50,10 @@ final class AddIngredientSheetVC: UIViewController {
         self.viewModel = viewModel
         self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
+        
+#if DEBUG
+        trackLifetime()
+#endif
     }
     
     @available(*, unavailable)
@@ -324,3 +330,11 @@ extension AddIngredientSheetVC: AddIngredientSheetVCDelegate {
         }
     }
 }
+
+#if DEBUG
+extension AddIngredientSheetVC: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "ViewControllers")
+    }
+}
+#endif

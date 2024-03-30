@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import LifetimeTracker
 
 protocol ShopingListVMDelegate: AnyObject {
     func reloadTable()
@@ -31,6 +32,10 @@ final class ShopingListVM {
                 }
             })
             .store(in: &cancellables)
+        
+#if DEBUG
+        trackLifetime()
+#endif
     }
 
     func loadShopingList() {
@@ -87,3 +92,11 @@ enum ShopingListType: Int, CaseIterable {
     case unchecked
     case checked
 }
+
+#if DEBUG
+extension ShopingListVM: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "ViewModels")
+    }
+}
+#endif

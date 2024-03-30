@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import LifetimeTracker
+
 
 class LocalFileManager: FileManager {
     static let instance = LocalFileManager()
