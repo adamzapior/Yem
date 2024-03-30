@@ -76,6 +76,7 @@
 		58AA17612B88136000C44578 /* LocalFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58AA17602B88136000C44578 /* LocalFileManager.swift */; };
 		58AB57BD2B588E8400053C74 /* DataRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58AB57BC2B588E8400053C74 /* DataRepository.swift */; };
 		58B8618D2BB88E8E00597153 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 58B8618C2BB88E8E00597153 /* GoogleService-Info.plist */; };
+		58B8618F2BB8A41D00597153 /* UIFontExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58B8618E2BB8A41D00597153 /* UIFontExt.swift */; };
 		58BBEB762B59C94B0058851C /* IngredientEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB742B59C94B0058851C /* IngredientEntity.swift */; };
 		58BBEB7C2B59C9EB0058851C /* RecipeEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB7A2B59C9EB0058851C /* RecipeEntity.swift */; };
 		58BBEB852B5AEDAF0058851C /* InstructionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB842B5AEDAE0058851C /* InstructionCell.swift */; };
@@ -178,6 +179,7 @@
 		58AA17602B88136000C44578 /* LocalFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFileManager.swift; sourceTree = "<group>"; };
 		58AB57BC2B588E8400053C74 /* DataRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataRepository.swift; sourceTree = "<group>"; };
 		58B8618C2BB88E8E00597153 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		58B8618E2BB8A41D00597153 /* UIFontExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIFontExt.swift; sourceTree = "<group>"; };
 		58BBEB742B59C94B0058851C /* IngredientEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientEntity.swift; sourceTree = "<group>"; };
 		58BBEB7A2B59C9EB0058851C /* RecipeEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeEntity.swift; sourceTree = "<group>"; };
 		58BBEB842B5AEDAE0058851C /* InstructionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionCell.swift; sourceTree = "<group>"; };
@@ -387,6 +389,7 @@
 				584D1D502B2F396F009D5F28 /* UIViewControllerExt.swift */,
 				58C5814B2B93D884000D3B7D /* UILabelExt.swift */,
 				586230F82BB5957E000456D0 /* NavigationControllerExt.swift */,
+				58B8618E2BB8A41D00597153 /* UIFontExt.swift */,
 			);
 			path = Extenstions;
 			sourceTree = "<group>";
@@ -460,10 +463,10 @@
 		589CA8012BB2EB070008DFC3 /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
+				589CA8022BB2EB160008DFC3 /* UnloggedOnboardingVC.swift */,
 				589CA8072BB2EB160008DFC3 /* LoginOnboardingVC.swift */,
 				589CA8062BB2EB160008DFC3 /* RegisterOnboardingVC.swift */,
 				589CA8032BB2EB160008DFC3 /* ResetPasswordVC.swift */,
-				589CA8022BB2EB160008DFC3 /* UnloggedOnboardingVC.swift */,
 				589CA8042BB2EB160008DFC3 /* OnboardingVM.swift */,
 				589CA8052BB2EB160008DFC3 /* OnboardingCoordinator.swift */,
 			);
@@ -724,6 +727,7 @@
 				589CA8082BB2EB160008DFC3 /* UnloggedOnboardingVC.swift in Sources */,
 				58EBB0772B227B82000EB128 /* PhotoView.swift in Sources */,
 				581F14212BA8AC3B0046FFA8 /* DualOptionAlertVC.swift in Sources */,
+				58B8618F2BB8A41D00597153 /* UIFontExt.swift in Sources */,
 				589929502B44A28100FAB070 /* NavigationBarAppearanceManager.swift in Sources */,
 				586230F52BB5952A000456D0 /* ChildCoordinator.swift in Sources */,
 				588746932B2E6D4B00EC5E11 /* AdaptiveLayoutHelper.swift in Sources */,

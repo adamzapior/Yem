@@ -17,8 +17,8 @@ final class InstructionTableFooterView: UIView {
     
     private let screenWidth = UIScreen.main.bounds.width
     
-    private let addButton = MainActionButton(title: "Add", backgroundColor: .ui.addBackground!)
-    private let editButton = MainActionButton(title: "Edit", backgroundColor: .ui.primaryContainer!)
+    private let addButton = MainActionButton(title: "Add", backgroundColor: .ui.addBackground)
+    private let editButton = MainActionButton(title: "Edit", backgroundColor: .ui.primaryContainer)
     
     private let content = UIView()
 

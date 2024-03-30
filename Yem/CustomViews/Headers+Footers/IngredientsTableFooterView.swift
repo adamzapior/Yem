@@ -16,7 +16,7 @@ final class IngredientsTableFooterView: UIView {
 
     private let screenWidth = UIScreen.main.bounds.width
 
-    private let addButton = MainActionButton(title: "Add", backgroundColor: .ui.addBackground!)
+    private let addButton = MainActionButton(title: "Add", backgroundColor: .ui.addBackground)
 
     private let content = UIView()
 

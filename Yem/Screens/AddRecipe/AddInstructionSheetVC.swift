@@ -44,8 +44,8 @@ final class AddInstructionSheetVC: UIViewController {
         }
     }
     
-    private let addButton = MainActionButton(title: "Add", backgroundColor: .ui.addBackground!)
-    private let cancelButton = MainActionButton(title: "Cancel", backgroundColor: .ui.cancelBackground ?? .ui.theme)
+    private let addButton = MainActionButton(title: "Add", backgroundColor: .ui.addBackground)
+    private let cancelButton = MainActionButton(title: "Cancel", backgroundColor: .ui.cancelBackground )
     
     private let stackView: UIStackView = {
         let stack = UIStackView()

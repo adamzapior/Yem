@@ -18,6 +18,7 @@ final class AppCoordinator: NSObject, ParentCoordinator {
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController
         super.init()
+        
 #if DEBUG
         trackLifetime()
 #endif
@@ -102,7 +103,7 @@ class SplashViewModel {
     
     // MARK: - Functions
     func isUserConnected() -> Bool {
-        return true
+        return false
     }
     
     

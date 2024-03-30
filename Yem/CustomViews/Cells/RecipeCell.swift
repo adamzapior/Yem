@@ -20,7 +20,7 @@ final class RecipeCell: UICollectionViewCell {
     
     private var cookingInfoContainerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .ui.secondaryContainer?.withAlphaComponent(0.85)
+        view.backgroundColor = .ui.secondaryContainer.withAlphaComponent(0.85)
         view.layer.cornerRadius = 20
         return view
     }()

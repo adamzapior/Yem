@@ -42,7 +42,7 @@ final class ValidationAlertVC: UIViewController {
         containerView.backgroundColor = .systemBackground
         containerView.layer.cornerRadius = 20
         containerView.layer.borderWidth = 1
-        containerView.layer.borderColor = UIColor.ui.secondaryText?.cgColor
+        containerView.layer.borderColor = UIColor.ui.secondaryText.cgColor
         
         containerView.snp.makeConstraints { make in
             make.centerX.centerY.equalToSuperview()

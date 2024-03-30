@@ -9,9 +9,14 @@ import UIKit
 import LifetimeTracker
 
 
-class ResetPasswordVC: UIViewController {
+final class ResetPasswordVC: UIViewController {
     
-    init() {
+    let coordinator: OnboardingCoordinator
+    let viewModel: OnboardingVM
+    
+    init(coordinator: OnboardingCoordinator, viewModel: OnboardingVM) {
+        self.coordinator = coordinator
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
 #if DEBUG
         trackLifetime()

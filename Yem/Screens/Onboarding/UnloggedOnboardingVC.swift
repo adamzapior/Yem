@@ -5,15 +5,23 @@
 //  Created by Adam Zapiór on 20/03/2024.
 //
 
+import Kingfisher
+import LifetimeTracker
 import SnapKit
 import UIKit
-import LifetimeTracker
-
 
 final class UnloggedOnboardingVC: UIViewController {
     var viewModel: OnboardingVM
     var coordinator: OnboardingCoordinator
     
+    lazy var image = UIImageView()
+        
+    let titleLabel = ReusableTextLabel(fontStyle: .title1, fontWeight: .light, textColor: .ui.theme, textAlignment: .center)
+    let subtitleLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .light, textColor: .ui.secondaryText, textAlignment: .center)
+
+    let loginButton = MainActionButton(title: "Login", backgroundColor: .ui.theme, isShadownOn: true)
+    let registerButton = MainActionButton(title: "Register", backgroundColor: .ui.cancelBackground, isShadownOn: true)
+
     init(viewModel: OnboardingVM, coordinator: OnboardingCoordinator) {
         self.viewModel = viewModel
         self.coordinator = coordinator
@@ -35,50 +43,99 @@ final class UnloggedOnboardingVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        let label = UILabel()
-        label.text = "unlogged onb"
-           
-        let button = UIButton(type: .system)
-        button.setTitle("Finish Onboarding", for: .normal)
-        button.addTarget(self, action: #selector(finishOnboarding), for: .touchUpInside)
-           
-        view.addSubview(label)
-        view.addSubview(button)
-           
-        label.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.centerY.equalToSuperview().offset(-50) // Adjusted for button
-        }
-           
-        button.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.top.equalTo(label.snp.bottom).offset(20) // Adjusted for spacing
-        }
-           
-        print("testtwstsegs")
+        
+        setupUI()
+        setupDelegateAndDataSource()
+        
+        loginButton.delegate = self
+        registerButton.delegate = self
+        
+        loginButton.tag = 1
+        registerButton.tag = 2
     }
-       
-//    override func viewDidDisappear(_ animated: Bool) {
-//        super.viewDidDisappear(animated)
-//        coordinator.coordinatorDidFinish()
-//    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        coordinator.isNavigationBarHidden(value: true)
+    }
+    
+    // MARK: - UI Setup
+    
+    private func setupUI() {
+        view.addSubview(image)
+        view.addSubview(titleLabel)
+        view.addSubview(subtitleLabel)
+        view.addSubview(loginButton)
+        view.addSubview(registerButton)
+        
+        image.image = UIImage(named: "onboarding-image")
+        image.sizeToFit()
+        image.contentMode = .scaleAspectFill
+        image.layer.cornerRadius = 24
+        
+        image.snp.makeConstraints { make in
+            make.top.equalToSuperview()
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(loginButton.snp.top).offset(-128)
+        }
+        
+        titleLabel.text = "Welcome to Yem!"
+        subtitleLabel.text = "Connect and enjoy. Your journey to unforgettable dining experiences starts here."
+        
+        titleLabel.snp.makeConstraints { make in
+            make.top.equalTo(image.snp.bottom)
+            make.leading.trailing.equalToSuperview()
+        }
+        
+        subtitleLabel.snp.makeConstraints { make in
+            make.top.equalTo(titleLabel.snp.bottom).offset(-12)
+            make.leading.trailing.equalToSuperview().inset(32)
+            make.bottom.equalTo(loginButton.snp.top).offset(-12)
+        }
+        
+        loginButton.snp.makeConstraints { make in
+            make.bottom.equalTo(registerButton.snp.top).offset(-18)
+            make.leading.trailing.equalToSuperview().inset(32)
+        }
+        
+        registerButton.snp.makeConstraints { make in
+            make.bottom.equalToSuperview().offset(-64)
+            make.top.equalTo(loginButton.snp.bottom).offset(18)
+            make.leading.trailing.equalToSuperview().inset(32)
+        }
+    }
+    
+    private func setupDelegateAndDataSource() {
+        loginButton.delegate = self
+        registerButton.delegate = self
+        
+        loginButton.tag = 1
+        registerButton.tag = 2
+    }
     
     @objc func finishOnboarding() {
         coordinator.registerFinished()
         coordinator.coordinatorDidFinish()
-
     }
+    
+    //    override func viewDidDisappear(_ animated: Bool) {
+    //        super.viewDidDisappear(animated)
+    //        coordinator.coordinatorDidFinish()
+    //    }
+}
 
-    /*
-     // MARK: - Navigation
+// MARK: - Navigation
 
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-         // Get the new view controller using segue.destination.
-         // Pass the selected object to the new view controller.
-     }
-     */
+extension UnloggedOnboardingVC: MainActionButtonDelegate {
+    func mainActionButtonTapped(_ button: MainActionButton) {
+        switch button.tag {
+        case 1:
+            coordinator.pushVC(for: .login)
+        case 2:
+            coordinator.pushVC(for: .register)
+        default:
+            break
+        }
+    }
 }
 
 #if DEBUG

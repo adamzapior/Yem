@@ -20,8 +20,8 @@ final class AddIngredientSheetVC: UIViewController {
     private let ingredientNameTextfield = TextfieldWithIconRow(backgroundColor: .ui.secondaryContainer, iconImage: "info.square", placeholderText: "Enter your igredient name*", textColor: .ui.secondaryText)
     private let countTextfield = TextfieldWithIconRow(backgroundColor: .ui.secondaryContainer, iconImage: "bag.badge.plus", placeholderText: "Enter value*", textColor: .ui.secondaryText)
     private let valueTypeCell = PickerWithIconRow(backgroundColor: .ui.secondaryContainer, iconImage: "note.text.badge.plus", textOnButton: "Select value type*")
-    private let addButton = MainActionButton(title: "Add", backgroundColor: .ui.addBackground!)
-    private let cancelButton = MainActionButton(title: "Cancel", backgroundColor: .ui.cancelBackground ?? .ui.theme)
+    private let addButton = MainActionButton(title: "Add", backgroundColor: .ui.addBackground)
+    private let cancelButton = MainActionButton(title: "Cancel", backgroundColor: .ui.cancelBackground )
     
     private let valueTypePickerView = UIPickerView()
     
@@ -315,11 +315,11 @@ extension AddIngredientSheetVC: AddIngredientSheetVCDelegate {
         case .category:
             break
         case .ingredientName:
-            ingredientNameTextfield.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
+            ingredientNameTextfield.setPlaceholderColor(.ui.placeholderError)
         case .ingredientValue:
-            valueTypeCell.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
+            valueTypeCell.setPlaceholderColor(.ui.placeholderError)
         case .ingredientValueType:
-            valueTypeCell.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
+            valueTypeCell.setPlaceholderColor(.ui.placeholderError)
         case .ingredientList:
             break
         case .instruction:

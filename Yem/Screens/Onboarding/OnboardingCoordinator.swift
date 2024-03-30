@@ -28,13 +28,16 @@ final class OnboardingCoordinator: ChildCoordinator {
     }
     
     func start(animated: Bool) {
-        let viewModel = OnboardingVM()
         let onboardingVC = UnloggedOnboardingVC(viewModel: viewModel, coordinator: self)
         onboardingVC.viewModel = viewModel
         
         viewControllerRef = onboardingVC
 
         navigationController.customPushViewController(viewController: onboardingVC)
+    }
+    
+    func isNavigationBarHidden(value: Bool) {
+        self.navigationController.setNavigationBarHidden(value, animated: false)
     }
     
     func coordinatorDidFinish() {
@@ -54,6 +57,33 @@ final class OnboardingCoordinator: ChildCoordinator {
         parentCoordinator?.logisterFinished(user: User(), animated: true)
 
     }
+    
+    func pushVC(for route: OnboardingRoute) {
+        self.isNavigationBarHidden(value: false)
+        switch route {
+        case .login:
+            let controller = LoginOnboardingVC(coordinator: self, viewModel: viewModel)
+            viewControllerRef = controller
+            navigationController.customPushViewController(viewController: controller)
+//            navigationController.pushViewController(controller, animated: true)
+        case .register:
+            let controller = RegisterOnboardingVC(coordinator: self, viewModel: viewModel)
+            viewControllerRef = controller
+            navigationController.customPushViewController(viewController: controller)
+        case .resetPassword:
+            let controller = ResetPasswordVC(coordinator: self, viewModel: viewModel)
+            navigationController.pushViewController(controller, animated: true)
+        case .privacyPolicy:
+            break
+        }
+    }
+}
+
+enum OnboardingRoute {
+    case login
+    case register
+    case resetPassword
+    case privacyPolicy
 }
 
 #if DEBUG

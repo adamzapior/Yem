@@ -582,17 +582,17 @@ extension AddRecipeVC: AddRecipeVCDelegate {
     func delegateDetailsError(_ type: ValidationErrorTypes) {
         switch type {
         case .recipeTitle:
-            nameTextfield.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
+            nameTextfield.setPlaceholderColor(.ui.placeholderError)
         case .servings:
-            servingCell.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
+            servingCell.setPlaceholderColor(.ui.placeholderError)
         case .difficulty:
-            difficultyCell.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
+            difficultyCell.setPlaceholderColor(.ui.placeholderError)
         case .prepTime:
-            prepTimeCell.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
+            prepTimeCell.setPlaceholderColor(.ui.placeholderError)
         case .spicy:
-            spicyCell.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
+            spicyCell.setPlaceholderColor(.ui.placeholderError)
         case .category:
-            categoryCell.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
+            categoryCell.setPlaceholderColor(.ui.placeholderError)
         case .ingredientName:
             break
         case .ingredientValue:

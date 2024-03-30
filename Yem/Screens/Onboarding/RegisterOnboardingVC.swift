@@ -9,10 +9,14 @@ import UIKit
 import LifetimeTracker
 
 
-class RegisterOnboardingVC: UIViewController {
+final class RegisterOnboardingVC: UIViewController {
 
+    let coordinator: OnboardingCoordinator
+    let viewModel: OnboardingVM
     
-    init() {
+    init(coordinator: OnboardingCoordinator, viewModel: OnboardingVM) {
+        self.coordinator = coordinator
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
 
 #if DEBUG
@@ -28,20 +32,14 @@ class RegisterOnboardingVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        self.navigationController?.navigationBar.prefersLargeTitles = true
+        self.navigationItem.largeTitleDisplayMode = .always
+
+        self.navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.ui.theme]
+        self.title = "Register to Yem"
+
+        print("mam 22")
     }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
 
 #if DEBUG
