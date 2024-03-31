@@ -17,11 +17,11 @@ final class AddIngredientSheetVC: UIViewController {
     
     // MARK: - View properties
     
-    private let ingredientNameTextfield = TextfieldWithIconRow(backgroundColor: .ui.secondaryContainer, iconImage: "info.square", placeholderText: "Enter your igredient name*", textColor: .ui.secondaryText)
-    private let countTextfield = TextfieldWithIconRow(backgroundColor: .ui.secondaryContainer, iconImage: "bag.badge.plus", placeholderText: "Enter value*", textColor: .ui.secondaryText)
-    private let valueTypeCell = PickerWithIconRow(backgroundColor: .ui.secondaryContainer, iconImage: "note.text.badge.plus", textOnButton: "Select value type*")
-    private let addButton = MainActionButton(title: "Add", backgroundColor: .ui.addBackground)
-    private let cancelButton = MainActionButton(title: "Cancel", backgroundColor: .ui.cancelBackground )
+    private let ingredientNameTextfield = TextfieldWithIcon(backgroundColor: .ui.secondaryContainer, iconImage: "info.square", placeholderText: "Enter your igredient name*", textColor: .ui.secondaryText)
+    private let countTextfield = TextfieldWithIcon(backgroundColor: .ui.secondaryContainer, iconImage: "bag.badge.plus", placeholderText: "Enter value*", textColor: .ui.secondaryText)
+    private let valueTypeCell = AddPicker(backgroundColor: .ui.secondaryContainer, iconImage: "note.text.badge.plus", textOnButton: "Select value type*")
+    private let addButton = ActionButton(title: "Add", backgroundColor: .ui.addBackground)
+    private let cancelButton = ActionButton(title: "Cancel", backgroundColor: .ui.cancelBackground )
     
     private let valueTypePickerView = UIPickerView()
     
@@ -76,7 +76,9 @@ final class AddIngredientSheetVC: UIViewController {
         }
         
         setupUI()
-        configureComponents()
+        setupTag()
+        setupDelegate()
+        setupDataSource()
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
@@ -111,23 +113,15 @@ final class AddIngredientSheetVC: UIViewController {
 // MARK: - Delegate & data source items
 
 extension AddIngredientSheetVC {
-    private func configureComponents() {
-        configureTags()
-        configureDelegateAndDataSource()
-        configureKeyboardType()
-    }
+
     
-    private func configureTags() {
-        /// textfields:
-        ingredientNameTextfield.tag = 1
-        countTextfield.tag = 2
-        
-        /// mainButton:
-        addButton.tag = 1
-        cancelButton.tag = 2
-    }
-    
-    private func configureDelegateAndDataSource() {
+ 
+}
+
+// MARK: Gestures: TextfieldWithIconCellDelegate & PickerButtonWithIconCellDelegate
+
+extension AddIngredientSheetVC: TextfieldWithIconDelegate, AddPickerDelegate, actionButtonDelegate {
+    func setupDelegate() {
         /// textfields:
         ingredientNameTextfield.delegate = self
         countTextfield.delegate = self
@@ -140,18 +134,23 @@ extension AddIngredientSheetVC {
         cancelButton.delegate = self
         
         valueTypePickerView.delegate = self
+    }
+    
+    func setupTag() {
+        /// textfields:
+        ingredientNameTextfield.tag = 1
+        countTextfield.tag = 2
+        
+        /// mainButton:
+        addButton.tag = 1
+        cancelButton.tag = 2
+    }
+    
+    func setupDataSource() {
         valueTypePickerView.dataSource = self
     }
     
-    private func configureKeyboardType() {
-        countTextfield.keyboardType = .decimalPad
-    }
-}
-
-// MARK: Gestures: TextfieldWithIconCellDelegate & PickerButtonWithIconCellDelegate
-
-extension AddIngredientSheetVC: TextfieldWithIconRowDelegate, PickerWithIconRowDelegate, MainActionButtonDelegate {
-    func textFieldDidChange(_ textfield: TextfieldWithIconRow, didUpdateText text: String) {
+    func textFieldDidChange(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
         switch textfield.tag {
         case 1:
             if let text = textfield.textField.text {
@@ -165,7 +164,7 @@ extension AddIngredientSheetVC: TextfieldWithIconRowDelegate, PickerWithIconRowD
         }
     }
     
-    func textFieldDidBeginEditing(_ textfield: TextfieldWithIconRow, didUpdateText text: String) {
+    func textFieldDidBeginEditing(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
         switch textfield.tag {
         case 1:
             if let text = textfield.textField.text {
@@ -180,7 +179,7 @@ extension AddIngredientSheetVC: TextfieldWithIconRowDelegate, PickerWithIconRowD
     }
     
     // Textfield
-    func textFieldDidEndEditing(_ textfield: TextfieldWithIconRow, didUpdateText text: String) {
+    func textFieldDidEndEditing(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
         switch textfield.tag {
         case 1:
             if let text = textfield.textField.text {
@@ -199,13 +198,17 @@ extension AddIngredientSheetVC: TextfieldWithIconRowDelegate, PickerWithIconRowD
         return true
     }
     
+    private func configureKeyboardType() {
+        countTextfield.keyboardType = .decimalPad
+    }
+    
     // Picker
-    func pickerWithIconRowTappped(_ cell: PickerWithIconRow) {
+    func pickerTapped(_ cell: AddPicker) {
         popUpPicker(for: valueTypePickerView, title: "Select ingredient value type")
     }
     
     // Add & Cancel buttons
-    func mainActionButtonTapped(_ cell: MainActionButton) {
+    func actionButtonTapped(_ cell: ActionButton) {
         switch cell.tag {
         case 1:
             /// add button

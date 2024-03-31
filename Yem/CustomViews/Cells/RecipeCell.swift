@@ -35,8 +35,8 @@ final class RecipeCell: UICollectionViewCell {
         return imageView
     }()
     
-    private var titleLabel = ReusableTextLabel(fontStyle: .title3, fontWeight: .semibold, textColor: .ui.primaryText)
-    private var perpTimeLabel = ReusableTextLabel(fontStyle: .footnote, fontWeight: .regular, textColor: .ui.secondaryText)
+    private var titleLabel = TextLabel(fontStyle: .title3, fontWeight: .semibold, textColor: .ui.primaryText)
+    private var perpTimeLabel = TextLabel(fontStyle: .footnote, fontWeight: .regular, textColor: .ui.secondaryText)
     private var spicyIcon = IconImage(systemImage: "leaf", color: .ui.theme, textStyle: .body)
 
     override init(frame: CGRect) {

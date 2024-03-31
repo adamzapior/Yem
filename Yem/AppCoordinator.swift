@@ -103,7 +103,7 @@ class SplashViewModel {
     
     // MARK: - Functions
     func isUserConnected() -> Bool {
-        return false
+        return true
     }
     
     

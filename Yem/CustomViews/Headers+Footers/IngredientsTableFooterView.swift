@@ -16,7 +16,7 @@ final class IngredientsTableFooterView: UIView {
 
     private let screenWidth = UIScreen.main.bounds.width
 
-    private let addButton = MainActionButton(title: "Add", backgroundColor: .ui.addBackground)
+    private let addButton = ActionButton(title: "Add", backgroundColor: .ui.addBackground)
 
     private let content = UIView()
 
@@ -53,8 +53,8 @@ final class IngredientsTableFooterView: UIView {
 
 // MARK: - Delegate & data source items
 
-extension IngredientsTableFooterView: MainActionButtonDelegate {
-    func mainActionButtonTapped(_ button: MainActionButton) {
+extension IngredientsTableFooterView: actionButtonDelegate {
+    func actionButtonTapped(_ button: ActionButton) {
         switch button.tag {
         case 1:
             button.onTapAnimation()

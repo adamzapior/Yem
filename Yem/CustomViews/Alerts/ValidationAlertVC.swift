@@ -10,9 +10,9 @@ import UIKit
 final class ValidationAlertVC: UIViewController {
     private let containerView = UIView()
 
-    private let titleLabel = ReusableTextLabel(fontStyle: .title3, fontWeight: .semibold, textColor: .ui.primaryText, textAlignment: .center)
-    private let errorLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText, textAlignment: .center)
-    private let actionButton = MainActionButton(title: "OK", backgroundColor: .ui.theme)
+    private let titleLabel = TextLabel(fontStyle: .title3, fontWeight: .semibold, textColor: .ui.primaryText, textAlignment: .center)
+    private let errorLabel = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText, textAlignment: .center)
+    private let actionButton = ActionButton(title: "OK", backgroundColor: .ui.theme)
     
     private var alertTitle: String?
     private var message: String?

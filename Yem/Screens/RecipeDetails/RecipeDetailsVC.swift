@@ -27,12 +27,12 @@ final class RecipeDetailsVC: UIViewController {
     
     private let detailsSubtitleLabel = UILabel()
     private let detailsContainer = UIView()
-    private let nameView = RecipeDetailsView()
-    private let categoryView = RecipeDetailsView()
-    private let servingView = RecipeDetailsView()
-    private let prepTiemView = RecipeDetailsView()
-    private let spicyView = RecipeDetailsView()
-    private let difficultyView = RecipeDetailsView()
+    private let nameView = DetailsView()
+    private let categoryView = DetailsView()
+    private let servingView = DetailsView()
+    private let prepTiemView = DetailsView()
+    private let spicyView = DetailsView()
+    private let difficultyView = DetailsView()
     
     private let ingredientsSubtitleLabel = UILabel()
     private let ingredientsContainer = UIView()
@@ -302,7 +302,7 @@ final class RecipeDetailsVC: UIViewController {
         }
          
         for instruction in recipe.instructionList.sorted(by: { $0.index < $1.index }) {
-            let instructionView = RecipeDetailsView()
+            let instructionView = DetailsView()
             instructionView.configure(titleText: "STEP \(instruction.index)", valueText: instruction.text)
 
             instructionsStackView.addArrangedSubview(instructionView)

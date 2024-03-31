@@ -13,7 +13,7 @@ import UIKit
 import LifetimeTracker
 
 protocol AddRecipeVCDelegate: AnyObject {
-    func loadData()
+    func loadDataToEditor()
     func delegateDetailsError(_ type: ValidationErrorTypes)
 }
 
@@ -548,10 +548,10 @@ final class AddRecipeViewModel {
 // MARK: - Delegate methods
 
 extension AddRecipeViewModel: AddRecipeVCDelegate {
-    func loadData() {
+    func loadDataToEditor() {
         if didRecipeExist {
             DispatchQueue.main.async {
-                self.delegateDetails?.loadData()
+                self.delegateDetails?.loadDataToEditor()
             }
             print("DEBUG: loadData() from AddRecipeViewModel celled")
         }

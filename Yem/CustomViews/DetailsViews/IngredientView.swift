@@ -10,8 +10,8 @@ import SnapKit
 import UIKit
 
 final class IngredientView: UIView {
-    private let valueLabel = ReusableTextLabel(fontStyle: .callout, fontWeight: .regular, textColor: .ui.theme)
-    private let nameLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText)
+    private let valueLabel = TextLabel(fontStyle: .callout, fontWeight: .regular, textColor: .ui.theme)
+    private let nameLabel = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText)
 
     override init(frame: CGRect) {
         super.init(frame: frame)

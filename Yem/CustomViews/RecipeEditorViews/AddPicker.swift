@@ -7,12 +7,15 @@
 
 import UIKit
 
-protocol PickerWithIconRowDelegate: AnyObject {
-    func pickerWithIconRowTappped(_ cell: PickerWithIconRow)
+protocol AddPickerDelegate: AnyObject {
+    func setupDelegate()
+    func setupDataSource()
+    func setupTag()
+    func pickerTapped(_ cell: AddPicker)
 }
 
-final class PickerWithIconRow: UIView {
-    weak var delegate: PickerWithIconRowDelegate?
+final class AddPicker: UIView {
+    weak var delegate: AddPickerDelegate?
     
     // MARK: - Properties
     
@@ -89,6 +92,6 @@ final class PickerWithIconRow: UIView {
     
     @objc private func buttonTapped() {
         self.onTapAnimation()
-        delegate?.pickerWithIconRowTappped(self)
+        delegate?.pickerTapped(self)
     }
 }

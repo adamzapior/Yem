@@ -32,7 +32,7 @@ final class AddRecipeIngredientsVC: UIViewController {
     private let tableViewHeader = IngredientsTableHeaderView()
     private let tableViewFooter = IngredientsTableFooterView()
     
-    private let emptyTableLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
+    private let emptyTableLabel = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
 
     
     // MARK: - Lifecycle
@@ -151,7 +151,7 @@ extension AddRecipeIngredientsVC: UITableViewDelegate, UITableViewDataSource, In
         return UITableView.automaticDimension
     }
     
-    func didTapButton(in cell: IngredientsCell) {
+    func trashTapped(in cell: IngredientsCell) {
         DispatchQueue.main.async {
             guard let indexPath = self.tableView.indexPath(for: cell) else { return }
             self.viewModel.removeIngredientFromList(at: indexPath.row)

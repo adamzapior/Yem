@@ -33,7 +33,7 @@ final class AddRecipeInstructionsVC: UIViewController {
     private let tableViewHeader = InstructionTableHeaderView()
     private let tableViewFooter = IngredientsTableFooterView()
     
-    private let emptyTableLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
+    private let emptyTableLabel = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
 
     
     // MARK: - Lifecycle

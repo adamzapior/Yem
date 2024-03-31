@@ -11,6 +11,10 @@ import UIKit
 final class LoginOnboardingVC: UIViewController {
     let coordinator: OnboardingCoordinator
     let viewModel: OnboardingVM
+    
+    let loginTextfield = TextfieldWithIcon(iconImage: "", placeholderText: "Enter your login...", textColor: .ui.secondaryText)
+    let passwordTextfield = TextfieldWithIcon(iconImage: "", placeholderText: "Enter your login...", textColor: .ui.secondaryText)
+
 
     init(coordinator: OnboardingCoordinator, viewModel: OnboardingVM) {
         self.coordinator = coordinator
@@ -35,8 +39,52 @@ final class LoginOnboardingVC: UIViewController {
 
         self.navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.ui.theme]
         self.title = "Login to Yem"
+        
+        setupUI()
+    }
+    
+    private func setupUI() {
+        
     }
 }
+
+// MARK: - Delegates
+
+extension LoginOnboardingVC: LoginOnboardingDelegate {
+    func showAlert() {
+        //
+    }
+}
+
+extension LoginOnboardingVC: TextfieldWithIconDelegate {
+    func setupDelegate() {
+        //
+    }
+    
+    func setupTag() {
+        //
+
+    }
+    
+    func textFieldDidBeginEditing(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
+        //
+
+    }
+    
+    func textFieldDidChange(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
+        //
+
+    }
+    
+    func textFieldDidEndEditing(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
+        //
+
+    }
+    
+    
+}
+
+
 
 // MARK: - Navigation
 

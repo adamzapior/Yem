@@ -1,6 +1,6 @@
 import UIKit
 
-protocol TextfieldWithIconRowDelegate: AnyObject {
+protocol TextfieldWithIconDelegate: AnyObject {
     func setupDelegate()
     func setupTag()
     func textFieldDidBeginEditing(_ textfield: TextfieldWithIcon, didUpdateText text: String)
@@ -9,7 +9,7 @@ protocol TextfieldWithIconRowDelegate: AnyObject {
 }
 
 final class TextfieldWithIcon: UIView, UITextFieldDelegate {
-    weak var delegate: TextfieldWithIconRowDelegate?
+    weak var delegate: TextfieldWithIconDelegate?
     
     private var icon: IconImage!
     private var iconImage: String

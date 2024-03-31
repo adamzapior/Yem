@@ -8,7 +8,7 @@
 import UIKit
 
 protocol ShopingListCellDelegate: AnyObject {
-    func didTapButton(in cell: ShopingListCell)
+    func checklistTapped(in cell: ShopingListCell)
 }
 
 class ShopingListCell: UITableViewCell {
@@ -25,9 +25,9 @@ class ShopingListCell: UITableViewCell {
         return view
     }()
     
-    private let valueLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .semibold, textColor: .ui.theme)
-    private let valueTypeLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
-    private let ingredientNameLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText)
+    private let valueLabel = TextLabel(fontStyle: .body, fontWeight: .semibold, textColor: .ui.theme)
+    private let valueTypeLabel = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
+    private let ingredientNameLabel = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText)
     
     private lazy var checklistIconString = "circle"
     private lazy var filledCircleIconString = "circle.fill"
@@ -129,7 +129,7 @@ class ShopingListCell: UITableViewCell {
             checklistIcon.image = UIImage(systemName: checklistIconString)
         }
         
-        delegate?.didTapButton(in: self)
+        delegate?.checklistTapped(in: self)
     }
 }
 

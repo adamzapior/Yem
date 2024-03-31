@@ -37,8 +37,10 @@ final class RegisterOnboardingVC: UIViewController {
 
         self.navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.ui.theme]
         self.title = "Register to Yem"
-
-        print("mam 22")
+    }
+    
+    private func setupUI() {
+        
     }
 }
 
