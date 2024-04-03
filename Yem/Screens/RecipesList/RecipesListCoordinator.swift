@@ -15,13 +15,16 @@ final class RecipesListCoordinator: ParentCoordinator, ChildCoordinator {
     var viewControllerRef: UIViewController?
     
     lazy var rootViewController: UIViewController = .init()
+    
+    let authManager: AuthenticationManager
     let repository: DataRepository
     var viewModel: RecipesListVM
     
-    init(parentCoordinator: TabBarCoordinator? = nil, repository: DataRepository, viewModel: RecipesListVM, navigationController: UINavigationController) {
+    init(parentCoordinator: TabBarCoordinator? = nil, repository: DataRepository, viewModel: RecipesListVM, authManager: AuthenticationManager, navigationController: UINavigationController) {
         self.parentCoordinator = parentCoordinator
         self.repository = repository
         self.viewModel = viewModel
+        self.authManager = authManager
         self.navigationController = navigationController
 #if DEBUG
         trackLifetime()
@@ -83,6 +86,17 @@ final class RecipesListCoordinator: ParentCoordinator, ChildCoordinator {
         
 //        navigationController.popToViewController(detailsVC, animated: true)
 //        navigationController.pushViewController(detailsVC, animated: true)
+    }
+    
+    
+    func navigateToSettings() {
+        let viewModel = SettingsViewModel(authManager: authManager)
+
+        let coordinator = SettingsCoordinator(parentCoordinator: self, viewControllerRef: nil, navigationController: navigationController, viewModel: viewModel)
+        coordinator.parentCoordinator = self
+
+        coordinator.start(animated: true)
+//        (navigationController).pushViewController(addRecipeVC, animated: true)
     }
 }
 

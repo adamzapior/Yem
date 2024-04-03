@@ -193,12 +193,19 @@ extension RecipesListVC: RecipesListVMDelegate {
 extension RecipesListVC {
     func setupNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = false
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "gearshape"), style: .done, target: self, action: #selector(settingsButtonTapped))
+        navigationItem.leftBarButtonItem?.tintColor = .ui.theme
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addRecipeButtonTapped))
-        navigationItem.rightBarButtonItem?.tintColor = .orange
+        navigationItem.rightBarButtonItem?.tintColor = .ui.theme
     }
 
     @objc func addRecipeButtonTapped() {
         coordinator.navigateToAddRecipeScreen()
+    }
+    
+    @objc func settingsButtonTapped() {
+        coordinator.navigateToSettings()
     }
 }
 
