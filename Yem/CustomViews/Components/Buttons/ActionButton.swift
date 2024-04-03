@@ -7,12 +7,12 @@
 
 import UIKit
 
-protocol actionButtonDelegate: AnyObject {
+protocol ActionButtonDelegate: AnyObject {
     func actionButtonTapped(_ button: ActionButton)
 }
 
 final class ActionButton: UIButton {
-    weak var delegate: actionButtonDelegate?
+    weak var delegate: ActionButtonDelegate?
     
     // MARK: - Lifecycle
     

@@ -6,10 +6,9 @@
 //
 
 import Combine
+import LifetimeTracker
 import SnapKit
 import UIKit
-import LifetimeTracker
-
 
 final class AddRecipeVC: UIViewController {
     // MARK: - Properties
@@ -173,7 +172,7 @@ final class AddRecipeVC: UIViewController {
         recipeDataStack.addArrangedSubview(prepTimePicker)
         recipeDataStack.addArrangedSubview(spicyPicker)
         recipeDataStack.addArrangedSubview(categoryPicker)
-
+        
         recipeDataStack.snp.makeConstraints { make in
             make.top.equalTo(addPhotoView.snp.bottom).offset(18)
             make.leading.trailing.equalToSuperview().inset(18)
@@ -265,7 +264,6 @@ final class AddRecipeVC: UIViewController {
     }
 }
 
-
 // MARK: - AddPhotoView delegate
 
 extension AddRecipeVC: AddPhotoViewDelegate, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
@@ -301,7 +299,6 @@ extension AddRecipeVC: TextfieldWithIconDelegate, AddPickerDelegate {
         spicyPicker.tag = 4
         spicyPickerView.tag = 4
 
-
         categoryPicker.tag = 5
         categoryPickerView.tag = 5
     }
@@ -317,7 +314,6 @@ extension AddRecipeVC: TextfieldWithIconDelegate, AddPickerDelegate {
         difficultyPickerView.delegate = self
         categoryPicker.delegate = self
         categoryPickerView.delegate = self
-
     }
     
     func setupDataSource() {
@@ -325,7 +321,6 @@ extension AddRecipeVC: TextfieldWithIconDelegate, AddPickerDelegate {
         categoryPickerView.dataSource = self
     }
 
-    
     func textFieldDidChange(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
         if let text = textfield.textField.text {
             viewModel.recipeTitle = text
@@ -349,9 +344,8 @@ extension AddRecipeVC: TextfieldWithIconDelegate, AddPickerDelegate {
         return true
     }
     
-    
-    func pickerTapped(_ cell: AddPicker) {
-        switch cell.tag {
+    func pickerTapped(item: AddPicker) {
+        switch item.tag {
         case 1:
             popUpPicker(for: difficultyPickerView, title: "Select difficulty")
         case 2:
@@ -366,7 +360,6 @@ extension AddRecipeVC: TextfieldWithIconDelegate, AddPickerDelegate {
             break
         }
     }
-
 }
 
 // MARK: - PickerView delegate/dataSource

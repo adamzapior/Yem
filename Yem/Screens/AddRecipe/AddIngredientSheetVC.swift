@@ -120,7 +120,7 @@ extension AddIngredientSheetVC {
 
 // MARK: Gestures: TextfieldWithIconCellDelegate & PickerButtonWithIconCellDelegate
 
-extension AddIngredientSheetVC: TextfieldWithIconDelegate, AddPickerDelegate, actionButtonDelegate {
+extension AddIngredientSheetVC: TextfieldWithIconDelegate, AddPickerDelegate, ActionButtonDelegate {
     func setupDelegate() {
         /// textfields:
         ingredientNameTextfield.delegate = self
@@ -203,7 +203,7 @@ extension AddIngredientSheetVC: TextfieldWithIconDelegate, AddPickerDelegate, ac
     }
     
     // Picker
-    func pickerTapped(_ cell: AddPicker) {
+    func pickerTapped(item: AddPicker) {
         popUpPicker(for: valueTypePickerView, title: "Select ingredient value type")
     }
     

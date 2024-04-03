@@ -205,7 +205,7 @@ extension AddInstructionSheetVC: UITextViewDelegate {
     }
 }
 
-extension AddInstructionSheetVC: actionButtonDelegate {
+extension AddInstructionSheetVC: ActionButtonDelegate {
     func actionButtonTapped(_ button: ActionButton) {
         switch button.tag {
         case 1:

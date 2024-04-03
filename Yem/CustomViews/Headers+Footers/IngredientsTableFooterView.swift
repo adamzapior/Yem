@@ -53,7 +53,7 @@ final class IngredientsTableFooterView: UIView {
 
 // MARK: - Delegate & data source items
 
-extension IngredientsTableFooterView: actionButtonDelegate {
+extension IngredientsTableFooterView: ActionButtonDelegate {
     func actionButtonTapped(_ button: ActionButton) {
         switch button.tag {
         case 1:
