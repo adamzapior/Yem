@@ -11,17 +11,18 @@ protocol TextfieldWithIconDelegate: AnyObject {
 final class TextfieldWithIcon: UIView, UITextFieldDelegate {
     weak var delegate: TextfieldWithIconDelegate?
     
-    private var icon: IconImage!
-    private var iconImage: String
-    private var textStyle: UIFont.TextStyle
-    
     let textField = UITextField()
-    
     var keyboardType: UIKeyboardType = .default {
         didSet {
             textField.keyboardType = keyboardType
         }
     }
+    
+    var minViewHeight: CGFloat?
+    
+    private var icon: IconImage!
+    private var iconImage: String
+    private var textStyle: UIFont.TextStyle
 
     override init(frame: CGRect) {
         self.iconImage = "plus"
@@ -36,8 +37,9 @@ final class TextfieldWithIcon: UIView, UITextFieldDelegate {
         fatalError("init(coder:) has not been implemented")
     }
     
-    convenience init(backgroundColor: UIColor? = .ui.primaryContainer, iconImage: String, placeholderText: String, textColor: UIColor?) {
+    convenience init(minViewHeight: CGFloat? = nil, backgroundColor: UIColor? = .ui.primaryContainer, iconImage: String, placeholderText: String, textColor: UIColor?) {
         self.init(frame: .zero)
+        self.minViewHeight = minViewHeight
         self.backgroundColor = backgroundColor
         self.iconImage = iconImage
         self.icon = IconImage(systemImage: iconImage, color: .ui.theme, textStyle: textStyle)
@@ -51,10 +53,10 @@ final class TextfieldWithIcon: UIView, UITextFieldDelegate {
     }
     
     func setPlaceholderColor(_ color: UIColor) {
-           let placeholderText = NSAttributedString(string: textField.placeholder ?? "",
-                                                    attributes: [NSAttributedString.Key.foregroundColor: color])
-           textField.attributedPlaceholder = placeholderText
-       }
+        let placeholderText = NSAttributedString(string: textField.placeholder ?? "",
+                                                 attributes: [NSAttributedString.Key.foregroundColor: color])
+        textField.attributedPlaceholder = placeholderText
+    }
     
     private func configure() {
         addSubview(icon)
@@ -68,9 +70,10 @@ final class TextfieldWithIcon: UIView, UITextFieldDelegate {
         textField.keyboardType = keyboardType
         
         icon.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview().inset(12)
-            make.leading.equalToSuperview().offset(18)
-            make.width.equalTo(24)
+//            make.top.bottom.equalToSuperview().inset(12)
+            make.leading.equalToSuperview().offset(24)
+            make.centerY.equalTo(textField.snp.centerY)
+            make.width.equalTo(22)
             make.height.equalTo(24)
         }
         
@@ -81,6 +84,10 @@ final class TextfieldWithIcon: UIView, UITextFieldDelegate {
         }
         
         textField.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
+        
+        snp.makeConstraints { make in
+            make.height.greaterThanOrEqualTo(minViewHeight ?? 32)
+        }
     }
     
     // MARK: Delegate textfield
@@ -88,7 +95,7 @@ final class TextfieldWithIcon: UIView, UITextFieldDelegate {
     @objc private func textFieldEditingChanged(_ textField: UITextField) {
         if let text = textField.text {
             delegate?.textFieldDidChange(self, didUpdateText: text)
-            setPlaceholderColor(.ui.secondaryText ?? .darkGray)
+            setPlaceholderColor(.ui.secondaryText)
         }
     }
 
@@ -104,7 +111,6 @@ final class TextfieldWithIcon: UIView, UITextFieldDelegate {
         }
     }
 
-    
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         onTapAnimation()
         return true
