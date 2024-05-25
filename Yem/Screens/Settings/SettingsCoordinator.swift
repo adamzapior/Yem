@@ -9,7 +9,15 @@ import LifetimeTracker
 import UIKit
 
 final class SettingsCoordinator: ParentCoordinator, ChildCoordinator {
-    var parentCoordinator: RecipesListCoordinator?
+    func childDidFinish(_ child: ChildCoordinator) {
+//
+    }
+    
+    func logisterFinished(user: UserModel, animated: Bool) {
+//
+    }
+    
+    private weak var parentCoordinator: RecipesListCoordinator?
     var childCoordinators: [Coordinator] = []
     var viewControllerRef: UIViewController?
     var navigationController: UINavigationController
@@ -39,25 +47,44 @@ final class SettingsCoordinator: ParentCoordinator, ChildCoordinator {
             viewController.cleanUp()
         }
 
-        parentCoordinator?.childDidFinish(self)
+//        parentCoordinator?.childDidFinish(self)
         viewControllerRef = nil
         parentCoordinator = nil
     }
+    
+    // MARK: Navigation
+    
+//    func navigateToOnboarding() {
+//        let onboardingCoordinator = OnboardingCoordinator(navigationController: navigationController, parentCoordinator: self, authManager: AuthenticationManager(), viewModel: OnboardingVM(authManager: AuthenticationManager()))
+//        addChildCoordinator(onboardingCoordinator)
+//        onboardingCoordinator.start(animated: true)
+//    }
 
     func presentLogoutAlert() {
-        let title = "Are you sure?"
-        let message = "Do you want to logout from app?"
-
-        let alertVC = DualOptionAlertVC(title: title, message: message) {
-            self.viewModel.logoutUser()
-            self.coordinatorDidFinish()
-            self.popViewController(animated: true)
-        } cancelAction: {
-            self.coordinatorDidFinish()
-        }
-        alertVC.modalPresentationStyle = .overFullScreen
-        alertVC.modalTransitionStyle = .crossDissolve
-        navigationController.present(alertVC, animated: true, completion: nil)
+//        let title = "Are you sure?"
+//        let message = "Do you want to logout from app?"
+//
+//        let alertVC = DualOptionAlertVC(title: title, message: message) {
+//            Task {
+//                await self.viewModel.signOut()
+//            }
+//            self.coordinatorDidFinish()
+//            
+//            if let sceneDelegate = UIApplication.shared.connectedScenes
+//                .first(where: { $0.activationState == .foregroundActive })?
+//                .delegate as? SceneDelegate,
+//               let appCoordinator = sceneDelegate.appCoordinator {
+//                
+//                appCoordinator.resetToInitialCoordinator()
+//            }
+//
+//           
+//        } cancelAction: {
+//            self.coordinatorDidFinish()
+//        }
+//        alertVC.modalPresentationStyle = .overFullScreen
+//        alertVC.modalTransitionStyle = .crossDissolve
+//        navigationController.present(alertVC, animated: true, completion: nil)
     }
 
 //    func dismissAlert() {

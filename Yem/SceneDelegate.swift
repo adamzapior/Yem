@@ -9,6 +9,9 @@ import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
+//    var appCoordinator: AppCoordinator?
+    
+    let navigator = Navigator(start: AppCoordinator())
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
@@ -16,12 +19,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let appWindow = UIWindow(frame: windowScene.coordinateSpace.bounds)
         appWindow.windowScene = windowScene
         
-        let navigationController = UINavigationController()
-        navigationController.setNavigationBarHidden(true, animated: false)
-        let coordinator = AppCoordinator(navigationController: navigationController)
-        coordinator.start(animated: false)
+//        let navigationController = UINavigationController()
+//        navigationController.setNavigationBarHidden(true, animated: false)
+//        let coordinator = AppCoordinator(navigationController: navigationController)
+//        coordinator.start(animated: false)
 
-        appWindow.rootViewController = navigationController
+//        appCoordinator = coordinator // I tu zapisz referencję
+//        appWindow.rootViewController = navigationController
+        navigator.attatch(appWindow: appWindow)
         appWindow.makeKeyAndVisible()
 
         window = appWindow

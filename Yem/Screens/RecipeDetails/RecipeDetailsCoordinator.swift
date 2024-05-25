@@ -8,8 +8,7 @@
 import LifetimeTracker
 import UIKit
 
-final class RecipeDetailsCoordinator: ParentCoordinator, ChildCoordinator, AddRecipeParentCoordinator {
-    var parentCoordinator: RecipesListCoordinator?
+final class RecipeDetailsCoordinator: ParentCoordinator, ChildCoordinator {
     var childCoordinators: [Coordinator] = []
     var viewControllerRef: UIViewController?
     var navigationController: UINavigationController
@@ -18,9 +17,8 @@ final class RecipeDetailsCoordinator: ParentCoordinator, ChildCoordinator, AddRe
     var repository: DataRepository
     var viewModel: RecipeDetailsVM
 
-    init(navigationController: UINavigationController, parentCoordinator: RecipesListCoordinator, viewModel: RecipeDetailsVM, recipe: RecipeModel, repository: DataRepository) {
+    init(navigationController: UINavigationController, viewModel: RecipeDetailsVM, recipe: RecipeModel, repository: DataRepository) {
         self.navigationController = navigationController
-        self.parentCoordinator = parentCoordinator
         self.viewModel = viewModel
         self.recipe = recipe
         self.repository = repository
@@ -41,9 +39,7 @@ final class RecipeDetailsCoordinator: ParentCoordinator, ChildCoordinator, AddRe
         if let viewController = viewControllerRef as? DisposableViewController {
             viewController.cleanUp()
         }
-        parentCoordinator?.childDidFinish(self)
         viewControllerRef = nil
-        parentCoordinator = nil
         print("DEBUG: coordinatorDidFinish() called")
     }
 
@@ -110,13 +106,9 @@ final class RecipeDetailsCoordinator: ParentCoordinator, ChildCoordinator, AddRe
 
     func navigateToRecipeEditor() {
         let viewModel = AddRecipeViewModel(repository: repository, existingRecipe: recipe)
-
         let coordinator = AddRecipeCoordinator(navigationController: navigationController, viewModel: viewModel, parentCoordinator: self)
-        coordinator.parentCoordinator = self
 
         coordinator.start(animated: true)
-
-//        (navigationController).pushViewController(addRecipeVC, animated: true)
     }
 
     func dismissAlert() {

@@ -19,8 +19,12 @@ final class SettingsViewModel {
 #endif
     }
     
-    func logoutUser() {
-        
+    func signOut() async {
+        do {
+            try await authManager.signOut()
+        } catch {
+            print(error)
+        }
     }
 }
 

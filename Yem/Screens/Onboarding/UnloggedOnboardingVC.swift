@@ -12,7 +12,7 @@ import UIKit
 
 final class UnloggedOnboardingVC: UIViewController {
     var viewModel: OnboardingVM
-    var coordinator: OnboardingCoordinator
+    var coordinator: OnboardingCoordinator?
     
     lazy var image = UIImageView()
         
@@ -43,7 +43,7 @@ final class UnloggedOnboardingVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        print("xd2")
         setupUI()
         setupDelegateAndDataSource()
         
@@ -53,11 +53,7 @@ final class UnloggedOnboardingVC: UIViewController {
         loginButton.tag = 1
         registerButton.tag = 2
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        coordinator.isNavigationBarHidden(value: true)
-    }
-    
+
     // MARK: - UI Setup
     
     private func setupUI() {
@@ -111,12 +107,12 @@ final class UnloggedOnboardingVC: UIViewController {
         loginButton.tag = 1
         registerButton.tag = 2
     }
-    
-    @objc func finishOnboarding() {
-        coordinator.registerFinished()
-        coordinator.coordinatorDidFinish()
-    }
-    
+//
+//    @objc func finishOnboarding() {
+//        coordinator.registerFinished()
+//        coordinator.coordinatorDidFinish()
+//    }
+//
     //    override func viewDidDisappear(_ animated: Bool) {
     //        super.viewDidDisappear(animated)
     //        coordinator.coordinatorDidFinish()
@@ -125,13 +121,14 @@ final class UnloggedOnboardingVC: UIViewController {
 
 // MARK: - Navigation
 
-extension UnloggedOnboardingVC: actionButtonDelegate {
+extension UnloggedOnboardingVC: ActionButtonDelegate {
     func actionButtonTapped(_ button: ActionButton) {
         switch button.tag {
         case 1:
-            coordinator.pushVC(for: .login)
-        case 2:
-            coordinator.pushVC(for: .register)
+            print("chbya tak")
+            coordinator?.navigateToLogin()
+        case 2: break
+//            coordinator.pushVC(for: .register)
         default:
             break
         }

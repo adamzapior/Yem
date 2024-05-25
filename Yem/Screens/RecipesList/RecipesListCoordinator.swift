@@ -8,94 +8,91 @@
 import LifetimeTracker
 import UIKit
 
-final class RecipesListCoordinator: ParentCoordinator, ChildCoordinator {
-    var parentCoordinator: TabBarCoordinator?
-    var childCoordinators = [Coordinator]()
-    var navigationController: UINavigationController
-    var viewControllerRef: UIViewController?
-    
-    lazy var rootViewController: UIViewController = .init()
-    
+//class RecipesListTabCoordinator: Destination {
+//    private weak var parentCoordinator: TabBarCoordinator?
+//
+//    let authManager: AuthenticationManager
+//    let repository: DataRepository
+//    var viewModel: RecipesListVM
+//    
+//    var tabNavigator: Navigator? = nil
+//    
+//    override func render() -> UIViewController {
+//        let controller = UIViewController()
+//        tabNavigator = Navigator(root: controller)
+//        tabNavigator?.goTo(screen: RecipesListCoordinator(parentCoordinator: parentCoordinator, repository: repository, viewModel: viewModel, authManager: authManager))
+//        return controller
+//    }
+//    
+//    init(parentCoordinator: TabBarCoordinator?, repository: DataRepository, viewModel: RecipesListVM, authManager: AuthenticationManager) {
+//        self.parentCoordinator = parentCoordinator
+//        self.repository = repository
+//        self.viewModel = viewModel
+//        self.authManager = authManager
+//    }
+//}
+
+final class RecipesListCoordinator: Destination {
+    private weak var parentCoordinator: TabBarCoordinator?
+        
     let authManager: AuthenticationManager
     let repository: DataRepository
     var viewModel: RecipesListVM
     
-    init(parentCoordinator: TabBarCoordinator? = nil, repository: DataRepository, viewModel: RecipesListVM, authManager: AuthenticationManager, navigationController: UINavigationController) {
+    init(parentCoordinator: TabBarCoordinator?, repository: DataRepository, viewModel: RecipesListVM, authManager: AuthenticationManager) {
         self.parentCoordinator = parentCoordinator
         self.repository = repository
         self.viewModel = viewModel
         self.authManager = authManager
-        self.navigationController = navigationController
+        super.init()
 #if DEBUG
         trackLifetime()
 #endif
     }
     
-    func start(animated: Bool = false) {
+    override func render() -> UIViewController {
         let recipesListController = RecipesListVC(coordinator: self, viewModel: viewModel)
         recipesListController.viewModel = viewModel
-        
-        viewControllerRef = recipesListController
-
+                
         recipesListController.tabBarItem = UITabBarItem(title: "Recipes",
                                                         image: UIImage(systemName: "book"),
                                                         selectedImage: nil)
-        
-        navigationController.customPushViewController(viewController: recipesListController)
-    }
-
-    func coordinatorDidFinish() {
-        if let viewController = viewControllerRef as? DisposableViewController {
-            viewController.cleanUp()
-        }
-        if let index = childCoordinators.firstIndex(where: { $0 === self }) {
-            childCoordinators.remove(at: index)
-        }
-//        parentCoordinator?.childDidFinish(self)
-        
-        print("Coordinator did finish")
+        return recipesListController
     }
     
-    func childDidFinish(_ child: Coordinator) {
-        if let index = childCoordinators.firstIndex(where: { $0 === child }) {
-            childCoordinators.remove(at: index)
-        }
-    }
+//    func start(animated: Bool = false) {
+//        let recipesListController = RecipesListVC(coordinator: self, viewModel: viewModel)
+//        recipesListController.viewModel = viewModel
+//
+//        viewControllerRef = recipesListController
+//
+//        recipesListController.tabBarItem = UITabBarItem(title: "Recipes",
+//                                                        image: UIImage(systemName: "book"),
+//                                                        selectedImage: nil)
+//
+//        navigationController.customPushViewController(viewController: recipesListController)
+//    }
+
     
     // MARK: Navigation
     
     func navigateToAddRecipeScreen() {
-        let viewModel = AddRecipeViewModel(repository: repository)
-
-        let coordinator = AddRecipeCoordinator(navigationController: navigationController, viewModel: viewModel, parentCoordinator: self)
-        coordinator.parentCoordinator = self
-
-        coordinator.start(animated: true)
-        
-//        (navigationController).pushViewController(addRecipeVC, animated: true)
+//        let viewModel = AddRecipeViewModel(repository: repository)
+//        let coordinator = AddRecipeCoordinator(navigationController: navigationController, viewModel: viewModel, parentCoordinator: self)
+//        coordinator.start(animated: true)
     }
     
     func navigateToRecipeDetail(with recipe: RecipeModel) {
-        let viewModel = RecipeDetailsVM(recipe: recipe, repository: repository)
-        
-        let coordinator = RecipeDetailsCoordinator(navigationController: navigationController, parentCoordinator: self, viewModel: viewModel, recipe: recipe, repository: repository)
-        coordinator.parentCoordinator = self
-
-        let detailsVC: () = coordinator.start(animated: true)
-//        detailsVC.hidesBottomBarWhenPushed = true
-        
-//        navigationController.popToViewController(detailsVC, animated: true)
-//        navigationController.pushViewController(detailsVC, animated: true)
+//        let viewModel = RecipeDetailsVM(recipe: recipe, repository: repository)
+//        let coordinator = RecipeDetailsCoordinator(navigationController: navigationController, parentCoordinator: self, viewModel: viewModel, recipe: recipe, repository: repository)
+//        coordinator.start(animated: true)
     }
     
-    
     func navigateToSettings() {
-        let viewModel = SettingsViewModel(authManager: authManager)
-
-        let coordinator = SettingsCoordinator(parentCoordinator: self, viewControllerRef: nil, navigationController: navigationController, viewModel: viewModel)
-        coordinator.parentCoordinator = self
-
-        coordinator.start(animated: true)
+//        let viewModel = SettingsViewModel(authManager: authManager)
+//        let coordinator = SettingsCoordinator(parentCoordinator: self, viewControllerRef: nil, navigationController: navigationController, viewModel: viewModel)
+//
+//        coordinator.start(animated: true)
 //        (navigationController).pushViewController(addRecipeVC, animated: true)
     }
 }

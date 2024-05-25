@@ -5,18 +5,27 @@
 //  Created by Adam Zapiór on 20/03/2024.
 //
 
+import FirebaseAuth
 import LifetimeTracker
+import SnapKit
 import UIKit
 
 final class LoginOnboardingVC: UIViewController {
-    let coordinator: OnboardingCoordinator
+    let coordinator: OnboardingLoginCoordinator
     let viewModel: OnboardingVM
-    
-    let loginTextfield = TextfieldWithIcon(iconImage: "", placeholderText: "Enter your login...", textColor: .ui.secondaryText)
-    let passwordTextfield = TextfieldWithIcon(iconImage: "", placeholderText: "Enter your login...", textColor: .ui.secondaryText)
 
+    var content = UIView()
 
-    init(coordinator: OnboardingCoordinator, viewModel: OnboardingVM) {
+    let textLabel = TextLabel(fontStyle: .title2, fontWeight: .light, textColor: .ui.secondaryText)
+    let loginLabel = TextLabel(fontStyle: .footnote, fontWeight: .light, textColor: .ui.secondaryText)
+    let passwordLabel = TextLabel(fontStyle: .footnote, fontWeight: .light, textColor: .ui.secondaryText)
+
+    let loginTextfield = TextfieldWithIcon(iconImage: "info", placeholderText: "Enter your login...", textColor: .ui.secondaryText)
+    let passwordTextfield = TextfieldWithIcon(iconImage: "staroflife", placeholderText: "Enter your password...", textColor: .ui.secondaryText)
+
+    let loginButton = ActionButton(title: "Try to login...", backgroundColor: .ui.addBackground, isShadownOn: true)
+
+    init(coordinator: OnboardingLoginCoordinator, viewModel: OnboardingVM) {
         self.coordinator = coordinator
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -34,17 +43,71 @@ final class LoginOnboardingVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.navigationController?.navigationBar.prefersLargeTitles = true
-        self.navigationItem.largeTitleDisplayMode = .always
-
-        self.navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.ui.theme]
-        self.title = "Login to Yem"
-        
         setupUI()
+        setupDelegate()
+        setupTag()
+
+        loginButton.delegate = self
     }
-    
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated) 
+
+//        if let user = viewModel.user {
+//            coordinator.coordinatorDidFinish(user: user)
+//        }
+    }
+
     private func setupUI() {
-        
+        view.addSubview(content)
+
+        content.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(84)
+            make.leading.trailing.bottom.equalToSuperview().inset(18)
+        }
+
+        content.addSubview(textLabel)
+        content.addSubview(loginLabel)
+        content.addSubview(passwordLabel)
+        content.addSubview(loginTextfield)
+        content.addSubview(passwordTextfield)
+        content.addSubview(loginButton)
+
+        textLabel.text = "Login to app"
+        loginLabel.text = "Login"
+        passwordLabel.text = "Password"
+
+        textLabel.snp.makeConstraints { make in
+            make.top.equalToSuperview()
+            make.centerX.equalToSuperview()
+        }
+
+        loginLabel.snp.makeConstraints { make in
+            make.top.equalTo(textLabel.snp.bottom).offset(12)
+            make.leading.trailing.equalToSuperview().inset(12)
+        }
+
+        loginTextfield.snp.makeConstraints { make in
+            make.top.equalTo(loginLabel.snp.bottom).offset(4)
+            make.leading.trailing.equalToSuperview()
+            make.height.greaterThanOrEqualTo(64)
+        }
+
+        passwordLabel.snp.makeConstraints { make in
+            make.top.equalTo(loginTextfield.snp.bottom).offset(24)
+            make.leading.trailing.equalToSuperview().inset(12)
+        }
+
+        passwordTextfield.snp.makeConstraints { make in
+            make.top.equalTo(passwordLabel.snp.bottom).offset(4)
+            make.leading.trailing.equalToSuperview()
+            make.height.greaterThanOrEqualTo(64)
+        }
+
+        loginButton.snp.makeConstraints { make in
+            make.top.equalTo(passwordTextfield.snp.bottom).offset(36)
+            make.leading.trailing.equalToSuperview().inset(12)
+        }
     }
 }
 
@@ -56,35 +119,89 @@ extension LoginOnboardingVC: LoginOnboardingDelegate {
     }
 }
 
-extension LoginOnboardingVC: TextfieldWithIconDelegate {
+extension LoginOnboardingVC: TextfieldWithIconDelegate, ActionButtonDelegate {
     func setupDelegate() {
-        //
+        loginTextfield.delegate = self
+        passwordTextfield.delegate = self
     }
-    
+
     func setupTag() {
-        //
-
+        loginTextfield.tag = 1
+        passwordTextfield.tag = 2
     }
-    
+
     func textFieldDidBeginEditing(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
-        //
-
+        switch textfield.tag {
+        /// login:
+        case 1:
+            if let text = textfield.textField.text {
+                viewModel.login = text
+            }
+        /// password:
+        case 2:
+            if let text = textfield.textField.text {
+                viewModel.password = text
+            }
+        default:
+            break
+        }
     }
-    
+
     func textFieldDidChange(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
-        //
-
+        switch textfield.tag {
+        /// login:
+        case 1:
+            if let text = textfield.textField.text {
+                viewModel.login = text
+            }
+        /// password:
+        case 2:
+            if let text = textfield.textField.text {
+                viewModel.password = text
+            }
+        default:
+            break
+        }
     }
-    
+
     func textFieldDidEndEditing(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
-        //
-
+        switch textfield.tag {
+        /// login:
+        case 1:
+            if let text = textfield.textField.text {
+                viewModel.login = text
+            }
+        /// password:
+        case 2:
+            if let text = textfield.textField.text {
+                viewModel.password = text
+            }
+        default:
+            break
+        }
     }
-    
-    
+
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder() /// Hide keyboard
+        return true
+    }
+
+    func actionButtonTapped(_ button: ActionButton) {
+        Task {
+            do {
+                let userModel = try await viewModel.loginUser(email: viewModel.login, password: viewModel.password)
+                await MainActor.run {
+                    coordinator.navigateToApp(user: userModel)
+//                    coordinator.registerFinished(user: userModel)
+//                    coordinator.coordinatorDidFinish(user: userModel)
+                }
+            } catch {
+                // Obsługa błędów, np. wyświetlenie alertu użytkownikowi
+                print(error)
+            }
+        }
+    }
 }
-
-
 
 // MARK: - Navigation
 

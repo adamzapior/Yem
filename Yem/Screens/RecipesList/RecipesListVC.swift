@@ -46,7 +46,7 @@ final class RecipesListVC: UIViewController {
         }
     }
 
-    // MARK: UI Setup
+    // MARK: - UI Setup
 
     private func setupCollectionView() {
         let layout = setupLayout()

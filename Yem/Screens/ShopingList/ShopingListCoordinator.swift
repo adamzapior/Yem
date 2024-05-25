@@ -8,44 +8,37 @@
 import LifetimeTracker
 import UIKit
 
-final class ShopingListCoordinator: ParentCoordinator, ChildCoordinator {
-    var parentCoordinator: TabBarCoordinator?
-    var childCoordinators = [Coordinator]()
-    var navigationController: UINavigationController
-    var viewControllerRef: UIViewController?
+final class ShopingListCoordinator: Destination {
+    private weak var parentCoordinator: TabBarCoordinator?
     
-    lazy var rootViewController: UIViewController = .init()
     let repository: DataRepository
     let viewModel: ShopingListVM
     
-    init(parentCoordinator: TabBarCoordinator? = nil, repository: DataRepository, viewModel: ShopingListVM, navigationController: UINavigationController) {
+    init(parentCoordinator: TabBarCoordinator? = nil, repository: DataRepository, viewModel: ShopingListVM) {
         self.parentCoordinator = parentCoordinator
         self.repository = repository
         self.viewModel = viewModel
-        self.navigationController = navigationController
         
+        super.init()
 #if DEBUG
         trackLifetime()
 #endif
     }
-
-    func start(animated: Bool) {
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func render() -> UIViewController {
         let shopingListController = ShopingListVC(coordinator: self, viewModel: viewModel)
         shopingListController.viewModel = viewModel
         
-        viewControllerRef = shopingListController
         shopingListController.tabBarItem = UITabBarItem(title: "Shoping list",
                                                         image: UIImage(systemName: "basket"),
                                                         selectedImage: nil)
-        navigationController.customPushViewController(viewController: shopingListController)
+        return shopingListController
     }
-    
-    func coordinatorDidFinish() {
-        if let viewController = viewControllerRef as? DisposableViewController {
-            viewController.cleanUp()
-        }
-//        parentCoordinator?.childDidFinish(self)
-    }
+
     
     func presentClearShopingListAlert() {
         let title = "Remove ingredients"
@@ -59,11 +52,11 @@ final class ShopingListCoordinator: ParentCoordinator, ChildCoordinator {
         }
         alertVC.modalPresentationStyle = .overFullScreen
         alertVC.modalTransitionStyle = .crossDissolve
-        rootViewController.present(alertVC, animated: true, completion: nil)
+        navigator?.present(alert: alertVC)
     }
     
     private func dismissAlert() {
-        rootViewController.dismiss(animated: true)
+        navigator?.dismissAlert()
     }
 }
 

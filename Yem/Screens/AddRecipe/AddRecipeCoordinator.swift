@@ -9,13 +9,13 @@ import LifetimeTracker
 import UIKit
 
 final class AddRecipeCoordinator: ChildCoordinator {
-    var parentCoordinator: AddRecipeParentCoordinator?
+    private weak var parentCoordinator: ParentCoordinator?
     var viewControllerRef: UIViewController?
     var navigationController: UINavigationController
 
     var viewModel: AddRecipeViewModel
 
-    init(navigationController: UINavigationController, viewModel: AddRecipeViewModel, parentCoordinator: AddRecipeParentCoordinator) {
+    init(navigationController: UINavigationController, viewModel: AddRecipeViewModel, parentCoordinator: ParentCoordinator) {
         self.navigationController = navigationController
         self.viewModel = viewModel
         self.parentCoordinator = parentCoordinator
@@ -83,12 +83,6 @@ enum AddRecipeRoute {
     case instructions
     case addInstruction
 }
-
-protocol AddRecipeParentCoordinator {
-    func childDidFinish(_ child: Coordinator)
-}
-
-extension RecipesListCoordinator: AddRecipeParentCoordinator {}
 
 #if DEBUG
 extension AddRecipeCoordinator: LifetimeTrackable {

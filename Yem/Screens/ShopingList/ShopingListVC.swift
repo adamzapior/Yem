@@ -41,7 +41,7 @@ final class ShopingListVC: UIViewController {
 
         Task {
             viewModel.loadShopingList()
-        }
+        }        
     }
 
     // MARK: - Setup UI
