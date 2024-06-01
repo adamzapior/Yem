@@ -25,6 +25,8 @@
 		5810495F2BB4455800FF2E8C /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5810495E2BB4455800FF2E8C /* AuthenticationManager.swift */; };
 		581049612BB445D400FF2E8C /* FirestoreRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581049602BB445D400FF2E8C /* FirestoreRepository.swift */; };
 		5812ADED2B5927E90035EAA5 /* RecipeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5812ADEC2B5927E90035EAA5 /* RecipeModel.swift */; };
+		581C611F2C01F4E7000E12DB /* Destinations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581C611E2C01F4E7000E12DB /* Destinations.swift */; };
+		581C61212C01F745000E12DB /* TabCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581C61202C01F745000E12DB /* TabCoordinator.swift */; };
 		581F14212BA8AC3B0046FFA8 /* DualOptionAlertVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581F14202BA8AC3B0046FFA8 /* DualOptionAlertVC.swift */; };
 		582E71AE2B62C7BC002D3164 /* ValidationAlertVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 582E71AD2B62C7BC002D3164 /* ValidationAlertVC.swift */; };
 		58354B552B992B1C002C7A40 /* ShopingListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58354B542B992B1C002C7A40 /* ShopingListCell.swift */; };
@@ -132,6 +134,8 @@
 		5810495E2BB4455800FF2E8C /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
 		581049602BB445D400FF2E8C /* FirestoreRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreRepository.swift; sourceTree = "<group>"; };
 		5812ADEC2B5927E90035EAA5 /* RecipeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeModel.swift; sourceTree = "<group>"; };
+		581C611E2C01F4E7000E12DB /* Destinations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Destinations.swift; sourceTree = "<group>"; };
+		581C61202C01F745000E12DB /* TabCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabCoordinator.swift; sourceTree = "<group>"; };
 		581F14202BA8AC3B0046FFA8 /* DualOptionAlertVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DualOptionAlertVC.swift; sourceTree = "<group>"; };
 		582E71AD2B62C7BC002D3164 /* ValidationAlertVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidationAlertVC.swift; sourceTree = "<group>"; };
 		58354B542B992B1C002C7A40 /* ShopingListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopingListCell.swift; sourceTree = "<group>"; };
@@ -262,7 +266,6 @@
 			children = (
 				58356B482B20E0ED000AC548 /* RecipesListVC.swift */,
 				58102DD42B2494ED0090EAE8 /* RecipesListVM.swift */,
-				589929492B4484FD00FAB070 /* RecipesListCoordinator.swift */,
 			);
 			path = RecipesList;
 			sourceTree = "<group>";
@@ -302,6 +305,17 @@
 			path = ShopingList;
 			sourceTree = "<group>";
 		};
+		581C611D2C01F45B000E12DB /* Coordinators */ = {
+			isa = PBXGroup;
+			children = (
+				586230ED2BB593A4000456D0 /* AppCoordinator.swift */,
+				589929472B44843A00FAB070 /* TabBarCoordinator.swift */,
+				581C61202C01F745000E12DB /* TabCoordinator.swift */,
+				589929492B4484FD00FAB070 /* RecipesListCoordinator.swift */,
+			);
+			path = Coordinators;
+			sourceTree = "<group>";
+		};
 		582E71AC2B62C7A3002D3164 /* Alerts */ = {
 			isa = PBXGroup;
 			children = (
@@ -335,12 +349,10 @@
 		58356AF92B1FB9E5000AC548 /* Yem */ = {
 			isa = PBXGroup;
 			children = (
-				58AD97E32BDADF5B002A6C40 /* Coordinators */,
+				58AD97E32BDADF5B002A6C40 /* Navigation */,
 				586230EF2BB59482000456D0 /* CoordinatorProtocols */,
 				58356AFA2B1FB9E5000AC548 /* AppDelegate.swift */,
 				58356AFC2B1FB9E5000AC548 /* SceneDelegate.swift */,
-				586230ED2BB593A4000456D0 /* AppCoordinator.swift */,
-				589929472B44843A00FAB070 /* TabBarCoordinator.swift */,
 				58356B062B1FB9E7000AC548 /* Assets.xcassets */,
 				58356B0B2B1FB9E7000AC548 /* Info.plist */,
 				58B8618C2BB88E8E00597153 /* GoogleService-Info.plist */,
@@ -539,12 +551,14 @@
 			path = DetailsViews;
 			sourceTree = "<group>";
 		};
-		58AD97E32BDADF5B002A6C40 /* Coordinators */ = {
+		58AD97E32BDADF5B002A6C40 /* Navigation */ = {
 			isa = PBXGroup;
 			children = (
+				581C611D2C01F45B000E12DB /* Coordinators */,
 				58AD97E42BDADF7F002A6C40 /* Navigator.swift */,
+				581C611E2C01F4E7000E12DB /* Destinations.swift */,
 			);
-			path = Coordinators;
+			path = Navigation;
 			sourceTree = "<group>";
 		};
 		58BBEB992B5C14980058851C /* Headers+Footers */ = {
@@ -749,6 +763,7 @@
 				586230F32BB59510000456D0 /* ParentCoordinator.swift in Sources */,
 				58D5F9C02B27A84700A72619 /* AddPicker.swift in Sources */,
 				58356B472B20E0DB000AC548 /* ShopingListVC.swift in Sources */,
+				581C61212C01F745000E12DB /* TabCoordinator.swift in Sources */,
 				58BBEB9B2B5C14C70058851C /* InstructionTableFooterView.swift in Sources */,
 				583C5D782BBD97A9002FCD5C /* SettingsCell.swift in Sources */,
 				589CA80A2BB2EB160008DFC3 /* OnboardingVM.swift in Sources */,
@@ -818,6 +833,7 @@
 				587F971A2BA71A0900F5B937 /* ShopingListModel.swift in Sources */,
 				582E71AE2B62C7BC002D3164 /* ValidationAlertVC.swift in Sources */,
 				58D644192B56F4AD0008413A /* CoreDataManager.swift in Sources */,
+				581C611F2C01F4E7000E12DB /* Destinations.swift in Sources */,
 				583C5D742BBD8BFB002FCD5C /* SettingsCoordinator.swift in Sources */,
 				58102DE02B24AB9E0090EAE8 /* UITextFieldExt.swift in Sources */,
 				58F2F8442B9131D700ACE336 /* DetailsView.swift in Sources */,

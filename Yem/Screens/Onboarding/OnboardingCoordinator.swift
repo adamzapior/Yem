@@ -19,6 +19,7 @@ final class OnboardingCoordinator: Destination {
 
     var authManager: AuthenticationManager
     lazy var viewModel = OnboardingVM(authManager: authManager)
+    weak var parentCoordinator: AppCoordinator?
 
     init(authManager: AuthenticationManager) {
         self.authManager = authManager
@@ -26,12 +27,13 @@ final class OnboardingCoordinator: Destination {
 #if DEBUG
         trackLifetime()
 #endif
-        
     }
-    
+
     func navigateToLogin() {
         print("navigate to login")
-        navigator?.goTo(screen: OnboardingLoginCoordinator(authManager: authManager, viewModel: viewModel))
+        let loginCoordinator = OnboardingLoginCoordinator(authManager: authManager, viewModel: viewModel)
+        loginCoordinator.parentCoordinator = parentCoordinator
+        navigator?.goTo(screen: loginCoordinator)
     }
 
 //    func start(animated: Bool) {
@@ -94,23 +96,26 @@ final class OnboardingLoginCoordinator: Destination {
 
     var authManager: AuthenticationManager
     var viewModel: OnboardingVM
+    weak var parentCoordinator: AppCoordinator?
 
     init(authManager: AuthenticationManager, viewModel: OnboardingVM) {
         self.authManager = authManager
         self.viewModel = viewModel
         super.init()
-//#if DEBUG
+        // #if DEBUG
 //        trackLifetime()
-//#endif
+        // #endif
     }
-    
 
-    
     func navigateToApp(user: UserModel) {
-        navigator?.changeRoot(screen: TabBarDestination(currentUser: user, dataRepository: DataRepository(), authManager: authManager))
+//        navigator?.changeRoot(screen: TabBarDestination(currentUser: user, dataRepository: DataRepository(), authManager: authManager, parentCoordinator: parentCoordinator!))
+//        
+        let tabBarCoordinator = TabBarCoordinator(currentUser: user, dataRepository: parentCoordinator!.dataRepository, authManager: authManager)
+            tabBarCoordinator.parentCoordinator = parentCoordinator
+            parentCoordinator!.tabBarCoordinator = tabBarCoordinator // Zapisz referencję do tabBarCoordinator
+        let tabBarDestination = TabBarDestination(currentUser: user, dataRepository: DataRepository(), authManager: authManager, parentCoordinator: parentCoordinator!, tabBarCoordinator: tabBarCoordinator)
+            navigator?.goTo(screen: tabBarDestination)
     }
-    
-    
 }
 
 enum OnboardingRoute {

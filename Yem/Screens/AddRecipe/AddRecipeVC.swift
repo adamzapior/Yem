@@ -13,7 +13,8 @@ import UIKit
 final class AddRecipeVC: UIViewController {
     // MARK: - Properties
     
-    let coordinator: AddRecipeCoordinator
+//    let coordinator: AddRecipeCoordinator
+    weak var coordinator: AddRecipeCoordinator?
     let viewModel: AddRecipeViewModel
     
     // MARK: - View properties
@@ -65,11 +66,20 @@ final class AddRecipeVC: UIViewController {
         self.coordinator = coordinator
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        
-#if DEBUG
+
+     #if DEBUG
         trackLifetime()
-#endif
+     #endif
     }
+    
+//    init(viewModel: AddRecipeViewModel) {
+//        self.viewModel = viewModel
+//        super.init(nibName: nil, bundle: nil)
+//        
+//#if DEBUG
+//        trackLifetime()
+//#endif
+//    }
     
     @available(*, unavailable)
     required init?(coder: NSCoder) {
@@ -104,7 +114,7 @@ final class AddRecipeVC: UIViewController {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        coordinator.coordinatorDidFinish()
+//        coordinator.coordinatorDidFinish() 4Delete
     }
     
     // MARK: - UI Setup
@@ -418,8 +428,8 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
                 viewModel.prepTimeMinutes = selectedMinutes
             }
             
-            var hours: String = ""
-            var minutes: String = ""
+            var hours = ""
+            var minutes = ""
             
             /// hours for '2 - 48'
             if viewModel.prepTimeHours != "0" &&
@@ -582,7 +592,7 @@ extension AddRecipeVC {
     }
 
     @objc func nextButtonTapped(_ sender: UIBarButtonItem) {
-        coordinator.pushVC(for: .ingredientsList)
+//        coordinator.pushVC(for: .ingredientsList)
     }
 }
 

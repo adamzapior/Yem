@@ -8,7 +8,6 @@
 import UIKit
 
 final class Navigator {
-    
     private let delegate: UINavigationController
     
     init(start: Destination) {
@@ -17,13 +16,37 @@ final class Navigator {
         delegate.pushViewController(start.render(), animated: true)
     }
     
+    var navigationController: UINavigationController {
+         return delegate
+     }
+    
+    // Inicjalizator z opcjonalnym rootViewController
+    init(rootViewController: UIViewController? = nil) {
+        if let rootVC = rootViewController {
+            delegate = UINavigationController(rootViewController: rootVC)
+        } else {
+            delegate = UINavigationController()
+        }
+    }
+    
+    func clearAllViewControllers() {
+         delegate.viewControllers = []
+     }
+    
 //    init() {
-//        
+//
 //    }
     
+    
     func goTo(screen: Destination) {
+        print("Navigating to screen: \(screen)")
         screen.navigator = self
         delegate.pushViewController(screen.render(), animated: true)
+    }
+    
+    func goTo22(screen: UIViewController) {
+        print("Navigating to UIViewController: \(screen)")
+        delegate.pushViewController(screen, animated: true)
     }
     
     func pop() {
@@ -35,7 +58,7 @@ final class Navigator {
 //            return
 //        }
 //        delegate.popToViewController(controller, animated: true)
-////        backstack.removeLast(backstack.count - index + 1)
+        ////        backstack.removeLast(backstack.count - index + 1)
     }
     
     func attatch(appWindow: UIWindow) {
@@ -56,20 +79,5 @@ final class Navigator {
     
     func dismissAlert() {
         delegate.dismiss(animated: true)
-    }
-}
-
-class Destination {
-    weak var navigator: Navigator?
-    
-    func render() -> UIViewController {
-        return UIViewController()
-    }
-    func attatch(tabBar: UITabBarController) {
-        if tabBar.viewControllers == nil {
-            tabBar.viewControllers = [render()]
-        } else {
-            tabBar.viewControllers!.append(render())
-        }
     }
 }

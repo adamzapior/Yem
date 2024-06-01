@@ -8,30 +8,6 @@
 import LifetimeTracker
 import UIKit
 
-//class RecipesListTabCoordinator: Destination {
-//    private weak var parentCoordinator: TabBarCoordinator?
-//
-//    let authManager: AuthenticationManager
-//    let repository: DataRepository
-//    var viewModel: RecipesListVM
-//    
-//    var tabNavigator: Navigator? = nil
-//    
-//    override func render() -> UIViewController {
-//        let controller = UIViewController()
-//        tabNavigator = Navigator(root: controller)
-//        tabNavigator?.goTo(screen: RecipesListCoordinator(parentCoordinator: parentCoordinator, repository: repository, viewModel: viewModel, authManager: authManager))
-//        return controller
-//    }
-//    
-//    init(parentCoordinator: TabBarCoordinator?, repository: DataRepository, viewModel: RecipesListVM, authManager: AuthenticationManager) {
-//        self.parentCoordinator = parentCoordinator
-//        self.repository = repository
-//        self.viewModel = viewModel
-//        self.authManager = authManager
-//    }
-//}
-
 final class RecipesListCoordinator: Destination {
     private weak var parentCoordinator: TabBarCoordinator?
         
@@ -39,6 +15,8 @@ final class RecipesListCoordinator: Destination {
     let repository: DataRepository
     var viewModel: RecipesListVM
     
+    var tabNavigator: Navigator?
+
     init(parentCoordinator: TabBarCoordinator?, repository: DataRepository, viewModel: RecipesListVM, authManager: AuthenticationManager) {
         self.parentCoordinator = parentCoordinator
         self.repository = repository
@@ -59,27 +37,16 @@ final class RecipesListCoordinator: Destination {
                                                         selectedImage: nil)
         return recipesListController
     }
-    
-//    func start(animated: Bool = false) {
-//        let recipesListController = RecipesListVC(coordinator: self, viewModel: viewModel)
-//        recipesListController.viewModel = viewModel
-//
-//        viewControllerRef = recipesListController
-//
-//        recipesListController.tabBarItem = UITabBarItem(title: "Recipes",
-//                                                        image: UIImage(systemName: "book"),
-//                                                        selectedImage: nil)
-//
-//        navigationController.customPushViewController(viewController: recipesListController)
-//    }
 
-    
     // MARK: Navigation
     
     func navigateToAddRecipeScreen() {
-//        let viewModel = AddRecipeViewModel(repository: repository)
-//        let coordinator = AddRecipeCoordinator(navigationController: navigationController, viewModel: viewModel, parentCoordinator: self)
-//        coordinator.start(animated: true)
+        print("Navigating to Add Recipe Screen")
+        let viewModel = AddRecipeViewModel(repository: repository)
+        let addRecipeCoordinator = AddRecipeCoordinator(viewModel: viewModel)
+        print("AddRecipeCoordinator created with viewModel: \(viewModel)")
+        tabNavigator?.goTo(screen: addRecipeCoordinator)
+        print("navigator is: \(String(describing: navigator))")
     }
     
     func navigateToRecipeDetail(with recipe: RecipeModel) {
@@ -89,11 +56,21 @@ final class RecipesListCoordinator: Destination {
     }
     
     func navigateToSettings() {
-//        let viewModel = SettingsViewModel(authManager: authManager)
+        let viewModel = SettingsViewModel(authManager: authManager)
+        let settingsCoordinator = SettingsCoordinator(viewModel: viewModel)
+        settingsCoordinator.parentCoordinator = self
+        navigator?.goTo(screen: settingsCoordinator)
+//        tabNavigator?.goTo(screen: settingsCoordinator)
 //        let coordinator = SettingsCoordinator(parentCoordinator: self, viewControllerRef: nil, navigationController: navigationController, viewModel: viewModel)
 //
 //        coordinator.start(animated: true)
 //        (navigationController).pushViewController(addRecipeVC, animated: true)
+    }
+    
+    func resetApplication() {
+        print("resetApplication from RecipesListCoordinator")
+        print(parentCoordinator.debugDescription)
+        parentCoordinator?.resetToInitialView()
     }
 }
 

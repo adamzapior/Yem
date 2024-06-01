@@ -11,6 +11,9 @@ import UIKit
 final class ShopingListCoordinator: Destination {
     private weak var parentCoordinator: TabBarCoordinator?
     
+    var tabNavigator: Navigator?
+
+    
     let repository: DataRepository
     let viewModel: ShopingListVM
     

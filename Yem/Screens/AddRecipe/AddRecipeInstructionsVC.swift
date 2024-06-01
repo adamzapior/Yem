@@ -215,7 +215,7 @@ extension AddRecipeInstructionsVC {
     @objc func saveButtonTapped(_ sender: UIBarButtonItem) {
         let result = viewModel.saveRecipe()
         if result {
-            coordinator.coordinatorDidFinish()
+//            coordinator.coordinatorDidFinish()
             coordinator.dismissVCStack()
         } else {
             let errorMessages = viewModel.validationErrors.map { $0.description }.joined(separator: "\n")

@@ -8,92 +8,56 @@
 import LifetimeTracker
 import UIKit
 
-final class SettingsCoordinator: ParentCoordinator, ChildCoordinator {
-    func childDidFinish(_ child: ChildCoordinator) {
-//
-    }
-    
-    func logisterFinished(user: UserModel, animated: Bool) {
-//
-    }
-    
-    private weak var parentCoordinator: RecipesListCoordinator?
-    var childCoordinators: [Coordinator] = []
-    var viewControllerRef: UIViewController?
-    var navigationController: UINavigationController
-
+final class SettingsCoordinator: Destination {
+    weak var parentCoordinator: RecipesListCoordinator?
     let viewModel: SettingsViewModel
 
-    init(parentCoordinator: RecipesListCoordinator?, viewControllerRef: UIViewController?, navigationController: UINavigationController, viewModel: SettingsViewModel) {
-        self.parentCoordinator = parentCoordinator
-        self.viewControllerRef = viewControllerRef
-        self.navigationController = navigationController
+    init(viewModel: SettingsViewModel) {
         self.viewModel = viewModel
-
+        super.init()
 #if DEBUG
         trackLifetime()
 #endif
     }
 
-    func start(animated: Bool) {
+    override func render() -> UIViewController {
         let settingsController = SettingsVC(viewModel: viewModel, coordinator: self)
-
-        viewControllerRef = settingsController
-        navigationController.customPushViewController(viewController: settingsController, direction: .fromRight, transitionType: .moveIn)
+//        settingsController.viewModel = viewModel
+        return settingsController
     }
 
-    func coordinatorDidFinish() {
-        if let viewController = viewControllerRef as? DisposableViewController {
-            viewController.cleanUp()
-        }
-
-//        parentCoordinator?.childDidFinish(self)
-        viewControllerRef = nil
-        parentCoordinator = nil
-    }
-    
     // MARK: Navigation
-    
-//    func navigateToOnboarding() {
-//        let onboardingCoordinator = OnboardingCoordinator(navigationController: navigationController, parentCoordinator: self, authManager: AuthenticationManager(), viewModel: OnboardingVM(authManager: AuthenticationManager()))
-//        addChildCoordinator(onboardingCoordinator)
-//        onboardingCoordinator.start(animated: true)
-//    }
 
     func presentLogoutAlert() {
-//        let title = "Are you sure?"
-//        let message = "Do you want to logout from app?"
-//
-//        let alertVC = DualOptionAlertVC(title: title, message: message) {
-//            Task {
-//                await self.viewModel.signOut()
-//            }
-//            self.coordinatorDidFinish()
-//            
-//            if let sceneDelegate = UIApplication.shared.connectedScenes
-//                .first(where: { $0.activationState == .foregroundActive })?
-//                .delegate as? SceneDelegate,
-//               let appCoordinator = sceneDelegate.appCoordinator {
-//                
-//                appCoordinator.resetToInitialCoordinator()
-//            }
-//
-//           
-//        } cancelAction: {
-//            self.coordinatorDidFinish()
-//        }
-//        alertVC.modalPresentationStyle = .overFullScreen
-//        alertVC.modalTransitionStyle = .crossDissolve
-//        navigationController.present(alertVC, animated: true, completion: nil)
-    }
+        let title = "Are you sure?"
+        let message = "Do you want to logout from app?"
 
-//    func dismissAlert() {
-//        navigationController.dismiss(animated: true)
-//    }
-//
-//    func dismissVC() {
-//        navigationController.customPopToRootViewController()
-//    }
+        let alertVC = DualOptionAlertVC(title: title, message: message) {
+            Task {
+                await self.viewModel.signOut()
+
+//                self.completeLogout()
+            }
+            self.resetApplicationToInitialState()
+//            self.navigator?.clearAllViewControllers()
+//            self.navigator?.changeRoot(screen: AppCoordinator())
+
+        } cancelAction: {
+            self.navigator?.dismissAlert()
+//            self.coordinatorDidFinish()
+        }
+
+        navigator?.present(alert: alertVC)
+    }
+    
+    
+    
+    func resetApplicationToInitialState() {
+        print(parentCoordinator.debugDescription)
+        parentCoordinator?.resetApplication()
+        }
+    
+
 }
 
 #if DEBUG

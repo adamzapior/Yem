@@ -106,9 +106,9 @@ final class RecipeDetailsCoordinator: ParentCoordinator, ChildCoordinator {
 
     func navigateToRecipeEditor() {
         let viewModel = AddRecipeViewModel(repository: repository, existingRecipe: recipe)
-        let coordinator = AddRecipeCoordinator(navigationController: navigationController, viewModel: viewModel, parentCoordinator: self)
+//        let coordinator = AddRecipeCoordinator(navigationController: navigationController, viewModel: viewModel, parentCoordinator: self)
 
-        coordinator.start(animated: true)
+//        coordinator.start(animated: true)
     }
 
     func dismissAlert() {

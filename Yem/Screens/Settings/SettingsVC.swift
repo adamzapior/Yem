@@ -46,11 +46,7 @@ class SettingsVC: UIViewController {
         setupTableView()
         setupUI()
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        coordinator.coordinatorDidFinish()
-    }
-    
+
     // MARK: - UI Setup
     
     func configureSection() {
