@@ -25,7 +25,7 @@
 		5810495F2BB4455800FF2E8C /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5810495E2BB4455800FF2E8C /* AuthenticationManager.swift */; };
 		581049612BB445D400FF2E8C /* FirestoreRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581049602BB445D400FF2E8C /* FirestoreRepository.swift */; };
 		5812ADED2B5927E90035EAA5 /* RecipeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5812ADEC2B5927E90035EAA5 /* RecipeModel.swift */; };
-		581C611F2C01F4E7000E12DB /* Destinations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581C611E2C01F4E7000E12DB /* Destinations.swift */; };
+		581C611F2C01F4E7000E12DB /* Destination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581C611E2C01F4E7000E12DB /* Destination.swift */; };
 		581C61212C01F745000E12DB /* TabCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581C61202C01F745000E12DB /* TabCoordinator.swift */; };
 		581F14212BA8AC3B0046FFA8 /* DualOptionAlertVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581F14202BA8AC3B0046FFA8 /* DualOptionAlertVC.swift */; };
 		582E71AE2B62C7BC002D3164 /* ValidationAlertVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 582E71AD2B62C7BC002D3164 /* ValidationAlertVC.swift */; };
@@ -134,7 +134,7 @@
 		5810495E2BB4455800FF2E8C /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
 		581049602BB445D400FF2E8C /* FirestoreRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreRepository.swift; sourceTree = "<group>"; };
 		5812ADEC2B5927E90035EAA5 /* RecipeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeModel.swift; sourceTree = "<group>"; };
-		581C611E2C01F4E7000E12DB /* Destinations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Destinations.swift; sourceTree = "<group>"; };
+		581C611E2C01F4E7000E12DB /* Destination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Destination.swift; sourceTree = "<group>"; };
 		581C61202C01F745000E12DB /* TabCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabCoordinator.swift; sourceTree = "<group>"; };
 		581F14202BA8AC3B0046FFA8 /* DualOptionAlertVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DualOptionAlertVC.swift; sourceTree = "<group>"; };
 		582E71AD2B62C7BC002D3164 /* ValidationAlertVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidationAlertVC.swift; sourceTree = "<group>"; };
@@ -556,7 +556,7 @@
 			children = (
 				581C611D2C01F45B000E12DB /* Coordinators */,
 				58AD97E42BDADF7F002A6C40 /* Navigator.swift */,
-				581C611E2C01F4E7000E12DB /* Destinations.swift */,
+				581C611E2C01F4E7000E12DB /* Destination.swift */,
 			);
 			path = Navigation;
 			sourceTree = "<group>";
@@ -833,7 +833,7 @@
 				587F971A2BA71A0900F5B937 /* ShopingListModel.swift in Sources */,
 				582E71AE2B62C7BC002D3164 /* ValidationAlertVC.swift in Sources */,
 				58D644192B56F4AD0008413A /* CoreDataManager.swift in Sources */,
-				581C611F2C01F4E7000E12DB /* Destinations.swift in Sources */,
+				581C611F2C01F4E7000E12DB /* Destination.swift in Sources */,
 				583C5D742BBD8BFB002FCD5C /* SettingsCoordinator.swift in Sources */,
 				58102DE02B24AB9E0090EAE8 /* UITextFieldExt.swift in Sources */,
 				58F2F8442B9131D700ACE336 /* DetailsView.swift in Sources */,

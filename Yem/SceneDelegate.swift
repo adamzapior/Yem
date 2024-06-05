@@ -27,7 +27,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.navigator = navigator
         appCoordinator.navigator = navigator
 
-        navigator.attatch(appWindow: appWindow)
+        navigator.attach(appWindow: appWindow)
         appWindow.makeKeyAndVisible()
 
         window = appWindow

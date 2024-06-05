@@ -31,21 +31,21 @@ final class AddRecipeCoordinator: Destination {
         switch route {
         case .ingredientsList:
             let controller = AddRecipeIngredientsVC(viewModel: viewModel, coordinator: self)
-            navigator?.goTo22(screen: controller)
+            navigator?.presentScreen(controller)
 //            navigationController.pushViewController(controller, animated: true)
         case .addIngredient:
             let controller = AddIngredientSheetVC(viewModel: viewModel, coordinator: self)
-            navigator?.goTo22(screen: controller)
+            navigator?.presentScreen(controller)
 
 //            navigationController.present(controller, animated: true)
         case .instructions:
             let controller = AddRecipeInstructionsVC(viewModel: viewModel, coordinator: self)
 //            navigationController.pushViewController(controller, animated: true)
-            navigator?.goTo22(screen: controller)
+            navigator?.presentScreen(controller)
 
         case .addInstruction:
             let controller = AddInstructionSheetVC(viewModel: viewModel, coordinator: self)
-            navigator?.goTo22(screen: controller)
+            navigator?.presentScreen(controller)
 
 //            navigationController.present(controller, animated: true)
         }

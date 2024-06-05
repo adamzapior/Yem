@@ -33,7 +33,7 @@ final class OnboardingCoordinator: Destination {
         print("navigate to login")
         let loginCoordinator = OnboardingLoginCoordinator(authManager: authManager, viewModel: viewModel)
         loginCoordinator.parentCoordinator = parentCoordinator
-        navigator?.goTo(screen: loginCoordinator)
+        navigator?.presentDestination(loginCoordinator)
     }
 
 //    func start(animated: Bool) {
@@ -114,7 +114,7 @@ final class OnboardingLoginCoordinator: Destination {
             tabBarCoordinator.parentCoordinator = parentCoordinator
             parentCoordinator!.tabBarCoordinator = tabBarCoordinator // Zapisz referencję do tabBarCoordinator
         let tabBarDestination = TabBarDestination(currentUser: user, dataRepository: DataRepository(), authManager: authManager, parentCoordinator: parentCoordinator!, tabBarCoordinator: tabBarCoordinator)
-            navigator?.goTo(screen: tabBarDestination)
+        navigator?.presentDestination(tabBarDestination)
     }
 }
 
