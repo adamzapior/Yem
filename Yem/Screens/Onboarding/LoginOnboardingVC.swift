@@ -11,7 +11,7 @@ import SnapKit
 import UIKit
 
 final class LoginOnboardingVC: UIViewController {
-    let coordinator: OnboardingLoginCoordinator
+    let coordinator: OnboardingCoordinator
     let viewModel: OnboardingVM
 
     var content = UIView()
@@ -25,7 +25,7 @@ final class LoginOnboardingVC: UIViewController {
 
     let loginButton = ActionButton(title: "Try to login...", backgroundColor: .ui.addBackground, isShadownOn: true)
 
-    init(coordinator: OnboardingLoginCoordinator, viewModel: OnboardingVM) {
+    init(coordinator: OnboardingCoordinator, viewModel: OnboardingVM) {
         self.coordinator = coordinator
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)

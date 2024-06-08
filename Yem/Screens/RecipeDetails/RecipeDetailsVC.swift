@@ -100,11 +100,6 @@ final class RecipeDetailsVC: UIViewController {
         
         configureRecipeViewData()
     }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        coordinator.coordinatorDidFinish()
-    }
 
     // MARK: - UI Setup
 

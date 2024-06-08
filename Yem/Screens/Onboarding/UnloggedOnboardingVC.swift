@@ -107,16 +107,6 @@ final class UnloggedOnboardingVC: UIViewController {
         loginButton.tag = 1
         registerButton.tag = 2
     }
-//
-//    @objc func finishOnboarding() {
-//        coordinator.registerFinished()
-//        coordinator.coordinatorDidFinish()
-//    }
-//
-    //    override func viewDidDisappear(_ animated: Bool) {
-    //        super.viewDidDisappear(animated)
-    //        coordinator.coordinatorDidFinish()
-    //    }
 }
 
 // MARK: - Navigation
@@ -125,9 +115,9 @@ extension UnloggedOnboardingVC: ActionButtonDelegate {
     func actionButtonTapped(_ button: ActionButton) {
         switch button.tag {
         case 1:
-            print("chbya tak")
-            coordinator?.navigateToLogin()
-        case 2: break
+            coordinator?.navigateTo(.login)
+        case 2:
+            coordinator?.navigateTo(.register)
 //            coordinator.pushVC(for: .register)
         default:
             break

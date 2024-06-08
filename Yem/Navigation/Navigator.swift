@@ -1,93 +1,90 @@
-//
+
 //  Navigator.swift
 //  Yem
 //  Created by Adam Zapiór on 25/04/2024.
-//
 
 import UIKit
 
 final class Navigator {
-    // MARK: - Properties
-    
-    private let delegate: UINavigationController
-    
-    var navigationController: UINavigationController {
-        return delegate
-    }
-    
-    // MARK: - Initialization
-    
+    let navigationController: UINavigationController
+
     init(start: Destination) {
-        delegate = UINavigationController()
+        navigationController = UINavigationController(rootViewController: start.render())
         start.navigator = self
-        delegate.pushViewController(start.render(), animated: true)
     }
-    
+
     // MARK: - Configuration
-    
+
     func attach(appWindow: UIWindow) {
-        appWindow.rootViewController = delegate
+        appWindow.rootViewController = navigationController
     }
-    
+
     func setNavigationBarHidden(_ hidden: Bool = true) {
-        delegate.setNavigationBarHidden(hidden, animated: false)
+        navigationController.setNavigationBarHidden(hidden, animated: false)
     }
-    
-    func changeRoot(screen: Destination) {
-        delegate.setViewControllers([screen.render()], animated: true)
-    }
-    
+
     // MARK: - Navigation Commands
-    
+
     func presentDestination(_ destination: Destination) {
-        print("Navigating to screen: \(destination)")
+        print("DEBUG: Navigating to screen: \(destination)")
         destination.navigator = self
-        delegate.pushViewController(destination.render(), animated: true)
+        navigationController.pushViewController(destination.render(), animated: true)
     }
-    
+
     func presentScreen(_ screen: UIViewController) {
-        print("Navigating to UIViewController: \(screen)")
-        delegate.pushViewController(screen, animated: true)
+        print("DEBUG: Navigating to UIViewController: \(screen)")
+        navigationController.pushViewController(screen, animated: true)
     }
-    
+
     func pop() {
-        delegate.popViewController(animated: true)
+        navigationController.popViewController(animated: true)
     }
-    
-    func popUpToRoot() {
-        delegate.popToRootViewController(animated: true)
-    }
-    
-    func popUpTo(predicate: @escaping (Destination) -> Bool) {
-        DispatchQueue.main.async {
-            guard let controller = self.delegate.viewControllers.last(where: { viewController in
-                let destinationIsCorrect = (viewController.destination).map(predicate) ?? false
-                print("Checking destination: \(String(describing: viewController.destination)), passes: \(destinationIsCorrect)")
-                return destinationIsCorrect
-            }) else {
-                print("No matching controller found.")
-                return
+
+    func popUpTo(where predicate: @escaping (Destination) -> Bool) {
+        DispatchQueue.main.async { [weak self] in
+            if let viewController = self?.navigationController.viewControllers.last(where: { $0.destination.map(predicate) ?? false }) {
+                print("DEBUG: Checking destination: \(String(describing: viewController.destination))")
+                self?.navigationController.popToViewController(viewController, animated: true)
             }
-            print("Popping to controller: \(controller)")
-            self.delegate.popToViewController(controller, animated: true)
         }
     }
-    
+
+    func popUpToRoot() {
+        navigationController.popToRootViewController(animated: true)
+    }
+
+    func changeRoot(screen: Destination) {
+        screen.navigator = self
+        navigationController.setViewControllers([screen.render()], animated: true)
+    }
+
+    // MARK: - Sheet Management
+
+    func presentSheet(_ screen: UIViewController) {
+        screen.modalPresentationStyle = .formSheet
+        navigationController.present(screen, animated: true, completion: nil)
+    }
+
+    func dismissSheet() {
+        navigationController.dismiss(animated: true, completion: nil)
+    }
+
     // MARK: - Alert Management
-    
-    func present(alert: UIViewController) {
-        delegate.present(alert, animated: true, completion: nil)
+
+    func presentAlert(_ vc: UIViewController) {
+        navigationController.present(vc, animated: true, completion: nil)
     }
-    
+
     func dismissAlert() {
-        delegate.dismiss(animated: true)
+        navigationController.dismiss(animated: true)
     }
-    
+
     // MARK: - Logout Management
-    
+
     func clearAllViewControllers() {
         DispatchQueue.main.async {
-            self.delegate.viewControllers = []
+            self.navigationController.viewControllers = []
         }
     }
 }
+

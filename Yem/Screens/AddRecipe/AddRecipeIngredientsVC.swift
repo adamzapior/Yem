@@ -187,11 +187,11 @@ extension AddRecipeIngredientsVC {
     }
     
     @objc func nextButtonTapped(_ sender: UIBarButtonItem) {
-        coordinator.pushVC(for: .instructions)
+        coordinator.navigateTo(.instructions)
     }
 
     func addIgredientTapped() {
-        coordinator.pushVC(for: .addIngredient)
+        coordinator.navigateTo(.addIngredient)
     }
 }
 

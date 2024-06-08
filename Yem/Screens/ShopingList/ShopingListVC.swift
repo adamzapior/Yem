@@ -21,6 +21,9 @@ final class ShopingListVC: UIViewController {
         self.coordinator = coordinator
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+#if DEBUG
+        trackLifetime()
+#endif
     }
 
     @available(*, unavailable)
@@ -42,6 +45,7 @@ final class ShopingListVC: UIViewController {
         Task {
             viewModel.loadShopingList()
         }        
+        
     }
 
     // MARK: - Setup UI

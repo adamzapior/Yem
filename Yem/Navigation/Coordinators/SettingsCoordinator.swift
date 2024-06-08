@@ -9,7 +9,7 @@ import LifetimeTracker
 import UIKit
 
 final class SettingsCoordinator: Destination {
-    weak var parentCoordinator: RecipesListCoordinator?
+    weak var parentCoordinator: Destination?
     let viewModel: SettingsViewModel
 
     init(viewModel: SettingsViewModel) {
@@ -21,9 +21,10 @@ final class SettingsCoordinator: Destination {
     }
 
     override func render() -> UIViewController {
-        let settingsController = SettingsVC(viewModel: viewModel, coordinator: self)
-//        settingsController.viewModel = viewModel
-        return settingsController
+        let controller = SettingsVC(viewModel: viewModel, coordinator: self)
+        controller.destination = self
+        controller.hidesBottomBarWhenPushed = true
+        return controller
     }
 
     // MARK: Navigation
@@ -35,29 +36,26 @@ final class SettingsCoordinator: Destination {
         let alertVC = DualOptionAlertVC(title: title, message: message) {
             Task {
                 await self.viewModel.signOut()
-
-//                self.completeLogout()
+                NotificationCenter.default.post(name: NSNotification.Name("ResetApplication"), object: nil)
             }
-            self.resetApplicationToInitialState()
-//            self.navigator?.clearAllViewControllers()
-//            self.navigator?.changeRoot(screen: AppCoordinator())
-
         } cancelAction: {
             self.navigator?.dismissAlert()
-//            self.coordinatorDidFinish()
         }
-
-        navigator?.present(alert: alertVC)
+        navigator?.presentAlert(alertVC)
     }
-    
-    
-    
-    func resetApplicationToInitialState() {
-        print(parentCoordinator.debugDescription)
-        parentCoordinator?.resetApplication()
-        }
-    
 
+    func presentSystemSettings() {
+        guard let settingsUrl = URL(string: UIApplication.openSettingsURLString),
+              UIApplication.shared.canOpenURL(settingsUrl)
+        else {
+            print("DEBUG: Cannot open system settings.")
+            return
+        }
+
+        DispatchQueue.main.async {
+            UIApplication.shared.open(settingsUrl, options: [:], completionHandler: nil)
+        }
+    }
 }
 
 #if DEBUG

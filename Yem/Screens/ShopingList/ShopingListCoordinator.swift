@@ -55,7 +55,7 @@ final class ShopingListCoordinator: Destination {
         }
         alertVC.modalPresentationStyle = .overFullScreen
         alertVC.modalTransitionStyle = .crossDissolve
-        navigator?.present(alert: alertVC)
+        navigator?.presentAlert(alertVC)
     }
     
     private func dismissAlert() {

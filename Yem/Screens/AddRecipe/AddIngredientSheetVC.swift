@@ -5,9 +5,8 @@
 //  Created by Adam Zapiór on 16/12/2023.
 //
 
-import UIKit
 import LifetimeTracker
-
+import UIKit
 
 final class AddIngredientSheetVC: UIViewController {
     // MARK: - Properties
@@ -21,7 +20,7 @@ final class AddIngredientSheetVC: UIViewController {
     private let countTextfield = TextfieldWithIcon(backgroundColor: .ui.secondaryContainer, iconImage: "bag.badge.plus", placeholderText: "Enter value*", textColor: .ui.secondaryText)
     private let valueTypeCell = AddPicker(backgroundColor: .ui.secondaryContainer, iconImage: "note.text.badge.plus", textOnButton: "Select value type*")
     private let addButton = ActionButton(title: "Add", backgroundColor: .ui.addBackground)
-    private let cancelButton = ActionButton(title: "Cancel", backgroundColor: .ui.cancelBackground )
+    private let cancelButton = ActionButton(title: "Cancel", backgroundColor: .ui.cancelBackground)
     
     private let valueTypePickerView = UIPickerView()
     
@@ -112,11 +111,7 @@ final class AddIngredientSheetVC: UIViewController {
 
 // MARK: - Delegate & data source items
 
-extension AddIngredientSheetVC {
-
-    
- 
-}
+extension AddIngredientSheetVC {}
 
 // MARK: Gestures: TextfieldWithIconCellDelegate & PickerButtonWithIconCellDelegate
 
@@ -329,7 +324,6 @@ extension AddIngredientSheetVC: AddIngredientSheetVCDelegate {
             break
         case .instructionList:
             break
-
         }
     }
 }

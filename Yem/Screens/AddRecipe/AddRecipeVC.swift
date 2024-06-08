@@ -592,7 +592,7 @@ extension AddRecipeVC {
     }
 
     @objc func nextButtonTapped(_ sender: UIBarButtonItem) {
-//        coordinator.pushVC(for: .ingredientsList)
+        coordinator!.navigateTo(.ingredientsList)
     }
 }
 

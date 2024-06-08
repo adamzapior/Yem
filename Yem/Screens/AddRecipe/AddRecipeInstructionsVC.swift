@@ -224,7 +224,7 @@ extension AddRecipeInstructionsVC {
     }
     
     private func addInstructionTapped() {
-        coordinator.pushVC(for: .addInstruction)
+        coordinator.navigateTo(.addInstruction)
     }
 }
 

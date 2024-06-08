@@ -92,6 +92,7 @@ extension SettingsVC: UITableViewDelegate, UITableViewDataSource {
         tableView.deselectRow(at: indexPath, animated: true) // Optional: for visual feedback
         switch indexPath.row {
         case 0:
+            coordinator.presentSystemSettings()
             // Handle Notifications row selection
             print("Notifications row tapped")
         case 1:

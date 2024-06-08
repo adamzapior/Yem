@@ -9,45 +9,41 @@ import LifetimeTracker
 import UIKit
 
 final class AddRecipeCoordinator: Destination {
-    var viewModel: AddRecipeViewModel
+    let viewModel: AddRecipeViewModel
+    weak var parentCoordinator: Destination?
 
     init(viewModel: AddRecipeViewModel) {
         self.viewModel = viewModel
         super.init()
-
 #if DEBUG
         trackLifetime()
 #endif
     }
 
     override func render() -> UIViewController {
-        print("Rendering AddRecipeVC")
         let addRecipeVC = AddRecipeVC(coordinator: self, viewModel: viewModel)
+        addRecipeVC.destination = self
+        addRecipeVC.hidesBottomBarWhenPushed = true
         return addRecipeVC
     }
 
-    func pushVC(for route: AddRecipeRoute) {
+    func navigateTo(_ route: AddRecipeRoute) {
         let viewModel = viewModel
         switch route {
         case .ingredientsList:
             let controller = AddRecipeIngredientsVC(viewModel: viewModel, coordinator: self)
             navigator?.presentScreen(controller)
-//            navigationController.pushViewController(controller, animated: true)
         case .addIngredient:
             let controller = AddIngredientSheetVC(viewModel: viewModel, coordinator: self)
-            navigator?.presentScreen(controller)
+            navigator?.presentSheet(controller)
 
-//            navigationController.present(controller, animated: true)
         case .instructions:
             let controller = AddRecipeInstructionsVC(viewModel: viewModel, coordinator: self)
-//            navigationController.pushViewController(controller, animated: true)
             navigator?.presentScreen(controller)
 
         case .addInstruction:
             let controller = AddInstructionSheetVC(viewModel: viewModel, coordinator: self)
-            navigator?.presentScreen(controller)
-
-//            navigationController.present(controller, animated: true)
+            navigator?.presentSheet(controller)
         }
     }
 
@@ -55,19 +51,19 @@ final class AddRecipeCoordinator: Destination {
         let alertVC = ValidationAlertVC(title: title, message: message)
         alertVC.modalPresentationStyle = .overFullScreen
         alertVC.modalTransitionStyle = .crossDissolve
-        navigator?.present(alert: alertVC)
-//        navigationController.present(alertVC, animated: true, completion: nil)
+        navigator?.presentAlert(alertVC)
     }
 
 //
     func dismissVC() {
         navigator?.dismissAlert()
-//        navigationController.dismiss(animated: true)
     }
 
     func dismissVCStack() {
-        navigator?.pop()
-//        navigationController.popToRootViewController(animated: true)
+//        self.navigator?.popUpTo { destination in
+//            destination is RecipesListCoordinator
+//        }
+        navigator?.popUpToRoot()
     }
 }
 

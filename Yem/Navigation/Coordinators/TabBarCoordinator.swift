@@ -1,27 +1,98 @@
-////
-////  MainCoordinator.swift
-////  Yem
-////
-////  Created by Adam Zapiór on 02/01/2024.
-////
+//
+//  TabBarCoordinator.swift
+//  Yem
+//
+//
 
 import FirebaseAuth
 import LifetimeTracker
 import UIKit
 
-final class TabBarCoordinator: UITabBarController {
-//    var childCoordinators: [Coordinator] = [] // 4delete
-    
+
+//class TabBarDestination: Destination {
+//    let currentUser: UserModel
+//    let dataRepository: DataRepository
+//    let authManager: AuthenticationManager
+//
+//    let parentCoordinator: AppCoordinator
+//    weak var tabBarCoordinator: TabBarCoordinator?
+//
+////    override func render() -> UIViewController {
+////        navigator?.setNavigationBarHidden()
+////        let tabBarCoordinator = TabBarCoordinator(currentUser: currentUser, dataRepository: dataRepository, authManager: authManager)
+////        tabBarCoordinator.parentCoordinator = parentCoordinator
+////        return tabBarCoordinator
+//    ////        return TabBarCoordinator(currentUser: currentUser, dataRepository: dataRepository, authManager: authManager)
+////    }
+//
+//    override func render() -> UIViewController {
+////        tabBarCoordinator?.navigator?.setNavigationBarHidden()
+//        return tabBarCoordinator ?? UIViewController()
+//    }
+//
+//    init(currentUser: UserModel, dataRepository: DataRepository, authManager: AuthenticationManager, parentCoordinator: AppCoordinator, tabBarCoordinator: TabBarCoordinator) {
+//        self.currentUser = currentUser
+//        self.dataRepository = dataRepository
+//        self.authManager = authManager
+//        self.parentCoordinator = parentCoordinator
+//
+//        self.tabBarCoordinator = tabBarCoordinator
+//
+//        super.init()
+//        #if DEBUG
+//            trackLifetime()
+//        #endif
+//    }
+//}
+
+//#if DEBUG
+//    extension TabBarDestination: LifetimeTrackable {
+//        class var lifetimeConfiguration: LifetimeConfiguration {
+//            return LifetimeConfiguration(maxCount: 1, groupName: "Coordinators")
+//        }
+//    }
+//#endif
+
+protocol DestinationProviding {
+    func render() -> UIViewController
+}
+
+final class TabBarCoordinatorAdapter: Destination {
+    private weak var coordinator: TabBarCoordinator?
+
+    init(coordinator: TabBarCoordinator) {
+        self.coordinator = coordinator
+        super.init()
+#if DEBUG
+        trackLifetime()
+#endif
+
+        print("DEBUG: TabBarCoordinatorAdapter init")
+    }
+
+    deinit {
+        print("DEBUG: TabBarCoordinatorAdapter deinit")
+    }
+
+    override func render() -> UIViewController {
+        return coordinator!.render()
+    }
+}
+
+final class TabBarCoordinator: UITabBarController, DestinationProviding {
+    func render() -> UIViewController {
+        return self
+    }
+
     weak var parentCoordinator: AppCoordinator?
 
     var recipesNavigator: Navigator?
     var shoppingNavigator: Navigator?
 
-    weak var navigator: Navigator?
     let dataRepository: DataRepository
     let authManager: AuthenticationManager
 
-    lazy var recipesListCoordinator = RecipesListCoordinator(parentCoordinator: self, repository: dataRepository, viewModel: RecipesListVM(repository: dataRepository), authManager: authManager)
+    lazy var recipesListCoordinator = RecipesListCoordinator(repository: dataRepository, viewModel: RecipesListVM(repository: dataRepository), authManager: authManager)
     lazy var shopingListCoordinator = ShopingListCoordinator(parentCoordinator: self, repository: dataRepository, viewModel: ShopingListVM(repository: dataRepository))
 
     init(currentUser: UserModel, dataRepository: DataRepository, authManager: AuthenticationManager) {
@@ -42,18 +113,14 @@ final class TabBarCoordinator: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Inicjalizacja RecipesListCoordinator
-        let recipesCoordinator = RecipesListCoordinator(parentCoordinator: self, repository: dataRepository, viewModel: RecipesListVM(repository: dataRepository), authManager: authManager)
-        recipesNavigator = Navigator(rootViewController: recipesCoordinator.render())
+        let recipesCoordinator = RecipesListCoordinator(repository: dataRepository, viewModel: RecipesListVM(repository: dataRepository), authManager: authManager)
+        recipesNavigator = Navigator(start: recipesCoordinator)
         recipesCoordinator.navigator = recipesNavigator
-//        recipesCoordinator.tabNavigator = recipesNavigator
 
-        // Inicjalizacja innego koordynatora dla drugiego tabu
         let shoppingCoordinator = ShopingListCoordinator(parentCoordinator: self, repository: dataRepository, viewModel: ShopingListVM(repository: dataRepository))
-        shoppingNavigator = Navigator(rootViewController: shoppingCoordinator.render())
-        shoppingCoordinator.tabNavigator = shoppingNavigator
+        shoppingNavigator = Navigator(start: shoppingCoordinator)
+        shoppingCoordinator.navigator = shoppingNavigator
 
-        // Dodanie widoków do tab bar controllera
         if let recipesNav = recipesNavigator?.navigationController, let shopingNav = shoppingNavigator?.navigationController {
             recipesNav.tabBarItem = UITabBarItem(title: "Recipes", image: UIImage(systemName: "book"), selectedImage: nil)
             shopingNav.tabBarItem = UITabBarItem(title: "Shopping", image: UIImage(systemName: "cart"), selectedImage: nil)
@@ -62,35 +129,25 @@ final class TabBarCoordinator: UITabBarController {
     }
 
     func clearAllNavigators() {
-        // Zwolnienie kontrolerów związanych z navigatorami
         recipesNavigator?.clearAllViewControllers()
         shoppingNavigator?.clearAllViewControllers()
 
-        // Ustawienie navigatorów na nil, aby umożliwić dealokację
         recipesNavigator = nil
         shoppingNavigator = nil
-        
+
         print(recipesNavigator.debugDescription)
         print(shoppingNavigator.debugDescription)
-        print("IS THAT WORKING")
-
-    }
-
-    func resetToOnboarding() {
-//        guard let appCoordinator = UIApplication.shared.delegate as? SceneDelegate?.appCoordinator else {
-//            return
-//        }
-//        appCoordinator.navigateToOnboarding()
-    }
-    
-    func resetToInitialView() {
-        print("resetToInitialView from TabBarCoordinator")
-        if parentCoordinator == nil {
-            print("PARENT IS NIL")
-        }
-        parentCoordinator?.resetToInitialView()
+        print("DEBUG: Navigators cleared: recipesNavigator - \(recipesNavigator.debugDescription), shoppingNavigator - \(shoppingNavigator.debugDescription)")
     }
 }
+
+#if DEBUG
+extension TabBarCoordinatorAdapter: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "Coordinators")
+    }
+}
+#endif
 
 #if DEBUG
 extension TabBarCoordinator: LifetimeTrackable {
