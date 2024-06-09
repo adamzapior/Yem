@@ -43,7 +43,6 @@ final class UnloggedOnboardingVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("xd2")
         setupUI()
         setupDelegateAndDataSource()
         
@@ -52,6 +51,7 @@ final class UnloggedOnboardingVC: UIViewController {
         
         loginButton.tag = 1
         registerButton.tag = 2
+        
     }
 
     // MARK: - UI Setup
@@ -64,6 +64,7 @@ final class UnloggedOnboardingVC: UIViewController {
         view.addSubview(registerButton)
         
         image.image = UIImage(named: "onboarding-image")
+        
         image.sizeToFit()
         image.contentMode = .scaleAspectFill
         image.layer.cornerRadius = 24
@@ -132,3 +133,4 @@ extension UnloggedOnboardingVC: LifetimeTrackable {
     }
 }
 #endif
+

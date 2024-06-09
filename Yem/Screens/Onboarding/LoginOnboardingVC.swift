@@ -46,6 +46,7 @@ final class LoginOnboardingVC: UIViewController {
         setupUI()
         setupDelegate()
         setupTag()
+        setupTextfieldBehaviour()
 
         loginButton.delegate = self
         
@@ -69,7 +70,7 @@ final class LoginOnboardingVC: UIViewController {
         textLabel.text = "Login to app"
         loginLabel.text = "Login"
         passwordLabel.text = "Password"
-
+        
         textLabel.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.centerX.equalToSuperview()
@@ -101,6 +102,12 @@ final class LoginOnboardingVC: UIViewController {
             make.top.equalTo(passwordTextfield.snp.bottom).offset(36)
             make.leading.trailing.equalToSuperview().inset(12)
         }
+    }
+    
+    private func setupTextfieldBehaviour() {
+        loginTextfield.textField.autocapitalizationType = .none
+        passwordTextfield.textField.autocapitalizationType = .none
+        passwordTextfield.textField.isSecureTextEntry = true
     }
 }
 

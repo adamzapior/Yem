@@ -31,9 +31,9 @@ final class Navigator {
         navigationController.pushViewController(destination.render(), animated: true)
     }
 
-    func presentScreen(_ screen: UIViewController) {
+    func presentScreen(_ screen: UIViewController, isAnimated: Bool = true) {
         print("DEBUG: Navigating to UIViewController: \(screen)")
-        navigationController.pushViewController(screen, animated: true)
+        navigationController.pushViewController(screen, animated: isAnimated)
     }
 
     func pop() {

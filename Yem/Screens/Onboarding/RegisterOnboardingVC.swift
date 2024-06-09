@@ -45,6 +45,7 @@ final class RegisterOnboardingVC: UIViewController {
         setupUI()
         setupDelegate()
         setupTag()
+        setupTextfieldBehaviour() 
 
         loginButton.delegate = self
     }
@@ -99,6 +100,12 @@ final class RegisterOnboardingVC: UIViewController {
             make.top.equalTo(passwordTextfield.snp.bottom).offset(36)
             make.leading.trailing.equalToSuperview().inset(12)
         }
+    }
+    
+    private func setupTextfieldBehaviour() {
+        loginTextfield.textField.autocapitalizationType = .none
+        passwordTextfield.textField.autocapitalizationType = .none
+        passwordTextfield.textField.isSecureTextEntry = true
     }
 }
 

@@ -56,7 +56,7 @@ final class OnboardingVM {
             user = userModel
             return userModel
         } catch {
-            print(error)
+            print(error.localizedDescription)
             throw error
         }
     }

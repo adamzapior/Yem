@@ -28,7 +28,6 @@ final class OnboardingCoordinator: Destination {
     override func render() -> UIViewController {
         let controller = UnloggedOnboardingVC(viewModel: viewModel, coordinator: self)
         controller.destination = self
-//        navigator?.setNavigationBarHidden()
         return controller
     }
 
@@ -36,10 +35,10 @@ final class OnboardingCoordinator: Destination {
         switch route {
         case .login:
             let controller = LoginOnboardingVC(coordinator: self, viewModel: viewModel)
-            navigator?.presentScreen(controller)
+            navigator?.presentScreen(controller, isAnimated: false)
         case .register:
             let controller = RegisterOnboardingVC(coordinator: self, viewModel: viewModel)
-            navigator?.presentScreen(controller)
+            navigator?.presentScreen(controller, isAnimated: false)
         case .resetPassword:
             let controller = ResetPasswordVC(coordinator: self, viewModel: viewModel)
             navigator?.presentScreen(controller)
