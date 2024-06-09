@@ -48,14 +48,7 @@ final class LoginOnboardingVC: UIViewController {
         setupTag()
 
         loginButton.delegate = self
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated) 
-
-//        if let user = viewModel.user {
-//            coordinator.coordinatorDidFinish(user: user)
-//        }
+        
     }
 
     private func setupUI() {
@@ -192,8 +185,6 @@ extension LoginOnboardingVC: TextfieldWithIconDelegate, ActionButtonDelegate {
                 let userModel = try await viewModel.loginUser(email: viewModel.login, password: viewModel.password)
                 await MainActor.run {
                     coordinator.navigateToApp(user: userModel)
-//                    coordinator.registerFinished(user: userModel)
-//                    coordinator.coordinatorDidFinish(user: userModel)
                 }
             } catch {
                 // Obsługa błędów, np. wyświetlenie alertu użytkownikowi
@@ -202,8 +193,6 @@ extension LoginOnboardingVC: TextfieldWithIconDelegate, ActionButtonDelegate {
         }
     }
 }
-
-// MARK: - Navigation
 
 #if DEBUG
 extension LoginOnboardingVC: LifetimeTrackable {

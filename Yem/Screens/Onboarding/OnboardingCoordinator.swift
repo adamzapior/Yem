@@ -28,7 +28,7 @@ final class OnboardingCoordinator: Destination {
     override func render() -> UIViewController {
         let controller = UnloggedOnboardingVC(viewModel: viewModel, coordinator: self)
         controller.destination = self
-        navigator?.setNavigationBarHidden()
+//        navigator?.setNavigationBarHidden()
         return controller
     }
 
