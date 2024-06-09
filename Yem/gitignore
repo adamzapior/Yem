@@ -1,0 +1,9 @@
+## build
+
+build/
+DerivedData/
+
+## firebase
+
+GoogleService-Info.plist
+

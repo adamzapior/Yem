@@ -10,10 +10,10 @@ import UIKit
 final class DualOptionAlertVC: UIViewController {
     private let containerView = UIView()
 
-    private let titleLabel = ReusableTextLabel(fontStyle: .title3, fontWeight: .semibold, textColor: .ui.primaryText, textAlignment: .center)
-    private let errorLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText, textAlignment: .center)
-    private let okButton = MainActionButton(title: "OK", backgroundColor: .ui.theme)
-    private let cancelButton = MainActionButton(title: "Cancel", backgroundColor: .ui.cancelBackground ?? .red)
+    private let titleLabel = TextLabel(fontStyle: .title3, fontWeight: .semibold, textColor: .ui.primaryText, textAlignment: .center)
+    private let errorLabel = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText, textAlignment: .center)
+    private let okButton = ActionButton(title: "OK", backgroundColor: .ui.theme)
+    private let cancelButton = ActionButton(title: "Cancel", backgroundColor: .ui.cancelBackground ?? .red)
 
     private var alertTitle: String?
     private var message: String?
@@ -48,7 +48,7 @@ final class DualOptionAlertVC: UIViewController {
         containerView.backgroundColor = .systemBackground
         containerView.layer.cornerRadius = 20
         containerView.layer.borderWidth = 1
-        containerView.layer.borderColor = UIColor.ui.secondaryText?.cgColor
+        containerView.layer.borderColor = UIColor.ui.secondaryText.cgColor
 
         containerView.snp.makeConstraints { make in
             make.centerX.centerY.equalToSuperview()

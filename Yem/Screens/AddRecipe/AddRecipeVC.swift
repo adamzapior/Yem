@@ -6,15 +6,15 @@
 //
 
 import Combine
+import LifetimeTracker
 import SnapKit
 import UIKit
-import LifetimeTracker
-
 
 final class AddRecipeVC: UIViewController {
     // MARK: - Properties
     
-    let coordinator: AddRecipeCoordinator
+//    let coordinator: AddRecipeCoordinator
+    weak var coordinator: AddRecipeCoordinator?
     let viewModel: AddRecipeViewModel
     
     // MARK: - View properties
@@ -39,12 +39,12 @@ final class AddRecipeVC: UIViewController {
     private let addPhotoView = PhotoView()
     private let addPhotoImagePicker = UIImagePickerController()
    
-    private var nameTextfield = TextfieldWithIconRow(iconImage: "info.square", placeholderText: "Enter your recipe name*", textColor: .ui.secondaryText)
-    private var difficultyCell = PickerWithIconRow(iconImage: "puzzlepiece.extension", textOnButton: "Select difficulty*")
-    private var servingCell = PickerWithIconRow(iconImage: "person", textOnButton: "Select servings count*")
-    private var prepTimeCell = PickerWithIconRow(iconImage: "timer", textOnButton: "Select prep time*")
-    private var spicyCell = PickerWithIconRow(iconImage: "leaf", textOnButton: "Select spicy*")
-    private var categoryCell = PickerWithIconRow(iconImage: "book", textOnButton: "Select category*")
+    private var nameTextfield = TextfieldWithIcon(iconImage: "info.square", placeholderText: "Enter your recipe name*", textColor: .ui.secondaryText)
+    private var difficultyPicker = AddPicker(iconImage: "puzzlepiece.extension", textOnButton: "Select difficulty*")
+    private var servingPicker = AddPicker(iconImage: "person", textOnButton: "Select servings count*")
+    private var prepTimePicker = AddPicker(iconImage: "timer", textOnButton: "Select prep time*")
+    private var spicyPicker = AddPicker(iconImage: "leaf", textOnButton: "Select spicy*")
+    private var categoryPicker = AddPicker(iconImage: "book", textOnButton: "Select category*")
     
     private lazy var difficultyPickerView = UIPickerView()
     private lazy var servingsPickerView = UIPickerView()
@@ -66,11 +66,20 @@ final class AddRecipeVC: UIViewController {
         self.coordinator = coordinator
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        
-#if DEBUG
+
+     #if DEBUG
         trackLifetime()
-#endif
+     #endif
     }
+    
+//    init(viewModel: AddRecipeViewModel) {
+//        self.viewModel = viewModel
+//        super.init(nibName: nil, bundle: nil)
+//        
+//#if DEBUG
+//        trackLifetime()
+//#endif
+//    }
     
     @available(*, unavailable)
     required init?(coder: NSCoder) {
@@ -83,7 +92,7 @@ final class AddRecipeVC: UIViewController {
         view.backgroundColor = .systemBackground
         title = "Details"
         viewModel.delegateDetails = self
-        viewModel.loadData()
+        viewModel.loadDataToEditor()
 
         setupNavigationBarButtons()
         
@@ -94,7 +103,10 @@ final class AddRecipeVC: UIViewController {
     
         setupAddPhotoView()
         configureRecipeDataStackView()
-        setupDelegateOfViewItems()
+        
+        setupTag()
+        setupDelegate()
+        setupDataSource()
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
@@ -102,7 +114,7 @@ final class AddRecipeVC: UIViewController {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        coordinator.coordinatorDidFinish()
+//        coordinator.coordinatorDidFinish() 4Delete
     }
     
     // MARK: - UI Setup
@@ -144,9 +156,7 @@ final class AddRecipeVC: UIViewController {
             make.leading.trailing.equalToSuperview()
         }
     }
-    
-    // Add photo UI
-    
+        
     private func setupAddPhotoView() {
         contentView.addSubview(addPhotoView)
     
@@ -155,24 +165,29 @@ final class AddRecipeVC: UIViewController {
             make.leading.trailing.equalToSuperview().inset(18)
             make.height.equalTo(200)
         }
+        
+        addPhotoView.delegate = self
+        
+        // picker delegate
+        addPhotoImagePicker.delegate = self
+        addPhotoImagePicker.allowsEditing = false
+        addPhotoImagePicker.mediaTypes = ["public.image"]
     }
     
     private func configureRecipeDataStackView() {
         contentView.addSubview(recipeDataStack)
         recipeDataStack.addArrangedSubview(nameTextfield)
-        recipeDataStack.addArrangedSubview(difficultyCell)
-        recipeDataStack.addArrangedSubview(servingCell)
-        recipeDataStack.addArrangedSubview(prepTimeCell)
-        recipeDataStack.addArrangedSubview(spicyCell)
-        recipeDataStack.addArrangedSubview(categoryCell)
-
+        recipeDataStack.addArrangedSubview(difficultyPicker)
+        recipeDataStack.addArrangedSubview(servingPicker)
+        recipeDataStack.addArrangedSubview(prepTimePicker)
+        recipeDataStack.addArrangedSubview(spicyPicker)
+        recipeDataStack.addArrangedSubview(categoryPicker)
+        
         recipeDataStack.snp.makeConstraints { make in
             make.top.equalTo(addPhotoView.snp.bottom).offset(18)
             make.leading.trailing.equalToSuperview().inset(18)
         }
     }
-
-//    /// https://www.youtube.com/watch?v=9Fy0Gc1l3VE
     
     // MARK: - Pop Up Picker method
 
@@ -198,14 +213,14 @@ final class AddRecipeVC: UIViewController {
             switch pickerView.tag {
             case 1:
                 let selectedDifficulty = self.viewModel.difficultyRowArray[selectedRow]
-                self.difficultyCell.textOnButton.text = selectedDifficulty.displayName
-                self.difficultyCell.textOnButton.textColor = .ui.primaryText
+                self.difficultyPicker.textOnButton.text = selectedDifficulty.displayName
+                self.difficultyPicker.textOnButton.textColor = .ui.primaryText
                 self.viewModel.difficulty = selectedDifficulty.displayName
             case 2:
                 
                 let selectedServing = self.viewModel.servingRowArray[selectedRow]
-                self.servingCell.textOnButton.text = "\(selectedServing.description) (serving)"
-                self.servingCell.textOnButton.textColor = .ui.primaryText
+                self.servingPicker.textOnButton.text = "\(selectedServing.description) (serving)"
+                self.servingPicker.textOnButton.textColor = .ui.primaryText
                 self.viewModel.serving = selectedServing.description
                 
             case 3:
@@ -230,18 +245,18 @@ final class AddRecipeVC: UIViewController {
                 if self.viewModel.prepTimeMinutes != "0", self.viewModel.prepTimeMinutes != "" {
                     minutes = "\(self.viewModel.prepTimeMinutes) min"
                 }
-                self.prepTimeCell.textOnButton.text = "\(hours) \(minutes)".trimmingCharacters(in: .whitespaces)
-                self.prepTimeCell.textOnButton.textColor = .ui.primaryText
+                self.prepTimePicker.textOnButton.text = "\(hours) \(minutes)".trimmingCharacters(in: .whitespaces)
+                self.prepTimePicker.textOnButton.textColor = .ui.primaryText
 
             case 4:
                 let selectedSpicy = self.viewModel.spicyRowArray[selectedRow]
-                self.spicyCell.textOnButton.text = selectedSpicy.displayName
-                self.spicyCell.textOnButton.textColor = .ui.primaryText
+                self.spicyPicker.textOnButton.text = selectedSpicy.displayName
+                self.spicyPicker.textOnButton.textColor = .ui.primaryText
                 self.viewModel.spicy = selectedSpicy.displayName
             case 5:
                 let selectedCategory = self.viewModel.categoryRowArray[selectedRow]
-                self.categoryCell.textOnButton.text = selectedCategory.displayName
-                self.categoryCell.textOnButton.textColor = .ui.primaryText
+                self.categoryPicker.textOnButton.text = selectedCategory.displayName
+                self.categoryPicker.textOnButton.textColor = .ui.primaryText
                 self.viewModel.category = selectedCategory.displayName
             default:
                 break
@@ -256,78 +271,6 @@ final class AddRecipeVC: UIViewController {
     
     @objc private func dismissKeyboard() {
         view.endEditing(true)
-    }
-}
-
-// MARK: - Tags & DataSource
-
-extension AddRecipeVC {
-    private func setupDelegateOfViewItems() {
-        setupAddPhotoPicker()
-        setupNameTextfield()
-        setupDifficultyCell()
-        setupServingCell()
-        setupPrepTimeCell()
-        setupSpicyCell()
-        setupCategoryCell()
-    }
-    
-    private func setupAddPhotoPicker() {
-        addPhotoView.delegate = self
-        
-        // picker delegate
-        addPhotoImagePicker.delegate = self
-        addPhotoImagePicker.allowsEditing = false
-        addPhotoImagePicker.mediaTypes = ["public.image"]
-    }
-    
-    private func setupNameTextfield() {
-        nameTextfield.delegate = self
-    }
-
-    private func setupDifficultyCell() {
-        difficultyCell.tag = 1
-        difficultyCell.delegate = self
-        
-        difficultyPickerView.tag = 1
-        difficultyPickerView.delegate = self
-        difficultyPickerView.dataSource = self
-    }
-    
-    private func setupServingCell() {
-        servingCell.tag = 2
-        servingCell.delegate = self
-        
-        servingsPickerView.tag = 2
-        servingsPickerView.delegate = self
-        servingsPickerView.dataSource = self
-    }
-    
-    private func setupPrepTimeCell() {
-        prepTimeCell.tag = 3
-        prepTimeCell.delegate = self
-        
-        prepTimePickerView.tag = 3
-        prepTimePickerView.delegate = self
-        prepTimePickerView.dataSource = self
-    }
-    
-    private func setupSpicyCell() {
-        spicyCell.tag = 4
-        spicyCell.delegate = self
-        
-        spicyPickerView.tag = 4
-        spicyPickerView.delegate = self
-        spicyPickerView.dataSource = self
-    }
-
-    private func setupCategoryCell() {
-        categoryCell.tag = 5
-        categoryCell.delegate = self
-        
-        categoryPickerView.tag = 5
-        categoryPickerView.delegate = self
-        categoryPickerView.dataSource = self
     }
 }
 
@@ -352,20 +295,55 @@ extension AddRecipeVC: AddPhotoViewDelegate, UIImagePickerControllerDelegate & U
 
 // MARK: - Textfield delegate
 
-extension AddRecipeVC: TextfieldWithIconRowDelegate {
-    func textFieldDidChange(_ textfield: TextfieldWithIconRow, didUpdateText text: String) {
+extension AddRecipeVC: TextfieldWithIconDelegate, AddPickerDelegate {
+    func setupTag() {
+        difficultyPicker.tag = 1
+        difficultyPickerView.tag = 1
+        
+        servingPicker.tag = 2
+        servingsPickerView.tag = 2
+
+        prepTimePicker.tag = 3
+        prepTimePickerView.tag = 3
+
+        spicyPicker.tag = 4
+        spicyPickerView.tag = 4
+
+        categoryPicker.tag = 5
+        categoryPickerView.tag = 5
+    }
+    
+    func setupDelegate() {
+        nameTextfield.delegate = self
+        
+        servingPicker.delegate = self
+        prepTimePicker.delegate = self
+        spicyPicker.delegate = self
+
+        difficultyPicker.delegate = self
+        difficultyPickerView.delegate = self
+        categoryPicker.delegate = self
+        categoryPickerView.delegate = self
+    }
+    
+    func setupDataSource() {
+        difficultyPickerView.dataSource = self
+        categoryPickerView.dataSource = self
+    }
+
+    func textFieldDidChange(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
         if let text = textfield.textField.text {
             viewModel.recipeTitle = text
         }
     }
     
-    func textFieldDidBeginEditing(_ textfield: TextfieldWithIconRow, didUpdateText text: String) {
+    func textFieldDidBeginEditing(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
         if let text = textfield.textField.text {
             viewModel.recipeTitle = text
         }
     }
     
-    func textFieldDidEndEditing(_ textfield: TextfieldWithIconRow, didUpdateText text: String) {
+    func textFieldDidEndEditing(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
         if let text = textfield.textField.text {
             viewModel.recipeTitle = text
         }
@@ -375,13 +353,9 @@ extension AddRecipeVC: TextfieldWithIconRowDelegate {
         textField.resignFirstResponder() // Ukrywa klawiaturę
         return true
     }
-}
-
-// MARK: - Button delegate/dataSource
-
-extension AddRecipeVC: PickerWithIconRowDelegate {
-    func pickerWithIconRowTappped(_ cell: PickerWithIconRow) {
-        switch cell.tag {
+    
+    func pickerTapped(item: AddPicker) {
+        switch item.tag {
         case 1:
             popUpPicker(for: difficultyPickerView, title: "Select difficulty")
         case 2:
@@ -437,13 +411,13 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
         switch pickerView.tag {
         case 1: // For difficulty
             let selectedDifficulty = viewModel.difficultyRowArray[row]
-            difficultyCell.textOnButton.text = selectedDifficulty.displayName
-            difficultyCell.textOnButton.textColor = .ui.primaryText
+            difficultyPicker.textOnButton.text = selectedDifficulty.displayName
+            difficultyPicker.textOnButton.textColor = .ui.primaryText
             viewModel.difficulty = selectedDifficulty.displayName
         case 2:
             let selectedServing = viewModel.servingRowArray[row]
-            servingCell.textOnButton.text = "\(selectedServing.description) (serving)"
-            servingCell.textOnButton.textColor = .ui.primaryText
+            servingPicker.textOnButton.text = "\(selectedServing.description) (serving)"
+            servingPicker.textOnButton.textColor = .ui.primaryText
             viewModel.serving = selectedServing.description
         case 3:
             if component == 0 {
@@ -454,8 +428,8 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
                 viewModel.prepTimeMinutes = selectedMinutes
             }
             
-            var hours: String = ""
-            var minutes: String = ""
+            var hours = ""
+            var minutes = ""
             
             /// hours for '2 - 48'
             if viewModel.prepTimeHours != "0" &&
@@ -477,17 +451,17 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
                 minutes = "\(viewModel.prepTimeMinutes) min"
             }
             
-            prepTimeCell.textOnButton.text = "\(hours) \(minutes)"
-            prepTimeCell.textOnButton.textColor = .ui.primaryText
+            prepTimePicker.textOnButton.text = "\(hours) \(minutes)"
+            prepTimePicker.textOnButton.textColor = .ui.primaryText
         case 4:
             let selectedSpicy = viewModel.spicyRowArray[row]
-            spicyCell.textOnButton.text = selectedSpicy.displayName
-            spicyCell.textOnButton.textColor = .ui.primaryText
+            spicyPicker.textOnButton.text = selectedSpicy.displayName
+            spicyPicker.textOnButton.textColor = .ui.primaryText
             viewModel.spicy = selectedSpicy.displayName
         case 5:
             let selectedCategory = viewModel.categoryRowArray[row]
-            categoryCell.textOnButton.text = selectedCategory.displayName
-            categoryCell.textOnButton.textColor = .ui.primaryText
+            categoryPicker.textOnButton.text = selectedCategory.displayName
+            categoryPicker.textOnButton.textColor = .ui.primaryText
             viewModel.category = selectedCategory.displayName
         default:
             break
@@ -543,18 +517,18 @@ extension AddRecipeVC: UIPickerViewDelegate, UIPickerViewDataSource {
 }
 
 extension AddRecipeVC: AddRecipeVCDelegate {
-    func loadData() {
+    func loadDataToEditor() {
         if let image = viewModel.selectedImage {
             addPhotoView.updatePhoto(with: image)
         }
         
         nameTextfield.textField.text = viewModel.recipeTitle
         
-        servingCell.textOnButton.text = "\(viewModel.serving) (serving)"
-        servingCell.textOnButton.textColor = .ui.primaryText
+        servingPicker.textOnButton.text = "\(viewModel.serving) (serving)"
+        servingPicker.textOnButton.textColor = .ui.primaryText
         
-        difficultyCell.textOnButton.text = viewModel.difficulty
-        difficultyCell.textOnButton.textColor = .ui.primaryText
+        difficultyPicker.textOnButton.text = viewModel.difficulty
+        difficultyPicker.textOnButton.textColor = .ui.primaryText
         
         /// prep time cell
         var hours = ""
@@ -569,30 +543,30 @@ extension AddRecipeVC: AddRecipeVCDelegate {
         if viewModel.prepTimeMinutes != "0", viewModel.prepTimeMinutes != "" {
             minutes = "\(viewModel.prepTimeMinutes) min"
         }
-        prepTimeCell.textOnButton.text = "\(hours) \(minutes)".trimmingCharacters(in: .whitespaces)
-        prepTimeCell.textOnButton.textColor = .ui.primaryText
+        prepTimePicker.textOnButton.text = "\(hours) \(minutes)".trimmingCharacters(in: .whitespaces)
+        prepTimePicker.textOnButton.textColor = .ui.primaryText
         
-        spicyCell.textOnButton.text = viewModel.spicy
-        spicyCell.textOnButton.textColor = .ui.primaryText
+        spicyPicker.textOnButton.text = viewModel.spicy
+        spicyPicker.textOnButton.textColor = .ui.primaryText
         
-        categoryCell.textOnButton.text = viewModel.category
-        categoryCell.textOnButton.textColor = .ui.primaryText
+        categoryPicker.textOnButton.text = viewModel.category
+        categoryPicker.textOnButton.textColor = .ui.primaryText
     }
     
     func delegateDetailsError(_ type: ValidationErrorTypes) {
         switch type {
         case .recipeTitle:
-            nameTextfield.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
+            nameTextfield.setPlaceholderColor(.ui.placeholderError)
         case .servings:
-            servingCell.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
+            servingPicker.setPlaceholderColor(.ui.placeholderError)
         case .difficulty:
-            difficultyCell.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
+            difficultyPicker.setPlaceholderColor(.ui.placeholderError)
         case .prepTime:
-            prepTimeCell.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
+            prepTimePicker.setPlaceholderColor(.ui.placeholderError)
         case .spicy:
-            spicyCell.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
+            spicyPicker.setPlaceholderColor(.ui.placeholderError)
         case .category:
-            categoryCell.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
+            categoryPicker.setPlaceholderColor(.ui.placeholderError)
         case .ingredientName:
             break
         case .ingredientValue:
@@ -618,7 +592,7 @@ extension AddRecipeVC {
     }
 
     @objc func nextButtonTapped(_ sender: UIBarButtonItem) {
-        coordinator.pushVC(for: .ingredientsList)
+        coordinator!.navigateTo(.ingredientsList)
     }
 }
 

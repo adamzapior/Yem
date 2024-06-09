@@ -9,19 +9,25 @@ import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
+    var appCoordinator: AppCoordinator?
+    var navigator: Navigator?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
 
         let appWindow = UIWindow(frame: windowScene.coordinateSpace.bounds)
         appWindow.windowScene = windowScene
-        
-        let navigationController = UINavigationController()
-        navigationController.setNavigationBarHidden(true, animated: false)
-        let coordinator = AppCoordinator(navigationController: navigationController)
-        coordinator.start(animated: false)
 
-        appWindow.rootViewController = navigationController
+        // Tworzenie AppCoordinator
+        let appCoordinator = AppCoordinator()
+        self.appCoordinator = appCoordinator
+
+        // Tworzenie Navigator z AppCoordinator jako startowym destination
+        let navigator = Navigator(start: appCoordinator)
+        self.navigator = navigator
+        appCoordinator.navigator = navigator
+
+        navigator.attach(appWindow: appWindow)
         appWindow.makeKeyAndVisible()
 
         window = appWindow

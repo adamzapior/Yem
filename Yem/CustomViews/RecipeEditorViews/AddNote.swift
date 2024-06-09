@@ -7,21 +7,21 @@
 
 import UIKit
 
-protocol NoteWithIconRowDelegate: AnyObject {
-    func textFieldDidBeginEditing(_ textfield: NoteWithIconRow, didUpdateText text: String)
-    func textFieldDidChange(_ textfield: NoteWithIconRow, didUpdateText text: String)
-    func textFieldDidEndEditing(_ textfield: NoteWithIconRow, didUpdateText text: String)
+protocol AddNoteDelegate: AnyObject {
+    func textFieldDidBeginEditing(_ textfield: AddNote, didUpdateText text: String)
+    func textFieldDidChange(_ textfield: AddNote, didUpdateText text: String)
+    func textFieldDidEndEditing(_ textfield: AddNote, didUpdateText text: String)
 }
 
-final class NoteWithIconRow: UIView {
-    weak var delegate: NoteWithIconRowDelegate?
+final class AddNote: UIView {
+    weak var delegate: AddNoteDelegate?
     
     private var icon: IconImage!
     private var iconImage: String
-    private var nameOfRow = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText)
+    private var nameOfRow = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText)
     private var nameOfRowText: String
     private var textStyle: UIFont.TextStyle
-    private var placeholder = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
+    private var placeholder = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
     
     lazy var textField: UITextView = {
         let text = UITextView()
@@ -116,7 +116,7 @@ final class NoteWithIconRow: UIView {
 }
 
 
-extension NoteWithIconRow: UITextViewDelegate {
+extension AddNote: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
         delegate?.textFieldDidBeginEditing(self, didUpdateText: textView.text)
     }

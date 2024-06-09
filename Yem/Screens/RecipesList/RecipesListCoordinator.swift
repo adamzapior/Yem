@@ -8,81 +8,48 @@
 import LifetimeTracker
 import UIKit
 
-final class RecipesListCoordinator: ParentCoordinator, ChildCoordinator {
-    var parentCoordinator: TabBarCoordinator?
-    var childCoordinators = [Coordinator]()
-    var navigationController: UINavigationController
-    var viewControllerRef: UIViewController?
-    
-    lazy var rootViewController: UIViewController = .init()
+final class RecipesListCoordinator: Destination {
+    let authManager: AuthenticationManager
     let repository: DataRepository
     var viewModel: RecipesListVM
-    
-    init(parentCoordinator: TabBarCoordinator? = nil, repository: DataRepository, viewModel: RecipesListVM, navigationController: UINavigationController) {
-        self.parentCoordinator = parentCoordinator
+
+    init(repository: DataRepository, viewModel: RecipesListVM, authManager: AuthenticationManager) {
         self.repository = repository
         self.viewModel = viewModel
-        self.navigationController = navigationController
+        self.authManager = authManager
+        super.init()
 #if DEBUG
         trackLifetime()
 #endif
     }
-    
-    func start(animated: Bool = false) {
-        let recipesListController = RecipesListVC(coordinator: self, viewModel: viewModel)
-        recipesListController.viewModel = viewModel
-        
-        viewControllerRef = recipesListController
 
-        recipesListController.tabBarItem = UITabBarItem(title: "Recipes",
-                                                        image: UIImage(systemName: "book"),
-                                                        selectedImage: nil)
-        
-        navigationController.customPushViewController(viewController: recipesListController)
+    override func render() -> UIViewController {
+        let controller = RecipesListVC(coordinator: self, viewModel: viewModel)
+        controller.destination = self
+        return controller
     }
 
-    func coordinatorDidFinish() {
-        if let viewController = viewControllerRef as? DisposableViewController {
-            viewController.cleanUp()
-        }
-        if let index = childCoordinators.firstIndex(where: { $0 === self }) {
-            childCoordinators.remove(at: index)
-        }
-//        parentCoordinator?.childDidFinish(self)
-        
-        print("Coordinator did finish")
-    }
-    
-    func childDidFinish(_ child: Coordinator) {
-        if let index = childCoordinators.firstIndex(where: { $0 === child }) {
-            childCoordinators.remove(at: index)
-        }
-    }
-    
     // MARK: Navigation
-    
+
     func navigateToAddRecipeScreen() {
         let viewModel = AddRecipeViewModel(repository: repository)
-
-        let coordinator = AddRecipeCoordinator(navigationController: navigationController, viewModel: viewModel, parentCoordinator: self)
+        let coordinator = AddRecipeCoordinator(viewModel: viewModel)
         coordinator.parentCoordinator = self
-
-        coordinator.start(animated: true)
-        
-//        (navigationController).pushViewController(addRecipeVC, animated: true)
+        navigator?.presentDestination(coordinator)
     }
-    
+
     func navigateToRecipeDetail(with recipe: RecipeModel) {
         let viewModel = RecipeDetailsVM(recipe: recipe, repository: repository)
-        
-        let coordinator = RecipeDetailsCoordinator(navigationController: navigationController, parentCoordinator: self, viewModel: viewModel, recipe: recipe, repository: repository)
+        let coordinator = RecipeDetailsCoordinator(viewModel: viewModel, recipe: recipe, repository: repository)
         coordinator.parentCoordinator = self
+        navigator?.presentDestination(coordinator)
+    }
 
-        let detailsVC: () = coordinator.start(animated: true)
-//        detailsVC.hidesBottomBarWhenPushed = true
-        
-//        navigationController.popToViewController(detailsVC, animated: true)
-//        navigationController.pushViewController(detailsVC, animated: true)
+    func navigateToSettings() {
+        let viewModel = SettingsViewModel(authManager: authManager)
+        let coordinator = SettingsCoordinator(viewModel: viewModel)
+        coordinator.parentCoordinator = self
+        navigator?.presentDestination(coordinator)
     }
 }
 

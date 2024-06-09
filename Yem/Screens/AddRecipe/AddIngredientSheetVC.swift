@@ -5,9 +5,8 @@
 //  Created by Adam Zapiór on 16/12/2023.
 //
 
-import UIKit
 import LifetimeTracker
-
+import UIKit
 
 final class AddIngredientSheetVC: UIViewController {
     // MARK: - Properties
@@ -17,11 +16,11 @@ final class AddIngredientSheetVC: UIViewController {
     
     // MARK: - View properties
     
-    private let ingredientNameTextfield = TextfieldWithIconRow(backgroundColor: .ui.secondaryContainer, iconImage: "info.square", placeholderText: "Enter your igredient name*", textColor: .ui.secondaryText)
-    private let countTextfield = TextfieldWithIconRow(backgroundColor: .ui.secondaryContainer, iconImage: "bag.badge.plus", placeholderText: "Enter value*", textColor: .ui.secondaryText)
-    private let valueTypeCell = PickerWithIconRow(backgroundColor: .ui.secondaryContainer, iconImage: "note.text.badge.plus", textOnButton: "Select value type*")
-    private let addButton = MainActionButton(title: "Add", backgroundColor: .ui.addBackground!)
-    private let cancelButton = MainActionButton(title: "Cancel", backgroundColor: .ui.cancelBackground ?? .ui.theme)
+    private let ingredientNameTextfield = TextfieldWithIcon(backgroundColor: .ui.secondaryContainer, iconImage: "info.square", placeholderText: "Enter your igredient name*", textColor: .ui.secondaryText)
+    private let countTextfield = TextfieldWithIcon(backgroundColor: .ui.secondaryContainer, iconImage: "bag.badge.plus", placeholderText: "Enter value*", textColor: .ui.secondaryText)
+    private let valueTypeCell = AddPicker(backgroundColor: .ui.secondaryContainer, iconImage: "note.text.badge.plus", textOnButton: "Select value type*")
+    private let addButton = ActionButton(title: "Add", backgroundColor: .ui.addBackground)
+    private let cancelButton = ActionButton(title: "Cancel", backgroundColor: .ui.cancelBackground)
     
     private let valueTypePickerView = UIPickerView()
     
@@ -44,6 +43,8 @@ final class AddIngredientSheetVC: UIViewController {
     private let screenWidth = UIScreen.main.bounds.width - 10
     private let screenHeight = UIScreen.main.bounds.height / 2
     
+    let value: CGFloat = 0
+    
     // MARK: - Lifecycle
     
     init(viewModel: AddRecipeViewModel, coordinator: AddRecipeCoordinator) {
@@ -65,18 +66,21 @@ final class AddIngredientSheetVC: UIViewController {
         super.viewDidLoad()
         viewModel.delegateIngredientSheet = self
         
-        let smallDetentId = UISheetPresentationController.Detent.Identifier("small")
-        let smallDetent = UISheetPresentationController.Detent.custom(identifier: smallDetentId) { _ in
-            300
+        setupUI()
+        setupTag()
+        setupDelegate()
+        setupDataSource()
+        
+        let contentHeight = calculateContentHeight()
+        let customDetentId = UISheetPresentationController.Detent.Identifier("customDetent")
+        let contentDetent = UISheetPresentationController.Detent.custom(identifier: customDetentId) { _ in
+            contentHeight
         }
         
         if let presentationController = presentationController as? UISheetPresentationController {
-            presentationController.detents = [smallDetent, smallDetent]
+            presentationController.detents = [contentDetent]
             presentationController.prefersGrabberVisible = true
         }
-        
-        setupUI()
-        configureComponents()
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
@@ -106,28 +110,38 @@ final class AddIngredientSheetVC: UIViewController {
         buttonsStackView.addArrangedSubview(addButton)
         buttonsStackView.addArrangedSubview(cancelButton)
     }
+    
+    private func calculateContentHeight() -> CGFloat {
+        let marginsAndSpacings: CGFloat = 124 // Suma górnych, dolnych marginesów oraz odstępów między elementami
+        let width = UIScreen.main.bounds.width - 24 // Załóż szerokość ekranu minus marginesy
+        let size = CGSize(width: width, height: UIView.layoutFittingCompressedSize.height)
+
+        let elementHeights: CGFloat = [
+            ingredientNameTextfield.systemLayoutSizeFitting(size).height,
+            countTextfield.systemLayoutSizeFitting(size).height,
+            valueTypeCell.systemLayoutSizeFitting(size).height,
+            addButton.systemLayoutSizeFitting(size).height,
+            cancelButton.systemLayoutSizeFitting(size).height
+        ].reduce(0, +)
+        
+        print(ingredientNameTextfield.systemLayoutSizeFitting(size).height)
+        print(countTextfield.systemLayoutSizeFitting(size).height)
+        print(valueTypeCell.systemLayoutSizeFitting(size).height)
+        print(addButton.systemLayoutSizeFitting(size).height)
+        print(cancelButton.systemLayoutSizeFitting(size).height)
+
+        return elementHeights + marginsAndSpacings
+    }
 }
 
 // MARK: - Delegate & data source items
 
-extension AddIngredientSheetVC {
-    private func configureComponents() {
-        configureTags()
-        configureDelegateAndDataSource()
-        configureKeyboardType()
-    }
-    
-    private func configureTags() {
-        /// textfields:
-        ingredientNameTextfield.tag = 1
-        countTextfield.tag = 2
-        
-        /// mainButton:
-        addButton.tag = 1
-        cancelButton.tag = 2
-    }
-    
-    private func configureDelegateAndDataSource() {
+extension AddIngredientSheetVC {}
+
+// MARK: Gestures: TextfieldWithIconCellDelegate & PickerButtonWithIconCellDelegate
+
+extension AddIngredientSheetVC: TextfieldWithIconDelegate, AddPickerDelegate, ActionButtonDelegate {
+    func setupDelegate() {
         /// textfields:
         ingredientNameTextfield.delegate = self
         countTextfield.delegate = self
@@ -140,18 +154,23 @@ extension AddIngredientSheetVC {
         cancelButton.delegate = self
         
         valueTypePickerView.delegate = self
+    }
+    
+    func setupTag() {
+        /// textfields:
+        ingredientNameTextfield.tag = 1
+        countTextfield.tag = 2
+        
+        /// mainButton:
+        addButton.tag = 1
+        cancelButton.tag = 2
+    }
+    
+    func setupDataSource() {
         valueTypePickerView.dataSource = self
     }
     
-    private func configureKeyboardType() {
-        countTextfield.keyboardType = .decimalPad
-    }
-}
-
-// MARK: Gestures: TextfieldWithIconCellDelegate & PickerButtonWithIconCellDelegate
-
-extension AddIngredientSheetVC: TextfieldWithIconRowDelegate, PickerWithIconRowDelegate, MainActionButtonDelegate {
-    func textFieldDidChange(_ textfield: TextfieldWithIconRow, didUpdateText text: String) {
+    func textFieldDidChange(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
         switch textfield.tag {
         case 1:
             if let text = textfield.textField.text {
@@ -165,7 +184,7 @@ extension AddIngredientSheetVC: TextfieldWithIconRowDelegate, PickerWithIconRowD
         }
     }
     
-    func textFieldDidBeginEditing(_ textfield: TextfieldWithIconRow, didUpdateText text: String) {
+    func textFieldDidBeginEditing(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
         switch textfield.tag {
         case 1:
             if let text = textfield.textField.text {
@@ -180,7 +199,7 @@ extension AddIngredientSheetVC: TextfieldWithIconRowDelegate, PickerWithIconRowD
     }
     
     // Textfield
-    func textFieldDidEndEditing(_ textfield: TextfieldWithIconRow, didUpdateText text: String) {
+    func textFieldDidEndEditing(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
         switch textfield.tag {
         case 1:
             if let text = textfield.textField.text {
@@ -199,13 +218,17 @@ extension AddIngredientSheetVC: TextfieldWithIconRowDelegate, PickerWithIconRowD
         return true
     }
     
+    private func configureKeyboardType() {
+        countTextfield.keyboardType = .decimalPad
+    }
+    
     // Picker
-    func pickerWithIconRowTappped(_ cell: PickerWithIconRow) {
+    func pickerTapped(item: AddPicker) {
         popUpPicker(for: valueTypePickerView, title: "Select ingredient value type")
     }
     
     // Add & Cancel buttons
-    func mainActionButtonTapped(_ cell: MainActionButton) {
+    func actionButtonTapped(_ cell: ActionButton) {
         switch cell.tag {
         case 1:
             /// add button
@@ -315,20 +338,40 @@ extension AddIngredientSheetVC: AddIngredientSheetVCDelegate {
         case .category:
             break
         case .ingredientName:
-            ingredientNameTextfield.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
+            ingredientNameTextfield.setPlaceholderColor(.ui.placeholderError)
         case .ingredientValue:
-            valueTypeCell.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
+            valueTypeCell.setPlaceholderColor(.ui.placeholderError)
         case .ingredientValueType:
-            valueTypeCell.setPlaceholderColor(.ui.placeholderError.unsafelyUnwrapped)
+            valueTypeCell.setPlaceholderColor(.ui.placeholderError)
         case .ingredientList:
             break
         case .instruction:
             break
         case .instructionList:
             break
-
         }
     }
+    
+//    private func calculateContentHeight() -> CGFloat {
+//        let marginsAndSpacings: CGFloat = 24 // Suma górnych, dolnych marginesów oraz odstępów między elementami
+//        let elementHeights: CGFloat = [
+//            ingredientNameTextfield.intrinsicContentSize.height,
+//            countTextfield.intrinsicContentSize.height,
+//            valueTypeCell.intrinsicContentSize.height,
+//            addButton.intrinsicContentSize.height,
+//            cancelButton.intrinsicContentSize.height
+//        ].reduce(0, +)
+//
+//        print(ingredientNameTextfield.intrinsicContentSize.height)
+//        print(countTextfield.intrinsicContentSize.height)
+//        print(valueTypeCell.intrinsicContentSize.height)
+//        print(addButton.intrinsicContentSize.height)
+//        print(cancelButton.intrinsicContentSize.height)
+//
+//        return elementHeights + marginsAndSpacings
+//    }
+    
+
 }
 
 #if DEBUG

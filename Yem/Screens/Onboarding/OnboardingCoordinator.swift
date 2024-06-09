@@ -5,55 +5,64 @@
 //  Created by Adam Zapiór on 20/03/2024.
 //
 
+import FirebaseAuth
 import Foundation
-import UIKit
 import LifetimeTracker
+import UIKit
 
-final class OnboardingCoordinator: ChildCoordinator {
-    var viewControllerRef: UIViewController?
-    var navigationController: UINavigationController
-
-    var parentCoordinator: AppCoordinator?
+final class OnboardingCoordinator: Destination {
     let authManager: AuthenticationManager
-    let viewModel: OnboardingVM
-        
-    init(navigationController: UINavigationController, parentCoordinator: AppCoordinator? = nil, authManager: AuthenticationManager, viewModel: OnboardingVM) {
-        self.navigationController = navigationController
-        self.parentCoordinator = parentCoordinator
+    let dataRepository: DataRepository
+    lazy var viewModel = OnboardingVM(authManager: authManager)
+    weak var parentCoordinator: AppCoordinator?
+
+    init(authManager: AuthenticationManager, dataRepository: DataRepository) {
         self.authManager = authManager
-        self.viewModel = viewModel
+        self.dataRepository = dataRepository
+        super.init()
 #if DEBUG
         trackLifetime()
 #endif
     }
-    
-    func start(animated: Bool) {
-        let viewModel = OnboardingVM()
-        let onboardingVC = UnloggedOnboardingVC(viewModel: viewModel, coordinator: self)
-        onboardingVC.viewModel = viewModel
-        
-        viewControllerRef = onboardingVC
 
-        navigationController.customPushViewController(viewController: onboardingVC)
+    override func render() -> UIViewController {
+        let controller = UnloggedOnboardingVC(viewModel: viewModel, coordinator: self)
+        controller.destination = self
+        return controller
     }
-    
-    func coordinatorDidFinish() {
-//        parentCoordinator?.logisterFinished(user: User(), animated: true)
-        
-        if let viewController = viewControllerRef as? DisposableViewController {
-            viewController.cleanUp()
+
+    func navigateTo(_ route: OnboardingRoute) {
+        switch route {
+        case .login:
+            let controller = LoginOnboardingVC(coordinator: self, viewModel: viewModel)
+            navigator?.presentScreen(controller, isAnimated: false)
+        case .register:
+            let controller = RegisterOnboardingVC(coordinator: self, viewModel: viewModel)
+            navigator?.presentScreen(controller, isAnimated: false)
+        case .resetPassword:
+            let controller = ResetPasswordVC(coordinator: self, viewModel: viewModel)
+            navigator?.presentScreen(controller)
+        case .privacyPolicy:
+            break
         }
-
-        parentCoordinator?.childDidFinish(self)
-        viewControllerRef = nil
-        parentCoordinator = nil
-        
     }
-    
-    func registerFinished() {
-        parentCoordinator?.logisterFinished(user: User(), animated: true)
 
+    func navigateToApp(user: UserModel) {
+        let tabBarCoordinator = TabBarCoordinator(currentUser: user, dataRepository: dataRepository, authManager: authManager)
+        tabBarCoordinator.parentCoordinator = parentCoordinator
+
+        let tabBarAdapter = TabBarCoordinatorAdapter(coordinator: tabBarCoordinator)
+
+        navigator?.setNavigationBarHidden()
+        navigator?.changeRoot(screen: tabBarAdapter)
     }
+}
+
+enum OnboardingRoute {
+    case login
+    case register
+    case resetPassword
+    case privacyPolicy
 }
 
 #if DEBUG

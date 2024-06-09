@@ -1,12 +1,14 @@
 import UIKit
 
 protocol TextfieldWithIconRowDelegate: AnyObject {
-    func textFieldDidBeginEditing(_ textfield: TextfieldWithIconRow, didUpdateText text: String)
-    func textFieldDidChange(_ textfield: TextfieldWithIconRow, didUpdateText text: String)
-    func textFieldDidEndEditing(_ textfield: TextfieldWithIconRow, didUpdateText text: String)
+    func setupDelegate()
+    func setupTag()
+    func textFieldDidBeginEditing(_ textfield: TextfieldWithIcon, didUpdateText text: String)
+    func textFieldDidChange(_ textfield: TextfieldWithIcon, didUpdateText text: String)
+    func textFieldDidEndEditing(_ textfield: TextfieldWithIcon, didUpdateText text: String)
 }
 
-final class TextfieldWithIconRow: UIView, UITextFieldDelegate {
+final class TextfieldWithIcon: UIView, UITextFieldDelegate {
     weak var delegate: TextfieldWithIconRowDelegate?
     
     private var icon: IconImage!

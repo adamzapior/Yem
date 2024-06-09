@@ -7,14 +7,19 @@
 
 import UIKit
 
-protocol PickerWithIconRowDelegate: AnyObject {
-    func pickerWithIconRowTappped(_ cell: PickerWithIconRow)
+protocol AddPickerDelegate: AnyObject {
+    func setupDelegate()
+    func setupDataSource()
+    func setupTag()
+    func pickerTapped(item: AddPicker)
 }
 
-final class PickerWithIconRow: UIView {
-    weak var delegate: PickerWithIconRowDelegate?
+final class AddPicker: UIView {
+    weak var delegate: AddPickerDelegate?
     
     // MARK: - Properties
+    
+    var minViewHeight: CGFloat?
     
     private var icon: IconImage!
     private var iconImage: String
@@ -39,8 +44,9 @@ final class PickerWithIconRow: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    convenience init(backgroundColor: UIColor? = UIColor.ui.primaryContainer, iconImage: String, textOnButton: String) {
+    convenience init(minViewHeight: CGFloat? = nil, backgroundColor: UIColor? = UIColor.ui.primaryContainer, iconImage: String, textOnButton: String) {
         self.init(frame: .zero)
+        self.minViewHeight = minViewHeight ?? 32
         self.backgroundColor = backgroundColor
         self.iconImage = iconImage
         self.icon = IconImage(systemImage: iconImage, color: .ui.theme, textStyle: textStyle)
@@ -67,9 +73,9 @@ final class PickerWithIconRow: UIView {
         button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
         
         icon.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview().inset(12)
-            make.leading.equalToSuperview().offset(18)
-            make.width.equalTo(24)
+            make.leading.equalToSuperview().offset(24)
+            make.centerY.equalTo(button.snp.centerY)
+            make.width.equalTo(22)
             make.height.equalTo(24)
         }
         
@@ -83,12 +89,16 @@ final class PickerWithIconRow: UIView {
             make.leading.equalTo(button.snp.leading).offset(18)
             make.centerY.equalTo(button.snp.centerY)
         }
+        
+        self.snp.makeConstraints { make in
+            make.height.greaterThanOrEqualTo(minViewHeight ?? 32)
+        }
     }
     
     // MARK: - Delegate methods
     
     @objc private func buttonTapped() {
         self.onTapAnimation()
-        delegate?.pickerWithIconRowTappped(self)
+        delegate?.pickerTapped(item: self)
     }
 }

@@ -33,7 +33,7 @@ final class AddRecipeInstructionsVC: UIViewController {
     private let tableViewHeader = InstructionTableHeaderView()
     private let tableViewFooter = IngredientsTableFooterView()
     
-    private let emptyTableLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
+    private let emptyTableLabel = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
 
     
     // MARK: - Lifecycle
@@ -55,6 +55,8 @@ final class AddRecipeInstructionsVC: UIViewController {
     
     override func viewDidLoad() {
         view.backgroundColor = .systemBackground
+        title = "Instructions"
+
         viewModel.delegateInstructions = self
 
         setupNavigationBarButtons()
@@ -215,7 +217,6 @@ extension AddRecipeInstructionsVC {
     @objc func saveButtonTapped(_ sender: UIBarButtonItem) {
         let result = viewModel.saveRecipe()
         if result {
-            coordinator.coordinatorDidFinish()
             coordinator.dismissVCStack()
         } else {
             let errorMessages = viewModel.validationErrors.map { $0.description }.joined(separator: "\n")
@@ -223,8 +224,9 @@ extension AddRecipeInstructionsVC {
         }
     }
     
+    /// Navigate to Add Instruction Sheet
     private func addInstructionTapped() {
-        coordinator.pushVC(for: .addInstruction)
+        coordinator.navigateTo(.addInstruction)
     }
 }
 

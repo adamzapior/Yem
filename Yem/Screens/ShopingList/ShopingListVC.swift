@@ -5,16 +5,15 @@
 //  Created by Adam Zapiór on 06/12/2023.
 //
 
-import UIKit
 import LifetimeTracker
-
+import UIKit
 
 final class ShopingListVC: UIViewController {
     var coordinator: ShopingListCoordinator?
     var viewModel: ShopingListVM
 
     private let tableView = UITableView()
-    private let emptyTableLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
+    private let emptyTableLabel = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
 
     private lazy var trashNavItem = UIBarButtonItem(image: UIImage(systemName: "trash"), style: .plain, target: self, action: #selector(trashButtonTapped))
 
@@ -22,6 +21,9 @@ final class ShopingListVC: UIViewController {
         self.coordinator = coordinator
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+#if DEBUG
+        trackLifetime()
+#endif
     }
 
     @available(*, unavailable)
@@ -42,7 +44,8 @@ final class ShopingListVC: UIViewController {
 
         Task {
             viewModel.loadShopingList()
-        }
+        }        
+        
     }
 
     // MARK: - Setup UI
@@ -127,7 +130,7 @@ extension ShopingListVC: UITableViewDelegate, UITableViewDataSource {
 // MARK: -  TableViewCell delegate
 
 extension ShopingListVC: ShopingListCellDelegate {
-    func didTapButton(in cell: ShopingListCell) {
+    func checklistTapped(in cell: ShopingListCell) {
         guard let indexPath = tableView.indexPath(for: cell) else {
             return
         }
@@ -151,7 +154,7 @@ extension ShopingListVC: ShopingListCellDelegate {
 extension ShopingListVC: ShopingListVMDelegate {
     func reloadTable() {
         tableView.reloadData()
-        
+
         if viewModel.uncheckedList.isEmpty && viewModel.checkedList.isEmpty {
             emptyTableLabel.isHidden = false
         } else {

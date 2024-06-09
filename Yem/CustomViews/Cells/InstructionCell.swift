@@ -23,17 +23,9 @@ final class InstructionCell: UITableViewCell {
         return view
     }()
     
-    private let indexLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .semibold, textColor: .ui.secondaryText, textAlignment: .natural)
+    private let indexLabel = TextLabel(fontStyle: .body, fontWeight: .semibold, textColor: .ui.secondaryText, textAlignment: .natural)
     
-    private let textTextView = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText, textAlignment: .natural)
-    
-//    private let deleteIcon: IconImage = {
-//        let icon = IconImage(systemImage: "trash", color: .red, textStyle: .body)
-//        // Zmieniony selektor na metodę instancji
-//
-//        icon.isUserInteractionEnabled = true
-//        return icon
-//    }()
+    private let textTextView = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText, textAlignment: .natural)
 
     private let moveIcon: IconImage = {
         let icon = IconImage(systemImage: "text.justify", color: .ui.secondaryText, textStyle: .body)

@@ -8,7 +8,7 @@
 import UIKit
 
 protocol IngredientsCellDelegate: AnyObject {
-    func didTapButton(in cell: IngredientsCell)
+    func trashTapped(in cell: IngredientsCell)
 }
 
 final class IngredientsCell: UITableViewCell {
@@ -23,9 +23,9 @@ final class IngredientsCell: UITableViewCell {
         return view
     }()
     
-    private let valueLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .semibold, textColor: .ui.theme)
-    private let valueTypeLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
-    private let ingredientNameLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText)
+    private let valueLabel = TextLabel(fontStyle: .body, fontWeight: .semibold, textColor: .ui.theme)
+    private let valueTypeLabel = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
+    private let ingredientNameLabel = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText)
     
     private lazy var trashIcon: IconImage = {
         let icon = IconImage(systemImage: "trash", color: .red, textStyle: .body)
@@ -100,6 +100,6 @@ final class IngredientsCell: UITableViewCell {
     }
     
     @objc func didTapButtonAction() {
-        delegate?.didTapButton(in: self)
+        delegate?.trashTapped(in: self)
     }
 }

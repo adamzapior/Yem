@@ -8,56 +8,42 @@
 import LifetimeTracker
 import UIKit
 
-final class AddRecipeCoordinator: ChildCoordinator {
-    var parentCoordinator: AddRecipeParentCoordinator?
-    var viewControllerRef: UIViewController?
-    var navigationController: UINavigationController
+final class AddRecipeCoordinator: Destination {
+    let viewModel: AddRecipeViewModel
+    weak var parentCoordinator: Destination?
 
-    var viewModel: AddRecipeViewModel
-
-    init(navigationController: UINavigationController, viewModel: AddRecipeViewModel, parentCoordinator: AddRecipeParentCoordinator) {
-        self.navigationController = navigationController
+    init(viewModel: AddRecipeViewModel) {
         self.viewModel = viewModel
-        self.parentCoordinator = parentCoordinator
-
+        super.init()
 #if DEBUG
         trackLifetime()
 #endif
     }
 
-    func start(animated: Bool) {
+    override func render() -> UIViewController {
         let addRecipeVC = AddRecipeVC(coordinator: self, viewModel: viewModel)
-        viewControllerRef = addRecipeVC
+        addRecipeVC.destination = self
         addRecipeVC.hidesBottomBarWhenPushed = true
-        navigationController.customPushViewController(viewController: addRecipeVC)
+        return addRecipeVC
     }
 
-    func coordinatorDidFinish() {
-        if let viewController = viewControllerRef as? DisposableViewController {
-            viewController.cleanUp()
-        }
-
-        parentCoordinator?.childDidFinish(self)
-        viewControllerRef = nil
-        parentCoordinator = nil
-        print("DEBUG: AddRecipeCoordinator: coordinatorDidFinish() called")
-    }
-
-    func pushVC(for route: AddRecipeRoute) {
+    func navigateTo(_ route: AddRecipeRoute) {
         let viewModel = viewModel
         switch route {
         case .ingredientsList:
             let controller = AddRecipeIngredientsVC(viewModel: viewModel, coordinator: self)
-            navigationController.pushViewController(controller, animated: true)
+            navigator?.presentScreen(controller)
         case .addIngredient:
             let controller = AddIngredientSheetVC(viewModel: viewModel, coordinator: self)
-            navigationController.present(controller, animated: true)
+            navigator?.presentSheet(controller)
+
         case .instructions:
             let controller = AddRecipeInstructionsVC(viewModel: viewModel, coordinator: self)
-            navigationController.pushViewController(controller, animated: true)
+            navigator?.presentScreen(controller)
+
         case .addInstruction:
             let controller = AddInstructionSheetVC(viewModel: viewModel, coordinator: self)
-            navigationController.present(controller, animated: true)
+            navigator?.presentSheet(controller)
         }
     }
 
@@ -65,15 +51,18 @@ final class AddRecipeCoordinator: ChildCoordinator {
         let alertVC = ValidationAlertVC(title: title, message: message)
         alertVC.modalPresentationStyle = .overFullScreen
         alertVC.modalTransitionStyle = .crossDissolve
-        navigationController.present(alertVC, animated: true, completion: nil)
+        navigator?.presentAlert(alertVC)
     }
 
     func dismissVC() {
-        navigationController.dismiss(animated: true)
+        navigator?.dismissAlert()
     }
 
     func dismissVCStack() {
-        navigationController.popToRootViewController(animated: true)
+//        self.navigator?.popUpTo { destination in
+//            destination is RecipesListCoordinator
+//        }
+        navigator?.popUpToRoot()
     }
 }
 
@@ -83,12 +72,6 @@ enum AddRecipeRoute {
     case instructions
     case addInstruction
 }
-
-protocol AddRecipeParentCoordinator {
-    func childDidFinish(_ child: Coordinator)
-}
-
-extension RecipesListCoordinator: AddRecipeParentCoordinator {}
 
 #if DEBUG
 extension AddRecipeCoordinator: LifetimeTrackable {

@@ -26,10 +26,10 @@ final class AddInstructionSheetVC: UIViewController {
     
     private var icon: IconImage!
     private var iconImage: String
-    private var nameOfRow = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText)
+    private var nameOfRow = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText)
     private var nameOfRowText: String
     private var textStyle: UIFont.TextStyle
-    private var placeholder = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
+    private var placeholder = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
     
     private lazy var textField: UITextView = {
         let text = UITextView()
@@ -44,8 +44,8 @@ final class AddInstructionSheetVC: UIViewController {
         }
     }
     
-    private let addButton = MainActionButton(title: "Add", backgroundColor: .ui.addBackground!)
-    private let cancelButton = MainActionButton(title: "Cancel", backgroundColor: .ui.cancelBackground ?? .ui.theme)
+    private let addButton = ActionButton(title: "Add", backgroundColor: .ui.addBackground)
+    private let cancelButton = ActionButton(title: "Cancel", backgroundColor: .ui.cancelBackground )
     
     private let stackView: UIStackView = {
         let stack = UIStackView()
@@ -205,8 +205,8 @@ extension AddInstructionSheetVC: UITextViewDelegate {
     }
 }
 
-extension AddInstructionSheetVC: MainActionButtonDelegate {
-    func mainActionButtonTapped(_ button: MainActionButton) {
+extension AddInstructionSheetVC: ActionButtonDelegate {
+    func actionButtonTapped(_ button: ActionButton) {
         switch button.tag {
         case 1:
             button.onTapAnimation()

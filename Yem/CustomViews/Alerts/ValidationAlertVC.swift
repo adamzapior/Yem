@@ -10,9 +10,9 @@ import UIKit
 final class ValidationAlertVC: UIViewController {
     private let containerView = UIView()
 
-    private let titleLabel = ReusableTextLabel(fontStyle: .title3, fontWeight: .semibold, textColor: .ui.primaryText, textAlignment: .center)
-    private let errorLabel = ReusableTextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText, textAlignment: .center)
-    private let actionButton = MainActionButton(title: "OK", backgroundColor: .ui.theme)
+    private let titleLabel = TextLabel(fontStyle: .title3, fontWeight: .semibold, textColor: .ui.primaryText, textAlignment: .center)
+    private let errorLabel = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText, textAlignment: .center)
+    private let actionButton = ActionButton(title: "OK", backgroundColor: .ui.theme)
     
     private var alertTitle: String?
     private var message: String?
@@ -42,7 +42,7 @@ final class ValidationAlertVC: UIViewController {
         containerView.backgroundColor = .systemBackground
         containerView.layer.cornerRadius = 20
         containerView.layer.borderWidth = 1
-        containerView.layer.borderColor = UIColor.ui.secondaryText?.cgColor
+        containerView.layer.borderColor = UIColor.ui.secondaryText.cgColor
         
         containerView.snp.makeConstraints { make in
             make.centerX.centerY.equalToSuperview()

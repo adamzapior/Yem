@@ -7,21 +7,20 @@
 
 import UIKit
 
-protocol MainActionButtonDelegate: AnyObject {
-    func mainActionButtonTapped(_ button: MainActionButton)
+protocol ActionButtonDelegate: AnyObject {
+    func actionButtonTapped(_ button: ActionButton)
 }
 
-final class MainActionButton: UIButton {
-    
-    weak var delegate: MainActionButtonDelegate?
+final class ActionButton: UIButton {
+    weak var delegate: ActionButtonDelegate?
     
     // MARK: - Lifecycle
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setupUI()
+        self.setupUI()
         
-        self.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+        self.addTarget(self, action: #selector(self.buttonTapped), for: .touchUpInside)
     }
 
     @available(*, unavailable)
@@ -29,13 +28,21 @@ final class MainActionButton: UIButton {
         fatalError("init(coder:) has not been implemented")
     }
     
-    convenience init(title: String, backgroundColor: UIColor) {
+    convenience init(title: String, backgroundColor: UIColor, isShadownOn: Bool = false) {
         self.init(frame: .zero)
         self.setTitle(title, for: .normal)
         self.backgroundColor = backgroundColor
+        
+        if isShadownOn {
+            self.layer.masksToBounds = false
+            self.layer.shadowRadius = 8
+            self.layer.shadowOffset = CGSize(width: 1, height: 1)
+            self.layer.shadowOpacity = 0.3
+            self.layer.shadowColor = UIColor.ui.theme.cgColor
+        }
     }
     
-    // MARK:  UI Setup
+    // MARK: UI Setup
 
     private func setupUI() {
         self.layer.cornerRadius = 20
@@ -49,7 +56,7 @@ final class MainActionButton: UIButton {
     // MARK: - Methods
     
     @objc private func buttonTapped() {
-        delegate?.mainActionButtonTapped(self)
+        self.delegate?.actionButtonTapped(self)
+        self.onTapAnimation()
     }
-   
 }

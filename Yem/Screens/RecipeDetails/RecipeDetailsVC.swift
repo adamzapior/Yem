@@ -5,10 +5,9 @@
 //  Created by Adam Zapiór on 20/02/2024.
 //
 
-import UIKit
-import SnapKit
 import LifetimeTracker
-
+import SnapKit
+import UIKit
 
 final class RecipeDetailsVC: UIViewController {
     // MARK: - Properties
@@ -27,12 +26,12 @@ final class RecipeDetailsVC: UIViewController {
     
     private let detailsSubtitleLabel = UILabel()
     private let detailsContainer = UIView()
-    private let nameView = RecipeDetailsView()
-    private let categoryView = RecipeDetailsView()
-    private let servingView = RecipeDetailsView()
-    private let prepTiemView = RecipeDetailsView()
-    private let spicyView = RecipeDetailsView()
-    private let difficultyView = RecipeDetailsView()
+    private let nameView = DetailsView()
+    private let categoryView = DetailsView()
+    private let servingView = DetailsView()
+    private let prepTiemView = DetailsView()
+    private let spicyView = DetailsView()
+    private let difficultyView = DetailsView()
     
     private let ingredientsSubtitleLabel = UILabel()
     private let ingredientsContainer = UIView()
@@ -40,7 +39,6 @@ final class RecipeDetailsVC: UIViewController {
     private let instructionsSubtitleLabel = UILabel()
     private let instructionsContainer = UIView()
 
-    
     var bookmarkIconString: String
 
     let bookmarkIconFilled: String = "bookmark.fill"
@@ -65,7 +63,6 @@ final class RecipeDetailsVC: UIViewController {
             bookmarkIconString = bookmarkIconEmpty
         }
         
-        print(recipe.isImageSaved.description)
         super.init(nibName: nil, bundle: nil)
         
 #if DEBUG
@@ -102,11 +99,6 @@ final class RecipeDetailsVC: UIViewController {
         setupInstructionsContainer()
         
         configureRecipeViewData()
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        coordinator.coordinatorDidFinish()
     }
 
     // MARK: - UI Setup
@@ -302,7 +294,7 @@ final class RecipeDetailsVC: UIViewController {
         }
          
         for instruction in recipe.instructionList.sorted(by: { $0.index < $1.index }) {
-            let instructionView = RecipeDetailsView()
+            let instructionView = DetailsView()
             instructionView.configure(titleText: "STEP \(instruction.index)", valueText: instruction.text)
 
             instructionsStackView.addArrangedSubview(instructionView)
@@ -348,7 +340,7 @@ extension RecipeDetailsVC {
 // MARK: Delegate methods
 
 extension RecipeDetailsVC: RecipeDetailsVMDelegate {
-    func isFavouriteValueChanged(to: Bool) {        
+    func isFavouriteValueChanged(to: Bool) {
         DispatchQueue.main.async {
             switch to {
             case true:
@@ -359,7 +351,6 @@ extension RecipeDetailsVC: RecipeDetailsVMDelegate {
         }
     }
 }
-
 
 #if DEBUG
 extension RecipeDetailsVC: LifetimeTrackable {

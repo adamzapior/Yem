@@ -13,7 +13,7 @@ import UIKit
 import LifetimeTracker
 
 protocol AddRecipeVCDelegate: AnyObject {
-    func loadData()
+    func loadDataToEditor()
     func delegateDetailsError(_ type: ValidationErrorTypes)
 }
 
@@ -260,11 +260,12 @@ final class AddRecipeViewModel {
     /// Save method:
     
     func saveRecipe() -> Bool {
-        validationErrors = []
-        resetValidationFlags()
-        resetIgredientValidationFlags()
-        resetInstructionValidationFlags()
-        validateForms()
+        // MARK: TESTY TESTY TESTY !!!!!!!! !!!!!! !!!!! !!!! !!!!!
+//        validationErrors = []
+//        resetValidationFlags()
+//        resetIgredientValidationFlags()
+//        resetInstructionValidationFlags()
+//        validateForms()
 
         if recipeTitleIsError || servingIsError || difficultyIsError || perpTimeIsError || spicyIsError || categoryIsError || ingredientListIsError || instructionIsError {
             print("DEBUG: Validation failed: Title, serving, difficulty, preparation time, spicy, category, ingredients, instruction error")
@@ -342,8 +343,10 @@ final class AddRecipeViewModel {
                                  instructionList: instructionList,
                                  isImageSaved: isImageSaved,
                                  isFavourite: isFavourite)
+        
+        let recipeForTest = RecipeModel(id: UUID(), name: "Test", serving: "3", perpTimeHours: "2", perpTimeMinutes: "2", spicy: .medium, category: .notSelected, difficulty: .easy, ingredientList: [IngredientModel(id: UUID(), value: "xd", valueType: "yyy", name: "fff")], instructionList: [InstructionModel(id: UUID(), index: 2, text: "XDDD")], isImageSaved: false, isFavourite: true)
 
-        repository.addRecipe(recipe: recipe)
+        repository.addRecipe(recipe: recipeForTest)
 
         if let image = selectedImage {
             let imageSaved = LocalFileManager.instance.saveImage(with: recipeID.uuidString, image: image)
@@ -548,10 +551,10 @@ final class AddRecipeViewModel {
 // MARK: - Delegate methods
 
 extension AddRecipeViewModel: AddRecipeVCDelegate {
-    func loadData() {
+    func loadDataToEditor() {
         if didRecipeExist {
             DispatchQueue.main.async {
-                self.delegateDetails?.loadData()
+                self.delegateDetails?.loadDataToEditor()
             }
             print("DEBUG: loadData() from AddRecipeViewModel celled")
         }
