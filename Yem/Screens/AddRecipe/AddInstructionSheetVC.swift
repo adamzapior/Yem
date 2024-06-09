@@ -5,9 +5,8 @@
 //  Created by Adam Zapiór on 21/01/2024.
 //
 
-import UIKit
 import LifetimeTracker
-
+import UIKit
 
 final class AddInstructionSheetVC: UIViewController {
     // MARK: - Properties
@@ -45,7 +44,7 @@ final class AddInstructionSheetVC: UIViewController {
     }
     
     private let addButton = ActionButton(title: "Add", backgroundColor: .ui.addBackground)
-    private let cancelButton = ActionButton(title: "Cancel", backgroundColor: .ui.cancelBackground )
+    private let cancelButton = ActionButton(title: "Cancel", backgroundColor: .ui.cancelBackground)
     
     private let stackView: UIStackView = {
         let stack = UIStackView()
@@ -79,20 +78,21 @@ final class AddInstructionSheetVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         viewModel.delegateInstructionSheet = self
-
-        let smallDetentId = UISheetPresentationController.Detent.Identifier("small")
-        let smallDetent = UISheetPresentationController.Detent.custom(identifier: smallDetentId) { _ in
-            430
-        }
-        
-        if let presentationController = presentationController as? UISheetPresentationController {
-            presentationController.detents = [smallDetent, smallDetent]
-            presentationController.prefersGrabberVisible = true
-        }
         
         configureTags()
         configureDelegate()
         setupUI()
+        
+        let contentHeight = calculateContentHeight()
+        let customDetentId = UISheetPresentationController.Detent.Identifier("customDetent")
+        let contentDetent = UISheetPresentationController.Detent.custom(identifier: customDetentId) { _ in
+            contentHeight
+        }
+        
+        if let presentationController = presentationController as? UISheetPresentationController {
+            presentationController.detents = [contentDetent]
+            presentationController.prefersGrabberVisible = true
+        }
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
@@ -168,6 +168,25 @@ final class AddInstructionSheetVC: UIViewController {
             make.top.equalTo(addButton.snp.bottom).offset(12)
             make.leading.trailing.equalToSuperview().inset(12)
         }
+    }
+    
+    private func calculateContentHeight() -> CGFloat {
+        let marginsAndSpacings: CGFloat = 84
+        let width = UIScreen.main.bounds.width - 24
+        let size = CGSize(width: width, height: UIView.layoutFittingCompressedSize.height)
+
+        let elementHeights: CGFloat = [
+            textFieldContentView.systemLayoutSizeFitting(size).height,
+            addButton.systemLayoutSizeFitting(size).height,
+            cancelButton.systemLayoutSizeFitting(size).height
+        ].reduce(0, +)
+        
+        print(textFieldContentView.systemLayoutSizeFitting(size).height)
+
+        print(addButton.systemLayoutSizeFitting(size).height)
+        print(cancelButton.systemLayoutSizeFitting(size).height)
+
+        return elementHeights + marginsAndSpacings
     }
 }
 

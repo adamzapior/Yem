@@ -123,12 +123,6 @@ final class AddIngredientSheetVC: UIViewController {
             addButton.systemLayoutSizeFitting(size).height,
             cancelButton.systemLayoutSizeFitting(size).height
         ].reduce(0, +)
-        
-        print(ingredientNameTextfield.systemLayoutSizeFitting(size).height)
-        print(countTextfield.systemLayoutSizeFitting(size).height)
-        print(valueTypeCell.systemLayoutSizeFitting(size).height)
-        print(addButton.systemLayoutSizeFitting(size).height)
-        print(cancelButton.systemLayoutSizeFitting(size).height)
 
         return elementHeights + marginsAndSpacings
     }
@@ -351,27 +345,6 @@ extension AddIngredientSheetVC: AddIngredientSheetVCDelegate {
             break
         }
     }
-    
-//    private func calculateContentHeight() -> CGFloat {
-//        let marginsAndSpacings: CGFloat = 24 // Suma górnych, dolnych marginesów oraz odstępów między elementami
-//        let elementHeights: CGFloat = [
-//            ingredientNameTextfield.intrinsicContentSize.height,
-//            countTextfield.intrinsicContentSize.height,
-//            valueTypeCell.intrinsicContentSize.height,
-//            addButton.intrinsicContentSize.height,
-//            cancelButton.intrinsicContentSize.height
-//        ].reduce(0, +)
-//
-//        print(ingredientNameTextfield.intrinsicContentSize.height)
-//        print(countTextfield.intrinsicContentSize.height)
-//        print(valueTypeCell.intrinsicContentSize.height)
-//        print(addButton.intrinsicContentSize.height)
-//        print(cancelButton.intrinsicContentSize.height)
-//
-//        return elementHeights + marginsAndSpacings
-//    }
-    
-
 }
 
 #if DEBUG
