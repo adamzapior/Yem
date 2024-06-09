@@ -43,6 +43,8 @@ final class AddIngredientSheetVC: UIViewController {
     private let screenWidth = UIScreen.main.bounds.width - 10
     private let screenHeight = UIScreen.main.bounds.height / 2
     
+    let value: CGFloat = 0
+    
     // MARK: - Lifecycle
     
     init(viewModel: AddRecipeViewModel, coordinator: AddRecipeCoordinator) {
@@ -64,20 +66,21 @@ final class AddIngredientSheetVC: UIViewController {
         super.viewDidLoad()
         viewModel.delegateIngredientSheet = self
         
-        let smallDetentId = UISheetPresentationController.Detent.Identifier("small")
-        let smallDetent = UISheetPresentationController.Detent.custom(identifier: smallDetentId) { _ in
-            300
-        }
-        
-        if let presentationController = presentationController as? UISheetPresentationController {
-            presentationController.detents = [smallDetent, smallDetent]
-            presentationController.prefersGrabberVisible = true
-        }
-        
         setupUI()
         setupTag()
         setupDelegate()
         setupDataSource()
+        
+        let contentHeight = calculateContentHeight()
+        let customDetentId = UISheetPresentationController.Detent.Identifier("customDetent")
+        let contentDetent = UISheetPresentationController.Detent.custom(identifier: customDetentId) { _ in
+            contentHeight
+        }
+        
+        if let presentationController = presentationController as? UISheetPresentationController {
+            presentationController.detents = [contentDetent]
+            presentationController.prefersGrabberVisible = true
+        }
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
@@ -106,6 +109,28 @@ final class AddIngredientSheetVC: UIViewController {
         
         buttonsStackView.addArrangedSubview(addButton)
         buttonsStackView.addArrangedSubview(cancelButton)
+    }
+    
+    private func calculateContentHeight() -> CGFloat {
+        let marginsAndSpacings: CGFloat = 124 // Suma górnych, dolnych marginesów oraz odstępów między elementami
+        let width = UIScreen.main.bounds.width - 24 // Załóż szerokość ekranu minus marginesy
+        let size = CGSize(width: width, height: UIView.layoutFittingCompressedSize.height)
+
+        let elementHeights: CGFloat = [
+            ingredientNameTextfield.systemLayoutSizeFitting(size).height,
+            countTextfield.systemLayoutSizeFitting(size).height,
+            valueTypeCell.systemLayoutSizeFitting(size).height,
+            addButton.systemLayoutSizeFitting(size).height,
+            cancelButton.systemLayoutSizeFitting(size).height
+        ].reduce(0, +)
+        
+        print(ingredientNameTextfield.systemLayoutSizeFitting(size).height)
+        print(countTextfield.systemLayoutSizeFitting(size).height)
+        print(valueTypeCell.systemLayoutSizeFitting(size).height)
+        print(addButton.systemLayoutSizeFitting(size).height)
+        print(cancelButton.systemLayoutSizeFitting(size).height)
+
+        return elementHeights + marginsAndSpacings
     }
 }
 
@@ -326,6 +351,27 @@ extension AddIngredientSheetVC: AddIngredientSheetVCDelegate {
             break
         }
     }
+    
+//    private func calculateContentHeight() -> CGFloat {
+//        let marginsAndSpacings: CGFloat = 24 // Suma górnych, dolnych marginesów oraz odstępów między elementami
+//        let elementHeights: CGFloat = [
+//            ingredientNameTextfield.intrinsicContentSize.height,
+//            countTextfield.intrinsicContentSize.height,
+//            valueTypeCell.intrinsicContentSize.height,
+//            addButton.intrinsicContentSize.height,
+//            cancelButton.intrinsicContentSize.height
+//        ].reduce(0, +)
+//
+//        print(ingredientNameTextfield.intrinsicContentSize.height)
+//        print(countTextfield.intrinsicContentSize.height)
+//        print(valueTypeCell.intrinsicContentSize.height)
+//        print(addButton.intrinsicContentSize.height)
+//        print(cancelButton.intrinsicContentSize.height)
+//
+//        return elementHeights + marginsAndSpacings
+//    }
+    
+
 }
 
 #if DEBUG

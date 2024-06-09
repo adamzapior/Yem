@@ -256,6 +256,7 @@
 			children = (
 				58356B482B20E0ED000AC548 /* RecipesListVC.swift */,
 				58102DD42B2494ED0090EAE8 /* RecipesListVM.swift */,
+				589929492B4484FD00FAB070 /* RecipesListCoordinator.swift */,
 			);
 			path = RecipesList;
 			sourceTree = "<group>";
@@ -280,6 +281,7 @@
 				5869321A2B253AB300379C8C /* AddRecipeInstructionsVC.swift */,
 				58A38F892B5D1CFD00007AC1 /* AddInstructionSheetVC.swift */,
 				58102DDA2B249F900090EAE8 /* AddRecipeVM.swift */,
+				5899294D2B44946000FAB070 /* AddRecipeCoordinator.swift */,
 			);
 			path = AddRecipe;
 			sourceTree = "<group>";
@@ -294,18 +296,14 @@
 			path = ShopingList;
 			sourceTree = "<group>";
 		};
-		581C611D2C01F45B000E12DB /* Core Coordinators */ = {
+		581C611D2C01F45B000E12DB /* CoreCoordinators */ = {
 			isa = PBXGroup;
 			children = (
 				586230ED2BB593A4000456D0 /* AppCoordinator.swift */,
 				58C259CE2C147ADE004BCEC2 /* SplashScreenCoordinator.swift */,
 				589929472B44843A00FAB070 /* TabBarCoordinator.swift */,
-				589929492B4484FD00FAB070 /* RecipesListCoordinator.swift */,
-				5899294D2B44946000FAB070 /* AddRecipeCoordinator.swift */,
-				589A65C92B85600C0018779B /* RecipeDetailsCoordinator.swift */,
-				583C5D732BBD8BFB002FCD5C /* SettingsCoordinator.swift */,
 			);
-			path = "Core Coordinators";
+			path = CoreCoordinators;
 			sourceTree = "<group>";
 		};
 		582E71AC2B62C7A3002D3164 /* Alerts */ = {
@@ -341,13 +339,13 @@
 		58356AF92B1FB9E5000AC548 /* Yem */ = {
 			isa = PBXGroup;
 			children = (
-				58AD97E32BDADF5B002A6C40 /* Navigation */,
 				58356AFA2B1FB9E5000AC548 /* AppDelegate.swift */,
 				58356AFC2B1FB9E5000AC548 /* SceneDelegate.swift */,
 				58356B062B1FB9E7000AC548 /* Assets.xcassets */,
 				583647022C15AC8800EABB64 /* GoogleService-Info.plist */,
 				58356B0B2B1FB9E7000AC548 /* Info.plist */,
 				58102DD62B2496110090EAE8 /* Model */,
+				58AD97E32BDADF5B002A6C40 /* Navigation */,
 				58102DD22B2494BC0090EAE8 /* Screens */,
 				58356B322B1FD891000AC548 /* CustomViews */,
 				58356B332B1FD8A3000AC548 /* LocalData */,
@@ -406,6 +404,7 @@
 			children = (
 				583C5D752BBD8C87002FCD5C /* SettingsVC.swift */,
 				583C5D712BBD8BC4002FCD5C /* SettingsViewModel.swift */,
+				583C5D732BBD8BFB002FCD5C /* SettingsCoordinator.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -483,6 +482,7 @@
 			children = (
 				589A65C72B855EFF0018779B /* RecipeDetailsVC.swift */,
 				589A65CB2B85607D0018779B /* RecipeDetailsVM.swift */,
+				589A65C92B85600C0018779B /* RecipeDetailsCoordinator.swift */,
 			);
 			path = RecipeDetails;
 			sourceTree = "<group>";
@@ -531,7 +531,7 @@
 		58AD97E32BDADF5B002A6C40 /* Navigation */ = {
 			isa = PBXGroup;
 			children = (
-				581C611D2C01F45B000E12DB /* Core Coordinators */,
+				581C611D2C01F45B000E12DB /* CoreCoordinators */,
 				58AD97E42BDADF7F002A6C40 /* Navigator.swift */,
 				583647002C14F8FD00EABB64 /* Destination.swift */,
 			);

@@ -48,10 +48,6 @@ final class RegisterOnboardingVC: UIViewController {
 
         loginButton.delegate = self
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-//        coordinator.coordinatorDidFinish()
-    }
 
     private func setupUI() {
         view.addSubview(content)
@@ -173,26 +169,12 @@ extension RegisterOnboardingVC: TextfieldWithIconDelegate, ActionButtonDelegate 
         return true
     }
 
-//    func actionButtonTapped(_ button: ActionButton) {
-//        print("c")
-//        coordinator.registerFinished(user: User(uid: viewModel.userID.uuidString, email: viewModel.login, password: viewModel.password))
-//        coordinator.coordinatorDidFinish()
-//    }
-
     func actionButtonTapped(_ button: ActionButton) {
-        // Obsługa asynchroniczna za pomocą Task
         Task {
             do {
-                // Próba utworzenia użytkownika za pomocą danych z viewModel
                 let userModel = try await viewModel.createUser(email: viewModel.login, password: viewModel.password)
-                // Sukces: przekazanie użytkownika do koordynatora (zakładając, że koordynator ma taką metodę)
-//                coordinator.registerFinished(user: userModel)
-                // Możliwe dodatkowe działania, np. przejście do innego widoku
-//                coordinator.coordinatorDidFinish()
             } catch {
-                // Obsługa błędu, np. pokazanie komunikatu
                 print("Błąd podczas rejestracji: \(error)")
-                // Tutaj możesz np. wyświetlić alert z informacją o błędzie
             }
         }
     }

@@ -55,6 +55,8 @@ final class AddRecipeInstructionsVC: UIViewController {
     
     override func viewDidLoad() {
         view.backgroundColor = .systemBackground
+        title = "Instructions"
+
         viewModel.delegateInstructions = self
 
         setupNavigationBarButtons()
@@ -215,7 +217,6 @@ extension AddRecipeInstructionsVC {
     @objc func saveButtonTapped(_ sender: UIBarButtonItem) {
         let result = viewModel.saveRecipe()
         if result {
-//            coordinator.coordinatorDidFinish()
             coordinator.dismissVCStack()
         } else {
             let errorMessages = viewModel.validationErrors.map { $0.description }.joined(separator: "\n")
