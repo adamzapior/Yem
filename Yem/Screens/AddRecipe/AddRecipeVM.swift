@@ -35,7 +35,7 @@ protocol AddInstructionSheetVCDelegate: AnyObject {
     func delegateInstructionError(_ type: ValidationErrorTypes)
 }
 
-final class AddRecipeViewModel {
+final class AddRecipeViewModel: IngredientViewModel {
     var repository: DataRepository
     
     weak var delegateDetails: AddRecipeVCDelegate?
@@ -85,13 +85,13 @@ final class AddRecipeViewModel {
     }
     
     @Published
-    var igredientName: String = ""
+    var ingredientName: String = ""
     
     @Published
-    var igredientValue: String = ""
+    var ingredientValue: String = ""
     
     @Published
-    var igredientValueType: String = ""
+    var ingredientValueType: String = ""
     
     @Published
     var instructionList: [InstructionModel] = [] {
@@ -205,7 +205,7 @@ final class AddRecipeViewModel {
             return false
         }
         
-        let ingredient = IngredientModel(id: UUID(), value: igredientValue, valueType: igredientValueType, name: igredientName)
+        let ingredient = IngredientModel(id: UUID(), value: ingredientValue, valueType: ingredientValueType, name: ingredientName)
         ingredientsList.append(ingredient)
         clearIngredientProperties()
         return true
@@ -238,9 +238,9 @@ final class AddRecipeViewModel {
     }
     
     func clearIngredientProperties() {
-        igredientName = ""
-        igredientValue = ""
-        igredientValueType = ""
+        ingredientName = ""
+        ingredientValue = ""
+        ingredientValueType = ""
     }
     
     func clearInstructionProperties() {
@@ -465,21 +465,21 @@ final class AddRecipeViewModel {
     }
     
     private func validateIgredientName() {
-        if igredientName.isEmpty {
+        if ingredientName.isEmpty {
             igredientNameIsError = true
             delegateDetailsError(.ingredientName)
         }
     }
     
     private func validateIgredientValue() {
-        if igredientValue.isEmpty {
+        if ingredientValue.isEmpty {
             igredientValueIsError = true
             delegateDetailsError(.ingredientValue)
         }
     }
     
     private func validateIgredientValueType() {
-        if igredientValueType.isEmpty {
+        if ingredientValueType.isEmpty {
             igredientValueTypeIsError = true
             delegateDetailsError(.ingredientValueType)
         }

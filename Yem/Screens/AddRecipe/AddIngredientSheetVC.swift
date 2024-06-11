@@ -168,11 +168,11 @@ extension AddIngredientSheetVC: TextfieldWithIconDelegate, AddPickerDelegate, Ac
         switch textfield.tag {
         case 1:
             if let text = textfield.textField.text {
-                viewModel.igredientName = text
+                viewModel.ingredientName = text
             }
         case 2:
             if let text = textfield.textField.text {
-                viewModel.igredientValue = text
+                viewModel.ingredientValue = text
             }
         default: break
         }
@@ -182,11 +182,11 @@ extension AddIngredientSheetVC: TextfieldWithIconDelegate, AddPickerDelegate, Ac
         switch textfield.tag {
         case 1:
             if let text = textfield.textField.text {
-                viewModel.igredientName = text
+                viewModel.ingredientName = text
             }
         case 2:
             if let text = textfield.textField.text {
-                viewModel.igredientValue = text
+                viewModel.ingredientValue = text
             }
         default: break
         }
@@ -197,11 +197,11 @@ extension AddIngredientSheetVC: TextfieldWithIconDelegate, AddPickerDelegate, Ac
         switch textfield.tag {
         case 1:
             if let text = textfield.textField.text {
-                viewModel.igredientName = text
+                viewModel.ingredientName = text
             }
         case 2:
             if let text = textfield.textField.text {
-                viewModel.igredientValue = text
+                viewModel.ingredientValue = text
             }
         default: break
         }
@@ -280,7 +280,7 @@ extension AddIngredientSheetVC: UIPickerViewDelegate, UIPickerViewDataSource {
         let selectedRow = viewModel.valueTypeArray[row]
         valueTypeCell.textOnButton.text = selectedRow
         valueTypeCell.textOnButton.textColor = .ui.primaryText
-        viewModel.igredientValueType = selectedRow
+        viewModel.ingredientValueType = selectedRow
     }
     
     func popUpPicker(for pickerView: UIPickerView, title: String) {
@@ -305,7 +305,7 @@ extension AddIngredientSheetVC: UIPickerViewDelegate, UIPickerViewDataSource {
             let selectedValueType = self.viewModel.valueTypeArray[selectedRow]
             self.valueTypeCell.textOnButton.text = selectedValueType
             self.valueTypeCell.textOnButton.textColor = .ui.primaryText
-            self.viewModel.igredientValueType = selectedValueType
+            self.viewModel.ingredientValueType = selectedValueType
         })
         
         selectAction.setValue(UIColor.orange, forKey: "titleTextColor")
