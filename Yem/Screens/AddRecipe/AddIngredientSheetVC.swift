@@ -11,8 +11,8 @@ import UIKit
 final class AddIngredientSheetVC: UIViewController {
     // MARK: - Properties
     
-    let coordinator: AddRecipeCoordinator
-    let viewModel: AddRecipeViewModel
+    var coordinator: Coordinator
+    var viewModel: IngredientViewModel
     
     // MARK: - View properties
     
@@ -47,7 +47,7 @@ final class AddIngredientSheetVC: UIViewController {
     
     // MARK: - Lifecycle
     
-    init(viewModel: AddRecipeViewModel, coordinator: AddRecipeCoordinator) {
+    init(viewModel: IngredientViewModel, coordinator: Coordinator) {
         self.viewModel = viewModel
         self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
@@ -112,8 +112,8 @@ final class AddIngredientSheetVC: UIViewController {
     }
     
     private func calculateContentHeight() -> CGFloat {
-        let marginsAndSpacings: CGFloat = 124 // Suma górnych, dolnych marginesów oraz odstępów między elementami
-        let width = UIScreen.main.bounds.width - 24 // Załóż szerokość ekranu minus marginesy
+        let marginsAndSpacings: CGFloat = 124
+        let width = UIScreen.main.bounds.width - 24
         let size = CGSize(width: width, height: UIView.layoutFittingCompressedSize.height)
 
         let elementHeights: CGFloat = [
@@ -230,15 +230,11 @@ extension AddIngredientSheetVC: TextfieldWithIconDelegate, AddPickerDelegate, Ac
             
             let success = viewModel.addIngredientToList()
             if success {
-                coordinator.dismissVC()
-            } else {
-                ingredientNameTextfield.setPlaceholderColor(.red)
-                countTextfield.setPlaceholderColor(.red)
-                valueTypeCell.setPlaceholderColor(.red)
-            }
+                coordinator.dismissSheet()
+            } 
         case 2:
             cell.onTapAnimation()
-            coordinator.dismissVC()
+            coordinator.dismissSheet()
         default: break
         }
     }
@@ -317,7 +313,7 @@ extension AddIngredientSheetVC: UIPickerViewDelegate, UIPickerViewDataSource {
 // MARK: - Ingredient delegate from ViewModel
 
 extension AddIngredientSheetVC: AddIngredientSheetVCDelegate {
-    func delegateIngredientError(_ type: ValidationErrorTypes) {
+    func delegateIngredientSheetError(_ type: ValidationErrorTypes) {
         switch type {
         case .recipeTitle:
             break
@@ -334,7 +330,7 @@ extension AddIngredientSheetVC: AddIngredientSheetVCDelegate {
         case .ingredientName:
             ingredientNameTextfield.setPlaceholderColor(.ui.placeholderError)
         case .ingredientValue:
-            valueTypeCell.setPlaceholderColor(.ui.placeholderError)
+            countTextfield.setPlaceholderColor(.ui.placeholderError)
         case .ingredientValueType:
             valueTypeCell.setPlaceholderColor(.ui.placeholderError)
         case .ingredientList:

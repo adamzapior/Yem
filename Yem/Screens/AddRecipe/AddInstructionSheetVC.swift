@@ -195,7 +195,7 @@ final class AddInstructionSheetVC: UIViewController {
 extension AddInstructionSheetVC: AddInstructionSheetVCDelegate {
     func delegateInstructionError(_ type: ValidationErrorTypes) {
         if type == .instruction {
-//            noteRow.placeholder.textColor = .ui.placeholderError
+            placeholder.textColor = .ui.placeholderError
         }
     }
 }
@@ -206,6 +206,10 @@ extension AddInstructionSheetVC: UITextViewDelegate {
             viewModel.instruction = text
         }
         
+        if textView.text.isEmpty == false {
+            placeholder.text = ""
+        }
+        
         if viewModel.instruction.isEmpty {
             placeholder.textColor = .clear
         }
@@ -214,6 +218,12 @@ extension AddInstructionSheetVC: UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
         if let text = textView.text {
             viewModel.instruction = text
+        }
+        
+        if let letters = textView.text {
+            if letters.count > 0 {
+                
+            }
         }
     }
 
@@ -229,14 +239,13 @@ extension AddInstructionSheetVC: ActionButtonDelegate {
         switch button.tag {
         case 1:
             button.onTapAnimation()
-            
             let success = viewModel.addInstructionToList()
             if success {
-                coordinator.dismissVC()
+                coordinator.dismissSheet()
             } else {}
         case 2:
             button.onTapAnimation()
-            coordinator.dismissVC()
+            coordinator.dismissSheet()
         default: break
         }
     }

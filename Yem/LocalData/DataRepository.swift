@@ -10,12 +10,12 @@ import CoreData
 import Foundation
 import LifetimeTracker
 
-//protocol DataRepositoryProtocol {
+// protocol DataRepositoryProtocol {
 //    func save()
 //    func fetchAllRecipes() async -> Result<[RecipeEntity], DataRepositoryError>
 //    func searchByQuery()
 //    func delete()
-//}
+// }
 
 final class DataRepository {
     let moc = CoreDataManager.shared
@@ -28,7 +28,6 @@ final class DataRepository {
     var recipesUpdatedPublisher = PassthroughSubject<ObjectChange, Never>()
 
     var shopingListPublisher = PassthroughSubject<ObjectChange, Never>()
-
 
     init() {
         moc.allRecipesPublisher()
@@ -290,7 +289,7 @@ final class DataRepository {
             return .failure(error)
         }
     }
-    
+
     func updateShopingList(shopingList: ShopingListModel) {
         let fetchRequest: NSFetchRequest<ShopingListEntity> = ShopingListEntity.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "id == %@", shopingList.id as CVarArg)
@@ -298,13 +297,12 @@ final class DataRepository {
         do {
             let results = try moc.context.fetch(fetchRequest)
             if let shopingListToUpdate = results.first {
-                // Update the fields
+                /// Method fetch first result - one recipe is one uniqe id
                 shopingListToUpdate.name = shopingList.name
                 shopingListToUpdate.value = shopingList.value
                 shopingListToUpdate.valueType = shopingList.valueType
                 shopingListToUpdate.isChecked = shopingList.isChecked
 
-                // Save the updated context
                 if save() {
                     print("DEBUG: ShopingListEntity updated and context saved.")
                 }
@@ -319,19 +317,19 @@ final class DataRepository {
     func clearShopingList() {
         let fetchRequest: NSFetchRequest<ShopingListEntity> = ShopingListEntity.fetchRequest()
 
-           do {
-               let results = try moc.context.fetch(fetchRequest)
-               for object in results {
-                   moc.context.delete(object)
-               }
-               try moc.context.save()
-               print("DEBUG: All objects removed from ShopingListEntity and context saved.")
-           } catch {
-               print("DEBUG: Error clearing shopping list: \(error)")
-           }
+        do {
+            let results = try moc.context.fetch(fetchRequest)
+            for object in results {
+                moc.context.delete(object)
+            }
+            try moc.context.save()
+            print("DEBUG: All objects removed from ShopingListEntity and context saved.")
+        } catch {
+            print("DEBUG: Error clearing shopping list: \(error)")
+        }
     }
-    
 
+    /// Method used to add ingredients from recipe to shoping list in recipe details or single ingredient in shoping list screen
     func addIngredientsToShopingList(ingredients: [IngredientModel]) {
         let data = ShopingListEntity(context: moc.context)
         data.id = UUID()
@@ -385,4 +383,3 @@ enum DataRepositoryError: Error {
     case fetchAllRecipesError
     case saveError
 }
-

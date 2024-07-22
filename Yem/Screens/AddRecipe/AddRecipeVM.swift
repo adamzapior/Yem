@@ -9,8 +9,8 @@ import Combine
 import CoreData
 import Foundation
 import Kingfisher
-import UIKit
 import LifetimeTracker
+import UIKit
 
 protocol AddRecipeVCDelegate: AnyObject {
     func loadDataToEditor()
@@ -23,7 +23,7 @@ protocol AddRecipeIngredientsVCDelegate: AnyObject {
 }
 
 protocol AddIngredientSheetVCDelegate: AnyObject {
-    func delegateIngredientError(_ type: ValidationErrorTypes)
+    func delegateIngredientSheetError(_ type: ValidationErrorTypes)
 }
 
 protocol AddRecipeInstructionsVCDelegate: AnyObject {
@@ -51,9 +51,6 @@ final class AddRecipeViewModel: IngredientViewModel {
     
     @Published
     var selectedImage: UIImage?
-//    
-//    @Published
-//    var slectedImageView: UIImageView?
     
     @Published
     var recipeTitle: String = ""
@@ -128,13 +125,13 @@ final class AddRecipeViewModel: IngredientViewModel {
     
     /// Igredient
     @Published
-    var igredientNameIsError: Bool = false
+    var ingredientNameIsError: Bool = false
     
     @Published
-    var igredientValueIsError: Bool = false
+    var ingredientValueIsError: Bool = false
     
     @Published
-    var igredientValueTypeIsError: Bool = false
+    var ingredientValueTypeIsError: Bool = false
     
     @Published
     var ingredientListIsError: Bool = false
@@ -170,7 +167,12 @@ final class AddRecipeViewModel: IngredientViewModel {
     
     var difficultyRowArray: [RecipeDifficulty] = RecipeDifficulty.allCases
     
+    
     lazy var valueTypeArray: [String] = ["Unit", "Grams (g)", "Kilograms (kg)", "Milliliters (ml)", "Liters (L)", "Teaspoons (tsp)", "Tablespoons (Tbsp)", "Cups (c)", "Pinch"]
+    
+//    var valueTypeArray: [String] {
+//            return IngredientValueType.allCases.map { $0.displayName }
+//        }
     
     var didRecipeExist: Bool = false
     
@@ -198,10 +200,10 @@ final class AddRecipeViewModel: IngredientViewModel {
 
     func addIngredientToList() -> Bool {
         validationErrors = []
-        resetIgredientValidationFlags()
+        resetIngredientValidationFlags()
         validateIngredientForm()
         
-        if igredientNameIsError || igredientValueIsError || igredientValueTypeIsError {
+        if ingredientNameIsError || ingredientValueIsError || ingredientValueTypeIsError {
             return false
         }
         
@@ -213,7 +215,7 @@ final class AddRecipeViewModel: IngredientViewModel {
     
     func addInstructionToList() -> Bool {
         validationErrors = []
-        resetValidationFlags()
+        resetInstructionValidationFlags()
         validateInstruction()
         
         if instructionIsError {
@@ -260,12 +262,11 @@ final class AddRecipeViewModel: IngredientViewModel {
     /// Save method:
     
     func saveRecipe() -> Bool {
-        // MARK: TESTY TESTY TESTY !!!!!!!! !!!!!! !!!!! !!!! !!!!!
-//        validationErrors = []
-//        resetValidationFlags()
-//        resetIgredientValidationFlags()
-//        resetInstructionValidationFlags()
-//        validateForms()
+        validationErrors = []
+        resetValidationFlags()
+        resetIngredientValidationFlags()
+        resetInstructionValidationFlags()
+        validateForms()
 
         if recipeTitleIsError || servingIsError || difficultyIsError || perpTimeIsError || spicyIsError || categoryIsError || ingredientListIsError || instructionIsError {
             print("DEBUG: Validation failed: Title, serving, difficulty, preparation time, spicy, category, ingredients, instruction error")
@@ -303,15 +304,6 @@ final class AddRecipeViewModel: IngredientViewModel {
             
             let fetchImageView = UIImageView()
             
-//            if slectedImageView == nil {
-//                slectedImageView = UIImageView()
-//            }
-
-            
-//            if selectedImage == nil {
-//                selectedImage = UIImageView()
-//            }
-            
             fetchImageView.kf.setImage(with: provider) { result in
                 switch result {
                 case .success(let result):
@@ -344,9 +336,7 @@ final class AddRecipeViewModel: IngredientViewModel {
                                  isImageSaved: isImageSaved,
                                  isFavourite: isFavourite)
         
-        let recipeForTest = RecipeModel(id: UUID(), name: "Test", serving: "3", perpTimeHours: "2", perpTimeMinutes: "2", spicy: .medium, category: .notSelected, difficulty: .easy, ingredientList: [IngredientModel(id: UUID(), value: "xd", valueType: "yyy", name: "fff")], instructionList: [InstructionModel(id: UUID(), index: 2, text: "XDDD")], isImageSaved: false, isFavourite: true)
-
-        repository.addRecipe(recipe: recipeForTest)
+        repository.addRecipe(recipe: recipe)
 
         if let image = selectedImage {
             let imageSaved = LocalFileManager.instance.saveImage(with: recipeID.uuidString, image: image)
@@ -466,22 +456,24 @@ final class AddRecipeViewModel: IngredientViewModel {
     
     private func validateIgredientName() {
         if ingredientName.isEmpty {
-            igredientNameIsError = true
-            delegateDetailsError(.ingredientName)
+            ingredientNameIsError = true
+            delegateIngredientSheetError(.ingredientName)
         }
     }
     
     private func validateIgredientValue() {
         if ingredientValue.isEmpty {
-            igredientValueIsError = true
-            delegateDetailsError(.ingredientValue)
+            ingredientValueIsError = true
+            delegateIngredientSheetError(.ingredientValue)
         }
     }
     
     private func validateIgredientValueType() {
         if ingredientValueType.isEmpty {
-            igredientValueTypeIsError = true
-            delegateDetailsError(.ingredientValueType)
+            ingredientValueTypeIsError = true
+            delegateIngredientSheetError(.ingredientValueType)
+        } else {
+            ingredientValueTypeIsError = false
         }
     }
     
@@ -489,14 +481,15 @@ final class AddRecipeViewModel: IngredientViewModel {
         if ingredientsList.isEmpty {
             ingredientListIsError = true
             validationErrors.append(.ingredientsList)
-            delegateIngredientsError(.ingredientList)
+            delegateIngredients?.delegateIngredientsError(.ingredientList)
         }
     }
     
     private func validateInstruction() {
         if instruction.isEmpty {
             instructionIsError = true
-            delegateInstructionError(.instructionList)
+//            delegateInstructionError(.instruction)
+            delegateInstructionSheet?.delegateInstructionError(.instruction)
         }
     }
     
@@ -504,6 +497,7 @@ final class AddRecipeViewModel: IngredientViewModel {
         if instructionList.isEmpty {
             instructionListIsError = true
             validationErrors.append(.instructionList)
+            print("test ssfs")
             delegateInstructionsError(.instructionList)
         }
     }
@@ -536,10 +530,10 @@ final class AddRecipeViewModel: IngredientViewModel {
         instructionListIsError = false
     }
     
-    private func resetIgredientValidationFlags() {
-        igredientNameIsError = false
-        igredientValueIsError = false
-        igredientValueTypeIsError = false
+    private func resetIngredientValidationFlags() {
+        ingredientNameIsError = false
+        ingredientValueIsError = false
+        ingredientValueTypeIsError = false
     }
     
     private func resetInstructionValidationFlags() {
@@ -582,9 +576,9 @@ extension AddRecipeViewModel: AddRecipeIngredientsVCDelegate {
 }
 
 extension AddRecipeViewModel: AddIngredientSheetVCDelegate {
-    func delegateIngredientError(_ type: ValidationErrorTypes) {
+    func delegateIngredientSheetError(_ type: ValidationErrorTypes) {
         DispatchQueue.main.async {
-            self.delegateIngredientSheet?.delegateIngredientError(type)
+            self.delegateIngredientSheet?.delegateIngredientSheetError(type)
         }
     }
 }
@@ -671,7 +665,6 @@ enum ValidationErrorTypes {
     case instruction
     case instructionList
 }
-
 
 #if DEBUG
 extension AddRecipeViewModel: LifetimeTrackable {

@@ -15,6 +15,7 @@ final class ShopingListVC: UIViewController {
     private let tableView = UITableView()
     private let emptyTableLabel = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
 
+    private lazy var addNavItem = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .plain, target: self, action: #selector(addItemButtonTapped))
     private lazy var trashNavItem = UIBarButtonItem(image: UIImage(systemName: "trash"), style: .plain, target: self, action: #selector(trashButtonTapped))
 
     init(coordinator: ShopingListCoordinator, viewModel: ShopingListVM) {
@@ -167,10 +168,15 @@ extension ShopingListVC: ShopingListVMDelegate {
 
 extension ShopingListVC {
     func setupNavigationBarButtons() {
-        navigationItem.setRightBarButtonItems([trashNavItem], animated: true)
+        navigationItem.setLeftBarButton(trashNavItem, animated: true)
+        navigationItem.setRightBarButton(addNavItem, animated: true)
         trashNavItem.tintColor = .red
     }
 
+    @objc func addItemButtonTapped(_ sender: UIBarButtonItem) {
+        coordinator?.presentAddItemSheet()
+    }
+    
     @objc func trashButtonTapped(_ sender: UIBarButtonItem) {
         coordinator?.presentClearShopingListAlert()
     }

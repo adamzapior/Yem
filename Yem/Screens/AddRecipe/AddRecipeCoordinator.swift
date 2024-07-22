@@ -8,7 +8,7 @@
 import LifetimeTracker
 import UIKit
 
-final class AddRecipeCoordinator: Destination {
+final class AddRecipeCoordinator: Destination, Coordinator {
     let viewModel: AddRecipeViewModel
     weak var parentCoordinator: Destination?
 
@@ -54,8 +54,8 @@ final class AddRecipeCoordinator: Destination {
         navigator?.presentAlert(alertVC)
     }
 
-    func dismissVC() {
-        navigator?.dismissAlert()
+    func dismissSheet() {
+        navigator?.dismissSheet()
     }
 
     func dismissVCStack() {

@@ -13,12 +13,38 @@ protocol ShopingListVMDelegate: AnyObject {
     func reloadTable()
 }
 
-final class ShopingListVM {
+final class ShopingListVM: IngredientViewModel {
+    var delegateIngredients: (any AddRecipeIngredientsVCDelegate)?
+
+    weak var delegateIngredientSheet: AddIngredientSheetVCDelegate?
+
     weak var delegate: ShopingListVMDelegate?
     let repository: DataRepository
 
     var uncheckedList: [ShopingListModel] = []
     var checkedList: [ShopingListModel] = []
+
+    @Published
+    var ingredientName: String = ""
+
+    @Published
+    var ingredientValue: String = ""
+
+    @Published
+    var ingredientValueType: String = ""
+
+    @Published
+    var ingredientNameIsError: Bool = false
+
+    @Published
+    var ingredientValueIsError: Bool = false
+
+    @Published
+    var ingredientValueTypeIsError: Bool = false
+
+    var valueTypeArray: [String] {
+        return IngredientValueType.allCases.map { $0.displayName }
+    }
 
     private var cancellables: Set<AnyCancellable> = []
 
@@ -32,11 +58,13 @@ final class ShopingListVM {
                 }
             })
             .store(in: &cancellables)
-        
+
 #if DEBUG
         trackLifetime()
 #endif
     }
+
+    // MARK: - Public methods
 
     func loadShopingList() {
         let uncheckedResult = repository.fetchShopingList(isChecked: false)
@@ -69,14 +97,76 @@ final class ShopingListVM {
             ingredient.isChecked = false
             uncheckedList.append(ingredient)
         }
-        
+
         repository.updateShopingList(shopingList: ingredient)
         reloadTable()
     }
-    
+
+    func addIngredientToList() -> Bool {
+        resetIngredientValidationFlags()
+        validateIngredientForm()
+
+        if ingredientNameIsError || ingredientValueIsError || ingredientValueTypeIsError {
+            return false
+        }
+
+        repository.addIngredientsToShopingList(ingredients: [IngredientModel(id: UUID(), value: ingredientValue, valueType: ingredientValueType, name: ingredientName)])
+        clearIngredientProperties()
+        return true
+    }
+
     func clearShopingList() {
         repository.clearShopingList()
         reloadTable()
+    }
+
+    // MARK: - Private methods
+
+    private func resetIngredientValidationFlags() {
+        ingredientNameIsError = false
+        ingredientValueIsError = false
+        ingredientValueTypeIsError = false
+    }
+
+    private func validateIngredientForm() {
+        validateIngredientName()
+        validateIngredientValue()
+        validateIngredientValueType()
+    }
+
+    private func validateIngredientName() {
+        if ingredientName.isEmpty {
+            ingredientNameIsError = true
+            delegateIngredientSheetError(.ingredientName)
+        }
+    }
+
+    private func validateIngredientValue() {
+        if ingredientValue.isEmpty {
+            ingredientValueIsError = true
+            delegateIngredientSheetError(.ingredientValue)
+        }
+    }
+
+    private func validateIngredientValueType() {
+        if ingredientValueType.isEmpty {
+            ingredientValueTypeIsError = true
+            delegateIngredientSheetError(.ingredientValueType)
+        }
+    }
+
+    private func clearIngredientProperties() {
+        ingredientName = ""
+        ingredientValue = ""
+        ingredientValueType = ""
+    }
+}
+
+extension ShopingListVM: AddIngredientSheetVCDelegate {
+    func delegateIngredientSheetError(_ type: ValidationErrorTypes) {
+        DispatchQueue.main.async {
+            self.delegateIngredientSheet?.delegateIngredientSheetError(type)
+        }
     }
 }
 

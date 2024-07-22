@@ -8,12 +8,12 @@
 import LifetimeTracker
 import UIKit
 
-final class ShopingListCoordinator: Destination {
+final class ShopingListCoordinator: Destination, Coordinator {
+    
     private weak var parentCoordinator: TabBarCoordinator?
     
     var tabNavigator: Navigator?
 
-    
     let repository: DataRepository
     let viewModel: ShopingListVM
     
@@ -28,6 +28,7 @@ final class ShopingListCoordinator: Destination {
 #endif
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -41,8 +42,15 @@ final class ShopingListCoordinator: Destination {
                                                         selectedImage: nil)
         return shopingListController
     }
-
     
+    func presentAddItemSheet() {
+        navigator?.presentSheet(AddIngredientSheetVC(viewModel: viewModel as IngredientViewModel, coordinator: self as Coordinator))
+    }
+    
+    func dismissSheet() {
+        navigator?.dismissSheet()
+    }
+
     func presentClearShopingListAlert() {
         let title = "Remove ingredients"
         let message = "Do you want to remove all ingredients from shoping list?"
