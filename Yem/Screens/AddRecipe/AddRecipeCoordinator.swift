@@ -47,11 +47,32 @@ final class AddRecipeCoordinator: Destination, Coordinator {
         }
     }
 
+    func showSettingsAlert(for resource: String) {
+        let title = "Access to \(resource) is required"
+        let message = "Please enable access to the \(resource) in Settings."
+        
+        let alertVC = DualOptionAlertVC(title: title, message: message) {
+            self.navigator?.presentSystemSettings()
+            self.dismissAlert()
+        } cancelAction: {
+            self.dismissAlert()
+        }
+        
+        alertVC.modalPresentationStyle = .overFullScreen
+        alertVC.modalTransitionStyle = .crossDissolve
+        navigator?.presentAlert(alertVC)
+    }
+    
+
     func presentValidationAlert(title: String, message: String) {
         let alertVC = ValidationAlertVC(title: title, message: message)
         alertVC.modalPresentationStyle = .overFullScreen
         alertVC.modalTransitionStyle = .crossDissolve
         navigator?.presentAlert(alertVC)
+    }
+    
+    func dismissAlert() {
+        navigator?.dismissAlert()
     }
 
     func dismissSheet() {

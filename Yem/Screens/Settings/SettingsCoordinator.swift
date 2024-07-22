@@ -45,16 +45,7 @@ final class SettingsCoordinator: Destination {
     }
 
     func presentSystemSettings() {
-        guard let settingsUrl = URL(string: UIApplication.openSettingsURLString),
-              UIApplication.shared.canOpenURL(settingsUrl)
-        else {
-            print("DEBUG: Cannot open system settings.")
-            return
-        }
-
-        DispatchQueue.main.async {
-            UIApplication.shared.open(settingsUrl, options: [:], completionHandler: nil)
-        }
+        navigator?.presentSystemSettings()
     }
 }
 

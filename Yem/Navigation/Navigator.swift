@@ -79,6 +79,21 @@ final class Navigator {
         navigationController.dismiss(animated: true)
     }
 
+    // MARK: - Deeplink to settings
+
+    func presentSystemSettings() {
+        guard let settingsUrl = URL(string: UIApplication.openSettingsURLString),
+              UIApplication.shared.canOpenURL(settingsUrl)
+        else {
+            print("DEBUG: Cannot open system settings.")
+            return
+        }
+
+        DispatchQueue.main.async {
+            UIApplication.shared.open(settingsUrl, options: [:], completionHandler: nil)
+        }
+    }
+
     // MARK: - Logout Management
 
     func clearAllViewControllers() {
@@ -87,4 +102,3 @@ final class Navigator {
         }
     }
 }
-

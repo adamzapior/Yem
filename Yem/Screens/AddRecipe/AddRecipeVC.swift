@@ -10,6 +10,9 @@ import LifetimeTracker
 import SnapKit
 import UIKit
 
+import AVFoundation
+import Photos
+
 final class AddRecipeVC: UIViewController {
     // MARK: - Properties
     
@@ -67,18 +70,18 @@ final class AddRecipeVC: UIViewController {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
 
-     #if DEBUG
-        trackLifetime()
-     #endif
+        #if DEBUG
+            trackLifetime()
+        #endif
     }
     
 //    init(viewModel: AddRecipeViewModel) {
 //        self.viewModel = viewModel
 //        super.init(nibName: nil, bundle: nil)
-//        
-//#if DEBUG
+//
+    // #if DEBUG
 //        trackLifetime()
-//#endif
+    // #endif
 //    }
     
     @available(*, unavailable)
@@ -278,18 +281,80 @@ final class AddRecipeVC: UIViewController {
 
 extension AddRecipeVC: AddPhotoViewDelegate, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
     func addPhotoViewTapped() {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            self.present(self.addPhotoImagePicker, animated: true, completion: nil)
+        let actionSheet = UIAlertController(title: "Select source", message: "", preferredStyle: .actionSheet)
+        actionSheet.view.tintColor = .orange
+            
+        let chooseFromLibraryAction = UIAlertAction(title: "Choose from Library", style: .default) { [weak self] _ in
+            self?.checkPhotoLibraryPermission()
         }
+            
+        let takePhotoAction = UIAlertAction(title: "Take Photo", style: .default) { [weak self] _ in
+            self?.checkCameraPermission()
+        }
+            
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            
+        actionSheet.addAction(chooseFromLibraryAction)
+        actionSheet.addAction(takePhotoAction)
+        actionSheet.addAction(cancelAction)
+            
+        present(actionSheet, animated: true, completion: nil)
     }
     
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-        if let image = info[.originalImage] as? UIImage {
-            viewModel.selectedImage = image
-            addPhotoView.updatePhoto(with: image)
+    private func checkPhotoLibraryPermission() {
+        let status = PHPhotoLibrary.authorizationStatus()
+        switch status {
+        case .authorized:
+            presentImagePicker(sourceType: .photoLibrary)
+        case .denied, .restricted:
+            coordinator?.showSettingsAlert(for: "photo library")
+        case .notDetermined:
+            PHPhotoLibrary.requestAuthorization { status in
+                DispatchQueue.main.async {
+                    if status == .authorized {
+                        self.presentImagePicker(sourceType: .photoLibrary)
+                    } else {
+                        self.coordinator?.showSettingsAlert(for: "photo library")
+                    }
+                }
+            }
+        default:
+            break
         }
-        picker.dismiss(animated: true, completion: nil)
+    }
+        
+    private func checkCameraPermission() {
+        let status = AVCaptureDevice.authorizationStatus(for: .video)
+        switch status {
+        case .authorized:
+            presentImagePicker(sourceType: .camera)
+        case .denied, .restricted:
+            coordinator?.showSettingsAlert(for: "camera")
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video) { granted in
+                DispatchQueue.main.async {
+                    if granted {
+                        self.presentImagePicker(sourceType: .camera)
+                    } else {
+                        self.coordinator?.showSettingsAlert(for: "camera")
+                    }
+                }
+            }
+        @unknown default:
+            break
+        }
+    }
+
+    private func presentImagePicker(sourceType: UIImagePickerController.SourceType) {
+        guard UIImagePickerController.isSourceTypeAvailable(sourceType) else {
+            let alert = UIAlertController(title: "Error", message: "This feature is not available", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(alert, animated: true, completion: nil)
+            return
+        }
+            
+        addPhotoImagePicker.sourceType = sourceType
+        present(addPhotoImagePicker, animated: true, completion: nil)
     }
 }
 
@@ -597,9 +662,9 @@ extension AddRecipeVC {
 }
 
 #if DEBUG
-extension AddRecipeVC: LifetimeTrackable {
-    class var lifetimeConfiguration: LifetimeConfiguration {
-        return LifetimeConfiguration(maxCount: 1, groupName: "ViewControllers")
+    extension AddRecipeVC: LifetimeTrackable {
+        class var lifetimeConfiguration: LifetimeConfiguration {
+            return LifetimeConfiguration(maxCount: 1, groupName: "ViewControllers")
+        }
     }
-}
 #endif
