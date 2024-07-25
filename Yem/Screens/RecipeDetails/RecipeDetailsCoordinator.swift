@@ -89,7 +89,7 @@ final class RecipeDetailsCoordinator: Destination {
     }
 
     func navigateToRecipeEditor() {
-        let viewModel = AddRecipeViewModel(repository: repository)
+        let viewModel = AddRecipeViewModel(repository: repository, existingRecipe: recipe)
         let coordinator = AddRecipeCoordinator(viewModel: viewModel)
         coordinator.parentCoordinator = self
         navigator?.presentDestination(coordinator)

@@ -15,12 +15,27 @@ protocol RecipesListVMDelegate: AnyObject {
     func reloadTable()
 }
 
+protocol RecipesSearchResultDelegate: AnyObject {
+    func reloadTable()
+}
+
 final class RecipesListVM {
     weak var delegate: RecipesListVMDelegate?
+    weak var delegateRecipesSearchResult: RecipesSearchResultDelegate?
+
     let repository: DataRepository
     
     var sections: [Section] = []
-    var recipes: [RecipeModel] = []
+    
+    var recipes: [RecipeModel] = [] {
+        didSet {
+            filterRecipes(query: currentQuery)
+        }
+    }
+    
+    var filteredRecipes: [RecipeModel] = []
+    
+    private var currentQuery: String = ""
     
     private var cancellables: Set<AnyCancellable> = []
     
@@ -71,6 +86,32 @@ final class RecipesListVM {
             print("DEBUG: Error loading recipes: \(error)")
         }
     }
+    
+    func filterRecipes(query: String) {
+            currentQuery = query
+            if query.isEmpty {
+                filteredRecipes = recipes
+            } else {
+                filteredRecipes = recipes.filter { $0.name.lowercased().contains(query.lowercased()) }
+            }
+            self.reloadSearchableTable()
+        }
+    
+//    func filterRecipes(with searchText: String) {
+//        if searchText.isEmpty {
+//            filteredRecipes = recipes
+//        } else {
+//            filteredRecipes = recipes.filter { recipe in
+//                recipe.name.lowercased().contains(searchText.lowercased())
+//            }
+//        }
+//        
+//        for fa in filteredRecipes {
+//            print(fa.name)
+//        }
+//        self.reloadSearchableTable()
+//    }
+
 
     // MARK: - Private methods
 
@@ -93,6 +134,14 @@ extension RecipesListVM: RecipesListVMDelegate {
     func reloadTable() {
         DispatchQueue.main.async {
             self.delegate?.reloadTable()
+        }
+    }
+}
+
+extension RecipesListVM: RecipesSearchResultDelegate {
+    func reloadSearchableTable() {
+        DispatchQueue.main.async {
+            self.delegateRecipesSearchResult?.reloadTable()
         }
     }
 }

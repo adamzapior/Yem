@@ -15,13 +15,16 @@ final class RecipesListVC: UIViewController {
 
     private var collectionView: UICollectionView!
 
+    lazy var searchResultVC = RecipesSearchResultsVC(coordinator: coordinator, viewModel: viewModel)
+    private var searchController: UISearchController!
+
     // MARK: - Lifecycle
 
     init(coordinator: RecipesListCoordinator, viewModel: RecipesListVM) {
         self.coordinator = coordinator
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        
+
 #if DEBUG
         trackLifetime()
 #endif
@@ -39,6 +42,7 @@ final class RecipesListVC: UIViewController {
         viewModel.delegate = self
 
         setupNavigationBar()
+        setupSearchController()
         setupCollectionView()
 
         Task {
@@ -47,6 +51,15 @@ final class RecipesListVC: UIViewController {
     }
 
     // MARK: - UI Setup
+
+    private func setupSearchController() {
+        searchController = UISearchController(searchResultsController: searchResultVC)
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search your recipes"
+        navigationItem.searchController = searchController
+        definesPresentationContext = true
+    }
 
     private func setupCollectionView() {
         let layout = setupLayout()
@@ -125,6 +138,13 @@ final class RecipesListVC: UIViewController {
 
 // MARK: - Delegates
 
+extension RecipesListVC: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let searchText = searchController.searchBar.text else { return }
+        viewModel.filterRecipes(query: searchText)
+    }
+}
+
 extension RecipesListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return viewModel.sections.count
@@ -184,7 +204,6 @@ extension RecipesListVC: UICollectionViewDelegate, UICollectionViewDataSource, U
 extension RecipesListVC: RecipesListVMDelegate {
     func reloadTable() {
         collectionView.reloadData()
-        
     }
 }
 
@@ -193,7 +212,7 @@ extension RecipesListVC: RecipesListVMDelegate {
 extension RecipesListVC {
     func setupNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = false
-        
+
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "gearshape"), style: .done, target: self, action: #selector(settingsButtonTapped))
         navigationItem.leftBarButtonItem?.tintColor = .ui.theme
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addRecipeButtonTapped))
@@ -203,7 +222,7 @@ extension RecipesListVC {
     @objc func addRecipeButtonTapped() {
         coordinator.navigateToAddRecipeScreen()
     }
-    
+
     @objc func settingsButtonTapped() {
         coordinator.navigateToSettings()
     }
