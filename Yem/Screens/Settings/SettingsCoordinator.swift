@@ -29,6 +29,14 @@ final class SettingsCoordinator: Destination {
 
     // MARK: Navigation
 
+    func presentAboutAppAlert() {
+        let title = "About this app"
+        let message = "Yem is an app created for portfolio and educational purposes by Adam Zapiór. You can check out more of my projects and GitHub under the username @adamzapior"
+        let alertVC = ValidationAlertVC(title: title, message: message)
+
+        navigator?.presentAlert(alertVC)
+    }
+
     func presentLogoutAlert() {
         let title = "Are you sure?"
         let message = "Do you want to logout from app?"

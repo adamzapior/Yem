@@ -93,11 +93,8 @@ extension SettingsVC: UITableViewDelegate, UITableViewDataSource {
         switch indexPath.row {
         case 0:
             coordinator.presentSystemSettings()
-            // Handle Notifications row selection
-            print("Notifications row tapped")
         case 1:
-            // Handle About App row selection
-            print("About App row tapped")
+            coordinator.presentAboutAppAlert()
         case 2:
             coordinator.presentLogoutAlert()
         default:
