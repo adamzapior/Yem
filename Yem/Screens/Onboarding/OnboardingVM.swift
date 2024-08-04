@@ -10,13 +10,19 @@ import Foundation
 import LifetimeTracker
 
 protocol LoginOnboardingDelegate: AnyObject {
-    func showAlert()
+    func showLoginErrorAlert()
+}
+
+protocol RegisterOnboardingDelegate: AnyObject {
+    func showRegisterErrorAlert()
 }
 
 final class OnboardingVM {
     weak var delegeteLoginOnb: LoginOnboardingDelegate?
+    weak var delegateRegisterOnb: RegisterOnboardingDelegate?
+
     var authManager: AuthenticationManager
-    
+
     @Published
     var user: UserModel?
 
@@ -30,7 +36,7 @@ final class OnboardingVM {
     var password: String = ""
 
     @Published
-    var isCheckboxValidation: Bool = false
+    var validationError: String = ""
 
     init(authManager: AuthenticationManager) {
         self.authManager = authManager
@@ -38,34 +44,48 @@ final class OnboardingVM {
         trackLifetime()
 #endif
     }
-    
-    func loginUser(email: String, password: String) async throws -> UserModel {
+
+    func loginUser(email: String, password: String) async throws -> UserModel? {
         do {
             let userModel = try await authManager.loginUser(email: email, password: password)
             user = userModel
             return userModel
         } catch {
-            print(error)
-            throw error
+            handleError(error)
+            showLoginErrorAlert()
+            return nil
         }
     }
 
-    func createUser(email: String, password: String) async throws -> UserModel {
+    func createUser(email: String, password: String) async throws -> UserModel? {
         do {
             let userModel = try await authManager.createUser(email: email, password: password)
             user = userModel
             return userModel
         } catch {
-            print(error.localizedDescription)
-            throw error
+            handleError(error)
+            showRegisterErrorAlert()
+            return nil
         }
+    }
+
+    private func handleError(_ error: Error) {
+        validationError = error.localizedDescription
     }
 }
 
 extension OnboardingVM: LoginOnboardingDelegate {
-    func showAlert() {
+    func showLoginErrorAlert() {
         DispatchQueue.main.async { [weak self] in
-            self?.delegeteLoginOnb?.showAlert()
+            self?.delegeteLoginOnb?.showLoginErrorAlert()
+        }
+    }
+}
+
+extension OnboardingVM: RegisterOnboardingDelegate {
+    func showRegisterErrorAlert() {
+        DispatchQueue.main.async { [weak self] in
+            self?.delegateRegisterOnb?.showRegisterErrorAlert()
         }
     }
 }

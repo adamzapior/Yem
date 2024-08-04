@@ -47,6 +47,7 @@ final class RegisterOnboardingVC: UIViewController {
         setupTag()
         setupTextfieldBehaviour() 
 
+        viewModel.delegateRegisterOnb = self
         loginButton.delegate = self
     }
 
@@ -179,11 +180,20 @@ extension RegisterOnboardingVC: TextfieldWithIconDelegate, ActionButtonDelegate 
     func actionButtonTapped(_ button: ActionButton) {
         Task {
             do {
-                let userModel = try await viewModel.createUser(email: viewModel.login, password: viewModel.password)
-            } catch {
-                print("Błąd podczas rejestracji: \(error)")
+                let newUser = try await viewModel.createUser(email: viewModel.login, password: viewModel.password)
+                if let newUser = newUser {
+                    await MainActor.run {
+                        coordinator.navigateToApp(user: newUser)
+                    }
+                }
             }
         }
+    }
+}
+
+extension RegisterOnboardingVC: RegisterOnboardingDelegate {
+    func showRegisterErrorAlert() {
+        coordinator.presentAlert(title: "Something went wrong!", message: viewModel.validationError)
     }
 }
 

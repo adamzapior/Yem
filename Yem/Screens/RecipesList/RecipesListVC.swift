@@ -18,7 +18,7 @@ final class RecipesListVC: UIViewController {
     lazy var searchResultVC = RecipesSearchResultsVC(coordinator: coordinator, viewModel: viewModel)
     private var searchController: UISearchController!
 
-    // MARK: - Lifecycle
+    // MARK: - Lifecycle	
 
     init(coordinator: RecipesListCoordinator, viewModel: RecipesListVM) {
         self.coordinator = coordinator

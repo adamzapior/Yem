@@ -48,8 +48,8 @@ final class LoginOnboardingVC: UIViewController {
         setupTag()
         setupTextfieldBehaviour()
 
+        viewModel.delegeteLoginOnb = self
         loginButton.delegate = self
-        
     }
 
     private func setupUI() {
@@ -70,7 +70,7 @@ final class LoginOnboardingVC: UIViewController {
         textLabel.text = "Login to app"
         loginLabel.text = "Login"
         passwordLabel.text = "Password"
-        
+
         textLabel.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.centerX.equalToSuperview()
@@ -103,7 +103,7 @@ final class LoginOnboardingVC: UIViewController {
             make.leading.trailing.equalToSuperview().inset(12)
         }
     }
-    
+
     private func setupTextfieldBehaviour() {
         loginTextfield.textField.autocapitalizationType = .none
         passwordTextfield.textField.autocapitalizationType = .none
@@ -112,12 +112,6 @@ final class LoginOnboardingVC: UIViewController {
 }
 
 // MARK: - Delegates
-
-extension LoginOnboardingVC: LoginOnboardingDelegate {
-    func showAlert() {
-        //
-    }
-}
 
 extension LoginOnboardingVC: TextfieldWithIconDelegate, ActionButtonDelegate {
     func setupDelegate() {
@@ -190,14 +184,19 @@ extension LoginOnboardingVC: TextfieldWithIconDelegate, ActionButtonDelegate {
         Task {
             do {
                 let userModel = try await viewModel.loginUser(email: viewModel.login, password: viewModel.password)
-                await MainActor.run {
-                    coordinator.navigateToApp(user: userModel)
+                if let userModel = userModel {
+                    await MainActor.run {
+                        coordinator.navigateToApp(user: userModel)
+                    }
                 }
-            } catch {
-                // Obsługa błędów, np. wyświetlenie alertu użytkownikowi
-                print(error)
             }
         }
+    }
+}
+
+extension LoginOnboardingVC: LoginOnboardingDelegate {
+    func showLoginErrorAlert() {
+        coordinator.presentAlert(title: "Something went wrong!", message: viewModel.validationError)
     }
 }
 
