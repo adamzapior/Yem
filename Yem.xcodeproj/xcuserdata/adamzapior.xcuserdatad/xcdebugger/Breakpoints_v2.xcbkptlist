@@ -3,4 +3,20 @@
    uuid = "46535AA9-F3DA-4303-8EAC-0CAC3E5B6A68"
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.SymbolicBreakpoint">
+         <BreakpointContent
+            uuid = "F3E2459C-E1EE-438C-A59A-7D7C4E2BC8AF"
+            shouldBeEnabled = "Yes"
+            nameForDebugger = "CGPostError"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            symbolName = ""
+            moduleName = "">
+            <Locations>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>
