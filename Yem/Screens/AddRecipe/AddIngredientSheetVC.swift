@@ -253,7 +253,7 @@ extension AddIngredientSheetVC: UIPickerViewDelegate, UIPickerViewDataSource {
     }
 
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return viewModel.valueTypeArray.count
+        return viewModel.ingredientValueTypeArray.count
     }
     
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
@@ -264,7 +264,7 @@ extension AddIngredientSheetVC: UIPickerViewDelegate, UIPickerViewDataSource {
             label = UILabel(frame: CGRect(x: 0, y: 0, width: screenWidth, height: 30))
             label.textAlignment = .center
         }
-        label.text = viewModel.valueTypeArray[row]
+        label.text = viewModel.ingredientValueTypeArray[row].displayName
         return label
     }
     
@@ -273,10 +273,10 @@ extension AddIngredientSheetVC: UIPickerViewDelegate, UIPickerViewDataSource {
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        let selectedRow = viewModel.valueTypeArray[row]
-        valueTypeCell.textOnButton.text = selectedRow
+        let selectedRow = viewModel.ingredientValueTypeArray[row]
+        valueTypeCell.textOnButton.text = selectedRow.displayName
         valueTypeCell.textOnButton.textColor = .ui.primaryText
-        viewModel.ingredientValueType = selectedRow
+        viewModel.ingredientValueType = selectedRow.displayName
     }
     
     func popUpPicker(for pickerView: UIPickerView, title: String) {
@@ -298,10 +298,10 @@ extension AddIngredientSheetVC: UIPickerViewDelegate, UIPickerViewDataSource {
         let selectAction = UIAlertAction(title: "Select", style: .default, handler: { _ in
             let selectedRow = pickerView.selectedRow(inComponent: 0)
  
-            let selectedValueType = self.viewModel.valueTypeArray[selectedRow]
-            self.valueTypeCell.textOnButton.text = selectedValueType
+            let selectedValueType = self.viewModel.ingredientValueTypeArray[selectedRow]
+            self.valueTypeCell.textOnButton.text = selectedValueType.displayName
             self.valueTypeCell.textOnButton.textColor = .ui.primaryText
-            self.viewModel.ingredientValueType = selectedValueType
+            self.viewModel.ingredientValueType = selectedValueType.displayName
         })
         
         selectAction.setValue(UIColor.orange, forKey: "titleTextColor")

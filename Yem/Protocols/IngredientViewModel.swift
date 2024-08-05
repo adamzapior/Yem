@@ -13,7 +13,7 @@ protocol IngredientViewModel {
     var ingredientName: String { get set }
     var ingredientValue: String { get set }
     var ingredientValueType: String { get set }
-    var valueTypeArray: [String] { get }
+    var ingredientValueTypeArray: [IngredientValueType] { get }
     func addIngredientToList() -> Bool
 }
 

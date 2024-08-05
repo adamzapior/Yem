@@ -42,9 +42,7 @@ final class ShopingListVM: IngredientViewModel {
     @Published
     var ingredientValueTypeIsError: Bool = false
 
-    var valueTypeArray: [String] {
-        return IngredientValueType.allCases.map { $0.displayName }
-    }
+    var ingredientValueTypeArray: [IngredientValueType] = IngredientValueType.allCases
 
     private var cancellables: Set<AnyCancellable> = []
 

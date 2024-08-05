@@ -167,12 +167,7 @@ final class AddRecipeViewModel: IngredientViewModel {
     
     var difficultyRowArray: [RecipeDifficulty] = RecipeDifficulty.allCases
     
-    
-    lazy var valueTypeArray: [String] = ["Unit", "Grams (g)", "Kilograms (kg)", "Milliliters (ml)", "Liters (L)", "Teaspoons (tsp)", "Tablespoons (Tbsp)", "Cups (c)", "Pinch"]
-    
-//    var valueTypeArray: [String] {
-//            return IngredientValueType.allCases.map { $0.displayName }
-//        }
+    var ingredientValueTypeArray: [IngredientValueType] = IngredientValueType.allCases
     
     var didRecipeExist: Bool = false
     
