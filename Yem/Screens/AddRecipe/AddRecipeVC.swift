@@ -235,6 +235,11 @@ final class AddRecipeVC: UIViewController {
 
                 let selectedMinutes = self.viewModel.timeMinutesArray[selectedMinutesRow].description
                 self.viewModel.prepTimeMinutes = selectedMinutes
+                
+                if self.viewModel.prepTimeHours == "0"  {
+                    self.coordinator?.presentValidationAlert(title: "Invalid time", message: "Preparation time must be at least 1 minute.")
+                              return
+                          }
 
                 var hours = ""
                 var minutes = ""
