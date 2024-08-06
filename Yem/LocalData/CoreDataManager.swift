@@ -9,7 +9,20 @@ import Combine
 import CoreData
 import Foundation
 
-final class CoreDataManager {
+protocol CoreDataManagerProtocol {
+    var context: NSManagedObjectContext { get }
+    func saveContext()
+    func beginTransaction()
+    func endTransaction()
+    func rollbackTransaction()
+    func allRecipesPublisher() -> AnyPublisher<ObjectChange?, Never>
+    func shopingListPublisher() -> AnyPublisher<ObjectChange?, Never>
+    func fetchAllRecipes() throws -> [RecipeEntity]
+    func fetchRecipesWithName(_ name: String) throws -> [RecipeEntity]?
+    func fetchShopingList(isChecked: Bool) throws -> [ShopingListEntity]
+}
+
+final class CoreDataManager: CoreDataManagerProtocol {
     static let shared = CoreDataManager()
 
     let persistentContainer: NSPersistentContainer
@@ -130,7 +143,7 @@ extension CoreDataManager {
             }
             .eraseToAnyPublisher()
     }
-    
+
     func shopingListPublisher() -> AnyPublisher<ObjectChange?, Never> {
         NotificationCenter.default.publisher(for: NSNotification.Name.NSManagedObjectContextObjectsDidChange, object: context)
             .compactMap { notification in
@@ -158,8 +171,6 @@ extension CoreDataManager {
             }
             .eraseToAnyPublisher()
     }
-
-
 }
 
 enum ObjectChange {

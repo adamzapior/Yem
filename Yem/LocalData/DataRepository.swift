@@ -10,26 +10,42 @@ import CoreData
 import Foundation
 import LifetimeTracker
 
-// protocol DataRepositoryProtocol {
-//    func save()
-//    func fetchAllRecipes() async -> Result<[RecipeEntity], DataRepositoryError>
-//    func searchByQuery()
-//    func delete()
-// }
+protocol DataRepositoryProtocol {
+    var recipesInsertedPublisher: PassthroughSubject<ObjectChange, Never> { get }
+    var recipesDeletedPublisher: PassthroughSubject<ObjectChange, Never> { get }
+    var recipesUpdatedPublisher: PassthroughSubject<ObjectChange, Never> { get }
+    var shopingListPublisher: PassthroughSubject<ObjectChange, Never> { get }
 
-final class DataRepository {
-    let moc = CoreDataManager.shared
-    var cancellables = Set<AnyCancellable>()
+    func save() -> Bool
+    func beginTransaction()
+    func endTransaction()
+    func rollbackTransaction()
+    func doesRecipeExist(with id: UUID) -> Bool
+    func addRecipe(recipe: RecipeModel)
+    func updateRecipe(recipe: RecipeModel)
+    func updateRecipeFavouriteStatus(recipeId: UUID, isFavourite: Bool)
+    func deleteRecipe(withId id: UUID)
+    func fetchAllRecipes() -> Result<[RecipeModel], Error>
+    func fetchRecipesWithName(_ name: String) -> Result<[RecipeModel]?, Error>
+    func fetchShopingList(isChecked: Bool) -> Result<[ShopingListModel], Error>
+    func updateShopingList(shopingList: ShopingListModel)
+    func clearShopingList()
+    func addIngredientsToShopingList(ingredients: [IngredientModel])
+}
+
+final class DataRepository: DataRepositoryProtocol {
+    let moc: CoreDataManagerProtocol
 
     var recipesInsertedPublisher = PassthroughSubject<ObjectChange, Never>()
-
     var recipesDeletedPublisher = PassthroughSubject<ObjectChange, Never>()
-
     var recipesUpdatedPublisher = PassthroughSubject<ObjectChange, Never>()
-
     var shopingListPublisher = PassthroughSubject<ObjectChange, Never>()
 
-    init() {
+    var cancellables = Set<AnyCancellable>()
+
+    init(moc: CoreDataManagerProtocol = CoreDataManager.shared) {
+        self.moc = moc
+
         moc.allRecipesPublisher()
             .sink(receiveValue: { [weak self] recipeChange in
                 Task { [weak self] in
@@ -377,9 +393,4 @@ extension DataRepository {
             isImageSaved: recipeEntity.isImageSaved,
             isFavourite: recipeEntity.isFavourite)
     }
-}
-
-enum DataRepositoryError: Error {
-    case fetchAllRecipesError
-    case saveError
 }

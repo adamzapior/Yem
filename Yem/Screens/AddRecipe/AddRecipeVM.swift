@@ -36,7 +36,7 @@ protocol AddInstructionSheetVCDelegate: AnyObject {
 }
 
 final class AddRecipeViewModel: IngredientViewModel {
-    var repository: DataRepository
+    var repository: DataRepositoryProtocol
     
     weak var delegateDetails: AddRecipeVCDelegate?
     weak var delegateIngredients: AddRecipeIngredientsVCDelegate?
@@ -115,7 +115,7 @@ final class AddRecipeViewModel: IngredientViewModel {
     var servingIsError: Bool = false
     
     @Published
-    var perpTimeIsError: Bool = false
+    var prepTimeIsError: Bool = false
     
     @Published
     var spicyIsError: Bool = false
@@ -142,25 +142,23 @@ final class AddRecipeViewModel: IngredientViewModel {
     @Published
     var instructionListIsError: Bool = false
     
-    /// validation used for validate all recipe
     @Published
     var validationErrors: [ValidateRecipeErrors] = []
 
     // MARK: - Properties
-    
-    /// UIPickerView properties
+        
     var servingRowArray: [Int] {
-        return Array(1...36)
+        return RecipeModel.servingRowArray
     }
 
     var timeHoursArray: [Int] {
-        return Array(0...48)
+        return RecipeModel.timeHoursArray
     }
 
     var timeMinutesArray: [Int] {
-        return Array(0...59)
+        return RecipeModel.timeMinutesArray
     }
-        
+    
     var spicyRowArray: [RecipeSpicy] = RecipeSpicy.allCases
     
     var categoryRowArray: [RecipeCategory] = RecipeCategory.allCases
@@ -173,7 +171,7 @@ final class AddRecipeViewModel: IngredientViewModel {
     
     // MARK: - Initialization
     
-    init(repository: DataRepository, existingRecipe: RecipeModel? = nil) {
+    init(repository: DataRepositoryProtocol, existingRecipe: RecipeModel? = nil) {
         self.repository = repository
         
         if let recipe = existingRecipe {
@@ -194,7 +192,6 @@ final class AddRecipeViewModel: IngredientViewModel {
     /// Add methods:
 
     func addIngredientToList() -> Bool {
-        validationErrors = []
         resetIngredientValidationFlags()
         validateIngredientForm()
         
@@ -209,7 +206,6 @@ final class AddRecipeViewModel: IngredientViewModel {
     }
     
     func addInstructionToList() -> Bool {
-        validationErrors = []
         resetInstructionValidationFlags()
         validateInstruction()
         
@@ -233,24 +229,16 @@ final class AddRecipeViewModel: IngredientViewModel {
             instructionList[index] = instruction
         }
     }
-    
-    func clearIngredientProperties() {
-        ingredientName = ""
-        ingredientValue = ""
-        ingredientValueType = ""
-    }
-    
-    func clearInstructionProperties() {
-        instruction = ""
-    }
 
     /// Delete methods:
     
     func removeIngredientFromList(at index: Int) {
+        guard index >= 0 && index < ingredientsList.count else { return }
         ingredientsList.remove(at: index)
     }
-    
+
     func removeInstructionFromList(at index: Int) {
+        guard index >= 0 && index < instructionList.count else { return }
         instructionList.remove(at: index)
     }
     
@@ -263,7 +251,7 @@ final class AddRecipeViewModel: IngredientViewModel {
         resetInstructionValidationFlags()
         validateForms()
 
-        if recipeTitleIsError || servingIsError || difficultyIsError || perpTimeIsError || spicyIsError || categoryIsError || ingredientListIsError || instructionIsError {
+        if recipeTitleIsError || servingIsError || difficultyIsError || prepTimeIsError || spicyIsError || categoryIsError || ingredientListIsError || instructionIsError {
             print("DEBUG: Validation failed: Title, serving, difficulty, preparation time, spicy, category, ingredients, instruction error")
             return false
         }
@@ -278,7 +266,6 @@ final class AddRecipeViewModel: IngredientViewModel {
     // MARK: - Private methods
     
     /// Load recipe if exsists - method usued when ViewModel is initializated by editing recipe
-    ///
     
     private func loadRecipeData(_ recipe: RecipeModel) {
         recipeID = recipe.id
@@ -384,7 +371,6 @@ final class AddRecipeViewModel: IngredientViewModel {
         }
 
         repository.endTransaction()
-        print(selectedImage?.cgImage)
         print("DEBUG: Recipe updated successfully")
         return true
     }
@@ -396,6 +382,18 @@ final class AddRecipeViewModel: IngredientViewModel {
             return false
         }
         return LocalFileManager.instance.saveImage(with: recipeID.uuidString, image: image)
+    }
+    
+    /// Prepare variables to reuse (ingredient & instruction)
+    
+    private func clearIngredientProperties() {
+        ingredientName = ""
+        ingredientValue = ""
+        ingredientValueType = ""
+    }
+    
+    private func clearInstructionProperties() {
+        instruction = ""
     }
 
     /// Validation
@@ -424,9 +422,8 @@ final class AddRecipeViewModel: IngredientViewModel {
         }
     }
     
-    // TODO: fix
     private func validatePerpTime() {
-        if recipeTitle.isEmpty {
+        if prepTimeHours.isEmpty && prepTimeMinutes.isEmpty {
             recipeTitleIsError = true
             validationErrors.append(.prepTime)
             delegateDetailsError(.prepTime)
@@ -467,8 +464,6 @@ final class AddRecipeViewModel: IngredientViewModel {
         if ingredientValueType.isEmpty {
             ingredientValueTypeIsError = true
             delegateIngredientSheetError(.ingredientValueType)
-        } else {
-            ingredientValueTypeIsError = false
         }
     }
     
@@ -476,15 +471,14 @@ final class AddRecipeViewModel: IngredientViewModel {
         if ingredientsList.isEmpty {
             ingredientListIsError = true
             validationErrors.append(.ingredientsList)
-            delegateIngredients?.delegateIngredientsError(.ingredientList)
+            delegateIngredientsError(.instructionList)
         }
     }
     
     private func validateInstruction() {
         if instruction.isEmpty {
             instructionIsError = true
-//            delegateInstructionError(.instruction)
-            delegateInstructionSheet?.delegateInstructionError(.instruction)
+            delegateInstructionError(.instruction)
         }
     }
     
@@ -492,7 +486,6 @@ final class AddRecipeViewModel: IngredientViewModel {
         if instructionList.isEmpty {
             instructionListIsError = true
             validationErrors.append(.instructionList)
-            print("test ssfs")
             delegateInstructionsError(.instructionList)
         }
     }
@@ -518,7 +511,7 @@ final class AddRecipeViewModel: IngredientViewModel {
         recipeTitleIsError = false
         difficultyIsError = false
         servingIsError = false
-        perpTimeIsError = false
+        prepTimeIsError = false
         spicyIsError = false
         categoryIsError = false
         ingredientListIsError = false

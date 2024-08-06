@@ -44,7 +44,7 @@ enum RecipeCategory: String, CaseIterable {
     case beverages = "Beverages"
     case appetizers = "Appetizers"
     case sideDishes = "Side Dishes"
-    case notSelected = "Not selected" 
+    case notSelected = "Not selected"
 
     var displayName: String {
         return self.rawValue
@@ -58,5 +58,19 @@ enum RecipeDifficulty: String, CaseIterable {
 
     var displayName: String {
         return self.rawValue
+    }
+}
+
+extension RecipeModel {
+    static var servingRowArray: [Int] {
+        return Array(1...36)
+    }
+
+    static var timeHoursArray: [Int] {
+        return Array(0...48)
+    }
+
+    static var timeMinutesArray: [Int] {
+        return Array(0...59)
     }
 }
