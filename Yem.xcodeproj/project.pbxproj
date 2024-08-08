@@ -91,6 +91,8 @@
 		58BBEB9D2B5C18840058851C /* InstructionTableHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB9C2B5C18840058851C /* InstructionTableHeaderView.swift */; };
 		58C259CF2C147ADE004BCEC2 /* SplashScreenCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58C259CE2C147ADE004BCEC2 /* SplashScreenCoordinator.swift */; };
 		58C3E4AB2C5AD586005CAC3E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 58C3E4AA2C5AD586005CAC3E /* GoogleService-Info.plist */; };
+		58C3E4AD2C6017AD005CAC3E /* MockDataRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58C3E4AC2C6017AD005CAC3E /* MockDataRepository.swift */; };
+		58C3E4AF2C616B75005CAC3E /* AddRecipeViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58C3E4AE2C616B75005CAC3E /* AddRecipeViewModelTests.swift */; };
 		58C5814C2B93D884000D3B7D /* UILabelExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58C5814B2B93D884000D3B7D /* UILabelExt.swift */; };
 		58C5814E2B94BB49000D3B7D /* IngredientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58C5814D2B94BB49000D3B7D /* IngredientView.swift */; };
 		58C66A4F2B5D3E000042C7CD /* AddNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58C66A4E2B5D3E000042C7CD /* AddNote.swift */; };
@@ -200,6 +202,8 @@
 		58BBEB9C2B5C18840058851C /* InstructionTableHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionTableHeaderView.swift; sourceTree = "<group>"; };
 		58C259CE2C147ADE004BCEC2 /* SplashScreenCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenCoordinator.swift; sourceTree = "<group>"; };
 		58C3E4AA2C5AD586005CAC3E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		58C3E4AC2C6017AD005CAC3E /* MockDataRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDataRepository.swift; sourceTree = "<group>"; };
+		58C3E4AE2C616B75005CAC3E /* AddRecipeViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRecipeViewModelTests.swift; sourceTree = "<group>"; };
 		58C5814B2B93D884000D3B7D /* UILabelExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabelExt.swift; sourceTree = "<group>"; };
 		58C5814D2B94BB49000D3B7D /* IngredientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientView.swift; sourceTree = "<group>"; };
 		58C66A4E2B5D3E000042C7CD /* AddNote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNote.swift; sourceTree = "<group>"; };
@@ -377,6 +381,8 @@
 			isa = PBXGroup;
 			children = (
 				58356B142B1FB9E8000AC548 /* YemTests.swift */,
+				58C3E4AC2C6017AD005CAC3E /* MockDataRepository.swift */,
+				58C3E4AE2C616B75005CAC3E /* AddRecipeViewModelTests.swift */,
 			);
 			path = YemTests;
 			sourceTree = "<group>";
@@ -837,6 +843,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				58356B152B1FB9E8000AC548 /* YemTests.swift in Sources */,
+				58C3E4AD2C6017AD005CAC3E /* MockDataRepository.swift in Sources */,
+				58C3E4AF2C616B75005CAC3E /* AddRecipeViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
