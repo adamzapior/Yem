@@ -242,31 +242,38 @@ final class AddRecipeViewModel: IngredientViewModel {
         instructionList.remove(at: index)
     }
     
-    /// Save method:
-    
-    func saveRecipe() -> Bool {
-        validationErrors = []
-        resetValidationFlags()
-        resetIngredientValidationFlags()
-        resetInstructionValidationFlags()
-        validateForms()
-
-        if recipeTitleIsError || servingIsError || difficultyIsError || prepTimeIsError || spicyIsError || categoryIsError || ingredientListIsError || instructionIsError {
-            print("DEBUG: Validation failed: Title, serving, difficulty, preparation time, spicy, category, ingredients, instruction error")
-            return false
-        }
-        
-        if repository.doesRecipeExist(with: recipeID) {
-            return updateRecipe()
-        } else {
-            return addNewRecipe()
-        }
-    }
-
-    // MARK: - Private methods
-    
-    /// Load recipe if exsists - method usued when ViewModel is initializated by editing recipe
-    
+//    /// Save method:
+//    ///
+//
+//    func doesRecipeExist(id: UUID) -> Bool {
+//        if repository.doesRecipeExist(with: id) {
+//            return true
+//        } else {
+//            return false
+//        }
+//    }
+//
+//    func saveRecipe() -> Bool {
+//        validationErrors = []
+//        validateForms()
+//
+//        if recipeTitleIsError || servingIsError || difficultyIsError || prepTimeIsError || spicyIsError || categoryIsError || ingredientListIsError || instructionListIsError {
+//            print("DEBUG: Recipe validation failed")
+//            return false
+//        }
+//
+//        if repository.doesRecipeExist(with: recipeID) {
+//            return updateRecipe()
+//        } else {
+//            return addNewRecipe()
+//        }
+//    }
+//
+//
+//    // MARK: - Private methods
+//
+//    /// Load recipe if exsists - method usued when ViewModel is initializated by editing recipe
+//
     private func loadRecipeData(_ recipe: RecipeModel) {
         recipeID = recipe.id
         recipeTitle = recipe.name
@@ -301,7 +308,111 @@ final class AddRecipeViewModel: IngredientViewModel {
         }
     }
 
-    private func addNewRecipe() -> Bool {
+//
+//    private func addNewRecipe() -> Bool {
+//        repository.beginTransaction()
+//
+//        let isImageSaved = selectedImage != nil
+//        let recipe = RecipeModel(id: recipeID,
+//                                 name: recipeTitle,
+//                                 serving: serving.description,
+//                                 perpTimeHours: prepTimeHours,
+//                                 perpTimeMinutes: prepTimeMinutes,
+//                                 spicy: RecipeSpicy(rawValue: spicy) ?? .medium,
+//                                 category: RecipeCategory(rawValue: category) ?? .notSelected,
+//                                 difficulty: RecipeDifficulty(rawValue: difficulty) ?? .medium,
+//                                 ingredientList: ingredientsList,
+//                                 instructionList: instructionList,
+//                                 isImageSaved: isImageSaved,
+//                                 isFavourite: isFavourite)
+//
+//        if let image = selectedImage {
+//            let imageSaved = LocalFileManager.instance.saveImage(with: recipeID.uuidString, image: image)
+//            if !imageSaved {
+//                repository.rollbackTransaction()
+//                return false
+//            }
+//        }
+//
+//        repository.addRecipe(recipe: recipe)
+//
+//        if !repository.save() {
+//            if isImageSaved {
+//                LocalFileManager.instance.deleteImage(with: recipeID.uuidString)
+//            }
+//            repository.rollbackTransaction()
+//            return false
+//        }
+//
+//        repository.endTransaction()
+//        print("DEBUG: New recipe saved successfully")
+//        return true
+//    }
+//
+//    private func updateRecipe() -> Bool {
+//
+//        repository.beginTransaction()
+//
+//        let isImageSaved = selectedImage != nil
+//        let recipe = RecipeModel(id: recipeID,
+//                                 name: recipeTitle,
+//                                 serving: serving.description,
+//                                 perpTimeHours: prepTimeHours,
+//                                 perpTimeMinutes: prepTimeMinutes,
+//                                 spicy: RecipeSpicy(rawValue: spicy) ?? .medium,
+//                                 category: RecipeCategory(rawValue: category) ?? .notSelected,
+//                                 difficulty: RecipeDifficulty(rawValue: difficulty) ?? .medium,
+//                                 ingredientList: ingredientsList,
+//                                 instructionList: instructionList,
+//                                 isImageSaved: isImageSaved,
+//                                 isFavourite: isFavourite)
+//
+//        if let image = selectedImage {
+//            let imageSaved = LocalFileManager.instance.saveImage(with: recipeID.uuidString, image: image)
+//            if !imageSaved {
+//                repository.rollbackTransaction()
+//                return false
+//            }
+//        }
+//
+//        repository.updateRecipe(recipe: recipe)
+//
+//        if !repository.save() {
+//            if isImageSaved {
+//                LocalFileManager.instance.deleteImage(with: recipeID.uuidString)
+//            }
+//            repository.rollbackTransaction()
+//            return false
+//        }
+//
+//        repository.endTransaction()
+//        print("DEBUG: Recipe updated successfully")
+//        return true
+//    }
+        
+    func doesRecipeExist(id: UUID) -> Bool {
+        return repository.doesRecipeExist(with: id)
+    }
+
+    func saveRecipe() -> Bool {
+        validationErrors = []
+        validateForms()
+
+        if hasRecipeValidationErrors() {
+            print("DEBUG: Recipe validation failed")
+            return false
+        }
+
+        return doesRecipeExist(id: recipeID) ? upsertRecipe(isUpdate: true) : upsertRecipe(isUpdate: false)
+    }
+
+    // MARK: - Private methods
+
+    func hasRecipeValidationErrors() -> Bool {
+        return recipeTitleIsError || servingIsError || difficultyIsError || prepTimeIsError || spicyIsError || categoryIsError || ingredientListIsError || instructionListIsError
+    }
+
+    private func upsertRecipe(isUpdate: Bool) -> Bool {
         repository.beginTransaction()
 
         let isImageSaved = selectedImage != nil
@@ -317,8 +428,6 @@ final class AddRecipeViewModel: IngredientViewModel {
                                  instructionList: instructionList,
                                  isImageSaved: isImageSaved,
                                  isFavourite: isFavourite)
-        
-        repository.addRecipe(recipe: recipe)
 
         if let image = selectedImage {
             let imageSaved = LocalFileManager.instance.saveImage(with: recipeID.uuidString, image: image)
@@ -328,60 +437,23 @@ final class AddRecipeViewModel: IngredientViewModel {
             }
         }
 
-        if !repository.save() {
-            repository.rollbackTransaction()
-            return false
+        if isUpdate {
+            repository.updateRecipe(recipe: recipe)
+        } else {
+            repository.addRecipe(recipe: recipe)
         }
 
-        repository.endTransaction()
-        print("DEBUG: New recipe saved successfully")
-        return true
-    }
-    
-    private func updateRecipe() -> Bool {
-        repository.beginTransaction()
-
-        let isImageSaved = selectedImage != nil
-        let recipe = RecipeModel(id: recipeID,
-                                 name: recipeTitle,
-                                 serving: serving.description,
-                                 perpTimeHours: prepTimeHours,
-                                 perpTimeMinutes: prepTimeMinutes,
-                                 spicy: RecipeSpicy(rawValue: spicy) ?? .medium,
-                                 category: RecipeCategory(rawValue: category) ?? .notSelected,
-                                 difficulty: RecipeDifficulty(rawValue: difficulty) ?? .medium,
-                                 ingredientList: ingredientsList,
-                                 instructionList: instructionList,
-                                 isImageSaved: isImageSaved,
-                                 isFavourite: isFavourite)
-
-        repository.updateRecipe(recipe: recipe)
-
-        if let image = selectedImage {
-            let imageSaved = LocalFileManager.instance.updateImage(with: recipeID.uuidString, newImage: image)
-            if !imageSaved {
-                repository.rollbackTransaction()
-                return false
+        if !repository.save() {
+            if isImageSaved {
+                LocalFileManager.instance.deleteImage(with: recipeID.uuidString)
             }
-        }
-
-        if !repository.save() {
             repository.rollbackTransaction()
             return false
         }
 
         repository.endTransaction()
-        print("DEBUG: Recipe updated successfully")
+        print("DEBUG: Recipe \(isUpdate ? "updated" : "saved") successfully")
         return true
-    }
-    
-    /// Add selectedImage to FileManager
-    
-    private func saveSelectedImage() -> Bool {
-        guard let image = selectedImage else {
-            return false
-        }
-        return LocalFileManager.instance.saveImage(with: recipeID.uuidString, image: image)
     }
     
     /// Prepare variables to reuse (ingredient & instruction)
@@ -491,6 +563,15 @@ final class AddRecipeViewModel: IngredientViewModel {
     }
     
     private func validateForms() {
+        recipeTitleIsError = false
+        difficultyIsError = false
+        servingIsError = false
+        prepTimeIsError = false
+        spicyIsError = false
+        categoryIsError = false
+        ingredientListIsError = false
+        instructionListIsError = false
+        
         validateRecipeTitle()
         validateDifficulty()
         validateServing()
@@ -507,17 +588,17 @@ final class AddRecipeViewModel: IngredientViewModel {
         validateIgredientValueType()
     }
     
-    private func resetValidationFlags() {
-        recipeTitleIsError = false
-        difficultyIsError = false
-        servingIsError = false
-        prepTimeIsError = false
-        spicyIsError = false
-        categoryIsError = false
-        ingredientListIsError = false
-        instructionListIsError = false
-    }
-    
+//    private func resetValidationFlags() {
+//        recipeTitleIsError = false
+//        difficultyIsError = false
+//        servingIsError = false
+//        prepTimeIsError = false
+//        spicyIsError = false
+//        categoryIsError = false
+//        ingredientListIsError = false
+//        instructionListIsError = false
+//    }
+//
     private func resetIngredientValidationFlags() {
         ingredientNameIsError = false
         ingredientValueIsError = false
