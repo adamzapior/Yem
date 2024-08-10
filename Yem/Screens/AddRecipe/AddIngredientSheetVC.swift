@@ -164,7 +164,8 @@ extension AddIngredientSheetVC: TextfieldWithIconDelegate, AddPickerDelegate, Ac
         valueTypePickerView.dataSource = self
     }
     
-    func textFieldDidChange(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
+    /// Update ViewModel
+    func updateTextfieldsInViewModel(for textfield: TextfieldWithIcon) {
         switch textfield.tag {
         case 1:
             if let text = textfield.textField.text {
@@ -172,39 +173,24 @@ extension AddIngredientSheetVC: TextfieldWithIconDelegate, AddPickerDelegate, Ac
             }
         case 2:
             if let text = textfield.textField.text {
-                viewModel.ingredientValue = text
+                let filteredText = text.filter { "0123456789".contains($0) }
+                textfield.textField.text = filteredText
+                viewModel.ingredientValue = filteredText
             }
         default: break
         }
+    }
+    
+    func textFieldDidChange(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
+        updateTextfieldsInViewModel(for: textfield)
     }
     
     func textFieldDidBeginEditing(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
-        switch textfield.tag {
-        case 1:
-            if let text = textfield.textField.text {
-                viewModel.ingredientName = text
-            }
-        case 2:
-            if let text = textfield.textField.text {
-                viewModel.ingredientValue = text
-            }
-        default: break
-        }
+        updateTextfieldsInViewModel(for: textfield)
     }
     
-    // Textfield
     func textFieldDidEndEditing(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
-        switch textfield.tag {
-        case 1:
-            if let text = textfield.textField.text {
-                viewModel.ingredientName = text
-            }
-        case 2:
-            if let text = textfield.textField.text {
-                viewModel.ingredientValue = text
-            }
-        default: break
-        }
+        updateTextfieldsInViewModel(for: textfield)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -231,7 +217,7 @@ extension AddIngredientSheetVC: TextfieldWithIconDelegate, AddPickerDelegate, Ac
             let success = viewModel.addIngredientToList()
             if success {
                 coordinator.dismissSheet()
-            } 
+            }
         case 2:
             cell.onTapAnimation()
             coordinator.dismissSheet()
