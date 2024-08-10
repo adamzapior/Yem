@@ -21,7 +21,7 @@ final class MockDataRepository: DataRepositoryProtocol {
 
     // Variables for testing purposes
     var mockRecipeExists: Bool = false
-    var mockSaveSuccess: Bool = true
+    var mockSaveSuccess: Bool = false
     var isAddRecipeCalled: Bool = false
     var isUpdateRecipeCalled: Bool = false
 
@@ -48,8 +48,6 @@ final class MockDataRepository: DataRepositoryProtocol {
     func addRecipe(recipe: RecipeModel) {
         isAddRecipeCalled = true
         mockRecipes.append(recipe)
-        
-        
     }
 
     func updateRecipe(recipe: RecipeModel) {
