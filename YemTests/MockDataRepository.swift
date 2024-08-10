@@ -16,14 +16,16 @@ final class MockDataRepository: DataRepositoryProtocol {
     var recipesUpdatedPublisher = PassthroughSubject<ObjectChange, Never>()
     var shopingListPublisher = PassthroughSubject<ObjectChange, Never>()
 
-    // Example mock data
-    private var mockRecipes: [RecipeModel] = []
+    var mockRecipes: [RecipeModel] = []
 
-    // Variables for testing purposes
     var mockRecipeExists: Bool = false
     var mockSaveSuccess: Bool = false
     var isAddRecipeCalled: Bool = false
     var isUpdateRecipeCalled: Bool = false
+    var clearShopingListCalled: Bool = false
+
+    var uncheckedItems: [ShopingListModel] = []
+    var checkedItems: [ShopingListModel] = []
 
     func save() -> Bool {
         return mockSaveSuccess
@@ -77,11 +79,11 @@ final class MockDataRepository: DataRepositoryProtocol {
     }
 
     func fetchShopingList(isChecked: Bool) -> Result<[Yem.ShopingListModel], any Error> {
-        // TO DO
-        let shopingList: [Yem.ShopingListModel] = [
-            ShopingListModel(id: UUID(), isChecked: false, name: "Sugar", value: "1", valueType: "kg")
-        ]
-        return .success(shopingList)
+        if isChecked {
+            return .success(checkedItems)
+        } else {
+            return .success(uncheckedItems)
+        }
     }
 
     func updateShopingList(shopingList: Yem.ShopingListModel) {
@@ -89,10 +91,16 @@ final class MockDataRepository: DataRepositoryProtocol {
     }
 
     func clearShopingList() {
-        // TO DO
+        clearShopingListCalled = true
     }
 
     func addIngredientsToShopingList(ingredients: [Yem.IngredientModel]) {
-        // TO DO
+        let newItem = ShopingListModel(id: ingredients.first!.id,
+                                       isChecked: false,
+                                       name: ingredients.first!.name,
+                                       value: ingredients.first!.value,
+                                       valueType: ingredients.first!.valueType)
+        uncheckedItems.append(newItem)
+        shopingListPublisher.send(completion: .finished)
     }
 }
