@@ -16,37 +16,26 @@ protocol ShopingListVMDelegate: AnyObject {
 final class ShopingListVM: IngredientViewModel {
     var delegateIngredients: (any AddRecipeIngredientsVCDelegate)?
 
-    weak var delegateIngredientSheet: AddIngredientSheetVCDelegate?
+    private let repository: DataRepositoryProtocol
+    private var cancellables: Set<AnyCancellable> = []
 
     weak var delegate: ShopingListVMDelegate?
-    let repository: DataRepository
+    weak var delegateIngredientSheet: AddIngredientSheetVCDelegate?
 
     var uncheckedList: [ShopingListModel] = []
     var checkedList: [ShopingListModel] = []
 
-    @Published
-    var ingredientName: String = ""
+    @Published var ingredientName: String = ""
+    @Published var ingredientValue: String = ""
+    @Published var ingredientValueType: String = ""
 
-    @Published
-    var ingredientValue: String = ""
-
-    @Published
-    var ingredientValueType: String = ""
-
-    @Published
-    var ingredientNameIsError: Bool = false
-
-    @Published
-    var ingredientValueIsError: Bool = false
-
-    @Published
-    var ingredientValueTypeIsError: Bool = false
+    @Published var ingredientNameIsError: Bool = false
+    @Published var ingredientValueIsError: Bool = false
+    @Published var ingredientValueTypeIsError: Bool = false
 
     var ingredientValueTypeArray: [IngredientValueType] = IngredientValueType.allCases
 
-    private var cancellables: Set<AnyCancellable> = []
-
-    init(repository: DataRepository) {
+    init(repository: DataRepositoryProtocol) {
         self.repository = repository
 
         repository.shopingListPublisher
@@ -62,26 +51,9 @@ final class ShopingListVM: IngredientViewModel {
 #endif
     }
 
-    // MARK: - Public methods
-
     func loadShopingList() {
-        let uncheckedResult = repository.fetchShopingList(isChecked: false)
-        let checkedResult = repository.fetchShopingList(isChecked: true)
-
-        switch uncheckedResult {
-        case .success(let result):
-            uncheckedList = result
-        case .failure(let error):
-            print("DEBUG: Error loading recipes: \(error)")
-        }
-
-        switch checkedResult {
-        case .success(let result):
-            checkedList = result
-        case .failure(let error):
-            print("DEBUG: Error loading recipes: \(error)")
-        }
-
+        uncheckedList = repository.fetchShopingList(isChecked: false).successOrEmpty()
+        checkedList = repository.fetchShopingList(isChecked: true).successOrEmpty()
         reloadTable()
     }
 
@@ -104,11 +76,13 @@ final class ShopingListVM: IngredientViewModel {
         resetIngredientValidationFlags()
         validateIngredientForm()
 
-        if ingredientNameIsError || ingredientValueIsError || ingredientValueTypeIsError {
+        if hasIngredientValidationErrors() {
+            print("failed")
             return false
         }
 
         repository.addIngredientsToShopingList(ingredients: [IngredientModel(id: UUID(), value: ingredientValue, valueType: ingredientValueType, name: ingredientName)])
+
         clearIngredientProperties()
         return true
     }
@@ -118,18 +92,22 @@ final class ShopingListVM: IngredientViewModel {
         reloadTable()
     }
 
-    // MARK: - Private methods
-
-    private func resetIngredientValidationFlags() {
-        ingredientNameIsError = false
-        ingredientValueIsError = false
-        ingredientValueTypeIsError = false
+    func hasIngredientValidationErrors() -> Bool {
+        return ingredientNameIsError || ingredientValueIsError || ingredientValueTypeIsError
     }
+
+    // MARK: - Validation
 
     private func validateIngredientForm() {
         validateIngredientName()
         validateIngredientValue()
         validateIngredientValueType()
+    }
+
+    private func resetIngredientValidationFlags() {
+        ingredientNameIsError = false
+        ingredientValueIsError = false
+        ingredientValueTypeIsError = false
     }
 
     private func validateIngredientName() {
@@ -140,14 +118,15 @@ final class ShopingListVM: IngredientViewModel {
     }
 
     private func validateIngredientValue() {
-        if ingredientValue.isEmpty {
+        let numberRegex = "^[0-9]+(\\.[0-9]{1,2})?$"
+        if ingredientValue.isEmpty || !NSPredicate(format: "SELF MATCHES %@", numberRegex).evaluate(with: ingredientValue) {
             ingredientValueIsError = true
             delegateIngredientSheetError(.ingredientValue)
         }
     }
 
     private func validateIngredientValueType() {
-        if ingredientValueType.isEmpty {
+        if ingredientValueType.isEmpty || !ingredientValueTypeArray.contains(where: { $0.displayName == ingredientValueType }) {
             ingredientValueTypeIsError = true
             delegateIngredientSheetError(.ingredientValueType)
         }
@@ -159,6 +138,8 @@ final class ShopingListVM: IngredientViewModel {
         ingredientValueType = ""
     }
 }
+
+// MARK: - ViewModel Delegates
 
 extension ShopingListVM: AddIngredientSheetVCDelegate {
     func delegateIngredientSheetError(_ type: ValidationErrorTypes) {
@@ -179,6 +160,20 @@ extension ShopingListVM: ShopingListVMDelegate {
 enum ShopingListType: Int, CaseIterable {
     case unchecked
     case checked
+}
+
+// MARK: - Result extension
+
+extension Result where Success == [ShopingListModel], Failure == Error {
+    func successOrEmpty() -> [ShopingListModel] {
+        switch self {
+        case .success(let result):
+            return result
+        case .failure(let error):
+            print("DEBUG: Error loading recipes: \(error)")
+            return []
+        }
+    }
 }
 
 #if DEBUG
