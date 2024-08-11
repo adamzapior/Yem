@@ -115,11 +115,6 @@ final class AddRecipeVC: UIViewController {
         view.addGestureRecognizer(tapGesture)
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-//        coordinator.coordinatorDidFinish() 4Delete
-    }
-    
     // MARK: - UI Setup
 
     private func setupScrollView() {
@@ -236,10 +231,10 @@ final class AddRecipeVC: UIViewController {
                 let selectedMinutes = self.viewModel.timeMinutesArray[selectedMinutesRow].description
                 self.viewModel.prepTimeMinutes = selectedMinutes
                 
-                if self.viewModel.prepTimeHours == "0"  {
+                if self.viewModel.prepTimeHours == "0" {
                     self.coordinator?.presentValidationAlert(title: "Invalid time", message: "Preparation time must be at least 1 minute.")
-                              return
-                          }
+                    return
+                }
 
                 var hours = ""
                 var minutes = ""
@@ -304,6 +299,14 @@ extension AddRecipeVC: AddPhotoViewDelegate, UIImagePickerControllerDelegate & U
         actionSheet.addAction(cancelAction)
             
         present(actionSheet, animated: true, completion: nil)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+        if let image = info[.originalImage] as? UIImage {
+            viewModel.selectedImage = image
+            addPhotoView.updatePhoto(with: image)
+        }
+        picker.dismiss(animated: true, completion: nil)
     }
     
     private func checkPhotoLibraryPermission() {
