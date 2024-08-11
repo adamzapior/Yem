@@ -5,14 +5,24 @@
 //  Created by Adam Zapiór on 23/02/2024.
 //
 
-import UIKit
 import LifetimeTracker
+import UIKit
 
+protocol LocalFileManagerProtocol {
+    func saveImage(with id: String, image: UIImage) -> Bool
+    func updateImage(with id: String, newImage: UIImage) -> Bool
+    func deleteImage(with id: String)
+    func imageUrl(for id: String) -> URL?
+}
 
-class LocalFileManager: FileManager {
-    static let instance = LocalFileManager()
+class LocalFileManager: FileManager, LocalFileManagerProtocol {
 
-    override private init() {}
+    override init() {
+        super.init()
+#if DEBUG
+        trackLifetime()
+#endif
+    }
 
     func saveImage(with id: String, image: UIImage) -> Bool {
         guard let data = image.jpegData(compressionQuality: 0.5) else {
@@ -59,11 +69,17 @@ class LocalFileManager: FileManager {
             print("DEBUG: Image doesn't exists")
         }
     }
-}
 
-extension LocalFileManager {
     func imageUrl(for id: String) -> URL? {
         let url = URL.documentsDirectory.appendingPathComponent("\(id).jpg")
         return FileManager.default.fileExists(atPath: url.path) ? url : nil
     }
 }
+
+#if DEBUG
+extension LocalFileManager: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "LocalFileManager")
+    }
+}
+#endif

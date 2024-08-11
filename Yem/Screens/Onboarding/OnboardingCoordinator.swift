@@ -13,12 +13,15 @@ import UIKit
 final class OnboardingCoordinator: Destination {
     let authManager: AuthenticationManager
     let dataRepository: DataRepository
+    let localFileManager: LocalFileManager
+
     lazy var viewModel = OnboardingVM(authManager: authManager)
     weak var parentCoordinator: AppCoordinator?
 
-    init(authManager: AuthenticationManager, dataRepository: DataRepository) {
+    init(authManager: AuthenticationManager, dataRepository: DataRepository, localFileManager: LocalFileManager) {
         self.authManager = authManager
         self.dataRepository = dataRepository
+        self.localFileManager = localFileManager
         super.init()
 #if DEBUG
         trackLifetime()
@@ -48,7 +51,7 @@ final class OnboardingCoordinator: Destination {
     }
 
     func navigateToApp(user: UserModel) {
-        let tabBarCoordinator = TabBarCoordinator(currentUser: user, dataRepository: dataRepository, authManager: authManager)
+        let tabBarCoordinator = TabBarCoordinator(currentUser: user, dataRepository: dataRepository, authManager: authManager, localFileManager: localFileManager)
         tabBarCoordinator.parentCoordinator = parentCoordinator
 
         let tabBarAdapter = TabBarCoordinatorAdapter(coordinator: tabBarCoordinator)

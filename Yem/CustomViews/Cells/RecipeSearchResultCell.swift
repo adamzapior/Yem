@@ -11,6 +11,18 @@ import UIKit
 final class RecipeSearchResultCell: UITableViewCell {
     static let id = "RecipeSearchResultCell"
     
+    var localFileManager: LocalFileManager?
+    
+    var recipeImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 20
+        imageView.alpha = 0.7
+        imageView.isHidden = true
+        return imageView
+    }()
+    
     private var containerView: UIView = {
         let view = UIView()
         view.backgroundColor = .ui.primaryContainer
@@ -23,16 +35,6 @@ final class RecipeSearchResultCell: UITableViewCell {
         view.backgroundColor = .ui.secondaryContainer.withAlphaComponent(0.85)
         view.layer.cornerRadius = 20
         return view
-    }()
-    
-    var recipeImage: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.clipsToBounds = true
-        imageView.layer.cornerRadius = 20
-        imageView.alpha = 0.7
-        imageView.isHidden = true
-        return imageView
     }()
     
     private var titleLabel = TextLabel(fontStyle: .title3, fontWeight: .semibold, textColor: .ui.primaryText)
@@ -58,7 +60,8 @@ final class RecipeSearchResultCell: UITableViewCell {
         recipeImage.kf.cancelDownloadTask()
     }
     
-    func configure(with model: RecipeModel, image: UIImage?) {
+    func configure(with model: RecipeModel, image: UIImage?, localFileManager: LocalFileManager?) {
+        self.localFileManager = localFileManager
         titleLabel.text = model.name
 
         var hours = ""
@@ -86,8 +89,8 @@ final class RecipeSearchResultCell: UITableViewCell {
             spicyIcon.tintColor = .ui.spicyVeryHot
         }
         
-        if model.isImageSaved {
-            let imageUrl = LocalFileManager.instance.imageUrl(for: model.id.uuidString)
+        if model.isImageSaved, let fileManager = localFileManager {            
+            let imageUrl = fileManager.imageUrl(for: model.id.uuidString)
             let provider = LocalFileImageDataProvider(fileURL: imageUrl!)
             let options: KingfisherOptionsInfo = [
                 .cacheOriginalImage,

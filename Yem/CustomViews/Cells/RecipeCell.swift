@@ -11,6 +11,18 @@ import UIKit
 final class RecipeCell: UICollectionViewCell {
     static let id = "RecipeCell"
     
+    var localFileManager: LocalFileManager?
+    
+    var recipeImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 20
+        imageView.alpha = 0.7
+        imageView.isHidden = true
+        return imageView
+    }()
+    
     private var containerView: UIView = {
         let view = UIView()
         view.backgroundColor = .ui.primaryContainer
@@ -25,27 +37,16 @@ final class RecipeCell: UICollectionViewCell {
         return view
     }()
     
-    var recipeImage: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.clipsToBounds = true
-        imageView.layer.cornerRadius = 20
-        imageView.alpha = 0.7
-        imageView.isHidden = true
-        return imageView
-    }()
-    
     private var titleLabel = TextLabel(fontStyle: .title3, fontWeight: .semibold, textColor: .ui.primaryText)
     private var perpTimeLabel = TextLabel(fontStyle: .footnote, fontWeight: .regular, textColor: .ui.secondaryText)
     private var spicyIcon = IconImage(systemImage: "leaf", color: .ui.theme, textStyle: .body)
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
         setupUI()
         addTextShadow()
     }
-
+  
     @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -58,7 +59,9 @@ final class RecipeCell: UICollectionViewCell {
         recipeImage.kf.cancelDownloadTask()
     }
     
-    func configure(with model: RecipeModel, image: UIImage?) {
+    func configure(with model: RecipeModel, image: UIImage?, localFileManager: LocalFileManager?) {
+        self.localFileManager = localFileManager
+        
         titleLabel.text = model.name
 
         var hours = ""
@@ -86,8 +89,8 @@ final class RecipeCell: UICollectionViewCell {
             spicyIcon.tintColor = .ui.spicyVeryHot
         }
         
-        if model.isImageSaved {
-            let imageUrl = LocalFileManager.instance.imageUrl(for: model.id.uuidString)
+        if model.isImageSaved, let fileManager = localFileManager {
+            let imageUrl = fileManager.imageUrl(for: model.id.uuidString)
             let provider = LocalFileImageDataProvider(fileURL: imageUrl!)
             let options: KingfisherOptionsInfo = [
                 .cacheOriginalImage,

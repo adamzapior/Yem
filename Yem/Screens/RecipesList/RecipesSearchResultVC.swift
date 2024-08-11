@@ -63,7 +63,11 @@ extension RecipesSearchResultsVC: UITableViewDelegate, UITableViewDataSource {
         cell.selectionStyle = .none
         cell.recipeImage.image = nil
 
-        cell.configure(with: recipe, image: nil)
+        cell.configure(
+            with: recipe,
+            image: nil,
+            localFileManager: viewModel.localFileManager
+        )
         return cell
     }
 

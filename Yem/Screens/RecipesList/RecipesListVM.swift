@@ -24,6 +24,7 @@ final class RecipesListVM {
     weak var delegateRecipesSearchResult: RecipesSearchResultDelegate?
 
     let repository: DataRepository
+    let localFileManager: LocalFileManager
     
     var sections: [Section] = []
     
@@ -39,8 +40,9 @@ final class RecipesListVM {
     
     private var cancellables: Set<AnyCancellable> = []
     
-    init(repository: DataRepository) {
+    init(repository: DataRepository, localFileManager: LocalFileManager) {
         self.repository = repository
+        self.localFileManager = localFileManager
         
         repository.recipesInsertedPublisher
             .sink(receiveValue: { [weak self] _ in

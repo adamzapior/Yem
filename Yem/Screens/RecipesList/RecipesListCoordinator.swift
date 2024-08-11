@@ -12,11 +12,13 @@ final class RecipesListCoordinator: Destination {
     let authManager: AuthenticationManager
     let repository: DataRepository
     var viewModel: RecipesListVM
+    let localFileManager: LocalFileManager
 
-    init(repository: DataRepository, viewModel: RecipesListVM, authManager: AuthenticationManager) {
+    init(repository: DataRepository, viewModel: RecipesListVM, authManager: AuthenticationManager, localFileManager: LocalFileManager) {
         self.repository = repository
         self.viewModel = viewModel
         self.authManager = authManager
+        self.localFileManager = localFileManager
         super.init()
 #if DEBUG
         trackLifetime()
@@ -32,15 +34,27 @@ final class RecipesListCoordinator: Destination {
     // MARK: Navigation
 
     func navigateToAddRecipeScreen() {
-        let viewModel = AddRecipeViewModel(repository: repository)
+        let viewModel = AddRecipeViewModel(
+            repository: repository,
+            localFileManager: localFileManager
+        )
         let coordinator = AddRecipeCoordinator(viewModel: viewModel)
         coordinator.parentCoordinator = self
         navigator?.presentDestination(coordinator)
     }
 
     func navigateToRecipeDetail(with recipe: RecipeModel) {
-        let viewModel = RecipeDetailsVM(recipe: recipe, repository: repository)
-        let coordinator = RecipeDetailsCoordinator(viewModel: viewModel, recipe: recipe, repository: repository)
+        let viewModel = RecipeDetailsVM(
+            recipe: recipe,
+            repository: repository,
+            localFileManager: localFileManager
+        )
+        let coordinator = RecipeDetailsCoordinator(
+            viewModel: viewModel,
+            recipe: recipe,
+            repository: repository, 
+            localFileManager: localFileManager
+        )
         coordinator.parentCoordinator = self
         navigator?.presentDestination(coordinator)
     }

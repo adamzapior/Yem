@@ -161,7 +161,11 @@ extension RecipesListVC: UICollectionViewDelegate, UICollectionViewDataSource, U
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecipeCell.id, for: indexPath) as! RecipeCell
         cell.recipeImage.image = nil
 
-        cell.configure(with: recipe, image: nil)
+        cell.configure(
+            with: recipe,
+            image: nil,
+            localFileManager: viewModel.localFileManager
+        )
 
         return cell
     }

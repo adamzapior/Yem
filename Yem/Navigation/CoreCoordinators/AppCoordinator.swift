@@ -12,6 +12,7 @@ import UIKit
 final class AppCoordinator: Destination {
     let authManager = AuthenticationManager()
     let dataRepository = DataRepository()
+    let localFileManager = LocalFileManager()
 
     override init() {
         super.init()
@@ -41,7 +42,7 @@ final class AppCoordinator: Destination {
     }
 
     private func navigateToApp(userData: UserModel) {
-        let tabBarCoordinator = TabBarCoordinator(currentUser: userData, dataRepository: dataRepository, authManager: authManager)
+        let tabBarCoordinator = TabBarCoordinator(currentUser: userData, dataRepository: dataRepository, authManager: authManager, localFileManager: localFileManager)
         tabBarCoordinator.parentCoordinator = self
 
         let tabBarAdapter = TabBarCoordinatorAdapter(coordinator: tabBarCoordinator)
@@ -51,7 +52,7 @@ final class AppCoordinator: Destination {
     }
 
     private func navigateToOnboarding() {
-        let onboardingCoordinator = OnboardingCoordinator(authManager: authManager, dataRepository: dataRepository)
+        let onboardingCoordinator = OnboardingCoordinator(authManager: authManager, dataRepository: dataRepository, localFileManager: localFileManager)
         onboardingCoordinator.parentCoordinator = self
         navigator?.changeRoot(screen: onboardingCoordinator)
     }

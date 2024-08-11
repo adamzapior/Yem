@@ -46,13 +46,15 @@ final class TabBarCoordinator: UITabBarController, DestinationProviding {
 
     let dataRepository: DataRepository
     let authManager: AuthenticationManager
+    let localFileManager: LocalFileManager
+//
+//    lazy var recipesListCoordinator = RecipesListCoordinator(repository: dataRepository, viewModel: RecipesListVM(repository: dataRepository), authManager: authManager, localFileManager: localFileManager)
+//    lazy var shopingListCoordinator = ShopingListCoordinator(parentCoordinator: self, repository: dataRepository, viewModel: ShopingListVM(repository: dataRepository))
 
-    lazy var recipesListCoordinator = RecipesListCoordinator(repository: dataRepository, viewModel: RecipesListVM(repository: dataRepository), authManager: authManager)
-    lazy var shopingListCoordinator = ShopingListCoordinator(parentCoordinator: self, repository: dataRepository, viewModel: ShopingListVM(repository: dataRepository))
-
-    init(currentUser: UserModel, dataRepository: DataRepository, authManager: AuthenticationManager) {
+    init(currentUser: UserModel, dataRepository: DataRepository, authManager: AuthenticationManager, localFileManager: LocalFileManager) {
         self.dataRepository = dataRepository
         self.authManager = authManager
+        self.localFileManager = localFileManager
 
         super.init(nibName: nil, bundle: nil)
 #if DEBUG
@@ -68,11 +70,25 @@ final class TabBarCoordinator: UITabBarController, DestinationProviding {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let recipesCoordinator = RecipesListCoordinator(repository: dataRepository, viewModel: RecipesListVM(repository: dataRepository), authManager: authManager)
+        let recipesCoordinator = RecipesListCoordinator(
+            repository: dataRepository,
+            viewModel: RecipesListVM(
+                repository: dataRepository,
+                localFileManager: localFileManager
+            ),
+            authManager: authManager,
+            localFileManager: localFileManager
+        )
         recipesNavigator = Navigator(start: recipesCoordinator)
         recipesCoordinator.navigator = recipesNavigator
 
-        let shoppingCoordinator = ShopingListCoordinator(parentCoordinator: self, repository: dataRepository, viewModel: ShopingListVM(repository: dataRepository))
+        let shoppingCoordinator = ShopingListCoordinator(
+            parentCoordinator: self,
+            repository: dataRepository,
+            viewModel: ShopingListVM(
+                repository: dataRepository
+            )
+        )
         shoppingNavigator = Navigator(start: shoppingCoordinator)
         shoppingCoordinator.navigator = shoppingNavigator
 
