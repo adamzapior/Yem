@@ -8,7 +8,7 @@
 import XCTest
 @testable import Yem
 
-class AddRecipeViewModelTests: XCTestCase {
+class AddRecipeViewModel_Tests: XCTestCase {
     var viewModel: AddRecipeViewModel!
     var mockRepository: MockDataRepository!
 
@@ -525,7 +525,7 @@ class AddRecipeViewModelTests: XCTestCase {
     }
 }
 
-extension AddRecipeViewModelTests {
+extension AddRecipeViewModel_Tests {
     func setupValidRecipe() {
         viewModel.recipeID = UUID()
         viewModel.recipeTitle = "Burger"
