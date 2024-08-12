@@ -23,8 +23,9 @@ final class RecipesListVM {
     weak var delegate: RecipesListVMDelegate?
     weak var delegateRecipesSearchResult: RecipesSearchResultDelegate?
 
-    let repository: DataRepository
-    let localFileManager: LocalFileManager
+    let repository: DataRepositoryProtocol
+    let localFileManager: LocalFileManagerProtocol
+    let imageFetcherManager: ImageFetcherManagerProtocol
     
     var sections: [Section] = []
     
@@ -40,7 +41,8 @@ final class RecipesListVM {
     
     private var cancellables: Set<AnyCancellable> = []
     
-    init(repository: DataRepository, localFileManager: LocalFileManager) {
+    init(
+        imageFetcherManager: ImageFetcherManagerProtocol
         self.repository = repository
         self.localFileManager = localFileManager
         

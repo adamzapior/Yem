@@ -7,8 +7,8 @@
 
 import Foundation
 import Kingfisher
-import UIKit
 import LifetimeTracker
+import UIKit
 
 protocol RecipeDetailsVMDelegate: AnyObject {
     func isFavouriteValueChanged(to: Bool)
@@ -16,23 +16,34 @@ protocol RecipeDetailsVMDelegate: AnyObject {
 
 final class RecipeDetailsVM {
     weak var delegate: RecipeDetailsVMDelegate?
-    
+
+    let repository: DataRepositoryProtocol
+    let localFileManager: LocalFileManagerProtocol
+    let imageFetcher: ImageFetcherManagerProtocol
+
     var recipe: RecipeModel
-    let repository: DataRepository
-    
     var isFavourite: Bool
-    
-    init(recipe: RecipeModel, repository: DataRepository) {
+
+    init(
+        recipe: RecipeModel,
+        repository: DataRepositoryProtocol,
+        localFileManager: LocalFileManagerProtocol,
+        imageFetcher: ImageFetcherManagerProtocol
+    ) {
         self.recipe = recipe
         self.repository = repository
-        
+        self.localFileManager = localFileManager
+        self.imageFetcher = imageFetcher
+
         isFavourite = recipe.isFavourite
-        
+
+        print(recipe.isImageSaved.description)
+
 #if DEBUG
         trackLifetime()
 #endif
     }
-    
+
     deinit {
         print("DEBUG: RecipeDetailsVM deinit")
     }
@@ -42,26 +53,16 @@ final class RecipeDetailsVM {
             completion(nil)
             return
         }
-    
-        let imageUrl = LocalFileManager.instance.imageUrl(for: recipe.id.uuidString)
-        let provider = LocalFileImageDataProvider(fileURL: imageUrl!)
-        let fetchImageView = UIImageView()
-    
-        fetchImageView.kf.setImage(with: provider) { result in
-            switch result {
-            case .success(let result):
-                print(result.cacheType)
-                print(result.source)
-                DispatchQueue.main.async {
-                    completion(result.image)
-                }
-            case .failure(let error):
-                print(error)
-                completion(nil)
-            }
+
+        let imageUrl = localFileManager.imageUrl(for: recipe.id.uuidString)
+        guard let imageUrl = imageUrl else {
+            completion(nil)
+            return
         }
+
+        imageFetcher.fetchImage(from: imageUrl, completion: completion)
     }
-    
+
     func toggleFavouriteStatus() {
         let newFavouriteStatus = !recipe.isFavourite
         repository.updateRecipeFavouriteStatus(recipeId: recipe.id, isFavourite: newFavouriteStatus)

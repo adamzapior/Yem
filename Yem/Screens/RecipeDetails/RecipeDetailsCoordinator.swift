@@ -12,7 +12,8 @@ final class RecipeDetailsCoordinator: Destination {
     var recipe: RecipeModel
     var repository: DataRepository
     var viewModel: RecipeDetailsVM
-    let localFileManager: LocalFileManager
+    let localFileManager: LocalFileManagerProtocol
+    let imageFetcherManager: ImageFetcherManagerProtocol
 
     weak var parentCoordinator: Destination?
 
@@ -20,12 +21,14 @@ final class RecipeDetailsCoordinator: Destination {
         viewModel: RecipeDetailsVM,
         recipe: RecipeModel,
         repository: DataRepository,
-        localFileManager: LocalFileManager
+        localFileManager: LocalFileManagerProtocol,
+        imageFetcherManager: ImageFetcherManagerProtocol
     ) {
         self.viewModel = viewModel
         self.recipe = recipe
         self.repository = repository
         self.localFileManager = localFileManager
+        self.imageFetcherManager = imageFetcherManager
 
         super.init()
 #if DEBUG
@@ -98,7 +101,8 @@ final class RecipeDetailsCoordinator: Destination {
     func navigateToRecipeEditor() {
         let viewModel = AddRecipeViewModel(
             repository: repository,
-            localFileManager: localFileManager,
+            localFileManager: localFileManager, 
+            imageFetcherManager: imageFetcherManager,
             existingRecipe: recipe
         )
         let coordinator = AddRecipeCoordinator(viewModel: viewModel)

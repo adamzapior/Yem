@@ -66,7 +66,8 @@ extension RecipesSearchResultsVC: UITableViewDelegate, UITableViewDataSource {
         cell.configure(
             with: recipe,
             image: nil,
-            localFileManager: viewModel.localFileManager
+            localFileManager: viewModel.localFileManager,
+            imageFetcherManager: viewModel.imageFetcherManager
         )
         return cell
     }

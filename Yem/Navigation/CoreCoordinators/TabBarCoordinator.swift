@@ -47,14 +47,13 @@ final class TabBarCoordinator: UITabBarController, DestinationProviding {
     let dataRepository: DataRepository
     let authManager: AuthenticationManager
     let localFileManager: LocalFileManager
-//
-//    lazy var recipesListCoordinator = RecipesListCoordinator(repository: dataRepository, viewModel: RecipesListVM(repository: dataRepository), authManager: authManager, localFileManager: localFileManager)
-//    lazy var shopingListCoordinator = ShopingListCoordinator(parentCoordinator: self, repository: dataRepository, viewModel: ShopingListVM(repository: dataRepository))
+    let imageFetcherManager: ImageFetcherManagerProtocol
 
-    init(currentUser: UserModel, dataRepository: DataRepository, authManager: AuthenticationManager, localFileManager: LocalFileManager) {
+    init(currentUser: UserModel, dataRepository: DataRepository, authManager: AuthenticationManager, localFileManager: LocalFileManager, imageFetcherManager: ImageFetcherManagerProtocol) {
         self.dataRepository = dataRepository
         self.authManager = authManager
         self.localFileManager = localFileManager
+        self.imageFetcherManager = imageFetcherManager
 
         super.init(nibName: nil, bundle: nil)
 #if DEBUG
@@ -74,10 +73,10 @@ final class TabBarCoordinator: UITabBarController, DestinationProviding {
             repository: dataRepository,
             viewModel: RecipesListVM(
                 repository: dataRepository,
-                localFileManager: localFileManager
+                localFileManager: localFileManager, imageFetcherManager: imageFetcherManager
             ),
             authManager: authManager,
-            localFileManager: localFileManager
+            localFileManager: localFileManager, imageFetcherManager: imageFetcherManager
         )
         recipesNavigator = Navigator(start: recipesCoordinator)
         recipesCoordinator.navigator = recipesNavigator

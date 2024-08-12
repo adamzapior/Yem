@@ -37,6 +37,8 @@ protocol AddInstructionSheetVCDelegate: AnyObject {
 
 final class AddRecipeViewModel: IngredientViewModel {
     var repository: DataRepositoryProtocol
+    let localFileManager: LocalFileManagerProtocol
+    let imageFetcherManager: ImageFetcherManagerProtocol
     
     weak var delegateDetails: AddRecipeVCDelegate?
     weak var delegateIngredients: AddRecipeIngredientsVCDelegate?
@@ -171,8 +173,15 @@ final class AddRecipeViewModel: IngredientViewModel {
     
     // MARK: - Initialization
     
-    init(repository: DataRepositoryProtocol, existingRecipe: RecipeModel? = nil) {
+    init(
+        repository: DataRepositoryProtocol,
+        localFileManager: LocalFileManagerProtocol,
+        imageFetcherManager: ImageFetcherManagerProtocol,
+        existingRecipe: RecipeModel? = nil
+    ) {
         self.repository = repository
+        self.localFileManager = localFileManager
+        self.imageFetcherManager = imageFetcherManager
         
         if let recipe = existingRecipe {
             loadRecipeData(recipe)
@@ -288,22 +297,17 @@ final class AddRecipeViewModel: IngredientViewModel {
         isFavourite = recipe.isFavourite
         
         if recipe.isImageSaved {
-            let imageUrl = LocalFileManager.instance.imageUrl(for: recipe.id.uuidString)
-            let provider = LocalFileImageDataProvider(fileURL: imageUrl!)
+            let imageUrl = localFileManager.imageUrl(for: recipe.id.uuidString)
             
-            let fetchImageView = UIImageView()
+            guard let validImageUrl = imageUrl else {
+                return
+            }
             
-            fetchImageView.kf.setImage(with: provider) { result in
-                switch result {
-                case .success(let result):
-                    print(result.cacheType)
-                    print(result.source)
-                    self.selectedImage = result.image
-                    print("success here")
-                case .failure(let error):
-                    print(error)
-                    print("error here")
-                }
+            imageFetcherManager.fetchImage(from: validImageUrl) { [weak self] image in
+                guard let self = self else { return }
+                if let fetchedImage = image {
+                    self.selectedImage = fetchedImage
+                } else {}
             }
         }
     }
@@ -430,7 +434,7 @@ final class AddRecipeViewModel: IngredientViewModel {
                                  isFavourite: isFavourite)
 
         if let image = selectedImage {
-            let imageSaved = LocalFileManager.instance.saveImage(with: recipeID.uuidString, image: image)
+            let imageSaved = localFileManager.saveImage(with: recipeID.uuidString, image: image)
             if !imageSaved {
                 repository.rollbackTransaction()
                 return false
@@ -445,7 +449,7 @@ final class AddRecipeViewModel: IngredientViewModel {
 
         if !repository.save() {
             if isImageSaved {
-                LocalFileManager.instance.deleteImage(with: recipeID.uuidString)
+                localFileManager.deleteImage(with: recipeID.uuidString)
             }
             repository.rollbackTransaction()
             return false

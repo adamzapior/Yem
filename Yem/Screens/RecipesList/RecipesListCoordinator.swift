@@ -12,13 +12,21 @@ final class RecipesListCoordinator: Destination {
     let authManager: AuthenticationManager
     let repository: DataRepository
     var viewModel: RecipesListVM
-    let localFileManager: LocalFileManager
+    let localFileManager: LocalFileManagerProtocol
+    let imageFetcherManager: ImageFetcherManagerProtocol
 
-    init(repository: DataRepository, viewModel: RecipesListVM, authManager: AuthenticationManager, localFileManager: LocalFileManager) {
+    init(
+        repository: DataRepository,
+        viewModel: RecipesListVM,
+        authManager: AuthenticationManager,
+        localFileManager: LocalFileManagerProtocol,
+        imageFetcherManager: ImageFetcherManagerProtocol
+    ) {
         self.repository = repository
         self.viewModel = viewModel
         self.authManager = authManager
         self.localFileManager = localFileManager
+        self.imageFetcherManager = imageFetcherManager
         super.init()
 #if DEBUG
         trackLifetime()
@@ -36,7 +44,8 @@ final class RecipesListCoordinator: Destination {
     func navigateToAddRecipeScreen() {
         let viewModel = AddRecipeViewModel(
             repository: repository,
-            localFileManager: localFileManager
+            localFileManager: localFileManager, 
+            imageFetcherManager: imageFetcherManager
         )
         let coordinator = AddRecipeCoordinator(viewModel: viewModel)
         coordinator.parentCoordinator = self
@@ -47,13 +56,15 @@ final class RecipesListCoordinator: Destination {
         let viewModel = RecipeDetailsVM(
             recipe: recipe,
             repository: repository,
-            localFileManager: localFileManager
+            localFileManager: localFileManager,
+            imageFetcher: imageFetcherManager
         )
         let coordinator = RecipeDetailsCoordinator(
             viewModel: viewModel,
             recipe: recipe,
-            repository: repository, 
-            localFileManager: localFileManager
+            repository: repository,
+            localFileManager: localFileManager, 
+            imageFetcherManager: imageFetcherManager
         )
         coordinator.parentCoordinator = self
         navigator?.presentDestination(coordinator)

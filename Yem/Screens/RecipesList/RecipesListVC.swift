@@ -164,7 +164,8 @@ extension RecipesListVC: UICollectionViewDelegate, UICollectionViewDataSource, U
         cell.configure(
             with: recipe,
             image: nil,
-            localFileManager: viewModel.localFileManager
+            localFileManager: viewModel.localFileManager, 
+            imageFetcherManager: viewModel.imageFetcherManager
         )
 
         return cell

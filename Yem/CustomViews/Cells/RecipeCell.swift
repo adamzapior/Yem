@@ -11,7 +11,8 @@ import UIKit
 final class RecipeCell: UICollectionViewCell {
     static let id = "RecipeCell"
     
-    var localFileManager: LocalFileManager?
+    var localFileManager: LocalFileManagerProtocol?
+    var imageFetcherManager: ImageFetcherManagerProtocol?
     
     var recipeImage: UIImageView = {
         let imageView = UIImageView()
@@ -59,8 +60,9 @@ final class RecipeCell: UICollectionViewCell {
         recipeImage.kf.cancelDownloadTask()
     }
     
-    func configure(with model: RecipeModel, image: UIImage?, localFileManager: LocalFileManager?) {
+    func configure(with model: RecipeModel, image: UIImage?, localFileManager: LocalFileManagerProtocol?, imageFetcherManager: ImageFetcherManagerProtocol?) {
         self.localFileManager = localFileManager
+        self.imageFetcherManager = imageFetcherManager
         
         titleLabel.text = model.name
 
@@ -89,24 +91,16 @@ final class RecipeCell: UICollectionViewCell {
             spicyIcon.tintColor = .ui.spicyVeryHot
         }
         
-        if model.isImageSaved, let fileManager = localFileManager {
-            let imageUrl = fileManager.imageUrl(for: model.id.uuidString)
-            let provider = LocalFileImageDataProvider(fileURL: imageUrl!)
-            let options: KingfisherOptionsInfo = [
-                .cacheOriginalImage,
-                .forceRefresh
-            ]
-            
-            recipeImage.kf.setImage(with: provider, options: options) { result in
-                switch result {
-                case .success(let result):
-                    print(result.cacheType)
-                    print(result.source)
-                    self.recipeImage.image = result.image
-                    self.recipeImage.isHidden = false
-                case .failure(let error):
-                    self.recipeImage.isHidden = true
-                    print(error)
+        if model.isImageSaved, let fileManager = localFileManager, let imageFetcher = imageFetcherManager {
+            if let imageUrl = fileManager.imageUrl(for: model.id.uuidString) {
+                imageFetcher.fetchImage(from: imageUrl) { [weak self] image in
+                    guard let self = self else { return }
+                    if let image = image {
+                        self.recipeImage.image = image
+                        self.recipeImage.isHidden = false
+                    } else {
+                        self.recipeImage.isHidden = true
+                    }
                 }
             }
         }

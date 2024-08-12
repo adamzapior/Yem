@@ -54,6 +54,12 @@
 		586932172B25351A00379C8C /* AddRecipeIngredientsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 586932162B25351A00379C8C /* AddRecipeIngredientsVC.swift */; };
 		5869321B2B253AB300379C8C /* AddRecipeInstructionsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5869321A2B253AB300379C8C /* AddRecipeInstructionsVC.swift */; };
 		5869321D2B26112000379C8C /* IconImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5869321C2B26112000379C8C /* IconImage.swift */; };
+		587E7A222C68C8D1002E9BB5 /* RecipeDetailsVM_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 587E7A212C68C8D1002E9BB5 /* RecipeDetailsVM_Tests.swift */; };
+		587E7A232C68F929002E9BB5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 58356B062B1FB9E7000AC548 /* Assets.xcassets */; };
+		587E7A252C6940DE002E9BB5 /* MockLocalFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 587E7A242C6940DE002E9BB5 /* MockLocalFileManager.swift */; };
+		587E7A282C6943D7002E9BB5 /* ImageFetcherManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 587E7A272C6943D7002E9BB5 /* ImageFetcherManager.swift */; };
+		587E7A2A2C6944E0002E9BB5 /* MockImageFetcherManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 587E7A292C6944E0002E9BB5 /* MockImageFetcherManager.swift */; };
+		587E7A2C2C695E1C002E9BB5 /* RecipesListVM_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 587E7A2B2C695E1C002E9BB5 /* RecipesListVM_Tests.swift */; };
 		587F971A2BA71A0900F5B937 /* ShopingListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 587F97192BA71A0900F5B937 /* ShopingListModel.swift */; };
 		5887468C2B2E075C00EC5E11 /* IngredientsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5887468B2B2E075C00EC5E11 /* IngredientsCell.swift */; };
 		5887468E2B2E1AA000EC5E11 /* AddIngredientSheetVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5887468D2B2E1AA000EC5E11 /* AddIngredientSheetVC.swift */; };
@@ -168,6 +174,11 @@
 		586932162B25351A00379C8C /* AddRecipeIngredientsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRecipeIngredientsVC.swift; sourceTree = "<group>"; };
 		5869321A2B253AB300379C8C /* AddRecipeInstructionsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRecipeInstructionsVC.swift; sourceTree = "<group>"; };
 		5869321C2B26112000379C8C /* IconImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconImage.swift; sourceTree = "<group>"; };
+		587E7A212C68C8D1002E9BB5 /* RecipeDetailsVM_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeDetailsVM_Tests.swift; sourceTree = "<group>"; };
+		587E7A242C6940DE002E9BB5 /* MockLocalFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockLocalFileManager.swift; sourceTree = "<group>"; };
+		587E7A272C6943D7002E9BB5 /* ImageFetcherManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageFetcherManager.swift; sourceTree = "<group>"; };
+		587E7A292C6944E0002E9BB5 /* MockImageFetcherManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockImageFetcherManager.swift; sourceTree = "<group>"; };
+		587E7A2B2C695E1C002E9BB5 /* RecipesListVM_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipesListVM_Tests.swift; sourceTree = "<group>"; };
 		587F97192BA71A0900F5B937 /* ShopingListModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopingListModel.swift; sourceTree = "<group>"; };
 		5887468B2B2E075C00EC5E11 /* IngredientsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientsCell.swift; sourceTree = "<group>"; };
 		5887468D2B2E1AA000EC5E11 /* AddIngredientSheetVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddIngredientSheetVC.swift; sourceTree = "<group>"; };
@@ -415,6 +426,7 @@
 			isa = PBXGroup;
 			children = (
 				58FEC9F52B5880C5005B4C8F /* Enitities */,
+				587E7A272C6943D7002E9BB5 /* ImageFetcherManager.swift */,
 				58AA17602B88136000C44578 /* LocalFileManager.swift */,
 				58AB57BC2B588E8400053C74 /* DataRepository.swift */,
 				58D644182B56F4AD0008413A /* CoreDataManager.swift */,
@@ -457,6 +469,8 @@
 			isa = PBXGroup;
 			children = (
 				58C3E4AC2C6017AD005CAC3E /* MockDataRepository.swift */,
+				587E7A242C6940DE002E9BB5 /* MockLocalFileManager.swift */,
+				587E7A292C6944E0002E9BB5 /* MockImageFetcherManager.swift */,
 			);
 			path = Mocks;
 			sourceTree = "<group>";
@@ -588,6 +602,8 @@
 			children = (
 				58C3E4AE2C616B75005CAC3E /* AddRecipeViewModel_Tests.swift */,
 				58C3E4B12C67CBD0005CAC3E /* ShopingListVM_Tests.swift */,
+				587E7A212C68C8D1002E9BB5 /* RecipeDetailsVM_Tests.swift */,
+				587E7A2B2C695E1C002E9BB5 /* RecipesListVM_Tests.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -757,6 +773,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				587E7A232C68F929002E9BB5 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -794,6 +811,7 @@
 				58102DD52B2494ED0090EAE8 /* RecipesListVM.swift in Sources */,
 				58102DDE2B24A3150090EAE8 /* ShopingListVM.swift in Sources */,
 				589A65CA2B85600C0018779B /* RecipeDetailsCoordinator.swift in Sources */,
+				587E7A282C6943D7002E9BB5 /* ImageFetcherManager.swift in Sources */,
 				58094EBC2B26164B00D4D2FC /* IngredientsTableFooterView.swift in Sources */,
 				58AD97E52BDADF7F002A6C40 /* Navigator.swift in Sources */,
 				58356B492B20E0ED000AC548 /* RecipesListVC.swift in Sources */,
@@ -861,10 +879,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				587E7A2C2C695E1C002E9BB5 /* RecipesListVM_Tests.swift in Sources */,
 				58356B152B1FB9E8000AC548 /* YemTests.swift in Sources */,
 				58C3E4B22C67CBD0005CAC3E /* ShopingListVM_Tests.swift in Sources */,
+				587E7A222C68C8D1002E9BB5 /* RecipeDetailsVM_Tests.swift in Sources */,
+				587E7A252C6940DE002E9BB5 /* MockLocalFileManager.swift in Sources */,
 				58C3E4AD2C6017AD005CAC3E /* MockDataRepository.swift in Sources */,
 				58C3E4AF2C616B75005CAC3E /* AddRecipeViewModel_Tests.swift in Sources */,
+				587E7A2A2C6944E0002E9BB5 /* MockImageFetcherManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
