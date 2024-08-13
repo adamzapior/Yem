@@ -46,10 +46,10 @@ final class TabBarCoordinator: UITabBarController, DestinationProviding {
 
     let dataRepository: DataRepository
     let authManager: AuthenticationManager
-    let localFileManager: LocalFileManager
+    let localFileManager: LocalFileManagerProtocol
     let imageFetcherManager: ImageFetcherManagerProtocol
 
-    init(currentUser: UserModel, dataRepository: DataRepository, authManager: AuthenticationManager, localFileManager: LocalFileManager, imageFetcherManager: ImageFetcherManagerProtocol) {
+    init(currentUser: UserModel, dataRepository: DataRepository, authManager: AuthenticationManager, localFileManager: LocalFileManagerProtocol, imageFetcherManager: ImageFetcherManagerProtocol) {
         self.dataRepository = dataRepository
         self.authManager = authManager
         self.localFileManager = localFileManager
