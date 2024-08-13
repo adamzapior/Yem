@@ -16,7 +16,6 @@ import Photos
 final class AddRecipeVC: UIViewController {
     // MARK: - Properties
     
-//    let coordinator: AddRecipeCoordinator
     weak var coordinator: AddRecipeCoordinator?
     let viewModel: AddRecipeViewModel
     
@@ -74,16 +73,7 @@ final class AddRecipeVC: UIViewController {
             trackLifetime()
         #endif
     }
-    
-//    init(viewModel: AddRecipeViewModel) {
-//        self.viewModel = viewModel
-//        super.init(nibName: nil, bundle: nil)
-//
-    // #if DEBUG
-//        trackLifetime()
-    // #endif
-//    }
-    
+
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
