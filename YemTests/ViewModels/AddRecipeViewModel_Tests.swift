@@ -11,11 +11,18 @@ import XCTest
 class AddRecipeViewModel_Tests: XCTestCase {
     var viewModel: AddRecipeViewModel!
     var mockRepository: MockDataRepository!
+    var mockLocalFileManager: MockLocalFileManager!
+    var mockImageFetcherManager: MockImageFetcherManager!
 
     override func setUp() {
         super.setUp()
         mockRepository = MockDataRepository()
-        viewModel = AddRecipeViewModel(repository: mockRepository)
+        mockLocalFileManager = MockLocalFileManager()
+        viewModel = AddRecipeViewModel(
+            repository: mockRepository,
+            localFileManager: mockLocalFileManager,
+            imageFetcherManager: mockImageFetcherManager
+        )
     }
 
     override func tearDown() {
