@@ -18,10 +18,18 @@ final class AddNote: UIView {
     
     private var icon: IconImage!
     private var iconImage: String
-    private var nameOfRow = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText)
+    private var nameOfRow = TextLabel(
+        fontStyle: .body,
+        fontWeight: .regular,
+        textColor: .ui.primaryText
+    )
     private var nameOfRowText: String
     private var textStyle: UIFont.TextStyle
-    private var placeholder = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
+    private var placeholder = TextLabel(
+        fontStyle: .body,
+        fontWeight: .regular,
+        textColor: .ui.secondaryText
+    )
     
     lazy var textField: UITextView = {
         let text = UITextView()
@@ -36,7 +44,6 @@ final class AddNote: UIView {
         }
     }
     
-
     override init(frame: CGRect) {
         self.iconImage = "plus"
         self.textStyle = .body
@@ -51,23 +58,26 @@ final class AddNote: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    convenience init(nameOfRowText: String, iconImage: String, placeholderText: String, textColor: UIColor?) {
+    convenience init(
+        nameOfRowText: String,
+        iconImage: String,
+        placeholderText: String,
+        textColor: UIColor?
+    ) {
         self.init(frame: .zero)
         self.nameOfRowText = nameOfRowText
         self.iconImage = iconImage
         self.icon = IconImage(systemImage: iconImage, color: .ui.theme, textStyle: textStyle)
                 
-        let placeholderText = NSAttributedString(string: "\(placeholderText)",
-                                                 attributes: [NSAttributedString.Key.foregroundColor: textColor ?? .primaryContainer])
+        let placeholderText = NSAttributedString(
+            string: "\(placeholderText)",
+            attributes: [NSAttributedString.Key.foregroundColor: textColor ?? .primaryContainer]
+        )
                 
-//        textField.attributedPlaceholder = placeholderText
-        
         configure()
     }
     
-    
     private func configure() {
-        
         addSubview(icon)
         addSubview(nameOfRow)
         addSubview(textField)
@@ -76,8 +86,6 @@ final class AddNote: UIView {
         layer.cornerRadius = 20
         backgroundColor = .ui.secondaryContainer
 
-
-        
         icon.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(12)
             make.leading.equalToSuperview().offset(18)
@@ -103,18 +111,14 @@ final class AddNote: UIView {
         
         textField.font = UIFont.systemFont(ofSize: UIFont.preferredFont(forTextStyle: .body).pointSize, weight: .regular)
         
-        
         placeholder.snp.makeConstraints { make in
             make.centerX.equalTo(textField)
             make.centerY.equalTo(textField)
-
         }
         
         placeholder.text = "Enter new step..."
     }
-
 }
-
 
 extension AddNote: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {

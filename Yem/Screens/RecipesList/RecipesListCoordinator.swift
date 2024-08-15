@@ -44,7 +44,7 @@ final class RecipesListCoordinator: Destination {
     func navigateToAddRecipeScreen() {
         let viewModel = AddRecipeViewModel(
             repository: repository,
-            localFileManager: localFileManager, 
+            localFileManager: localFileManager,
             imageFetcherManager: imageFetcherManager
         )
         let coordinator = AddRecipeCoordinator(viewModel: viewModel)
@@ -63,7 +63,7 @@ final class RecipesListCoordinator: Destination {
             viewModel: viewModel,
             recipe: recipe,
             repository: repository,
-            localFileManager: localFileManager, 
+            localFileManager: localFileManager,
             imageFetcherManager: imageFetcherManager
         )
         coordinator.parentCoordinator = self

@@ -5,22 +5,21 @@
 //  Created by Adam Zapiór on 11/08/2024.
 //
 
-import UIKit
 import Kingfisher
 import LifetimeTracker
+import UIKit
 
 protocol ImageFetcherManagerProtocol {
     func fetchImage(from url: URL, completion: @escaping (UIImage?) -> Void)
 }
 
 final class ImageFetcherManager: ImageFetcherManagerProtocol {
-    
     init() {
 #if DEBUG
         trackLifetime()
 #endif
     }
-    
+
     func fetchImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
         let provider = LocalFileImageDataProvider(fileURL: url)
         let fetchImageView = UIImageView()

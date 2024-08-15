@@ -41,12 +41,31 @@ final class AddRecipeVC: UIViewController {
     private let addPhotoView = PhotoView()
     private let addPhotoImagePicker = UIImagePickerController()
    
-    private var nameTextfield = TextfieldWithIcon(iconImage: "info.square", placeholderText: "Enter your recipe name*", textColor: .ui.secondaryText)
-    private var difficultyPicker = AddPicker(iconImage: "puzzlepiece.extension", textOnButton: "Select difficulty*")
-    private var servingPicker = AddPicker(iconImage: "person", textOnButton: "Select servings count*")
-    private var prepTimePicker = AddPicker(iconImage: "timer", textOnButton: "Select prep time*")
-    private var spicyPicker = AddPicker(iconImage: "leaf", textOnButton: "Select spicy*")
-    private var categoryPicker = AddPicker(iconImage: "book", textOnButton: "Select category*")
+    private var nameTextfield = TextfieldWithIcon(
+        iconImage: "info.square",
+        placeholderText: "Enter your recipe name*",
+        textColor: .ui.secondaryText
+    )
+    private var difficultyPicker = AddPicker(
+        iconImage: "puzzlepiece.extension",
+        textOnButton: "Select difficulty*"
+    )
+    private var servingPicker = AddPicker(
+        iconImage: "person",
+        textOnButton: "Select servings count*"
+    )
+    private var prepTimePicker = AddPicker(
+        iconImage: "timer",
+        textOnButton: "Select prep time*"
+    )
+    private var spicyPicker = AddPicker(
+        iconImage: "leaf",
+        textOnButton: "Select spicy*"
+    )
+    private var categoryPicker = AddPicker(
+        iconImage: "book",
+        textOnButton: "Select category*"
+    )
     
     private lazy var difficultyPickerView = UIPickerView()
     private lazy var servingsPickerView = UIPickerView()

@@ -48,7 +48,7 @@ final class IngredientsTableFooterView: UIView {
             make.height.greaterThanOrEqualTo(50)
             make.width.greaterThanOrEqualTo(330.HAdapted)
         }
-        
+
         addButton.animateFadeIn()
     }
 }

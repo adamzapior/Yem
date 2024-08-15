@@ -17,7 +17,12 @@ final class AppCoordinator: Destination {
 
     override init() {
         super.init()
-        NotificationCenter.default.addObserver(self, selector: #selector(resetApplication), name: NSNotification.Name("ResetApplication"), object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(resetApplication),
+            name: NSNotification.Name("ResetApplication"),
+            object: nil
+        )
 #if DEBUG
         trackLifetime()
 #endif
@@ -43,7 +48,13 @@ final class AppCoordinator: Destination {
     }
 
     private func navigateToApp(userData: UserModel) {
-        let tabBarCoordinator = TabBarCoordinator(currentUser: userData, dataRepository: dataRepository, authManager: authManager, localFileManager: localFileManager, imageFetcherManager: imageFetcherManager)
+        let tabBarCoordinator = TabBarCoordinator(
+            currentUser: userData,
+            dataRepository: dataRepository,
+            authManager: authManager,
+            localFileManager: localFileManager,
+            imageFetcherManager: imageFetcherManager
+        )
         tabBarCoordinator.parentCoordinator = self
 
         let tabBarAdapter = TabBarCoordinatorAdapter(coordinator: tabBarCoordinator)
@@ -53,7 +64,12 @@ final class AppCoordinator: Destination {
     }
 
     private func navigateToOnboarding() {
-        let onboardingCoordinator = OnboardingCoordinator(authManager: authManager, dataRepository: dataRepository, localFileManager: localFileManager, imageFetcherManager: imageFetcherManager)
+        let onboardingCoordinator = OnboardingCoordinator(
+            authManager: authManager,
+            dataRepository: dataRepository,
+            localFileManager: localFileManager,
+            imageFetcherManager: imageFetcherManager
+        )
         onboardingCoordinator.parentCoordinator = self
         navigator?.changeRoot(screen: onboardingCoordinator)
     }

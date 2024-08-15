@@ -18,9 +18,17 @@ class IconImage: UIImageView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    convenience init(systemImage: String, color: UIColor!, textStyle: UIFont.TextStyle, contentMode: UIView.ContentMode? = nil) {
+    convenience init(
+        systemImage: String,
+        color: UIColor!,
+        textStyle: UIFont.TextStyle,
+        contentMode: UIView.ContentMode? = nil
+    ) {
         self.init(frame: .zero)
-        self.image = UIImage(systemName: systemImage, withConfiguration: UIImage.SymbolConfiguration(textStyle: textStyle))
+        self.image = UIImage(
+            systemName: systemImage,
+            withConfiguration: UIImage.SymbolConfiguration(textStyle: textStyle)
+        )
         self.tintColor = color
         self.contentMode = contentMode ?? .scaleToFill
     }

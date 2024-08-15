@@ -122,7 +122,7 @@ final class RecipesListVM {
     }
 }
 
-    // MARK: - Delegates
+// MARK: - Delegates
 
 extension RecipesListVM: RecipesListVMDelegate {
     func reloadTable() {

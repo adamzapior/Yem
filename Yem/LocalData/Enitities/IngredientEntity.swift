@@ -6,12 +6,11 @@
 //
 //
 
-import Foundation
 import CoreData
+import Foundation
 
 @objc(IngredientEntity)
 public class IngredientEntity: NSManagedObject {
-
     @nonobjc public class func fetchRequest() -> NSFetchRequest<IngredientEntity> {
         return NSFetchRequest<IngredientEntity>(entityName: "IngredientEntity")
     }
@@ -21,10 +20,6 @@ public class IngredientEntity: NSManagedObject {
     @NSManaged public var valueType: String
     @NSManaged public var id: UUID
     @NSManaged public var recipe: RecipeEntity
-
 }
 
-extension IngredientEntity: Identifiable {
-
-}
-
+extension IngredientEntity: Identifiable {}

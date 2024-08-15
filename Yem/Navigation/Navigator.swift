@@ -42,7 +42,9 @@ final class Navigator {
 
     func popUpTo(where predicate: @escaping (Destination) -> Bool) {
         DispatchQueue.main.async { [weak self] in
-            if let viewController = self?.navigationController.viewControllers.last(where: { $0.destination.map(predicate) ?? false }) {
+            if let viewController = self?.navigationController.viewControllers.last(where: {
+                $0.destination.map(predicate) ?? false
+            }) {
                 print("DEBUG: Checking destination: \(String(describing: viewController.destination))")
                 self?.navigationController.popToViewController(viewController, animated: true)
             }

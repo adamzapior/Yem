@@ -10,8 +10,16 @@ import SnapKit
 import UIKit
 
 class DetailsView: UIView {
-    private let titleTextLabel = TextLabel(fontStyle: .footnote, fontWeight: .semibold, textColor: .ui.theme)
-    private let valueTextLabel = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText)
+    private let titleTextLabel = TextLabel(
+        fontStyle: .footnote,
+        fontWeight: .semibold,
+        textColor: .ui.theme
+    )
+    private let valueTextLabel = TextLabel(
+        fontStyle: .body,
+        fontWeight: .regular,
+        textColor: .ui.primaryText
+    )
     
     override init(frame: CGRect) {
         super.init(frame: frame)

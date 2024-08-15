@@ -44,11 +44,32 @@ final class RecipeDetailsVC: UIViewController {
     let bookmarkIconFilled: String = "bookmark.fill"
     let bookmarkIconEmpty: String = "bookmark"
         
-    lazy var basketNavItem = UIBarButtonItem(image: UIImage(systemName: "basket"), style: .plain, target: self, action: #selector(basketButtonTapped))
+    lazy var basketNavItem = UIBarButtonItem(
+        image: UIImage(
+            systemName: "basket"
+        ),
+        style: .plain,
+        target: self,
+        action: #selector(basketButtonTapped)
+    )
     
-    lazy var bookmarkNavItem = UIBarButtonItem(image: UIImage(systemName: "\(bookmarkIconString)"), style: .plain, target: self, action: #selector(bookmarkButtonTapped))
+    lazy var bookmarkNavItem = UIBarButtonItem(
+        image: UIImage(
+            systemName: "\(bookmarkIconString)"
+        ),
+        style: .plain,
+        target: self,
+        action: #selector(bookmarkButtonTapped)
+    )
 
-    lazy var pencilNavItem = UIBarButtonItem(image: UIImage(systemName: "pencil"), style: .plain, target: self, action: #selector(pencilButtonTapped))
+    lazy var pencilNavItem = UIBarButtonItem(
+        image: UIImage(
+            systemName: "pencil"
+        ),
+        style: .plain,
+        target: self,
+        action: #selector(pencilButtonTapped)
+    )
 
     lazy var trashNavItem = UIBarButtonItem(image: UIImage(systemName: "trash"), style: .plain, target: self, action: #selector(trashButtonTapped))
 
@@ -148,7 +169,10 @@ final class RecipeDetailsVC: UIViewController {
         contentView.addSubview(detailsSubtitleLabel)
          
         detailsSubtitleLabel.text = "Details"
-        detailsSubtitleLabel.font = UIFont.systemFont(ofSize: UIFont.preferredFont(forTextStyle: .title2).pointSize, weight: .semibold)
+        detailsSubtitleLabel.font = UIFont.systemFont(
+            ofSize: UIFont.preferredFont(forTextStyle: .title2).pointSize,
+            weight: .semibold
+        )
         detailsSubtitleLabel.textColor = .ui.primaryText
          
         detailsSubtitleLabel.snp.makeConstraints { make in
@@ -215,7 +239,10 @@ final class RecipeDetailsVC: UIViewController {
         contentView.addSubview(ingredientsSubtitleLabel)
          
         ingredientsSubtitleLabel.text = "Ingredients"
-        ingredientsSubtitleLabel.font = UIFont.systemFont(ofSize: UIFont.preferredFont(forTextStyle: .title2).pointSize, weight: .semibold)
+        ingredientsSubtitleLabel.font = UIFont.systemFont(
+            ofSize: UIFont.preferredFont(forTextStyle: .title2).pointSize,
+            weight: .semibold
+        )
         ingredientsSubtitleLabel.textColor = .ui.primaryText
          
         ingredientsSubtitleLabel.snp.makeConstraints { make in
@@ -253,7 +280,10 @@ final class RecipeDetailsVC: UIViewController {
          
         for ingredient in recipe.ingredientList {
             let ingredientView = IngredientView()
-            ingredientView.configure(name: ingredient.name.lowercased(), value: "\(ingredient.value) \(ingredient.valueType.lowercased())")
+            ingredientView.configure(
+                name: ingredient.name.lowercased(),
+                value: "\(ingredient.value) \(ingredient.valueType.lowercased())"
+            )
 
             ingredientsStackView.addArrangedSubview(ingredientView)
         }
@@ -263,7 +293,10 @@ final class RecipeDetailsVC: UIViewController {
         contentView.addSubview(instructionsSubtitleLabel)
          
         instructionsSubtitleLabel.text = "Instructions"
-        instructionsSubtitleLabel.font = UIFont.systemFont(ofSize: UIFont.preferredFont(forTextStyle: .title2).pointSize, weight: .semibold)
+        instructionsSubtitleLabel.font = UIFont.systemFont(
+            ofSize: UIFont.preferredFont(forTextStyle: .title2).pointSize,
+            weight: .semibold
+        )
         instructionsSubtitleLabel.textColor = .ui.primaryText
          
         instructionsSubtitleLabel.snp.makeConstraints { make in
@@ -295,20 +328,41 @@ final class RecipeDetailsVC: UIViewController {
          
         for instruction in recipe.instructionList.sorted(by: { $0.index < $1.index }) {
             let instructionView = DetailsView()
-            instructionView.configure(titleText: "STEP \(instruction.index)", valueText: instruction.text)
+            instructionView.configure(
+                titleText: "STEP \(instruction.index)",
+                valueText: instruction.text
+            )
 
             instructionsStackView.addArrangedSubview(instructionView)
         }
     }
     
     private func configureRecipeViewData() {
-        nameView.configure(titleText: "Name", valueText: recipe.name)
-        categoryView.configure(titleText: "Category", valueText: recipe.category.rawValue)
-        servingView.configure(titleText: "Serving", valueText: recipe.serving)
+        nameView.configure(
+            titleText: "Name",
+            valueText: recipe.name
+        )
+        categoryView.configure(
+            titleText: "Category",
+            valueText: recipe.category.rawValue
+        )
+        servingView.configure(
+            titleText: "Serving",
+            valueText: recipe.serving
+        )
         
-        prepTiemView.configure(titleText: "Prep time", valueText: "\(recipe.perpTimeHours)h \(recipe.perpTimeMinutes)min")
-        spicyView.configure(titleText: "Spicy", valueText: recipe.spicy.rawValue)
-        difficultyView.configure(titleText: "Difficulty", valueText: recipe.difficulty.rawValue)
+        prepTiemView.configure(
+            titleText: "Prep time",
+            valueText: "\(recipe.perpTimeHours)h \(recipe.perpTimeMinutes)min"
+        )
+        spicyView.configure(
+            titleText: "Spicy",
+            valueText: recipe.spicy.rawValue
+        )
+        difficultyView.configure(
+            titleText: "Difficulty",
+            valueText: recipe.difficulty.rawValue
+        )
     }
 }
 

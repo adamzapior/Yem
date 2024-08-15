@@ -6,12 +6,11 @@
 //
 //
 
-import Foundation
 import CoreData
+import Foundation
 
 @objc(ShopingListEntity)
 public class ShopingListEntity: NSManagedObject, Identifiable {
-
     @nonobjc public class func fetchRequest() -> NSFetchRequest<ShopingListEntity> {
         return NSFetchRequest<ShopingListEntity>(entityName: "ShopingListEntity")
     }
@@ -21,6 +20,4 @@ public class ShopingListEntity: NSManagedObject, Identifiable {
     @NSManaged public var name: String
     @NSManaged public var value: String
     @NSManaged public var valueType: String
-
 }
-

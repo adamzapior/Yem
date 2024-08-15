@@ -58,7 +58,13 @@ final class OnboardingCoordinator: Destination {
     }
 
     func navigateToApp(user: UserModel) {
-        let tabBarCoordinator = TabBarCoordinator(currentUser: user, dataRepository: dataRepository, authManager: authManager, localFileManager: localFileManager, imageFetcherManager: imageFetcherManager)
+        let tabBarCoordinator = TabBarCoordinator(
+            currentUser: user,
+            dataRepository: dataRepository,
+            authManager: authManager,
+            localFileManager: localFileManager,
+            imageFetcherManager: imageFetcherManager
+        )
         tabBarCoordinator.parentCoordinator = parentCoordinator
 
         let tabBarAdapter = TabBarCoordinatorAdapter(coordinator: tabBarCoordinator)
@@ -66,7 +72,7 @@ final class OnboardingCoordinator: Destination {
         navigator?.setNavigationBarHidden()
         navigator?.changeRoot(screen: tabBarAdapter)
     }
-    
+
     func presentAlert(title: String, message: String) {
         let alertVC = ValidationAlertVC(title: title, message: message)
         alertVC.modalPresentationStyle = .overFullScreen

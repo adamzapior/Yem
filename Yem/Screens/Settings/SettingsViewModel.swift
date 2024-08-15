@@ -10,15 +10,15 @@ import LifetimeTracker
 
 final class SettingsViewModel {
     let authManager: AuthenticationManager
-    
+
     init(authManager: AuthenticationManager) {
         self.authManager = authManager
-        
+
 #if DEBUG
         trackLifetime()
 #endif
     }
-    
+
     func signOut() async {
         do {
             try await authManager.signOut()
@@ -27,7 +27,6 @@ final class SettingsViewModel {
         }
     }
 }
-
 
 #if DEBUG
 extension SettingsViewModel: LifetimeTrackable {

@@ -38,9 +38,21 @@ final class RecipeSearchResultCell: UITableViewCell {
         return view
     }()
     
-    private var titleLabel = TextLabel(fontStyle: .title3, fontWeight: .semibold, textColor: .ui.primaryText)
-    private var perpTimeLabel = TextLabel(fontStyle: .footnote, fontWeight: .regular, textColor: .ui.secondaryText)
-    private var spicyIcon = IconImage(systemImage: "leaf", color: .ui.theme, textStyle: .body)
+    private var titleLabel = TextLabel(
+        fontStyle: .title3,
+        fontWeight: .semibold,
+        textColor: .ui.primaryText
+    )
+    private var perpTimeLabel = TextLabel(
+        fontStyle: .footnote,
+        fontWeight: .regular,
+        textColor: .ui.secondaryText
+    )
+    private var spicyIcon = IconImage(
+        systemImage: "leaf",
+        color: .ui.theme,
+        textStyle: .body
+    )
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -61,7 +73,12 @@ final class RecipeSearchResultCell: UITableViewCell {
         recipeImage.kf.cancelDownloadTask()
     }
     
-    func configure(with model: RecipeModel, image: UIImage?, localFileManager: LocalFileManagerProtocol?, imageFetcherManager: ImageFetcherManagerProtocol?) {
+    func configure(
+        with model: RecipeModel,
+        image: UIImage?,
+        localFileManager: LocalFileManagerProtocol?,
+        imageFetcherManager: ImageFetcherManagerProtocol?
+    ) {
         self.localFileManager = localFileManager
         self.imageFetcherManager = imageFetcherManager
         

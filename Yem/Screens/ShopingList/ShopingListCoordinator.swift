@@ -17,7 +17,11 @@ final class ShopingListCoordinator: Destination, Coordinator {
     let repository: DataRepository
     let viewModel: ShopingListVM
     
-    init(parentCoordinator: TabBarCoordinator? = nil, repository: DataRepository, viewModel: ShopingListVM) {
+    init(
+        parentCoordinator: TabBarCoordinator? = nil,
+        repository: DataRepository,
+        viewModel: ShopingListVM
+    ) {
         self.parentCoordinator = parentCoordinator
         self.repository = repository
         self.viewModel = viewModel
@@ -37,14 +41,21 @@ final class ShopingListCoordinator: Destination, Coordinator {
         let shopingListController = ShopingListVC(coordinator: self, viewModel: viewModel)
         shopingListController.viewModel = viewModel
         
-        shopingListController.tabBarItem = UITabBarItem(title: "Shoping list",
-                                                        image: UIImage(systemName: "basket"),
-                                                        selectedImage: nil)
+        shopingListController.tabBarItem = UITabBarItem(
+            title: "Shoping list",
+            image: UIImage(systemName: "basket"),
+            selectedImage: nil
+        )
         return shopingListController
     }
     
     func presentAddItemSheet() {
-        navigator?.presentSheet(AddIngredientSheetVC(viewModel: viewModel as IngredientViewModel, coordinator: self as Coordinator))
+        navigator?.presentSheet(
+            AddIngredientSheetVC(
+                viewModel: viewModel as IngredientViewModel,
+                coordinator: self as Coordinator
+            )
+        )
     }
     
     func dismissSheet() {

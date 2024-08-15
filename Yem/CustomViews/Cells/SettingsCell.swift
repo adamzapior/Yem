@@ -10,9 +10,23 @@ import UIKit
 class SettingsCell: UITableViewCell {
     static let reuseID = "SettingsCell"
     
-    private let titleLabel = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText)
-    private let image = IconImage(systemImage: "plus", color: .ui.theme, textStyle: .body, contentMode: .center)
-    private let arrow = IconImage(systemImage: "chevron.right", color: .ui.secondaryText, textStyle: .body, contentMode: .center)
+    private let titleLabel = TextLabel(
+        fontStyle: .body,
+        fontWeight: .regular,
+        textColor: .ui.primaryText
+    )
+    private let image = IconImage(
+        systemImage: "plus",
+        color: .ui.theme,
+        textStyle: .body,
+        contentMode: .center
+    )
+    private let arrow = IconImage(
+        systemImage: "chevron.right",
+        color: .ui.secondaryText,
+        textStyle: .body,
+        contentMode: .center
+    )
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

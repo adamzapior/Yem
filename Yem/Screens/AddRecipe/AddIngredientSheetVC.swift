@@ -16,11 +16,31 @@ final class AddIngredientSheetVC: UIViewController {
     
     // MARK: - View properties
     
-    private let ingredientNameTextfield = TextfieldWithIcon(backgroundColor: .ui.secondaryContainer, iconImage: "info.square", placeholderText: "Enter your igredient name*", textColor: .ui.secondaryText)
-    private let countTextfield = TextfieldWithIcon(backgroundColor: .ui.secondaryContainer, iconImage: "bag.badge.plus", placeholderText: "Enter value*", textColor: .ui.secondaryText)
-    private let valueTypeCell = AddPicker(backgroundColor: .ui.secondaryContainer, iconImage: "note.text.badge.plus", textOnButton: "Select value type*")
-    private let addButton = ActionButton(title: "Add", backgroundColor: .ui.addBackground)
-    private let cancelButton = ActionButton(title: "Cancel", backgroundColor: .ui.cancelBackground)
+    private let ingredientNameTextfield = TextfieldWithIcon(
+        backgroundColor: .ui.secondaryContainer,
+        iconImage: "info.square",
+        placeholderText: "Enter your igredient name*",
+        textColor: .ui.secondaryText
+    )
+    private let countTextfield = TextfieldWithIcon(
+        backgroundColor: .ui.secondaryContainer,
+        iconImage: "bag.badge.plus",
+        placeholderText: "Enter value*",
+        textColor: .ui.secondaryText
+    )
+    private let valueTypeCell = AddPicker(
+        backgroundColor: .ui.secondaryContainer,
+        iconImage: "note.text.badge.plus",
+        textOnButton: "Select value type*"
+    )
+    private let addButton = ActionButton(
+        title: "Add",
+        backgroundColor: .ui.addBackground
+    )
+    private let cancelButton = ActionButton(
+        title: "Cancel",
+        backgroundColor: .ui.cancelBackground
+    )
     
     private let valueTypePickerView = UIPickerView()
     

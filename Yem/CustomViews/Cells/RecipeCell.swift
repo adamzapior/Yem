@@ -60,7 +60,12 @@ final class RecipeCell: UICollectionViewCell {
         recipeImage.kf.cancelDownloadTask()
     }
     
-    func configure(with model: RecipeModel, image: UIImage?, localFileManager: LocalFileManagerProtocol?, imageFetcherManager: ImageFetcherManagerProtocol?) {
+    func configure(
+        with model: RecipeModel,
+        image: UIImage?,
+        localFileManager: LocalFileManagerProtocol?,
+        imageFetcherManager: ImageFetcherManagerProtocol?
+    ) {
         self.localFileManager = localFileManager
         self.imageFetcherManager = imageFetcherManager
         

@@ -16,11 +16,29 @@ final class UnloggedOnboardingVC: UIViewController {
     
     lazy var image = UIImageView()
         
-    let titleLabel = TextLabel(fontStyle: .title1, fontWeight: .light, textColor: .ui.theme, textAlignment: .center)
-    let subtitleLabel = TextLabel(fontStyle: .body, fontWeight: .light, textColor: .ui.secondaryText, textAlignment: .center)
+    let titleLabel = TextLabel(
+        fontStyle: .title1,
+        fontWeight: .light,
+        textColor: .ui.theme,
+        textAlignment: .center
+    )
+    let subtitleLabel = TextLabel(
+        fontStyle: .body,
+        fontWeight: .light,
+        textColor: .ui.secondaryText,
+        textAlignment: .center
+    )
 
-    let loginButton = ActionButton(title: "Login", backgroundColor: .ui.theme, isShadownOn: true)
-    let registerButton = ActionButton(title: "Register", backgroundColor: .ui.cancelBackground, isShadownOn: true)
+    let loginButton = ActionButton(
+        title: "Login",
+        backgroundColor: .ui.theme,
+        isShadownOn: true
+    )
+    let registerButton = ActionButton(
+        title: "Register",
+        backgroundColor: .ui.cancelBackground,
+        isShadownOn: true
+    )
 
     init(viewModel: OnboardingVM, coordinator: OnboardingCoordinator) {
         self.viewModel = viewModel

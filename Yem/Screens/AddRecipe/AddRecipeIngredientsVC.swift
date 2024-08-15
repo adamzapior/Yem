@@ -5,9 +5,8 @@
 //  Created by Adam Zapiór on 10/12/2023.
 //
 
-import UIKit
 import LifetimeTracker
-
+import UIKit
 
 final class AddRecipeIngredientsVC: UIViewController {
     // MARK: - ViewModel
@@ -32,9 +31,12 @@ final class AddRecipeIngredientsVC: UIViewController {
     private let tableViewHeader = IngredientsTableHeaderView()
     private let tableViewFooter = IngredientsTableFooterView()
     
-    private let emptyTableLabel = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
+    private let emptyTableLabel = TextLabel(
+        fontStyle: .body,
+        fontWeight: .regular,
+        textColor: .ui.secondaryText
+    )
 
-    
     // MARK: - Lifecycle
     
     init(viewModel: AddRecipeViewModel, coordinator: AddRecipeCoordinator) {
@@ -126,13 +128,11 @@ final class AddRecipeIngredientsVC: UIViewController {
         }
         
         emptyTableLabel.textColor = .ui.secondaryText
-        
     }
     
     private func setupAnimations() {
         emptyTableLabel.animateFadeIn()
     }
-
 }
 
 // MARK: -  TableView delegate & data source
@@ -188,7 +188,12 @@ extension AddRecipeIngredientsVC: IngredientsTableFooterViewDelegate {
 
 extension AddRecipeIngredientsVC {
     func setupNavigationBarButtons() {
-        let nextButtonItem = UIBarButtonItem(title: "Next", style: .plain, target: self, action: #selector(nextButtonTapped))
+        let nextButtonItem = UIBarButtonItem(
+            title: "Next",
+            style: .plain,
+            target: self,
+            action: #selector(nextButtonTapped)
+        )
         navigationItem.rightBarButtonItem = nextButtonItem
     }
     

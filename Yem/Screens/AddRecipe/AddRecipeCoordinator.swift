@@ -80,9 +80,6 @@ final class AddRecipeCoordinator: Destination, Coordinator {
     }
 
     func dismissVCStack() {
-//        self.navigator?.popUpTo { destination in
-//            destination is RecipesListCoordinator
-//        }
         navigator?.popUpToRoot()
     }
 }

@@ -44,7 +44,12 @@ final class AddPicker: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    convenience init(minViewHeight: CGFloat? = nil, backgroundColor: UIColor? = UIColor.ui.primaryContainer, iconImage: String, textOnButton: String) {
+    convenience init(
+        minViewHeight: CGFloat? = nil,
+        backgroundColor: UIColor? = UIColor.ui.primaryContainer,
+        iconImage: String,
+        textOnButton: String
+    ) {
         self.init(frame: .zero)
         self.minViewHeight = minViewHeight ?? 32
         self.backgroundColor = backgroundColor

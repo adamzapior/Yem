@@ -49,7 +49,13 @@ final class TabBarCoordinator: UITabBarController, DestinationProviding {
     let localFileManager: LocalFileManagerProtocol
     let imageFetcherManager: ImageFetcherManagerProtocol
 
-    init(currentUser: UserModel, dataRepository: DataRepository, authManager: AuthenticationManager, localFileManager: LocalFileManagerProtocol, imageFetcherManager: ImageFetcherManagerProtocol) {
+    init(
+        currentUser: UserModel,
+        dataRepository: DataRepository,
+        authManager: AuthenticationManager,
+        localFileManager: LocalFileManagerProtocol,
+        imageFetcherManager: ImageFetcherManagerProtocol
+    ) {
         self.dataRepository = dataRepository
         self.authManager = authManager
         self.localFileManager = localFileManager
@@ -92,8 +98,16 @@ final class TabBarCoordinator: UITabBarController, DestinationProviding {
         shoppingCoordinator.navigator = shoppingNavigator
 
         if let recipesNav = recipesNavigator?.navigationController, let shopingNav = shoppingNavigator?.navigationController {
-            recipesNav.tabBarItem = UITabBarItem(title: "Recipes", image: UIImage(systemName: "book"), selectedImage: nil)
-            shopingNav.tabBarItem = UITabBarItem(title: "Shopping", image: UIImage(systemName: "cart"), selectedImage: nil)
+            recipesNav.tabBarItem = UITabBarItem(
+                title: "Recipes",
+                image: UIImage(systemName: "book"),
+                selectedImage: nil
+            )
+            shopingNav.tabBarItem = UITabBarItem(
+                title: "Shopping",
+                image: UIImage(systemName: "cart"),
+                selectedImage: nil
+            )
             viewControllers = [recipesNav, shopingNav]
         }
     }

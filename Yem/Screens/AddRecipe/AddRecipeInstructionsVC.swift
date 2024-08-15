@@ -6,9 +6,8 @@
 //
 
 import Foundation
-import UIKit
 import LifetimeTracker
-
+import UIKit
 
 final class AddRecipeInstructionsVC: UIViewController {
     // MARK: - Properties
@@ -35,7 +34,6 @@ final class AddRecipeInstructionsVC: UIViewController {
     
     private let emptyTableLabel = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
 
-    
     // MARK: - Lifecycle
     
     init(viewModel: AddRecipeViewModel, coordinator: AddRecipeCoordinator) {
@@ -74,7 +72,7 @@ final class AddRecipeInstructionsVC: UIViewController {
         
         tableView.dragDelegate = self
         tableView.dropDelegate = self
-        tableView.dragInteractionEnabled = true 
+        tableView.dragInteractionEnabled = true
 
         tableView.backgroundColor = UIColor.ui.background
         tableView.showsVerticalScrollIndicator = false
@@ -203,7 +201,6 @@ extension AddRecipeInstructionsVC: AddRecipeInstructionsVCDelegate {
             emptyTableLabel.textColor = .ui.placeholderError
         }
     }
-    
 }
 
 // MARK: - Navigation
@@ -229,7 +226,6 @@ extension AddRecipeInstructionsVC {
         coordinator.navigateTo(.addInstruction)
     }
 }
-
 
 #if DEBUG
 extension AddRecipeInstructionsVC: LifetimeTrackable {

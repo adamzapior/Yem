@@ -16,7 +16,6 @@ protocol LocalFileManagerProtocol {
 }
 
 class LocalFileManager: FileManager, LocalFileManagerProtocol {
-
     override init() {
         super.init()
 #if DEBUG

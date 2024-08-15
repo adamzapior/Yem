@@ -101,7 +101,7 @@ final class RecipeDetailsCoordinator: Destination {
     func navigateToRecipeEditor() {
         let viewModel = AddRecipeViewModel(
             repository: repository,
-            localFileManager: localFileManager, 
+            localFileManager: localFileManager,
             imageFetcherManager: imageFetcherManager,
             existingRecipe: recipe
         )

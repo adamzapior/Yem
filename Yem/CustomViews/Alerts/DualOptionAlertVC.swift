@@ -10,10 +10,26 @@ import UIKit
 final class DualOptionAlertVC: UIViewController {
     private let containerView = UIView()
 
-    private let titleLabel = TextLabel(fontStyle: .title3, fontWeight: .semibold, textColor: .ui.primaryText, textAlignment: .center)
-    private let errorLabel = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText, textAlignment: .center)
-    private let okButton = ActionButton(title: "OK", backgroundColor: .ui.theme)
-    private let cancelButton = ActionButton(title: "Cancel", backgroundColor: .ui.cancelBackground ?? .red)
+    private let titleLabel = TextLabel(
+        fontStyle: .title3,
+        fontWeight: .semibold,
+        textColor: .ui.primaryText,
+        textAlignment: .center
+    )
+    private let errorLabel = TextLabel(
+        fontStyle: .body,
+        fontWeight: .regular,
+        textColor: .ui.primaryText,
+        textAlignment: .center
+    )
+    private let okButton = ActionButton(
+        title: "OK",
+        backgroundColor: .ui.theme
+    )
+    private let cancelButton = ActionButton(
+        title: "Cancel",
+        backgroundColor: .ui.cancelBackground ?? .red
+    )
 
     private var alertTitle: String?
     private var message: String?

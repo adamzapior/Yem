@@ -53,7 +53,7 @@ final class SettingsCoordinator: Destination {
         }
         alertVC.modalPresentationStyle = .overFullScreen
         alertVC.modalTransitionStyle = .crossDissolve
-        
+
         navigator?.presentAlert(alertVC)
     }
 

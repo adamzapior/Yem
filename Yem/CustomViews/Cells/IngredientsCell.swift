@@ -23,9 +23,21 @@ final class IngredientsCell: UITableViewCell {
         return view
     }()
     
-    private let valueLabel = TextLabel(fontStyle: .body, fontWeight: .semibold, textColor: .ui.theme)
-    private let valueTypeLabel = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
-    private let ingredientNameLabel = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText)
+    private let valueLabel = TextLabel(
+        fontStyle: .body,
+        fontWeight: .semibold,
+        textColor: .ui.theme
+    )
+    private let valueTypeLabel = TextLabel(
+        fontStyle: .body,
+        fontWeight: .regular,
+        textColor: .ui.secondaryText
+    )
+    private let ingredientNameLabel = TextLabel(
+        fontStyle: .body,
+        fontWeight: .regular,
+        textColor: .ui.primaryText
+    )
     
     private lazy var trashIcon: IconImage = {
         let icon = IconImage(systemImage: "trash", color: .red, textStyle: .body)

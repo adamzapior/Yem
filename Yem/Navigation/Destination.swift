@@ -17,7 +17,6 @@ class Destination {
     }
 }
 
-
 extension UIViewController {
     private enum AssociatedKeys {
         static var destination: Void?
