@@ -8,8 +8,8 @@
 import Combine
 import Foundation
 import Kingfisher
-import UIKit
 import LifetimeTracker
+import UIKit
 
 protocol RecipesListVMDelegate: AnyObject {
     func reloadTable()
@@ -42,9 +42,13 @@ final class RecipesListVM {
     private var cancellables: Set<AnyCancellable> = []
     
     init(
+        repository: DataRepositoryProtocol,
+        localFileManager: LocalFileManagerProtocol,
         imageFetcherManager: ImageFetcherManagerProtocol
+    ) {
         self.repository = repository
         self.localFileManager = localFileManager
+        self.imageFetcherManager = imageFetcherManager
         
         repository.recipesInsertedPublisher
             .sink(receiveValue: { [weak self] _ in
@@ -92,30 +96,14 @@ final class RecipesListVM {
     }
     
     func filterRecipes(query: String) {
-            currentQuery = query
-            if query.isEmpty {
-                filteredRecipes = recipes
-            } else {
-                filteredRecipes = recipes.filter { $0.name.lowercased().contains(query.lowercased()) }
-            }
-            self.reloadSearchableTable()
+        currentQuery = query
+        if query.isEmpty {
+            filteredRecipes = recipes
+        } else {
+            filteredRecipes = recipes.filter { $0.name.lowercased().contains(query.lowercased()) }
         }
-    
-//    func filterRecipes(with searchText: String) {
-//        if searchText.isEmpty {
-//            filteredRecipes = recipes
-//        } else {
-//            filteredRecipes = recipes.filter { recipe in
-//                recipe.name.lowercased().contains(searchText.lowercased())
-//            }
-//        }
-//        
-//        for fa in filteredRecipes {
-//            print(fa.name)
-//        }
-//        self.reloadSearchableTable()
-//    }
-
+        reloadSearchableTable()
+    }
 
     // MARK: - Private methods
 
@@ -125,14 +113,16 @@ final class RecipesListVM {
         let groupedRecipes = Dictionary(grouping: recipes, by: { $0.category })
         
         for category in RecipeCategory.allCases {
-            let recipesForCategory = groupedRecipes[category] ?? []
-            let section = Section(title: RecipeCategory(rawValue: category.rawValue) ?? .notSelected, items: recipesForCategory)
-            sections.append(section)
+            if let recipesForCategory = groupedRecipes[category], !recipesForCategory.isEmpty {
+                let section = Section(title: category, items: recipesForCategory)
+                sections.append(section)
+                print(section.title)
+            }
         }
     }
 }
 
-// MARK: - Delegates
+    // MARK: - Delegates
 
 extension RecipesListVM: RecipesListVMDelegate {
     func reloadTable() {

@@ -32,7 +32,6 @@
 		58356AFB2B1FB9E5000AC548 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356AFA2B1FB9E5000AC548 /* AppDelegate.swift */; };
 		58356AFD2B1FB9E5000AC548 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356AFC2B1FB9E5000AC548 /* SceneDelegate.swift */; };
 		58356B072B1FB9E7000AC548 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 58356B062B1FB9E7000AC548 /* Assets.xcassets */; };
-		58356B152B1FB9E8000AC548 /* YemTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B142B1FB9E8000AC548 /* YemTests.swift */; };
 		58356B1F2B1FB9E8000AC548 /* YemUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B1E2B1FB9E8000AC548 /* YemUITests.swift */; };
 		58356B212B1FB9E8000AC548 /* YemUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B202B1FB9E8000AC548 /* YemUITestsLaunchTests.swift */; };
 		58356B472B20E0DB000AC548 /* ShopingListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356B462B20E0DB000AC548 /* ShopingListVC.swift */; };
@@ -67,7 +66,6 @@
 		588746932B2E6D4B00EC5E11 /* AdaptiveLayoutHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 588746922B2E6D4B00EC5E11 /* AdaptiveLayoutHelper.swift */; };
 		588FCE452BB21ACC009F9A8D /* LifetimeTracker in Frameworks */ = {isa = PBXBuildFile; productRef = 588FCE442BB21ACC009F9A8D /* LifetimeTracker */; };
 		588FCE482BB22575009F9A8D /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 588FCE472BB22575009F9A8D /* Kingfisher */; };
-		589864952C6BFF08008BDC7B /* OnboardingVM_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589864942C6BFF08008BDC7B /* OnboardingVM_Tests.swift */; };
 		589929482B44843A00FAB070 /* TabBarCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589929472B44843A00FAB070 /* TabBarCoordinator.swift */; };
 		5899294A2B4484FD00FAB070 /* RecipesListCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589929492B4484FD00FAB070 /* RecipesListCoordinator.swift */; };
 		5899294C2B44851F00FAB070 /* ShopingListCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5899294B2B44851F00FAB070 /* ShopingListCoordinator.swift */; };
@@ -152,7 +150,6 @@
 		58356B062B1FB9E7000AC548 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		58356B0B2B1FB9E7000AC548 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		58356B102B1FB9E8000AC548 /* YemTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YemTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		58356B142B1FB9E8000AC548 /* YemTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YemTests.swift; sourceTree = "<group>"; };
 		58356B1A2B1FB9E8000AC548 /* YemUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YemUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		58356B1E2B1FB9E8000AC548 /* YemUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YemUITests.swift; sourceTree = "<group>"; };
 		58356B202B1FB9E8000AC548 /* YemUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YemUITestsLaunchTests.swift; sourceTree = "<group>"; };
@@ -185,7 +182,6 @@
 		5887468D2B2E1AA000EC5E11 /* AddIngredientSheetVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddIngredientSheetVC.swift; sourceTree = "<group>"; };
 		588746902B2E400000EC5E11 /* ActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionButton.swift; sourceTree = "<group>"; };
 		588746922B2E6D4B00EC5E11 /* AdaptiveLayoutHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveLayoutHelper.swift; sourceTree = "<group>"; };
-		589864942C6BFF08008BDC7B /* OnboardingVM_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingVM_Tests.swift; sourceTree = "<group>"; };
 		589929472B44843A00FAB070 /* TabBarCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarCoordinator.swift; sourceTree = "<group>"; };
 		589929492B4484FD00FAB070 /* RecipesListCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipesListCoordinator.swift; sourceTree = "<group>"; };
 		5899294B2B44851F00FAB070 /* ShopingListCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopingListCoordinator.swift; sourceTree = "<group>"; };
@@ -397,7 +393,6 @@
 			children = (
 				587E7A202C68C854002E9BB5 /* Mocks */,
 				58C3E4B02C67CBB3005CAC3E /* ViewModels */,
-				58356B142B1FB9E8000AC548 /* YemTests.swift */,
 			);
 			path = YemTests;
 			sourceTree = "<group>";
@@ -606,7 +601,6 @@
 				58C3E4B12C67CBD0005CAC3E /* ShopingListVM_Tests.swift */,
 				587E7A212C68C8D1002E9BB5 /* RecipeDetailsVM_Tests.swift */,
 				587E7A2B2C695E1C002E9BB5 /* RecipesListVM_Tests.swift */,
-				589864942C6BFF08008BDC7B /* OnboardingVM_Tests.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -883,8 +877,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				587E7A2C2C695E1C002E9BB5 /* RecipesListVM_Tests.swift in Sources */,
-				58356B152B1FB9E8000AC548 /* YemTests.swift in Sources */,
-				589864952C6BFF08008BDC7B /* OnboardingVM_Tests.swift in Sources */,
 				58C3E4B22C67CBD0005CAC3E /* ShopingListVM_Tests.swift in Sources */,
 				587E7A222C68C8D1002E9BB5 /* RecipeDetailsVM_Tests.swift in Sources */,
 				587E7A252C6940DE002E9BB5 /* MockLocalFileManager.swift in Sources */,
