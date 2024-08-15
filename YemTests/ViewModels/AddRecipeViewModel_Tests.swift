@@ -18,6 +18,7 @@ class AddRecipeViewModel_Tests: XCTestCase {
         super.setUp()
         mockRepository = MockDataRepository()
         mockLocalFileManager = MockLocalFileManager()
+        mockImageFetcherManager = MockImageFetcherManager(stubbedImage: nil)
         viewModel = AddRecipeViewModel(
             repository: mockRepository,
             localFileManager: mockLocalFileManager,

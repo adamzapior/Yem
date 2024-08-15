@@ -12,7 +12,6 @@ extension UIView {
     static func createDivider(color: UIColor) -> UIView {
         let divider = UIView()
         divider.backgroundColor = color
-//        divider.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             divider.heightAnchor.constraint(equalToConstant: 5)
         ])

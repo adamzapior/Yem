@@ -45,8 +45,7 @@ final class ShopingListVC: UIViewController {
 
         Task {
             viewModel.loadShopingList()
-        }        
-        
+        }
     }
 
     // MARK: - Setup UI
@@ -176,7 +175,7 @@ extension ShopingListVC {
     @objc func addItemButtonTapped(_ sender: UIBarButtonItem) {
         coordinator?.presentAddItemSheet()
     }
-    
+
     @objc func trashButtonTapped(_ sender: UIBarButtonItem) {
         coordinator?.presentClearShopingListAlert()
     }

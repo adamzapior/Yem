@@ -19,19 +19,23 @@ final class PhotoView: UIView {
 
     private var iconString: String
 
+    private var enableAnimations: Bool
+
     override init(frame: CGRect) {
         self.iconString = "camera" // Default icon string
         self.icon = IconImage(systemImage: iconString, color: .ui.theme, textStyle: .largeTitle)
+        self.enableAnimations = true
         super.init(frame: frame)
 
         commonInit()
     }
 
-    convenience init(frame: CGRect, iconString: String) {
+    convenience init(frame: CGRect, iconString: String, enableAnimations: Bool) {
         self.init(frame: frame)
         self.iconString = iconString
         self.icon = IconImage(systemImage: iconString, color: .ui.theme, textStyle: .largeTitle)
         commonInit()
+        self.enableAnimations = enableAnimations
     }
 
     @available(*, unavailable)
@@ -71,7 +75,9 @@ final class PhotoView: UIView {
     // MARK: Delegate method
 
     @objc private func addPhotoViewTapped() {
-        onTapAnimation()
+        if enableAnimations {
+            defaultOnTapAnimation()
+        }
         delegate?.addPhotoViewTapped()
     }
 }

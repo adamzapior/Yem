@@ -22,7 +22,7 @@ final class RecipeDetailsVC: UIViewController {
     private let scrollView = UIScrollView()
     private let contentView = UIView()
     
-    private var photoView = PhotoView(frame: .zero, iconString: "photo")
+    private var photoView = PhotoView(frame: .zero, iconString: "photo", enableAnimations: false)
     
     private let detailsSubtitleLabel = UILabel()
     private let detailsContainer = UIView()

@@ -52,11 +52,9 @@ final class ActionButton: UIButton {
             make.height.equalTo(54.HAdapted)
         }
     }
-    
-    // MARK: - Methods
-    
+        
     @objc private func buttonTapped() {
         self.delegate?.actionButtonTapped(self)
-        self.onTapAnimation()
+        self.defaultOnTapAnimation()
     }
 }

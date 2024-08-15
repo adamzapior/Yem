@@ -32,7 +32,7 @@ final class ShopingListVM: IngredientViewModel {
     @Published var ingredientNameIsError: Bool = false
     @Published var ingredientValueIsError: Bool = false
     @Published var ingredientValueTypeIsError: Bool = false
-
+    
     var ingredientValueTypeArray: [IngredientValueType] = IngredientValueType.allCases
 
     init(repository: DataRepositoryProtocol) {

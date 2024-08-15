@@ -48,6 +48,8 @@ final class IngredientsTableFooterView: UIView {
             make.height.greaterThanOrEqualTo(50)
             make.width.greaterThanOrEqualTo(330.HAdapted)
         }
+        
+        addButton.animateFadeIn()
     }
 }
 
@@ -57,7 +59,7 @@ extension IngredientsTableFooterView: ActionButtonDelegate {
     func actionButtonTapped(_ button: ActionButton) {
         switch button.tag {
         case 1:
-            button.onTapAnimation()
+            button.defaultOnTapAnimation()
             delegate?.addIconTapped(view: self)
         default:
             break

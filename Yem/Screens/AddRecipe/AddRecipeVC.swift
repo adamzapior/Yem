@@ -96,6 +96,7 @@ final class AddRecipeVC: UIViewController {
     
         setupAddPhotoView()
         configureRecipeDataStackView()
+        setupAnimations()
         
         setupTag()
         setupDelegate()
@@ -175,6 +176,16 @@ final class AddRecipeVC: UIViewController {
             make.top.equalTo(addPhotoView.snp.bottom).offset(18)
             make.leading.trailing.equalToSuperview().inset(18)
         }
+    }
+    
+    private func setupAnimations() {
+        addPhotoView.animateFadeIn()
+        nameTextfield.animateFadeIn()
+        difficultyPicker.animateFadeIn()
+        servingPicker.animateFadeIn()
+        prepTimePicker.animateFadeIn()
+        spicyPicker.animateFadeIn()
+        categoryPicker.animateFadeIn()
     }
     
     // MARK: - Pop Up Picker method
@@ -666,3 +677,13 @@ extension AddRecipeVC {
         }
     }
 #endif
+
+// extension AddRecipeVC {
+//    private func animateFadeIn(view: UIView, duration: TimeInterval = 0.5) {
+//        view.alpha = 0
+//        UIView.animate(withDuration: duration) {
+//            view.alpha = 1
+//        }
+//    }
+//
+// }

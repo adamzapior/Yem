@@ -8,14 +8,15 @@
 import UIKit
 
 extension UIView {
-    func onTapAnimation() {
-        UIView.animate(withDuration: 0.1, animations: {
+    func defaultOnTapAnimation() {
+        self.transform = CGAffineTransform.identity
+
+        UIView.animate(withDuration: 0.3, animations: {
             self.transform = CGAffineTransform(scaleX: 1.03, y: 1.03)
         }) { _ in
-            UIView.animate(withDuration: 0.1) {
+            UIView.animate(withDuration: 0.3) {
                 self.transform = CGAffineTransform.identity
             }
         }
     }
 }
-

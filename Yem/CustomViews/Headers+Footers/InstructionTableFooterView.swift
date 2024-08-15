@@ -71,7 +71,7 @@ final class InstructionTableFooterView: UIView {
 
 extension InstructionTableFooterView: InstructionTableFooterViewDelegate {
     @objc func addIconTapped(view: UIView) {
-        self.addButton.onTapAnimation()
+        self.addButton.defaultOnTapAnimation()
 
         delegate?.addIconTapped(view: self)
     }

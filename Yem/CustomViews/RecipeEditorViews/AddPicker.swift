@@ -98,7 +98,7 @@ final class AddPicker: UIView {
     // MARK: - Delegate methods
     
     @objc private func buttonTapped() {
-        self.onTapAnimation()
+        self.defaultOnTapAnimation()
         delegate?.pickerTapped(item: self)
     }
 }

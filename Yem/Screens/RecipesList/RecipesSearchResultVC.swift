@@ -50,6 +50,28 @@ class RecipesSearchResultsVC: UIViewController {
             make.edges.equalToSuperview()
         }
     }
+
+    private func animateCells() {
+        let visibleCells = tableView.visibleCells
+        let tableViewHeight = tableView.bounds.height
+
+        for (index, cell) in visibleCells.enumerated() {
+            let delay = 0.05 * Double(index)
+            let cellPosition = cell.frame.origin.y + cell.frame.height
+            let offset = tableViewHeight - cellPosition
+
+            cell.transform = CGAffineTransform(translationX: 0, y: offset)
+            cell.alpha = 0
+
+            UIView.animate(withDuration: 0.5,
+                           delay: delay,
+                           options: [.curveEaseInOut],
+                           animations: {
+                               cell.transform = .identity
+                               cell.alpha = 1
+                           }, completion: nil)
+        }
+    }
 }
 
 extension RecipesSearchResultsVC: UITableViewDelegate, UITableViewDataSource {
@@ -86,6 +108,7 @@ extension RecipesSearchResultsVC: UITableViewDelegate, UITableViewDataSource {
 extension RecipesSearchResultsVC: RecipesSearchResultDelegate {
     func reloadTable() {
         tableView.reloadData()
+        animateCells()
     }
 }
 

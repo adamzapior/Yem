@@ -112,7 +112,7 @@ final class TextfieldWithIcon: UIView, UITextFieldDelegate {
     }
 
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-        onTapAnimation()
+        defaultOnTapAnimation()
         return true
     }
     

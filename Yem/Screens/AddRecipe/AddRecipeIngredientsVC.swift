@@ -65,6 +65,8 @@ final class AddRecipeIngredientsVC: UIViewController {
         setupTableViewFooter()
         setupEmptyTableLabel()
         setupEmptyTableLabelisHidden()
+        
+        setupAnimations()
     }
     
     override func viewDidLayoutSubviews() {
@@ -125,6 +127,10 @@ final class AddRecipeIngredientsVC: UIViewController {
         
         emptyTableLabel.textColor = .ui.secondaryText
         
+    }
+    
+    private func setupAnimations() {
+        emptyTableLabel.animateFadeIn()
     }
 
 }

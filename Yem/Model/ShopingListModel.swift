@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ShopingListModel {
+struct ShopingListModel: Equatable {
     var id: UUID
     var isChecked: Bool
     var name: String

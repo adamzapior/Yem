@@ -212,14 +212,14 @@ extension AddIngredientSheetVC: TextfieldWithIconDelegate, AddPickerDelegate, Ac
         switch cell.tag {
         case 1:
             /// add button
-            cell.onTapAnimation()
+            cell.defaultOnTapAnimation()
             
             let success = viewModel.addIngredientToList()
             if success {
                 coordinator.dismissSheet()
             }
         case 2:
-            cell.onTapAnimation()
+            cell.defaultOnTapAnimation()
             coordinator.dismissSheet()
         default: break
         }

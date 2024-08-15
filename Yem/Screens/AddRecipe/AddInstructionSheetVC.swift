@@ -238,13 +238,13 @@ extension AddInstructionSheetVC: ActionButtonDelegate {
     func actionButtonTapped(_ button: ActionButton) {
         switch button.tag {
         case 1:
-            button.onTapAnimation()
+            button.defaultOnTapAnimation()
             let success = viewModel.addInstructionToList()
             if success {
                 coordinator.dismissSheet()
             } else {}
         case 2:
-            button.onTapAnimation()
+            button.defaultOnTapAnimation()
             coordinator.dismissSheet()
         default: break
         }

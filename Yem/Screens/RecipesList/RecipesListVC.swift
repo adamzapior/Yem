@@ -18,7 +18,7 @@ final class RecipesListVC: UIViewController {
     lazy var searchResultVC = RecipesSearchResultsVC(coordinator: coordinator, viewModel: viewModel)
     private var searchController: UISearchController!
 
-    // MARK: - Lifecycle	
+    // MARK: - Lifecycle
 
     init(coordinator: RecipesListCoordinator, viewModel: RecipesListVM) {
         self.coordinator = coordinator
@@ -164,7 +164,7 @@ extension RecipesListVC: UICollectionViewDelegate, UICollectionViewDataSource, U
         cell.configure(
             with: recipe,
             image: nil,
-            localFileManager: viewModel.localFileManager, 
+            localFileManager: viewModel.localFileManager,
             imageFetcherManager: viewModel.imageFetcherManager
         )
 
@@ -203,6 +203,20 @@ extension RecipesListVC: UICollectionViewDelegate, UICollectionViewDataSource, U
         let recipe = section.items[indexPath.item]
 
         coordinator.navigateToRecipeDetail(with: recipe)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if let lastIndexPath = collectionView.indexPathsForVisibleItems.last {
+            if lastIndexPath.item <= indexPath.item {
+                cell.center.y += cell.frame.height / 2
+                cell.alpha = 0
+
+                UIView.animate(withDuration: 0.5, delay: 0.05 * Double(indexPath.item), options: [.curveEaseInOut], animations: {
+                    cell.center.y -= cell.frame.height / 2
+                    cell.alpha = 1
+                }, completion: nil)
+            }
+        }
     }
 }
 
