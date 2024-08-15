@@ -75,7 +75,7 @@ final class MockDataRepository: DataRepositoryProtocol {
     }
 
     func updateRecipeFavouriteStatus(recipeId: UUID, isFavourite: Bool) {
-        // TO DO
+        isUpdateRecipeCalled = true
     }
 
     func fetchShopingList(isChecked: Bool) -> Result<[Yem.ShopingListModel], any Error> {
