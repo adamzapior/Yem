@@ -14,4 +14,12 @@ extension UIView {
             self.alpha = 1
         }
     }
+    
+    func animateFadeOut(duration: TimeInterval = 0.5) {
+           UIView.animate(withDuration: duration) {
+               self.alpha = 0
+           } completion: { _ in
+               self.isHidden = true
+           }
+       }
 }
