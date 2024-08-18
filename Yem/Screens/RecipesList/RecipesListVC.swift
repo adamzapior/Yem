@@ -206,17 +206,20 @@ extension RecipesListVC: UICollectionViewDelegate, UICollectionViewDataSource, U
     }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if let lastIndexPath = collectionView.indexPathsForVisibleItems.last {
-            if lastIndexPath.item <= indexPath.item {
-                cell.center.y += cell.frame.height / 2
-                cell.alpha = 0
+        
+        
+               cell.transform = CGAffineTransform(translationX: 0, y: 50)
+               cell.alpha = 0
+               
+               // Calculate delay based on the position in the section
+               let delay = Double(indexPath.item) * 0.1
+               
+               // Animate the cell appearance
+               UIView.animate(withDuration: 0.5, delay: delay, options: [.curveEaseInOut], animations: {
+                   cell.transform = .identity
+                   cell.alpha = 1
+               }, completion: nil)
 
-                UIView.animate(withDuration: 0.5, delay: 0.05 * Double(indexPath.item), options: [.curveEaseInOut], animations: {
-                    cell.center.y -= cell.frame.height / 2
-                    cell.alpha = 1
-                }, completion: nil)
-            }
-        }
     }
 }
 
