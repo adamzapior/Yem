@@ -43,6 +43,13 @@ final class RecipeDetailsVC: UIViewController {
 
     let bookmarkIconFilled: String = "bookmark.fill"
     let bookmarkIconEmpty: String = "bookmark"
+    
+    lazy var cookNavItem = UIBarButtonItem(
+        image: UIImage(systemName: "play"),
+        style: .plain,
+        target: self,
+        action: #selector(playButtonTapped)
+    )
         
     lazy var basketNavItem = UIBarButtonItem(
         image: UIImage(
@@ -71,7 +78,37 @@ final class RecipeDetailsVC: UIViewController {
         action: #selector(pencilButtonTapped)
     )
 
-    lazy var trashNavItem = UIBarButtonItem(image: UIImage(systemName: "trash"), style: .plain, target: self, action: #selector(trashButtonTapped))
+    lazy var trashNavItem = UIBarButtonItem(
+        image: UIImage(systemName: "trash"),
+        style: .plain,
+        target: self,
+        action: #selector(trashButtonTapped)
+    )
+    
+    lazy var moreNavItem: UIBarButtonItem = {
+        // Tworzymy akcje dla menu
+        let editAction = UIAction(
+            title: "Edit",
+            image: UIImage(systemName: "pencil")
+        ) { [weak self] _ in
+            self?.pencilButtonTapped(self!.pencilNavItem)
+        }
+        
+        let deleteAction = UIAction(
+            title: "Delete",
+            image: UIImage(systemName: "trash"),
+            attributes: .destructive
+        ) { [weak self] _ in
+            self?.trashButtonTapped(self!.trashNavItem)
+        }
+        
+        // Tworzymy menu
+        let menu = UIMenu(title: "", children: [editAction, deleteAction])
+        
+        // Tworzymy przycisk nawigacyjny z przypisanym menu
+        let button = UIBarButtonItem(image: UIImage(systemName: "ellipsis"), menu: menu)
+        return button
+    }()
 
     init(recipe: RecipeModel, viewModel: RecipeDetailsVM, coordinator: RecipeDetailsCoordinator) {
         self.recipe = recipe
@@ -370,8 +407,19 @@ final class RecipeDetailsVC: UIViewController {
 
 extension RecipeDetailsVC {
     func setupNavigationBarButtons() {
-        navigationItem.setRightBarButtonItems([trashNavItem, pencilNavItem, bookmarkNavItem, basketNavItem], animated: true)
-        trashNavItem.tintColor = .red
+        navigationItem.setRightBarButtonItems(
+            [
+                moreNavItem,
+                bookmarkNavItem,
+                basketNavItem,
+                cookNavItem
+            ],
+            animated: true
+        )
+    }
+    
+    @objc func playButtonTapped(_ sender: UIBarButtonItem) {
+        coordinator.navigateToCookingMode()
     }
     
     @objc func basketButtonTapped(_ sender: UIBarButtonItem) {
