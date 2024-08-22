@@ -80,12 +80,15 @@ class ShopingListCell: UITableViewCell {
         }
     }
     
-    func configure(with model: ShopingListModel, type: ShopingListCellType) {
+    func configure(with model: ShopingListModel, type: ShopingListCellType, backgroundColor: UIColor = .ui.primaryContainer) {
         cellType = type
         
         valueLabel.text = model.value
         valueTypeLabel.text = model.valueType.lowercased()
         ingredientNameLabel.text = model.name
+        
+        // Set background color
+        content.backgroundColor = backgroundColor
         
         if model.isChecked {
             checklistIcon.image = UIImage(systemName: filledCircleIconString)
