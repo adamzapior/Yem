@@ -9,7 +9,7 @@ import UIKit
 
 final class ValidationAlertVC: UIViewController {
     private let containerView = UIView()
-
+    
     private let titleLabel = TextLabel(
         fontStyle: .title3,
         fontWeight: .semibold,
@@ -29,11 +29,13 @@ final class ValidationAlertVC: UIViewController {
     
     private var alertTitle: String?
     private var message: String?
+    private var dismissCompletion: (() -> Void)?
     
-    init(title: String, message: String) {
+    init(title: String, message: String, dismissCompletion: (() -> Void)? = nil) {
         super.init(nibName: nil, bundle: nil)
         self.alertTitle = title
         self.message = message
+        self.dismissCompletion = dismissCompletion
     }
     
     @available(*, unavailable)
@@ -78,7 +80,7 @@ final class ValidationAlertVC: UIViewController {
     private func setupErrorLabel() {
         containerView.addSubview(errorLabel)
         errorLabel.text = message ?? "Unable to complete request"
-
+        
         errorLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(18)
             make.leading.equalTo(containerView.snp.leading).offset(12)
@@ -98,7 +100,9 @@ final class ValidationAlertVC: UIViewController {
         }
     }
     
-    @objc func dismissVC() {
-        dismiss(animated: true)
+    @objc private func dismissVC() {
+        dismiss(animated: true) { [weak self] in
+            self?.dismissCompletion?() // Wywołaj zamknięcie po zamknięciu VC
+        }
     }
 }
