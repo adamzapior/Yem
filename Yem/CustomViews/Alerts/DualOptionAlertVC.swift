@@ -28,7 +28,7 @@ final class DualOptionAlertVC: UIViewController {
     )
     private let cancelButton = ActionButton(
         title: "Cancel",
-        backgroundColor: .ui.cancelBackground ?? .red
+        backgroundColor: .ui.cancelBackground
     )
 
     private var alertTitle: String?
@@ -69,7 +69,7 @@ final class DualOptionAlertVC: UIViewController {
         containerView.snp.makeConstraints { make in
             make.centerX.centerY.equalToSuperview()
             make.height.greaterThanOrEqualTo(200)
-            make.leading.trailing.equalToSuperview().inset(24)
+            make.leading.trailing.equalToSuperview().inset(12)
         }
     }
 
@@ -106,13 +106,12 @@ final class DualOptionAlertVC: UIViewController {
         okButton.snp.makeConstraints { make in
             make.top.equalTo(errorLabel.snp.bottom).offset(24)
             make.leading.equalTo(containerView.snp.leading).offset(24)
-            make.trailing.equalTo(containerView.snp.centerX).offset(-12)
-            make.bottom.equalTo(containerView.snp.bottom).offset(-24)
+            make.trailing.equalTo(containerView.snp.trailing).offset(-24)
         }
 
         cancelButton.snp.makeConstraints { make in
-            make.top.equalTo(errorLabel.snp.bottom).offset(24)
-            make.leading.equalTo(containerView.snp.centerX).offset(12)
+            make.top.equalTo(okButton.snp.bottom).offset(12)
+            make.leading.equalTo(containerView.snp.leading).offset(24)
             make.trailing.equalTo(containerView.snp.trailing).offset(-24)
             make.bottom.equalTo(containerView.snp.bottom).offset(-24)
         }
