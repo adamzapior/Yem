@@ -45,10 +45,10 @@ final class OnboardingCoordinator: Destination {
         switch route {
         case .login:
             let controller = LoginOnboardingVC(coordinator: self, viewModel: viewModel)
-            navigator?.presentScreen(controller, isAnimated: false)
+            navigator?.presentScreen(controller, isAnimated: true)
         case .register:
             let controller = RegisterOnboardingVC(coordinator: self, viewModel: viewModel)
-            navigator?.presentScreen(controller, isAnimated: false)
+            navigator?.presentScreen(controller, isAnimated: true)
         case .resetPassword:
             let controller = ResetPasswordVC(coordinator: self, viewModel: viewModel)
             navigator?.presentScreen(controller)

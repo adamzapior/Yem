@@ -89,6 +89,7 @@ final class AppCoordinator: Destination {
 
         let splashCoordinator = SplashCoordinator()
         splashCoordinator.parentCoordinator = self
+        navigator?.setNavigationBarHidden(false)
         navigator?.changeRoot(screen: splashCoordinator)
     }
 }

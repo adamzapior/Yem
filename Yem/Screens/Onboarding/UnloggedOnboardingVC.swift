@@ -61,6 +61,7 @@ final class UnloggedOnboardingVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .systemBackground
         setupUI()
         setupDelegateAndDataSource()
         
@@ -82,7 +83,6 @@ final class UnloggedOnboardingVC: UIViewController {
         view.addSubview(registerButton)
         
         image.image = UIImage(named: "onboarding-image")
-        
         image.sizeToFit()
         image.contentMode = .scaleAspectFill
         image.layer.cornerRadius = 24
@@ -137,7 +137,6 @@ extension UnloggedOnboardingVC: ActionButtonDelegate {
             coordinator?.navigateTo(.login)
         case 2:
             coordinator?.navigateTo(.register)
-//            coordinator.pushVC(for: .register)
         default:
             break
         }
