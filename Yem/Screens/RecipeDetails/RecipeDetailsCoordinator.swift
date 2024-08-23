@@ -109,6 +109,19 @@ final class RecipeDetailsCoordinator: Destination {
         coordinator.parentCoordinator = self
         navigator?.presentDestination(coordinator)
     }
+
+    func navigateToCookingMode() {
+        let viewModel = CookingModeViewModel(
+            recipe: recipe,
+            repository: repository
+        )
+        let coordinator = CookingModeCoordinator(
+            viewModel: viewModel,
+            recipe: recipe
+        )
+        coordinator.parentCoordinator = self
+        navigator?.presentDestination(coordinator)
+    }
 }
 
 #if DEBUG

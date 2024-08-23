@@ -68,7 +68,7 @@ final class CookingModeViewModel {
     }
 
     // MARK: - Public methods
-    
+
     // Ingredient list methods
 
     func mapIngredientsToShoppingList(ingredients: [IngredientModel]) -> [ShopingListModel] {
@@ -104,7 +104,7 @@ final class CookingModeViewModel {
         minutes = 0
         seconds = 0
     }
-    
+
     // Timer methods
 
     func startTimer(with time: TimeInterval? = nil) {
@@ -121,11 +121,11 @@ final class CookingModeViewModel {
             timer?.invalidate()
             timer = nil
             cancellables.removeAll()
-            
+
             /// Create a Combine publisher and manage its lifecycle
             let timerPublisher = Timer.publish(every: 1, on: .main, in: .common)
                 .autoconnect()
-            
+
             timerPublisher
                 .sink { [weak self] _ in
                     self?.updateTimer()
@@ -139,42 +139,41 @@ final class CookingModeViewModel {
         }
     }
 
-    func saveTimerState() {
-        UserDefaults.standard.set(Date(), forKey: "TimerStartDate")
-        UserDefaults.standard.set(selectedTime, forKey: "TimerDuration")
-    }
-    
-    func restoreTimerState() {
-        guard timer == nil else {
-            print("test")
-            return
-        }
-
-        if let startDate = UserDefaults.standard.value(forKey: "TimerStartDate") as? Date,
-           let duration = UserDefaults.standard.value(forKey: "TimerDuration") as? TimeInterval
-        {
-            let currentDate = Date()
-            let timePassed = currentDate.timeIntervalSince(startDate)
-            let result = max(duration - timePassed, 0)
-
-            print("Restoring timer state.")
-            print("Current Date: \(currentDate)")
-            print("Start Date: \(startDate)")
-            print("Time Passed: \(timePassed)")
-            print("Restored Selected Time: \(result)")
-
-            if selectedTime > 0 {
-                startTimer(with: result)
-            } else {
-                timeRemaining = "00:00:00"
-                print("Timer already finished while in background.")
-            }
-        } else {
-            timeRemaining = "00:00:00"
-            print("No saved timer state found.")
-        }
-    }
-
+//    func saveTimerState() {
+//        UserDefaults.standard.set(Date(), forKey: "TimerStartDate")
+//        UserDefaults.standard.set(selectedTime, forKey: "TimerDuration")
+//    }
+//
+//    func restoreTimerState() {
+//        guard timer == nil else {
+//            print("test")
+//            return
+//        }
+//
+//        if let startDate = UserDefaults.standard.value(forKey: "TimerStartDate") as? Date,
+//           let duration = UserDefaults.standard.value(forKey: "TimerDuration") as? TimeInterval
+//        {
+//            let currentDate = Date()
+//            let timePassed = currentDate.timeIntervalSince(startDate)
+//            let result = max(duration - timePassed, 0)
+//
+//            print("Restoring timer state.")
+//            print("Current Date: \(currentDate)")
+//            print("Start Date: \(startDate)")
+//            print("Time Passed: \(timePassed)")
+//            print("Restored Selected Time: \(result)")
+//
+//            if selectedTime > 0 {
+//                startTimer(with: result)
+//            } else {
+//                timeRemaining = "00:00:00"
+//                print("Timer already finished while in background.")
+//            }
+//        } else {
+//            timeRemaining = "00:00:00"
+//            print("No saved timer state found.")
+//        }
+//    }
 
     func stopVibration() {
         vibrationTimer?.invalidate()
