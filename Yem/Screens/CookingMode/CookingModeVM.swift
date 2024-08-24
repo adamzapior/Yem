@@ -43,6 +43,8 @@ final class CookingModeViewModel {
 
     var vibrationTimer: Timer?
 
+    var timerPublisher: AnyCancellable?
+
     @Published
     var timeRemaining: String = ""
 
@@ -117,20 +119,16 @@ final class CookingModeViewModel {
         print("Initial Selected Time: \(selectedTime)")
 
         if selectedTime > 0 {
-            /// Invalidate any existing timer to prevent multiple timers from running
-            timer?.invalidate()
-            timer = nil
+            // Invalidate any existing timer
+            timerPublisher?.cancel()
             cancellables.removeAll()
 
-            /// Create a Combine publisher and manage its lifecycle
-            let timerPublisher = Timer.publish(every: 1, on: .main, in: .common)
+            // Create a Combine publisher and manage its lifecycle
+            timerPublisher = Timer.publish(every: 1, on: .main, in: .common)
                 .autoconnect()
-
-            timerPublisher
                 .sink { [weak self] _ in
                     self?.updateTimer()
                 }
-                .store(in: &cancellables)
 
             delegate?.timerStarted()
             print("Timer started.")
@@ -138,42 +136,6 @@ final class CookingModeViewModel {
             print("Selected time is 0 or less, not starting timer.")
         }
     }
-
-//    func saveTimerState() {
-//        UserDefaults.standard.set(Date(), forKey: "TimerStartDate")
-//        UserDefaults.standard.set(selectedTime, forKey: "TimerDuration")
-//    }
-//
-//    func restoreTimerState() {
-//        guard timer == nil else {
-//            print("test")
-//            return
-//        }
-//
-//        if let startDate = UserDefaults.standard.value(forKey: "TimerStartDate") as? Date,
-//           let duration = UserDefaults.standard.value(forKey: "TimerDuration") as? TimeInterval
-//        {
-//            let currentDate = Date()
-//            let timePassed = currentDate.timeIntervalSince(startDate)
-//            let result = max(duration - timePassed, 0)
-//
-//            print("Restoring timer state.")
-//            print("Current Date: \(currentDate)")
-//            print("Start Date: \(startDate)")
-//            print("Time Passed: \(timePassed)")
-//            print("Restored Selected Time: \(result)")
-//
-//            if selectedTime > 0 {
-//                startTimer(with: result)
-//            } else {
-//                timeRemaining = "00:00:00"
-//                print("Timer already finished while in background.")
-//            }
-//        } else {
-//            timeRemaining = "00:00:00"
-//            print("No saved timer state found.")
-//        }
-//    }
 
     func stopVibration() {
         vibrationTimer?.invalidate()
@@ -231,3 +193,41 @@ extension CookingModeViewModel: LifetimeTrackable {
     }
 }
 #endif
+
+// MARK: - Unused code:
+
+//    func saveTimerState() {
+//        UserDefaults.standard.set(Date(), forKey: "TimerStartDate")
+//        UserDefaults.standard.set(selectedTime, forKey: "TimerDuration")
+//    }
+//
+//    func restoreTimerState() {
+//        guard timer == nil else {
+//            print("test")
+//            return
+//        }
+//
+//        if let startDate = UserDefaults.standard.value(forKey: "TimerStartDate") as? Date,
+//           let duration = UserDefaults.standard.value(forKey: "TimerDuration") as? TimeInterval
+//        {
+//            let currentDate = Date()
+//            let timePassed = currentDate.timeIntervalSince(startDate)
+//            let result = max(duration - timePassed, 0)
+//
+//            print("Restoring timer state.")
+//            print("Current Date: \(currentDate)")
+//            print("Start Date: \(startDate)")
+//            print("Time Passed: \(timePassed)")
+//            print("Restored Selected Time: \(result)")
+//
+//            if selectedTime > 0 {
+//                startTimer(with: result)
+//            } else {
+//                timeRemaining = "00:00:00"
+//                print("Timer already finished while in background.")
+//            }
+//        } else {
+//            timeRemaining = "00:00:00"
+//            print("No saved timer state found.")
+//        }
+//    }
