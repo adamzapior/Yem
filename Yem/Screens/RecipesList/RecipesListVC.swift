@@ -13,6 +13,7 @@ final class RecipesListVC: UIViewController {
     let coordinator: RecipesListCoordinator
     var viewModel: RecipesListVM
 
+    private let emptyTableLabel = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
     private var collectionView: UICollectionView!
 
     lazy var searchResultVC = RecipesSearchResultsVC(coordinator: coordinator, viewModel: viewModel)
@@ -44,6 +45,7 @@ final class RecipesListVC: UIViewController {
         setupNavigationBar()
         setupSearchController()
         setupCollectionView()
+        setupEmptyTableLabel()
 
         Task {
             viewModel.loadRecipes()
@@ -85,6 +87,7 @@ final class RecipesListVC: UIViewController {
 
             switch sectionName {
             case RecipeCategory.breakfast, RecipeCategory.desserts, RecipeCategory.snacks, RecipeCategory.beverages, RecipeCategory.vegan, RecipeCategory.vegetarian:
+
                 let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(250), heightDimension: .absolute(170))
                 let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
@@ -132,6 +135,16 @@ final class RecipesListVC: UIViewController {
             return NSCollectionLayoutBoundarySupplementaryItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(0.0001)), elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
         } else {
             return NSCollectionLayoutBoundarySupplementaryItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(50)), elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
+        }
+    }
+
+    private func setupEmptyTableLabel() {
+        view.addSubview(emptyTableLabel)
+        emptyTableLabel.text = "Your recipes list is empty"
+
+        emptyTableLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview()
         }
     }
 }
@@ -206,26 +219,29 @@ extension RecipesListVC: UICollectionViewDelegate, UICollectionViewDataSource, U
     }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        
-        
-               cell.transform = CGAffineTransform(translationX: 0, y: 50)
-               cell.alpha = 0
-               
-               // Calculate delay based on the position in the section
-               let delay = Double(indexPath.item) * 0.1
-               
-               // Animate the cell appearance
-               UIView.animate(withDuration: 0.5, delay: delay, options: [.curveEaseInOut], animations: {
-                   cell.transform = .identity
-                   cell.alpha = 1
-               }, completion: nil)
+        cell.transform = CGAffineTransform(translationX: 0, y: 50)
+        cell.alpha = 0
 
+        // Calculate delay based on the position in the section
+        let delay = Double(indexPath.item) * 0.1
+
+        // Animate the cell appearance
+        UIView.animate(withDuration: 0.5, delay: delay, options: [.curveEaseInOut], animations: {
+            cell.transform = .identity
+            cell.alpha = 1
+        }, completion: nil)
     }
 }
 
 extension RecipesListVC: RecipesListVMDelegate {
     func reloadTable() {
         collectionView.reloadData()
+
+        if viewModel.sections.isEmpty {
+            emptyTableLabel.isHidden = false
+        } else {
+            emptyTableLabel.isHidden = true
+        }
     }
 }
 
