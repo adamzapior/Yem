@@ -23,36 +23,23 @@ protocol CoreDataManagerProtocol {
 }
 
 final class CoreDataManager: CoreDataManagerProtocol {
-    static let shared = CoreDataManager()
-
-    let persistentContainer: NSPersistentContainer
+    private let persistentContainer: NSPersistentContainer
     let context: NSManagedObjectContext
 
-    init() {
-        persistentContainer = NSPersistentContainer(name: "YemData")
-        persistentContainer.loadPersistentStores { _, error in
-            if let error = error as NSError? {
-                fatalError("DEBUG: Unresolved error \(error), \(error.userInfo)")
-            }
-        }
-
-        context = persistentContainer.viewContext
+    init(persistentContainer: NSPersistentContainer) {
+        self.persistentContainer = persistentContainer
+        self.context = persistentContainer.viewContext
     }
-
-    // MARK: Operations on current context
+    
+    // MARK: - Operations on current context
 
     func saveContext() {
         if context.hasChanges {
-            print("DEBUG: Context has unsaved changes")
             do {
                 try context.save()
-                print("DEBUG: Core Data context has saved")
             } catch {
-                let nserror = error as NSError
-                fatalError("DEBUG: Unresolved error \(nserror), \(nserror.userInfo)")
+                fatalError("Unresolved error \(error)")
             }
-        } else {
-            print("DEBUG: No unsaved changes in context")
         }
     }
 
@@ -72,74 +59,35 @@ final class CoreDataManager: CoreDataManagerProtocol {
         context.undoManager = nil
     }
 
-    // MARK: Fetch data methods
+    // MARK: - Fetch data methods
 
     func fetchAllRecipes() throws -> [RecipeEntity] {
         let request: NSFetchRequest<RecipeEntity> = RecipeEntity.fetchRequest()
         let sortDescriptor = NSSortDescriptor(key: "name", ascending: true)
         request.sortDescriptors = [sortDescriptor]
-        do {
-            return try CoreDataManager.shared.context.fetch(request)
-        } catch {
-            throw error
-        }
+        return try context.fetch(request)
     }
 
     func fetchRecipesWithName(_ name: String) throws -> [RecipeEntity]? {
         let request: NSFetchRequest<RecipeEntity> = RecipeEntity.fetchRequest()
-        let idString = name
-        request.predicate = NSPredicate(format: "name == %@", idString)
-
-        do {
-            let results = try context.fetch(request)
-            return results
-        } catch {
-            throw error
-        }
+        request.predicate = NSPredicate(format: "name == %@", name)
+        return try context.fetch(request)
     }
 
     func fetchShopingList(isChecked: Bool) throws -> [ShopingListEntity] {
         let request: NSFetchRequest<ShopingListEntity> = ShopingListEntity.fetchRequest()
         let sortDescriptor = NSSortDescriptor(key: "name", ascending: true)
         request.sortDescriptors = [sortDescriptor]
-
         request.predicate = NSPredicate(format: "\(#keyPath(ShopingListEntity.isChecked)) == %@", NSNumber(value: isChecked))
-
-        do {
-            return try CoreDataManager.shared.context.fetch(request)
-        } catch {
-            throw error
-        }
+        return try context.fetch(request)
     }
-}
 
-// MARK: Observe changes methods
+    // MARK: - Observe changes methods
 
-extension CoreDataManager {
     func allRecipesPublisher() -> AnyPublisher<ObjectChange?, Never> {
         NotificationCenter.default.publisher(for: NSNotification.Name.NSManagedObjectContextObjectsDidChange, object: context)
             .compactMap { notification in
-                guard let userInfo = notification.userInfo else { return nil }
-
-                var recipeChange: ObjectChange?
-
-                if let inserts = userInfo[NSInsertedObjectsKey] as? Set<NSManagedObject>,
-                   let insertedRecipe = inserts.first(where: { $0 is RecipeEntity })
-                {
-                    recipeChange = .inserted(insertedRecipe)
-                }
-                if let deletes = userInfo[NSDeletedObjectsKey] as? Set<NSManagedObject>,
-                   let deletedRecipe = deletes.first(where: { $0 is RecipeEntity })
-                {
-                    recipeChange = .deleted(deletedRecipe)
-                }
-                if let updates = userInfo[NSUpdatedObjectsKey] as? Set<NSManagedObject>,
-                   let updatedRecipe = updates.first(where: { $0 is RecipeEntity })
-                {
-                    recipeChange = .updated(updatedRecipe)
-                }
-
-                return recipeChange
+                self.objectChange(from: notification, ofType: RecipeEntity.self)
             }
             .eraseToAnyPublisher()
     }
@@ -147,34 +95,37 @@ extension CoreDataManager {
     func shopingListPublisher() -> AnyPublisher<ObjectChange?, Never> {
         NotificationCenter.default.publisher(for: NSNotification.Name.NSManagedObjectContextObjectsDidChange, object: context)
             .compactMap { notification in
-                guard let userInfo = notification.userInfo else { return nil }
-
-                var recipeChange: ObjectChange?
-
-                if let inserts = userInfo[NSInsertedObjectsKey] as? Set<NSManagedObject>,
-                   let insertedRecipe = inserts.first(where: { $0 is ShopingListEntity })
-                {
-                    recipeChange = .inserted(insertedRecipe)
-                }
-                if let deletes = userInfo[NSDeletedObjectsKey] as? Set<NSManagedObject>,
-                   let deletedRecipe = deletes.first(where: { $0 is ShopingListEntity })
-                {
-                    recipeChange = .deleted(deletedRecipe)
-                }
-                if let updates = userInfo[NSUpdatedObjectsKey] as? Set<NSManagedObject>,
-                   let updatedRecipe = updates.first(where: { $0 is ShopingListEntity })
-                {
-                    recipeChange = .updated(updatedRecipe)
-                }
-
-                return recipeChange
+                self.objectChange(from: notification, ofType: ShopingListEntity.self)
             }
             .eraseToAnyPublisher()
     }
+
+    private func objectChange<T: NSManagedObject>(from notification: Notification, ofType type: T.Type) -> ObjectChange? {
+        guard let userInfo = notification.userInfo else { return nil }
+
+        if let inserts = userInfo[NSInsertedObjectsKey] as? Set<NSManagedObject>,
+           let insertedObject = inserts.first(where: { $0 is T }) {
+            return .inserted(insertedObject)
+        }
+        if let deletes = userInfo[NSDeletedObjectsKey] as? Set<NSManagedObject>,
+           let deletedObject = deletes.first(where: { $0 is T }) {
+            return .deleted(deletedObject)
+        }
+        if let updates = userInfo[NSUpdatedObjectsKey] as? Set<NSManagedObject>,
+           let updatedObject = updates.first(where: { $0 is T }) {
+            return .updated(updatedObject)
+        }
+
+        return nil
+    }
 }
+
+// MARK: - ObjectChange enum
 
 enum ObjectChange {
     case inserted(NSManagedObject)
     case deleted(NSManagedObject)
     case updated(NSManagedObject)
 }
+
+

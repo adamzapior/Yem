@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22522" systemVersion="22G120" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22758" systemVersion="23E224" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="YemData">
     <entity name="Entity" representedClassName="Entity" syncable="YES"/>
-    <entity name="IngredientEntity" representedClassName="IngredientEntity" syncable="YES">
+    <entity name="IngredientEntity" representedClassName=".IngredientEntity" syncable="YES">
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="name" attributeType="String"/>
         <attribute name="value" attributeType="String"/>
         <attribute name="valueType" attributeType="String"/>
         <relationship name="recipe" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RecipeEntity" inverseName="ingredients" inverseEntity="RecipeEntity"/>
     </entity>
-    <entity name="InstructionEntity" representedClassName="InstructionEntity" syncable="YES">
+    <entity name="InstructionEntity" representedClassName=".InstructionEntity" syncable="YES">
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="indexPath" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="text" attributeType="String"/>
@@ -19,7 +19,7 @@
         <attribute name="difficulty" attributeType="String"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="isFavourite" attributeType="Boolean" usesScalarValueType="YES"/>
-        <attribute name="isImageSaved" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="isImageSaved" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="name" attributeType="String"/>
         <attribute name="prepTimeHours" attributeType="String"/>
         <attribute name="prepTimeMinutes" attributeType="String"/>
@@ -28,7 +28,7 @@
         <relationship name="ingredients" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="IngredientEntity" inverseName="recipe" inverseEntity="IngredientEntity"/>
         <relationship name="instructions" toMany="YES" deletionRule="Nullify" destinationEntity="InstructionEntity" inverseName="recipe" inverseEntity="InstructionEntity"/>
     </entity>
-    <entity name="ShopingListEntity" representedClassName="ShopingListEntity" syncable="YES">
+    <entity name="ShopingListEntity" representedClassName=".ShopingListEntity" syncable="YES">
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="isChecked" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="name" attributeType="String"/>

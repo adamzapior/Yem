@@ -27,6 +27,8 @@ final class MockDataRepository: DataRepositoryProtocol {
     var uncheckedItems: [ShopingListModel] = []
     var checkedItems: [ShopingListModel] = []
 
+    init() {}
+
     func save() -> Bool {
         return mockSaveSuccess
     }

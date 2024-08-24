@@ -84,6 +84,15 @@
 		589CA80B2BB2EB160008DFC3 /* OnboardingCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589CA8052BB2EB160008DFC3 /* OnboardingCoordinator.swift */; };
 		589CA80C2BB2EB160008DFC3 /* RegisterOnboardingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589CA8062BB2EB160008DFC3 /* RegisterOnboardingVC.swift */; };
 		589CA80D2BB2EB160008DFC3 /* LoginOnboardingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589CA8072BB2EB160008DFC3 /* LoginOnboardingVC.swift */; };
+		58A208D62C79F6D800A0AE9E /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A208D52C79F6D800A0AE9E /* CoreDataStack.swift */; };
+		58A208D82C79FDAC00A0AE9E /* YemData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB962B5B28390058851C /* YemData.xcdatamodeld */; };
+		58A208E42C7A1BB200A0AE9E /* CoreDataTestStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A208D32C79DFCC00A0AE9E /* CoreDataTestStack.swift */; };
+		58A208F22C7A961400A0AE9E /* YemData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB962B5B28390058851C /* YemData.xcdatamodeld */; };
+		58A208F72C7A971400A0AE9E /* RecipeEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB7A2B59C9EB0058851C /* RecipeEntity.swift */; };
+		58A208F82C7A971600A0AE9E /* IngredientEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB742B59C94B0058851C /* IngredientEntity.swift */; };
+		58A208F92C7A971900A0AE9E /* InstructionEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB8F2B5AF5D10058851C /* InstructionEntity.swift */; };
+		58A208FA2C7A971B00A0AE9E /* ShopingListEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58614D152BA123EF007AD868 /* ShopingListEntity.swift */; };
+		58A208FC2C7A9B0700A0AE9E /* CoreDataManager_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A208FB2C7A9B0700A0AE9E /* CoreDataManager_Tests.swift */; };
 		58A38F8A2B5D1CFD00007AC1 /* AddInstructionSheetVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A38F892B5D1CFD00007AC1 /* AddInstructionSheetVC.swift */; };
 		58AA17612B88136000C44578 /* LocalFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58AA17602B88136000C44578 /* LocalFileManager.swift */; };
 		58AB57BD2B588E8400053C74 /* DataRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58AB57BC2B588E8400053C74 /* DataRepository.swift */; };
@@ -100,7 +109,6 @@
 		58BBEB852B5AEDAF0058851C /* InstructionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB842B5AEDAE0058851C /* InstructionCell.swift */; };
 		58BBEB932B5AF5D10058851C /* InstructionEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB8F2B5AF5D10058851C /* InstructionEntity.swift */; };
 		58BBEB952B5B0C3A0058851C /* InstructionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB942B5B0C3A0058851C /* InstructionModel.swift */; };
-		58BBEB982B5B28390058851C /* YemData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB962B5B28390058851C /* YemData.xcdatamodeld */; };
 		58BBEB9B2B5C14C70058851C /* InstructionTableFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB9A2B5C14C70058851C /* InstructionTableFooterView.swift */; };
 		58BBEB9D2B5C18840058851C /* InstructionTableHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB9C2B5C18840058851C /* InstructionTableHeaderView.swift */; };
 		58C259CF2C147ADE004BCEC2 /* SplashScreenCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58C259CE2C147ADE004BCEC2 /* SplashScreenCoordinator.swift */; };
@@ -209,6 +217,9 @@
 		589CA8052BB2EB160008DFC3 /* OnboardingCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingCoordinator.swift; sourceTree = "<group>"; };
 		589CA8062BB2EB160008DFC3 /* RegisterOnboardingVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterOnboardingVC.swift; sourceTree = "<group>"; };
 		589CA8072BB2EB160008DFC3 /* LoginOnboardingVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginOnboardingVC.swift; sourceTree = "<group>"; };
+		58A208D32C79DFCC00A0AE9E /* CoreDataTestStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataTestStack.swift; sourceTree = "<group>"; };
+		58A208D52C79F6D800A0AE9E /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
+		58A208FB2C7A9B0700A0AE9E /* CoreDataManager_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager_Tests.swift; sourceTree = "<group>"; };
 		58A38F892B5D1CFD00007AC1 /* AddInstructionSheetVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddInstructionSheetVC.swift; sourceTree = "<group>"; };
 		58AA17602B88136000C44578 /* LocalFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFileManager.swift; sourceTree = "<group>"; };
 		58AB57BC2B588E8400053C74 /* DataRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataRepository.swift; sourceTree = "<group>"; };
@@ -411,6 +422,7 @@
 		58356B132B1FB9E8000AC548 /* YemTests */ = {
 			isa = PBXGroup;
 			children = (
+				58A208D22C79DFB900A0AE9E /* CoreData */,
 				587E7A202C68C854002E9BB5 /* Mocks */,
 				58C3E4B02C67CBB3005CAC3E /* ViewModels */,
 			);
@@ -447,6 +459,7 @@
 				58AA17602B88136000C44578 /* LocalFileManager.swift */,
 				58AB57BC2B588E8400053C74 /* DataRepository.swift */,
 				58D644182B56F4AD0008413A /* CoreDataManager.swift */,
+				58A208D52C79F6D800A0AE9E /* CoreDataStack.swift */,
 				58BBEB962B5B28390058851C /* YemData.xcdatamodeld */,
 			);
 			path = LocalData;
@@ -584,6 +597,15 @@
 				581049602BB445D400FF2E8C /* FirestoreRepository.swift */,
 			);
 			path = RemoteData;
+			sourceTree = "<group>";
+		};
+		58A208D22C79DFB900A0AE9E /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				58A208D32C79DFCC00A0AE9E /* CoreDataTestStack.swift */,
+				58A208FB2C7A9B0700A0AE9E /* CoreDataManager_Tests.swift */,
+			);
+			path = CoreData;
 			sourceTree = "<group>";
 		};
 		58ACE3A52BB8F8C600766D4B /* RecipeEditorViews */ = {
@@ -825,7 +847,6 @@
 			files = (
 				58BBEB952B5B0C3A0058851C /* InstructionModel.swift in Sources */,
 				589A65CC2B85607D0018779B /* RecipeDetailsVM.swift in Sources */,
-				58BBEB982B5B28390058851C /* YemData.xcdatamodeld in Sources */,
 				585F7C912C51B66B0005A55C /* RecipesSearchResultVC.swift in Sources */,
 				585F7C932C51B73C0005A55C /* RecipeSearchResultCell.swift in Sources */,
 				58C5814E2B94BB49000D3B7D /* IngredientView.swift in Sources */,
@@ -861,6 +882,7 @@
 				580ED3822B25068100B4A9F0 /* ColorTheme.swift in Sources */,
 				5869321B2B253AB300379C8C /* AddRecipeInstructionsVC.swift in Sources */,
 				589CA80D2BB2EB160008DFC3 /* LoginOnboardingVC.swift in Sources */,
+				58A208D82C79FDAC00A0AE9E /* YemData.xcdatamodeld in Sources */,
 				589CA8002BB2E8720008DFC3 /* RecipesSectionHeaderView.swift in Sources */,
 				58C5814C2B93D884000D3B7D /* UILabelExt.swift in Sources */,
 				586932172B25351A00379C8C /* AddRecipeIngredientsVC.swift in Sources */,
@@ -898,6 +920,7 @@
 				583C5D762BBD8C87002FCD5C /* SettingsVC.swift in Sources */,
 				58BBEB762B59C94B0058851C /* IngredientEntity.swift in Sources */,
 				58102DDB2B249F900090EAE8 /* AddRecipeVM.swift in Sources */,
+				58A208D62C79F6D800A0AE9E /* CoreDataStack.swift in Sources */,
 				5887468C2B2E075C00EC5E11 /* IngredientsCell.swift in Sources */,
 				583647012C14F8FD00EABB64 /* Destination.swift in Sources */,
 				581049612BB445D400FF2E8C /* FirestoreRepository.swift in Sources */,
@@ -920,13 +943,20 @@
 			buildActionMask = 2147483647;
 			files = (
 				58B99A822C79CA88000B0818 /* CookingModeViewModel_Tests.swift in Sources */,
+				58A208FC2C7A9B0700A0AE9E /* CoreDataManager_Tests.swift in Sources */,
+				58A208E42C7A1BB200A0AE9E /* CoreDataTestStack.swift in Sources */,
 				587E7A2C2C695E1C002E9BB5 /* RecipesListVM_Tests.swift in Sources */,
+				58A208F92C7A971900A0AE9E /* InstructionEntity.swift in Sources */,
 				58C3E4B22C67CBD0005CAC3E /* ShopingListVM_Tests.swift in Sources */,
 				587E7A222C68C8D1002E9BB5 /* RecipeDetailsVM_Tests.swift in Sources */,
 				587E7A252C6940DE002E9BB5 /* MockLocalFileManager.swift in Sources */,
 				58C3E4AD2C6017AD005CAC3E /* MockDataRepository.swift in Sources */,
+				58A208F72C7A971400A0AE9E /* RecipeEntity.swift in Sources */,
+				58A208F22C7A961400A0AE9E /* YemData.xcdatamodeld in Sources */,
 				58C3E4AF2C616B75005CAC3E /* AddRecipeViewModel_Tests.swift in Sources */,
 				587E7A2A2C6944E0002E9BB5 /* MockImageFetcherManager.swift in Sources */,
+				58A208F82C7A971600A0AE9E /* IngredientEntity.swift in Sources */,
+				58A208FA2C7A971B00A0AE9E /* ShopingListEntity.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -11,7 +11,7 @@ import UIKit
 
 final class AppCoordinator: Destination {
     let authManager = AuthenticationManager()
-    let dataRepository = DataRepository()
+    let dataRepository = DataRepository(moc: CoreDataStack.shared.coreDataManager)
     let localFileManager = LocalFileManager()
     let imageFetcherManager = ImageFetcherManager()
 

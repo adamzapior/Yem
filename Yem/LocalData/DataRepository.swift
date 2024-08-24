@@ -43,7 +43,7 @@ final class DataRepository: DataRepositoryProtocol {
 
     var cancellables = Set<AnyCancellable>()
 
-    init(moc: CoreDataManagerProtocol = CoreDataManager.shared) {
+    init(moc: CoreDataManagerProtocol) {
         self.moc = moc
 
         moc.allRecipesPublisher()
