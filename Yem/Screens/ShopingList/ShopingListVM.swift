@@ -13,14 +13,16 @@ protocol ShopingListVMDelegate: AnyObject {
     func reloadTable()
 }
 
-final class ShopingListVM: IngredientViewModel {
-    var delegateIngredients: (any AddRecipeIngredientsVCDelegate)?
+protocol ShopingListAddIngredientSheetVCDelegate: AnyObject {
+    func delegateIngredientSheetError(_ type: ValidationErrorTypes)
+}
 
+final class ShopingListVM {
     private let repository: DataRepositoryProtocol
     private var cancellables: Set<AnyCancellable> = []
 
     weak var delegate: ShopingListVMDelegate?
-    weak var delegateIngredientSheet: AddIngredientSheetVCDelegate?
+    weak var delegateIngredientSheet: ShopingListAddIngredientSheetVCDelegate?
 
     var uncheckedList: [ShopingListModel] = []
     var checkedList: [ShopingListModel] = []
@@ -32,7 +34,7 @@ final class ShopingListVM: IngredientViewModel {
     @Published var ingredientNameIsError: Bool = false
     @Published var ingredientValueIsError: Bool = false
     @Published var ingredientValueTypeIsError: Bool = false
-    
+
     var ingredientValueTypeArray: [IngredientValueType] = IngredientValueType.allCases
 
     init(repository: DataRepositoryProtocol) {
@@ -141,7 +143,7 @@ final class ShopingListVM: IngredientViewModel {
 
 // MARK: - ViewModel Delegates
 
-extension ShopingListVM: AddIngredientSheetVCDelegate {
+extension ShopingListVM: ShopingListAddIngredientSheetVCDelegate {
     func delegateIngredientSheetError(_ type: ValidationErrorTypes) {
         DispatchQueue.main.async {
             self.delegateIngredientSheet?.delegateIngredientSheetError(type)

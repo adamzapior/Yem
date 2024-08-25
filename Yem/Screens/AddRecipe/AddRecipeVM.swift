@@ -35,7 +35,7 @@ protocol AddInstructionSheetVCDelegate: AnyObject {
     func delegateInstructionError(_ type: ValidationErrorTypes)
 }
 
-final class AddRecipeViewModel: IngredientViewModel {
+final class AddRecipeViewModel {
     var repository: DataRepositoryProtocol
     let localFileManager: LocalFileManagerProtocol
     let imageFetcherManager: ImageFetcherManagerProtocol

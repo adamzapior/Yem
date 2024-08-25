@@ -8,7 +8,7 @@
 import LifetimeTracker
 import UIKit
 
-final class AddRecipeCoordinator: Destination, Coordinator {
+final class AddRecipeCoordinator: Destination {
     let viewModel: AddRecipeViewModel
     weak var parentCoordinator: Destination?
 

@@ -8,7 +8,7 @@
 import LifetimeTracker
 import UIKit
 
-final class ShopingListCoordinator: Destination, Coordinator {
+final class ShopingListCoordinator: Destination {
     
     private weak var parentCoordinator: TabBarCoordinator?
     
@@ -51,9 +51,9 @@ final class ShopingListCoordinator: Destination, Coordinator {
     
     func presentAddItemSheet() {
         navigator?.presentSheet(
-            AddIngredientSheetVC(
-                viewModel: viewModel as IngredientViewModel,
-                coordinator: self as Coordinator
+            ShopingListAddIngredientSheetVC(
+                viewModel: viewModel,
+                coordinator: self
             )
         )
     }

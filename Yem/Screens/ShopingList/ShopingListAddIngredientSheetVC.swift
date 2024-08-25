@@ -1,18 +1,18 @@
 //
-//  AddIgredientSheetVC.swift
+//  AddIngredientToListSheetVC.swift
 //  Yem
 //
-//  Created by Adam Zapiór on 16/12/2023.
+//  Created by Adam Zapiór on 25/08/2024.
 //
 
 import LifetimeTracker
 import UIKit
 
-final class AddIngredientSheetVC: UIViewController {
+final class ShopingListAddIngredientSheetVC: UIViewController {
     // MARK: - Properties
     
-    var coordinator: AddRecipeCoordinator
-    var viewModel: AddRecipeViewModel
+    var coordinator: ShopingListCoordinator
+    var viewModel: ShopingListVM
     
     // MARK: - View properties
     
@@ -67,7 +67,7 @@ final class AddIngredientSheetVC: UIViewController {
     
     // MARK: - Lifecycle
     
-    init(viewModel: AddRecipeViewModel, coordinator: AddRecipeCoordinator) {
+    init(viewModel: ShopingListVM, coordinator: ShopingListCoordinator) {
         self.viewModel = viewModel
         self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
@@ -154,7 +154,7 @@ extension AddIngredientSheetVC {}
 
 // MARK: Gestures: TextfieldWithIconCellDelegate & PickerButtonWithIconCellDelegate
 
-extension AddIngredientSheetVC: TextfieldWithIconDelegate, AddPickerDelegate, ActionButtonDelegate {
+extension ShopingListAddIngredientSheetVC: TextfieldWithIconDelegate, AddPickerDelegate, ActionButtonDelegate {
     func setupDelegate() {
         /// textfields:
         ingredientNameTextfield.delegate = self
@@ -253,7 +253,7 @@ extension AddIngredientSheetVC: TextfieldWithIconDelegate, AddPickerDelegate, Ac
 
 // MARK: -  PickerView setup
 
-extension AddIngredientSheetVC: UIPickerViewDelegate, UIPickerViewDataSource {
+extension ShopingListAddIngredientSheetVC: UIPickerViewDelegate, UIPickerViewDataSource {
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
@@ -318,7 +318,7 @@ extension AddIngredientSheetVC: UIPickerViewDelegate, UIPickerViewDataSource {
 
 // MARK: - Ingredient delegate from ViewModel
 
-extension AddIngredientSheetVC: AddIngredientSheetVCDelegate {
+extension ShopingListAddIngredientSheetVC: ShopingListAddIngredientSheetVCDelegate {
     func delegateIngredientSheetError(_ type: ValidationErrorTypes) {
         switch type {
         case .recipeTitle:
@@ -350,7 +350,7 @@ extension AddIngredientSheetVC: AddIngredientSheetVCDelegate {
 }
 
 #if DEBUG
-extension AddIngredientSheetVC: LifetimeTrackable {
+extension ShopingListAddIngredientSheetVC: LifetimeTrackable {
     class var lifetimeConfiguration: LifetimeConfiguration {
         return LifetimeConfiguration(maxCount: 1, groupName: "ViewControllers")
     }
