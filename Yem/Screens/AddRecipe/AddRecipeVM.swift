@@ -440,7 +440,7 @@ final class AddRecipeViewModel {
         if ingredientsList.isEmpty {
             ingredientListIsError = true
             validationErrors.append(.ingredientsList)
-            delegateIngredientsError(.instructionList)
+            delegateIngredientsError(.ingredientList)
         }
     }
     
