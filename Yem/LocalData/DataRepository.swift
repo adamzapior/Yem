@@ -79,6 +79,10 @@ final class DataRepository: DataRepositoryProtocol {
                 }
             })
             .store(in: &cancellables)
+        
+#if DEBUG
+        trackLifetime()
+#endif
     }
 
     func save() -> Bool {
@@ -394,3 +398,12 @@ extension DataRepository {
             isFavourite: recipeEntity.isFavourite)
     }
 }
+
+
+#if DEBUG
+extension DataRepository: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "DataRepository")
+    }
+}
+#endif

@@ -7,9 +7,15 @@
 
 import FirebaseAuth
 import Foundation
+import LifetimeTracker
+
 
 final class AuthenticationManager {
-    init() {}
+    init() {
+#if DEBUG
+        trackLifetime()
+#endif
+    }
 
     func loginUser(email: String, password: String) async throws -> UserModel {
         let user: User?
@@ -134,3 +140,11 @@ extension NSError {
         }
     }
 }
+
+#if DEBUG
+extension AuthenticationManager: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "AuthenticationManager")
+    }
+}
+#endif

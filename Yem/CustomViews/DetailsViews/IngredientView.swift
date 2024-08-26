@@ -21,6 +21,8 @@ final class IngredientView: UIView {
         textColor: .ui.primaryText
     )
 
+    // MARK: Lifecycle
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
@@ -34,6 +36,8 @@ final class IngredientView: UIView {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    // MARK: UI Setup
 
     func configure(name: String, value: String) {
         nameLabel.text = name

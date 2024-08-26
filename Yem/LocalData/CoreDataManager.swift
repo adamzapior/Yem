@@ -8,6 +8,7 @@
 import Combine
 import CoreData
 import Foundation
+import LifetimeTracker
 
 protocol CoreDataManagerProtocol {
     var context: NSManagedObjectContext { get }
@@ -29,6 +30,10 @@ final class CoreDataManager: CoreDataManagerProtocol {
     init(persistentContainer: NSPersistentContainer) {
         self.persistentContainer = persistentContainer
         self.context = persistentContainer.viewContext
+        
+#if DEBUG
+        trackLifetime()
+#endif
     }
     
     // MARK: - Operations on current context
@@ -128,4 +133,10 @@ enum ObjectChange {
     case updated(NSManagedObject)
 }
 
-
+#if DEBUG
+extension CoreDataManager: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "CoreDataManager")
+    }
+}
+#endif

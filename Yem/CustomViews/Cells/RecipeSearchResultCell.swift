@@ -53,6 +53,8 @@ final class RecipeSearchResultCell: UITableViewCell {
         color: .ui.theme,
         textStyle: .body
     )
+    
+    // MARK: Lifecycle
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -72,6 +74,8 @@ final class RecipeSearchResultCell: UITableViewCell {
         recipeImage.image = nil
         recipeImage.kf.cancelDownloadTask()
     }
+    
+    // MARK: UI Setup
     
     func configure(
         with model: RecipeModel,

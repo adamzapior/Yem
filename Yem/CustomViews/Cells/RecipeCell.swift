@@ -38,14 +38,27 @@ final class RecipeCell: UICollectionViewCell {
         return view
     }()
     
-    private var titleLabel = TextLabel(fontStyle: .title3, fontWeight: .semibold, textColor: .ui.primaryText)
-    private var perpTimeLabel = TextLabel(fontStyle: .footnote, fontWeight: .regular, textColor: .ui.secondaryText)
-    private var spicyIcon = IconImage(systemImage: "leaf", color: .ui.theme, textStyle: .body)
+    private var titleLabel = TextLabel(
+        fontStyle: .title3,
+        fontWeight: .semibold,
+        textColor: .ui.primaryText
+    )
+    private var perpTimeLabel = TextLabel(
+        fontStyle: .footnote,
+        fontWeight: .regular,
+        textColor: .ui.secondaryText
+    )
+    private var spicyIcon = IconImage(
+        systemImage: "leaf",
+        color: .ui.theme,
+        textStyle: .body
+    )
+    
+    // MARK: Lifecycle
 
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
-        addTextShadow()
     }
   
     @available(*, unavailable)
@@ -59,6 +72,8 @@ final class RecipeCell: UICollectionViewCell {
         recipeImage.image = nil
         recipeImage.kf.cancelDownloadTask()
     }
+    
+    // MARK: UI Setup
     
     func configure(
         with model: RecipeModel,
@@ -163,12 +178,5 @@ final class RecipeCell: UICollectionViewCell {
         perpTimeLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         perpTimeLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
     }
-    
-    private func addTextShadow() {
-        titleLabel.layer.shadowColor = UIColor.ui.background.cgColor
-        titleLabel.layer.shadowRadius = 2.0
-        titleLabel.layer.shadowOpacity = 0.5
-        titleLabel.layer.shadowOffset = CGSize(width: 2, height: 2)
-        titleLabel.layer.masksToBounds = false
-    }
+
 }

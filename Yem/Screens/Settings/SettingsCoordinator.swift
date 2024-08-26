@@ -27,7 +27,7 @@ final class SettingsCoordinator: Destination {
         return controller
     }
 
-    // MARK: Navigation
+    // MARK: Alerts
 
     func presentAboutAppAlert() {
         let title = "About this app"
@@ -56,6 +56,8 @@ final class SettingsCoordinator: Destination {
 
         navigator?.presentAlert(alertVC)
     }
+    
+    // MARK: Navigation
 
     func presentSystemSettings() {
         navigator?.presentSystemSettings()

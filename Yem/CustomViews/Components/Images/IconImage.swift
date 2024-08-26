@@ -8,16 +8,16 @@
 import UIKit
 
 class IconImage: UIImageView {
-
     override init(frame: CGRect) {
         super.init(frame: frame)
         configure()
     }
-    
+
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     convenience init(
         systemImage: String,
         color: UIColor!,
@@ -32,7 +32,7 @@ class IconImage: UIImageView {
         self.tintColor = color
         self.contentMode = contentMode ?? .scaleToFill
     }
-    
+
     private func configure() {
         tintColor = .ui.theme
         clipsToBounds = true

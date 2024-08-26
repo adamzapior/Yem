@@ -36,6 +36,8 @@ final class DualOptionAlertVC: UIViewController {
     private var okAction: (() -> Void)?
     private var cancelAction: (() -> Void)?
 
+    // MARK: Lifecycle
+
     init(title: String, message: String, okAction: (() -> Void)? = nil, cancelAction: (() -> Void)? = nil) {
         super.init(nibName: nil, bundle: nil)
         self.alertTitle = title
@@ -58,6 +60,8 @@ final class DualOptionAlertVC: UIViewController {
         setupErrorLabel()
         setupButtons()
     }
+
+    // MARK: UI Setup
 
     private func setupContainerView() {
         view.addSubview(containerView)
@@ -100,7 +104,7 @@ final class DualOptionAlertVC: UIViewController {
         okButton.addTarget(self, action: #selector(okButtonTapped), for: .touchUpInside)
 
         containerView.addSubview(cancelButton)
-        
+
         cancelButton.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
 
         okButton.snp.makeConstraints { make in

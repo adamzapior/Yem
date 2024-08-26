@@ -9,13 +9,10 @@ import LifetimeTracker
 import UIKit
 
 final class AddIngredientSheetVC: UIViewController {
-    // MARK: - Properties
     
-    var coordinator: AddRecipeCoordinator
+    weak var coordinator: AddRecipeCoordinator?
     var viewModel: AddRecipeViewModel
-    
-    // MARK: - View properties
-    
+        
     private let ingredientNameTextfield = TextfieldWithIcon(
         backgroundColor: .ui.secondaryContainer,
         iconImage: "info.square",
@@ -236,11 +233,11 @@ extension AddIngredientSheetVC: TextfieldWithIconDelegate, AddPickerDelegate, Ac
             
             let success = viewModel.addIngredientToList()
             if success {
-                coordinator.dismissSheet()
+                coordinator?.dismissSheet()
             }
         case 2:
             cell.defaultOnTapAnimation()
-            coordinator.dismissSheet()
+            coordinator?.dismissSheet()
         default: break
         }
     }

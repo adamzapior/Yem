@@ -23,7 +23,6 @@
 		581049592BB4355C00FF2E8C /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 581049582BB4355C00FF2E8C /* FirebaseFirestore */; };
 		5810495B2BB4355C00FF2E8C /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 5810495A2BB4355C00FF2E8C /* FirebaseFirestoreSwift */; };
 		5810495F2BB4455800FF2E8C /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5810495E2BB4455800FF2E8C /* AuthenticationManager.swift */; };
-		581049612BB445D400FF2E8C /* FirestoreRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581049602BB445D400FF2E8C /* FirestoreRepository.swift */; };
 		5812ADED2B5927E90035EAA5 /* RecipeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5812ADEC2B5927E90035EAA5 /* RecipeModel.swift */; };
 		581F14212BA8AC3B0046FFA8 /* DualOptionAlertVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581F14202BA8AC3B0046FFA8 /* DualOptionAlertVC.swift */; };
 		582E71AE2B62C7BC002D3164 /* ValidationAlertVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 582E71AD2B62C7BC002D3164 /* ValidationAlertVC.swift */; };
@@ -102,7 +101,6 @@
 		58B99A7A2C73386E000B0818 /* CookingTimerSheetVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58B99A792C73386E000B0818 /* CookingTimerSheetVC.swift */; };
 		58B99A7C2C77D262000B0818 /* ShakeAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58B99A7B2C77D262000B0818 /* ShakeAnimation.swift */; };
 		58B99A7E2C77D9E5000B0818 /* CookingInstructionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58B99A7D2C77D9E4000B0818 /* CookingInstructionVC.swift */; };
-		58B99A802C79B780000B0818 /* PickerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58B99A7F2C79B780000B0818 /* PickerVC.swift */; };
 		58B99A822C79CA88000B0818 /* CookingModeViewModel_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58B99A812C79CA88000B0818 /* CookingModeViewModel_Tests.swift */; };
 		58BBEB762B59C94B0058851C /* IngredientEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB742B59C94B0058851C /* IngredientEntity.swift */; };
 		58BBEB7C2B59C9EB0058851C /* RecipeEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BBEB7A2B59C9EB0058851C /* RecipeEntity.swift */; };
@@ -155,7 +153,6 @@
 		58102DDD2B24A3150090EAE8 /* ShopingListVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopingListVM.swift; sourceTree = "<group>"; };
 		58102DDF2B24AB9E0090EAE8 /* UITextFieldExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextFieldExt.swift; sourceTree = "<group>"; };
 		5810495E2BB4455800FF2E8C /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
-		581049602BB445D400FF2E8C /* FirestoreRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreRepository.swift; sourceTree = "<group>"; };
 		5812ADEC2B5927E90035EAA5 /* RecipeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeModel.swift; sourceTree = "<group>"; };
 		581F14202BA8AC3B0046FFA8 /* DualOptionAlertVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DualOptionAlertVC.swift; sourceTree = "<group>"; };
 		582E71AD2B62C7BC002D3164 /* ValidationAlertVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidationAlertVC.swift; sourceTree = "<group>"; };
@@ -229,7 +226,6 @@
 		58B99A792C73386E000B0818 /* CookingTimerSheetVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CookingTimerSheetVC.swift; sourceTree = "<group>"; };
 		58B99A7B2C77D262000B0818 /* ShakeAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShakeAnimation.swift; sourceTree = "<group>"; };
 		58B99A7D2C77D9E4000B0818 /* CookingInstructionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CookingInstructionVC.swift; sourceTree = "<group>"; };
-		58B99A7F2C79B780000B0818 /* PickerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerVC.swift; sourceTree = "<group>"; };
 		58B99A812C79CA88000B0818 /* CookingModeViewModel_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CookingModeViewModel_Tests.swift; sourceTree = "<group>"; };
 		58BBEB742B59C94B0058851C /* IngredientEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientEntity.swift; sourceTree = "<group>"; };
 		58BBEB7A2B59C9EB0058851C /* RecipeEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeEntity.swift; sourceTree = "<group>"; };
@@ -334,7 +330,6 @@
 				58A38F892B5D1CFD00007AC1 /* AddInstructionSheetVC.swift */,
 				58102DDA2B249F900090EAE8 /* AddRecipeVM.swift */,
 				5899294D2B44946000FAB070 /* AddRecipeCoordinator.swift */,
-				58B99A7F2C79B780000B0818 /* PickerVC.swift */,
 			);
 			path = AddRecipe;
 			sourceTree = "<group>";
@@ -586,7 +581,6 @@
 			children = (
 				583C5D792BBE17AF002FCD5C /* Entities */,
 				5810495E2BB4455800FF2E8C /* AuthenticationManager.swift */,
-				581049602BB445D400FF2E8C /* FirestoreRepository.swift */,
 			);
 			path = RemoteData;
 			sourceTree = "<group>";
@@ -867,7 +861,6 @@
 				58614D172BA123EF007AD868 /* ShopingListEntity.swift in Sources */,
 				585230F42C70C0DA00E9C142 /* CookingModeVM.swift in Sources */,
 				5858B7412B6B05E3005CB438 /* RecipeCell.swift in Sources */,
-				58B99A802C79B780000B0818 /* PickerVC.swift in Sources */,
 				589CA80C2BB2EB160008DFC3 /* RegisterOnboardingVC.swift in Sources */,
 				58BBEB9D2B5C18840058851C /* InstructionTableHeaderView.swift in Sources */,
 				580ED3822B25068100B4A9F0 /* ColorTheme.swift in Sources */,
@@ -915,7 +908,6 @@
 				58A208D62C79F6D800A0AE9E /* CoreDataStack.swift in Sources */,
 				5887468C2B2E075C00EC5E11 /* IngredientsCell.swift in Sources */,
 				583647012C14F8FD00EABB64 /* Destination.swift in Sources */,
-				581049612BB445D400FF2E8C /* FirestoreRepository.swift in Sources */,
 				58B99A7A2C73386E000B0818 /* CookingTimerSheetVC.swift in Sources */,
 				58B99A7C2C77D262000B0818 /* ShakeAnimation.swift in Sources */,
 				580ED3842B2513C000B4A9F0 /* IngredientModel.swift in Sources */,
@@ -1101,6 +1093,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = B5C5KJWJ34;
@@ -1120,6 +1114,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = adamzapior.Yem;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -1135,6 +1130,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = B5C5KJWJ34;
@@ -1154,6 +1151,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = adamzapior.Yem;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;

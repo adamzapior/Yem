@@ -13,7 +13,7 @@ final class AddRecipeInstructionsVC: UIViewController {
     // MARK: - Properties
 
     let viewModel: AddRecipeViewModel
-    let coordinator: AddRecipeCoordinator
+    weak var coordinator: AddRecipeCoordinator?
     
     // MARK: - View properties
 
@@ -214,16 +214,16 @@ extension AddRecipeInstructionsVC {
     @objc func saveButtonTapped(_ sender: UIBarButtonItem) {
         let result = viewModel.saveRecipe()
         if result {
-            coordinator.dismissVCStack()
+            coordinator?.dismissVCStack()
         } else {
             let errorMessages = viewModel.validationErrors.map { $0.description }.joined(separator: "\n")
-            coordinator.presentValidationAlert(title: "We can't save your recipe", message: errorMessages)
+            coordinator?.presentValidationAlert(title: "We can't save your recipe", message: errorMessages)
         }
     }
     
     /// Navigate to Add Instruction Sheet
     private func addInstructionTapped() {
-        coordinator.navigateTo(.addInstruction)
+        coordinator?.navigateTo(.addInstruction)
     }
 }
 

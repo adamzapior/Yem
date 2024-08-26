@@ -10,19 +10,18 @@ import SnapKit
 import UIKit
 
 final class RecipeDetailsVC: UIViewController {
-    // MARK: - Properties
-
     let recipe: RecipeModel
-
     let viewModel: RecipeDetailsVM
-    let coordinator: RecipeDetailsCoordinator
-    
-    // MARK: - View properties
-    
+    weak var coordinator: RecipeDetailsCoordinator?
+        
     private let scrollView = UIScrollView()
     private let contentView = UIView()
     
-    private var photoView = PhotoView(frame: .zero, iconString: "photo", enableAnimations: false)
+    private var photoView = PhotoView(
+        frame: .zero,
+        iconString: "photo",
+        enableAnimations: false
+    )
     
     private let detailsSubtitleLabel = UILabel()
     private let detailsContainer = UIView()
@@ -39,10 +38,9 @@ final class RecipeDetailsVC: UIViewController {
     private let instructionsSubtitleLabel = UILabel()
     private let instructionsContainer = UIView()
 
-    var bookmarkIconString: String
-
-    let bookmarkIconFilled: String = "bookmark.fill"
-    let bookmarkIconEmpty: String = "bookmark"
+    private var bookmarkIconString: String
+    private let bookmarkIconFilled: String = "bookmark.fill"
+    private let bookmarkIconEmpty: String = "bookmark"
     
     lazy var cookNavItem = UIBarButtonItem(
         image: UIImage(systemName: "play"),
@@ -86,7 +84,6 @@ final class RecipeDetailsVC: UIViewController {
     )
     
     lazy var moreNavItem: UIBarButtonItem = {
-        // Tworzymy akcje dla menu
         let editAction = UIAction(
             title: "Edit",
             image: UIImage(systemName: "pencil")
@@ -102,13 +99,13 @@ final class RecipeDetailsVC: UIViewController {
             self?.trashButtonTapped(self!.trashNavItem)
         }
         
-        // Tworzymy menu
         let menu = UIMenu(title: "", children: [editAction, deleteAction])
         
-        // Tworzymy przycisk nawigacyjny z przypisanym menu
         let button = UIBarButtonItem(image: UIImage(systemName: "ellipsis"), menu: menu)
         return button
     }()
+    
+    // MARK: - Lifecycle
 
     init(recipe: RecipeModel, viewModel: RecipeDetailsVM, coordinator: RecipeDetailsCoordinator) {
         self.recipe = recipe
@@ -419,23 +416,23 @@ extension RecipeDetailsVC {
     }
     
     @objc func playButtonTapped(_ sender: UIBarButtonItem) {
-        coordinator.navigateToCookingMode()
+        coordinator?.navigateToCookingMode()
     }
     
     @objc func basketButtonTapped(_ sender: UIBarButtonItem) {
-        coordinator.presentAddIngredientsToShopingListAlert()
+        coordinator?.presentAddIngredientsToShopingListAlert()
     }
 
     @objc func bookmarkButtonTapped(_ sender: UIBarButtonItem) {
-        coordinator.presentAddToFavouritesAlert()
+        coordinator?.presentAddToFavouritesAlert()
     }
     
     @objc func pencilButtonTapped(_ sender: UIBarButtonItem) {
-        coordinator.navigateToRecipeEditor()
+        coordinator?.navigateToRecipeEditor()
     }
 
     @objc func trashButtonTapped(_ sender: UIBarButtonItem) {
-        coordinator.presentDeleteRecipeAlert()
+        coordinator?.presentDeleteRecipeAlert()
     }
 }
 

@@ -10,13 +10,20 @@ import SnapKit
 import UIKit
 
 final class RecipesListVC: UIViewController {
-    let coordinator: RecipesListCoordinator
-    var viewModel: RecipesListVM
+    weak var coordinator: RecipesListCoordinator?
+    let viewModel: RecipesListVM
 
-    private let emptyTableLabel = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
+    private let emptyTableLabel = TextLabel(
+        fontStyle: .body,
+        fontWeight: .regular,
+        textColor: .ui.secondaryText
+    )
     private var collectionView: UICollectionView!
 
-    lazy var searchResultVC = RecipesSearchResultsVC(coordinator: coordinator, viewModel: viewModel)
+    lazy var searchResultVC = RecipesSearchResultsVC(
+        coordinator: coordinator!,
+        viewModel: viewModel
+    )
     private var searchController: UISearchController!
 
     // MARK: - Lifecycle
@@ -215,7 +222,7 @@ extension RecipesListVC: UICollectionViewDelegate, UICollectionViewDataSource, U
         let section = viewModel.sections[indexPath.section]
         let recipe = section.items[indexPath.item]
 
-        coordinator.navigateToRecipeDetail(with: recipe)
+        coordinator?.navigateToRecipeDetail(with: recipe)
     }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
@@ -258,11 +265,11 @@ extension RecipesListVC {
     }
 
     @objc func addRecipeButtonTapped() {
-        coordinator.navigateToAddRecipeScreen()
+        coordinator?.navigateToAddRecipeScreen()
     }
 
     @objc func settingsButtonTapped() {
-        coordinator.navigateToSettings()
+        coordinator?.navigateToSettings()
     }
 }
 

@@ -10,13 +10,13 @@ import UIKit
 class RecipesSectionHeaderView: UICollectionReusableView {
     static let reuseIdentifier = "RecipesSectionHeaderView"
 
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .black
-        label.font = UIFont.systemFont(ofSize: 18, weight: .bold)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+    private let titleLabel = TextLabel(
+        fontStyle: .body,
+        fontWeight: .bold,
+        textColor: .primaryText
+    )
+    
+    // MARK: Lifecycle
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -27,6 +27,8 @@ class RecipesSectionHeaderView: UICollectionReusableView {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    // MARK: UI Setup
 
     private func setupSubviews() {
         addSubview(titleLabel)

@@ -28,6 +28,8 @@ class SettingsCell: UITableViewCell {
         contentMode: .center
     )
     
+    // MARK: Lifecycle
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -43,6 +45,8 @@ class SettingsCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
     }
+    
+    // MARK: UI Setup
     
     func configure(with options: SettingsOption) {
         titleLabel.text = options.title

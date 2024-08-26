@@ -44,6 +44,8 @@ final class AddNote: UIView {
         }
     }
     
+    // MARK: Lifecycle
+
     override init(frame: CGRect) {
         self.iconImage = "plus"
         self.textStyle = .body
@@ -69,13 +71,10 @@ final class AddNote: UIView {
         self.iconImage = iconImage
         self.icon = IconImage(systemImage: iconImage, color: .ui.theme, textStyle: textStyle)
                 
-        let placeholderText = NSAttributedString(
-            string: "\(placeholderText)",
-            attributes: [NSAttributedString.Key.foregroundColor: textColor ?? .primaryContainer]
-        )
-                
         configure()
     }
+    
+    // MARK: UI Setup
     
     private func configure() {
         addSubview(icon)

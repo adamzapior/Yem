@@ -40,13 +40,21 @@ final class IngredientsCell: UITableViewCell {
     )
     
     private lazy var trashIcon: IconImage = {
-        let icon = IconImage(systemImage: "trash", color: .red, textStyle: .body)
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapButtonAction))
+        let icon = IconImage(
+            systemImage: "trash",
+            color: .red,
+            textStyle: .body
+        )
+        let tapGesture = UITapGestureRecognizer(
+            target: self,
+            action: #selector(didTapButtonAction)
+        )
         icon.addGestureRecognizer(tapGesture)
         icon.isUserInteractionEnabled = true
         return icon
     }()
         
+    // MARK: Lifecycle
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -65,6 +73,8 @@ final class IngredientsCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
+    
+    // MARK: UI Setup
     
     func configure(with model: IngredientModel) {
         valueLabel.text = model.value

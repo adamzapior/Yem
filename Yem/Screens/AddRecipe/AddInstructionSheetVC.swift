@@ -9,12 +9,10 @@ import LifetimeTracker
 import UIKit
 
 final class AddInstructionSheetVC: UIViewController {
-    // MARK: - Properties
     
-    var coordinator: AddRecipeCoordinator
+    weak var coordinator: AddRecipeCoordinator?
     var viewModel: AddRecipeViewModel
     
-    // MARK: - View properties
     
     private var textFieldContentView: UIView = {
         let content = UIView()
@@ -241,11 +239,11 @@ extension AddInstructionSheetVC: ActionButtonDelegate {
             button.defaultOnTapAnimation()
             let success = viewModel.addInstructionToList()
             if success {
-                coordinator.dismissSheet()
+                coordinator?.dismissSheet()
             } else {}
         case 2:
             button.defaultOnTapAnimation()
-            coordinator.dismissSheet()
+            coordinator?.dismissSheet()
         default: break
         }
     }

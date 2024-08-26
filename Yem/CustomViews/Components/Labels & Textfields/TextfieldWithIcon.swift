@@ -23,6 +23,8 @@ final class TextfieldWithIcon: UIView, UITextFieldDelegate {
     private var icon: IconImage!
     private var iconImage: String
     private var textStyle: UIFont.TextStyle
+    
+    // MARK: Lifecycle
 
     override init(frame: CGRect) {
         self.iconImage = "plus"
@@ -58,19 +60,19 @@ final class TextfieldWithIcon: UIView, UITextFieldDelegate {
         textField.attributedPlaceholder = placeholderText
     }
     
+    // MARK: UI Setup
+
     private func configure() {
         addSubview(icon)
         addSubview(textField)
         
         layer.cornerRadius = 20
-//        backgroundColor = .ui.primaryContainer
 
         textField.delegate = self
         textField.backgroundColor = backgroundColor
         textField.keyboardType = keyboardType
         
         icon.snp.makeConstraints { make in
-//            make.top.bottom.equalToSuperview().inset(12)
             make.leading.equalToSuperview().offset(24)
             make.centerY.equalTo(textField.snp.centerY)
             make.width.equalTo(22)

@@ -16,11 +16,8 @@ protocol AddPickerDelegate: AnyObject {
 
 final class AddPicker: UIView {
     weak var delegate: AddPickerDelegate?
-    
-    // MARK: - Properties
-    
-    var minViewHeight: CGFloat?
-    
+        
+    private var minViewHeight: CGFloat?
     private var icon: IconImage!
     private var iconImage: String
     private var textStyle: UIFont.TextStyle

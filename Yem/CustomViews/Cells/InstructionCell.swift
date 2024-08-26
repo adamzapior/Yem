@@ -38,9 +38,15 @@ final class InstructionCell: UITableViewCell {
     )
 
     private let moveIcon: IconImage = {
-        let icon = IconImage(systemImage: "text.justify", color: .ui.secondaryText, textStyle: .body)
+        let icon = IconImage(
+            systemImage: "text.justify",
+            color: .ui.secondaryText,
+            textStyle: .body
+        )
         return icon
     }()
+    
+    // MARK: Lifecycle
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -59,6 +65,8 @@ final class InstructionCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
+    
+    // MARK: UI Setup
     
     func configure(with model: InstructionModel) {
         indexLabel.text = model.index.description

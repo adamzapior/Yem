@@ -14,12 +14,10 @@ import AVFoundation
 import Photos
 
 final class AddRecipeVC: UIViewController {
-    // MARK: - Properties
     
     weak var coordinator: AddRecipeCoordinator?
     let viewModel: AddRecipeViewModel
     
-    // MARK: - View properties
     
     private let scrollView = UIScrollView()
     private let contentView = UIView()

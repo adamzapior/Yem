@@ -9,7 +9,7 @@ import LifetimeTracker
 import UIKit
 
 final class ShopingListVC: UIViewController {
-    var coordinator: ShopingListCoordinator?
+    weak var coordinator: ShopingListCoordinator?
     var viewModel: ShopingListVM
 
     private let tableView = UITableView()

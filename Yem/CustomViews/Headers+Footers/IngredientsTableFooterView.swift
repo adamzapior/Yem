@@ -16,9 +16,14 @@ final class IngredientsTableFooterView: UIView {
 
     private let screenWidth = UIScreen.main.bounds.width
 
-    private let addButton = ActionButton(title: "Add", backgroundColor: .ui.addBackground)
+    private let addButton = ActionButton(
+        title: "Add",
+        backgroundColor: .ui.addBackground
+    )
 
     private let content = UIView()
+
+    // MARK: Lifecycle
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -31,6 +36,8 @@ final class IngredientsTableFooterView: UIView {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
+
+    // MARK: UI Setup
 
     private func configure() {
         addSubview(content)

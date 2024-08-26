@@ -11,16 +11,16 @@ import SnapKit
 import UIKit
 
 class CookingModeViewController: UIViewController {
-    // MARK: - Properties
-
     let viewModel: CookingModeViewModel
-    let coordinator: CookingModeCoordinator
-
-    // MARK: - View properties
-
+    weak var coordinator: CookingModeCoordinator?
     var recipe: RecipeModel
-    var pageViewController: UIPageViewController!
-    var pageControl: UIPageControl!
+
+    private var pageViewController = UIPageViewController(
+        transitionStyle: .scroll,
+        navigationOrientation: .horizontal,
+        options: nil
+    )
+    private var pageControl = UIPageControl()
 
     private let stepsLabel = TextLabel(
         fontStyle: .body,
@@ -108,7 +108,7 @@ class CookingModeViewController: UIViewController {
     deinit {
         NotificationCenter.default.removeObserver(self)
 
-        coordinator.navigator?.navigationController.interactivePopGestureRecognizer?.isEnabled = true
+        coordinator?.navigator?.navigationController.interactivePopGestureRecognizer?.isEnabled = true
     }
 
     @available(*, unavailable)
@@ -122,7 +122,7 @@ class CookingModeViewController: UIViewController {
         view.backgroundColor = .systemBackground
         viewModel.delegate = self
 
-        coordinator.navigator?.navigationController.interactivePopGestureRecognizer?.isEnabled = false
+        coordinator?.navigator?.navigationController.interactivePopGestureRecognizer?.isEnabled = false
 
         setupNavigationBarButtons()
 
@@ -171,11 +171,6 @@ class CookingModeViewController: UIViewController {
     }
 
     private func setupPageViewController() {
-        pageViewController = UIPageViewController(
-            transitionStyle: .scroll,
-            navigationOrientation: .horizontal,
-            options: nil
-        )
         pageViewController.dataSource = self
         pageViewController.delegate = self
 
@@ -200,7 +195,6 @@ class CookingModeViewController: UIViewController {
     }
 
     private func setupPageControl() {
-        pageControl = UIPageControl()
         pageControl.numberOfPages = recipe.instructionList.count
         pageControl.currentPage = 0
         pageControl.addTarget(self, action: #selector(pageControlTapped(_:)), for: .valueChanged)
@@ -375,15 +369,15 @@ extension CookingModeViewController {
     }
 
     @objc func backButtonTapped() {
-        coordinator.presentExitAlert()
+        coordinator?.presentExitAlert()
     }
 
     @objc func ingredientsButtonTapped(_ sender: UIBarButtonItem) {
-        coordinator.openIngredientsSheet()
+        coordinator?.openIngredientsSheet()
     }
 
     @objc func timerButtonTapped(_ sender: UIBarButtonItem) {
-        coordinator.openTimeSheet()
+        coordinator?.openTimeSheet()
     }
 }
 
@@ -398,7 +392,7 @@ extension CookingModeViewController: CookingModeVCDelegate {
     }
 
     func timerStopped() {
-        coordinator.presentTimerStoppedAlert()
+        coordinator?.presentTimerStoppedAlert()
         if let timerButtonView = timerNavItem.value(forKey: "view") as? UIView {
             timerButtonView.stopShaking()
             print("Timer started delegate")

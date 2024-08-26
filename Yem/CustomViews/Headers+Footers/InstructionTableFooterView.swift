@@ -27,6 +27,8 @@ final class InstructionTableFooterView: UIView {
 
     private let content = UIView()
 
+    // MARK: Lifecycle
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         configure()
@@ -35,6 +37,8 @@ final class InstructionTableFooterView: UIView {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
+
+    // MARK: UI Setup
 
     private func configure() {
         addSubview(content)

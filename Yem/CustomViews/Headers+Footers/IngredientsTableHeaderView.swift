@@ -21,6 +21,8 @@ final class IngredientsTableHeaderView: UIView {
     private let pageCount = 3
     private var pageViews = [UIView]()
 
+    // MARK: Lifecycle
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         configure(page: 1)
@@ -30,6 +32,8 @@ final class IngredientsTableHeaderView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    // MARK: UI Setup
 
     func configure(page: Int) {
         for _ in 0 ..< pageCount {

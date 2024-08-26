@@ -21,6 +21,8 @@ class DetailsView: UIView {
         textColor: .ui.primaryText
     )
     
+    // MARK: Lifecycle
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
@@ -30,6 +32,8 @@ class DetailsView: UIView {
         super.init(coder: aDecoder)
     }
     
+    // MARK: UI Setup
+
     func configure(titleText: String, valueText: String) {
         titleTextLabel.text = titleText
         valueTextLabel.text = valueText

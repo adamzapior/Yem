@@ -12,8 +12,11 @@ import UIKit
 
 class RecipesSearchResultsVC: UIViewController {
     let coordinator: RecipesListCoordinator
-    var viewModel: RecipesListVM
-    var tableView: UITableView!
+    let viewModel: RecipesListVM
+
+    private var tableView = UITableView()
+
+    // MARK: - Lifecycle
 
     init(coordinator: RecipesListCoordinator, viewModel: RecipesListVM) {
         self.coordinator = coordinator
@@ -36,8 +39,9 @@ class RecipesSearchResultsVC: UIViewController {
         viewModel.delegateRecipesSearchResult = self
     }
 
+    // MARK: - UI Setup
+
     private func setupTableView() {
-        tableView = UITableView(frame: view.bounds, style: .plain)
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(RecipeSearchResultCell.self, forCellReuseIdentifier: RecipeSearchResultCell.id)
@@ -50,29 +54,9 @@ class RecipesSearchResultsVC: UIViewController {
             make.edges.equalToSuperview()
         }
     }
-
-    private func animateCells() {
-        let visibleCells = tableView.visibleCells
-        let tableViewHeight = tableView.bounds.height
-
-        for (index, cell) in visibleCells.enumerated() {
-            let delay = 0.05 * Double(index)
-            let cellPosition = cell.frame.origin.y + cell.frame.height
-            let offset = tableViewHeight - cellPosition
-
-            cell.transform = CGAffineTransform(translationX: 0, y: offset)
-            cell.alpha = 0
-
-            UIView.animate(withDuration: 0.5,
-                           delay: delay,
-                           options: [.curveEaseInOut],
-                           animations: {
-                               cell.transform = .identity
-                               cell.alpha = 1
-                           }, completion: nil)
-        }
-    }
 }
+
+// MARK: - Delegates
 
 extension RecipesSearchResultsVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -108,7 +92,6 @@ extension RecipesSearchResultsVC: UITableViewDelegate, UITableViewDataSource {
 extension RecipesSearchResultsVC: RecipesSearchResultDelegate {
     func reloadTable() {
         tableView.reloadData()
-        animateCells()
     }
 }
 

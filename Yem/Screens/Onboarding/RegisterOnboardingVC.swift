@@ -15,14 +15,40 @@ final class RegisterOnboardingVC: UIViewController {
 
     var content = UIView()
 
-    let textLabel = TextLabel(fontStyle: .title2, fontWeight: .light, textColor: .ui.secondaryText)
-    let loginLabel = TextLabel(fontStyle: .footnote, fontWeight: .light, textColor: .ui.secondaryText)
-    let passwordLabel = TextLabel(fontStyle: .footnote, fontWeight: .light, textColor: .ui.secondaryText)
+    let textLabel = TextLabel(
+        fontStyle: .title2,
+        fontWeight: .light,
+        textColor: .ui.secondaryText
+    )
+    let loginLabel = TextLabel(
+        fontStyle: .footnote,
+        fontWeight: .light,
+        textColor: .ui.secondaryText
+    )
+    let passwordLabel = TextLabel(
+        fontStyle: .footnote,
+        fontWeight: .light,
+        textColor: .ui.secondaryText
+    )
 
-    let loginTextfield = TextfieldWithIcon(iconImage: "info", placeholderText: "Enter your login...", textColor: .ui.secondaryText)
-    let passwordTextfield = TextfieldWithIcon(iconImage: "staroflife", placeholderText: "Enter your new password...", textColor: .ui.secondaryText)
+    let loginTextfield = TextfieldWithIcon(
+        iconImage: "info",
+        placeholderText: "Enter your login...",
+        textColor: .ui.secondaryText
+    )
+    let passwordTextfield = TextfieldWithIcon(
+        iconImage: "staroflife",
+        placeholderText: "Enter your new password...",
+        textColor: .ui.secondaryText
+    )
 
-    let loginButton = ActionButton(title: "Register...", backgroundColor: .ui.addBackground, isShadownOn: true)
+    let loginButton = ActionButton(
+        title: "Register...",
+        backgroundColor: .ui.addBackground,
+        isShadownOn: true
+    )
+    
+    // MARK: - Lifecycle
 
     init(coordinator: OnboardingCoordinator, viewModel: OnboardingVM) {
         self.coordinator = coordinator
@@ -51,6 +77,8 @@ final class RegisterOnboardingVC: UIViewController {
         viewModel.delegateRegisterOnb = self
         loginButton.delegate = self
     }
+    
+    // MARK: - UI Setup
 
     private func setupUI() {
         view.addSubview(content)

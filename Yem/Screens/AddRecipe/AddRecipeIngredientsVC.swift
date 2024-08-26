@@ -12,7 +12,7 @@ final class AddRecipeIngredientsVC: UIViewController {
     // MARK: - ViewModel
     
     let viewModel: AddRecipeViewModel
-    let coordinator: AddRecipeCoordinator
+    weak var coordinator: AddRecipeCoordinator?
     
     // MARK: - View properties
     
@@ -198,11 +198,11 @@ extension AddRecipeIngredientsVC {
     }
     
     @objc func nextButtonTapped(_ sender: UIBarButtonItem) {
-        coordinator.navigateTo(.instructions)
+        coordinator?.navigateTo(.instructions)
     }
 
     func addIgredientTapped() {
-        coordinator.navigateTo(.addIngredient)
+        coordinator?.navigateTo(.addIngredient)
     }
 }
 

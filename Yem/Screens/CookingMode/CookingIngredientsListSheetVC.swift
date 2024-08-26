@@ -10,7 +10,7 @@ import LifetimeTracker
 import UIKit
 
 final class CookingIngredientsListSheetVC: UIViewController {
-    var coordinator: CookingModeCoordinator?
+    weak var coordinator: CookingModeCoordinator?
     var viewModel: CookingModeViewModel
 
     private let tableView = UITableView()

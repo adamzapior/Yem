@@ -9,15 +9,10 @@ import LifetimeTracker
 import UIKit
 
 class SettingsVC: UIViewController {
-    // MARK: - Properties
-    
     let viewModel: SettingsViewModel
-    let coordinator: SettingsCoordinator
-    
-    // MARK: - View properties
-    
+    weak var coordinator: SettingsCoordinator?
+        
     fileprivate var section: [SettingsOption] = []
-    
     private let tableView = UITableView()
     
     // MARK: - Lifecycle
@@ -92,11 +87,11 @@ extension SettingsVC: UITableViewDelegate, UITableViewDataSource {
         tableView.deselectRow(at: indexPath, animated: true) // Optional: for visual feedback
         switch indexPath.row {
         case 0:
-            coordinator.presentSystemSettings()
+            coordinator?.presentSystemSettings()
         case 1:
-            coordinator.presentAboutAppAlert()
+            coordinator?.presentAboutAppAlert()
         case 2:
-            coordinator.presentLogoutAlert()
+            coordinator?.presentLogoutAlert()
         default:
             break
         }

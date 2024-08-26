@@ -50,8 +50,9 @@ final class OnboardingCoordinator: Destination {
             let controller = RegisterOnboardingVC(coordinator: self, viewModel: viewModel)
             navigator?.presentScreen(controller, isAnimated: true)
         case .resetPassword:
-            let controller = ResetPasswordVC(coordinator: self, viewModel: viewModel)
-            navigator?.presentScreen(controller)
+            break
+//            let controller = ResetPasswordVC(coordinator: self, viewModel: viewModel)
+//            navigator?.presentScreen(controller)
         case .privacyPolicy:
             break
         }

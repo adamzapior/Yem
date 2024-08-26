@@ -16,15 +16,41 @@ final class LoginOnboardingVC: UIViewController {
 
     var content = UIView()
 
-    let textLabel = TextLabel(fontStyle: .title2, fontWeight: .light, textColor: .ui.secondaryText)
-    let loginLabel = TextLabel(fontStyle: .footnote, fontWeight: .light, textColor: .ui.secondaryText)
-    let passwordLabel = TextLabel(fontStyle: .footnote, fontWeight: .light, textColor: .ui.secondaryText)
+    let textLabel = TextLabel(
+        fontStyle: .title2,
+        fontWeight: .light,
+        textColor: .ui.secondaryText
+    )
+    let loginLabel = TextLabel(
+        fontStyle: .footnote,
+        fontWeight: .light,
+        textColor: .ui.secondaryText
+    )
+    let passwordLabel = TextLabel(
+        fontStyle: .footnote,
+        fontWeight: .light,
+        textColor: .ui.secondaryText
+    )
 
-    let loginTextfield = TextfieldWithIcon(iconImage: "info", placeholderText: "Enter your login...", textColor: .ui.secondaryText)
-    let passwordTextfield = TextfieldWithIcon(iconImage: "staroflife", placeholderText: "Enter your password...", textColor: .ui.secondaryText)
+    let loginTextfield = TextfieldWithIcon(
+        iconImage: "info",
+        placeholderText: "Enter your login...",
+        textColor: .ui.secondaryText
+    )
+    let passwordTextfield = TextfieldWithIcon(
+        iconImage: "staroflife",
+        placeholderText: "Enter your password...",
+        textColor: .ui.secondaryText
+    )
 
-    let loginButton = ActionButton(title: "Try to login...", backgroundColor: .ui.addBackground, isShadownOn: true)
+    let loginButton = ActionButton(
+        title: "Try to login...",
+        backgroundColor: .ui.addBackground,
+        isShadownOn: true
+    )
 
+    // MARK: - Lifecycle
+    
     init(coordinator: OnboardingCoordinator, viewModel: OnboardingVM) {
         self.coordinator = coordinator
         self.viewModel = viewModel

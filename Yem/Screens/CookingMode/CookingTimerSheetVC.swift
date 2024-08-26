@@ -10,10 +10,10 @@ import SnapKit
 import UIKit
 
 class CookingTimerSheetVC: UIViewController {
-    var coordinator: CookingModeCoordinator?
+    weak var coordinator: CookingModeCoordinator?
     var viewModel: CookingModeViewModel
 
-    private var pickerView: UIPickerView!
+    private var pickerView = UIPickerView()
 
     private let timerButton = ActionButton(
         title: "Set timer",
@@ -69,7 +69,6 @@ class CookingTimerSheetVC: UIViewController {
     }
 
     private func setupPickerView() {
-        pickerView = UIPickerView()
         pickerView.delegate = self
         pickerView.dataSource = self
         pickerView.translatesAutoresizingMaskIntoConstraints = false

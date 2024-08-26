@@ -31,6 +31,8 @@ final class ValidationAlertVC: UIViewController {
     private var message: String?
     private var dismissCompletion: (() -> Void)?
     
+    // MARK: Lifecycle
+    
     init(title: String, message: String, dismissCompletion: (() -> Void)? = nil) {
         super.init(nibName: nil, bundle: nil)
         self.alertTitle = title
@@ -52,6 +54,8 @@ final class ValidationAlertVC: UIViewController {
         setupActionButton()
     }
     
+    // MARK: UI Setup
+
     private func setupContainerView() {
         view.addSubview(containerView)
         containerView.backgroundColor = .systemBackground

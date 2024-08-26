@@ -45,13 +45,22 @@ class ShopingListCell: UITableViewCell {
     private lazy var filledCircleIconString = "circle.fill"
     
     private lazy var checklistIcon: IconImage = {
-        let icon = IconImage(systemImage: checklistIconString, color: .red, textStyle: .body)
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapButtonAction))
+        let icon = IconImage(
+            systemImage: checklistIconString,
+            color: .red,
+            textStyle: .body
+        )
+        let tapGesture = UITapGestureRecognizer(
+            target: self,
+            action: #selector(didTapButtonAction)
+        )
         icon.addGestureRecognizer(tapGesture)
         icon.isUserInteractionEnabled = true
         return icon
     }()
-        
+    
+    // MARK: Lifecycle
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
@@ -79,6 +88,8 @@ class ShopingListCell: UITableViewCell {
             layer.opacity = 0.6
         }
     }
+    
+    // MARK: UI Setup
     
     func configure(with model: ShopingListModel, type: ShopingListCellType, backgroundColor: UIColor = .ui.primaryContainer) {
         cellType = type
@@ -135,7 +146,7 @@ class ShopingListCell: UITableViewCell {
         }
     }
     
-    @objc func didTapButtonAction() {        
+    @objc func didTapButtonAction() {
         let currentImage = checklistIcon.image
         
         if currentImage == UIImage(systemName: checklistIconString) {
