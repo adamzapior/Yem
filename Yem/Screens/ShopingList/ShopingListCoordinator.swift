@@ -39,7 +39,7 @@ final class ShopingListCoordinator: Destination {
     
     override func render() -> UIViewController {
         let shopingListController = ShopingListVC(coordinator: self, viewModel: viewModel)
-        shopingListController.viewModel = viewModel
+        shopingListController.destination = self
         
         shopingListController.tabBarItem = UITabBarItem(
             title: "Shoping list",

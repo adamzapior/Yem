@@ -5,7 +5,6 @@
 //  Created by Adam Zapiór on 20/03/2024.
 //
 
-import Combine
 import Foundation
 import LifetimeTracker
 
@@ -23,19 +22,14 @@ final class OnboardingVM {
 
     var authManager: AuthenticationManager
 
-    @Published
     var user: UserModel?
-
-    @Published
+    
     var userID: UUID = .init()
-
-    @Published
+    
     var login: String = ""
-
-    @Published
+    
     var password: String = ""
-
-    @Published
+    
     var validationError: String = ""
 
     init(authManager: AuthenticationManager) {

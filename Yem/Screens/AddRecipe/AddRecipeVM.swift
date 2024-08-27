@@ -49,100 +49,71 @@ final class AddRecipeViewModel {
     // MARK: - Observable properties
     
     /// Recipe properties
-    @Published
     var recipeID: UUID = .init()
     
-    @Published
     var selectedImage: UIImage?
     
-    @Published
     var recipeTitle: String = ""
     
-    @Published
     var difficulty: String = ""
     
-    @Published
     var serving: String = ""
     
-    @Published
     var prepTimeHours: String = ""
     
-    @Published
     var prepTimeMinutes: String = ""
     
-    @Published
     var spicy: String = ""
     
-    @Published
     var category: String = ""
     
-    @Published
     var ingredientsList: [IngredientModel] = [] {
         didSet {
             reloadIngredientsTable()
         }
     }
     
-    @Published
     var ingredientName: String = ""
     
-    @Published
     var ingredientValue: String = ""
     
-    @Published
     var ingredientValueType: String = ""
     
-    @Published
     var instructionList: [InstructionModel] = [] {
         didSet {
             reloadInstructionTable()
         }
     }
     
-    @Published
     var instruction: String = ""
     
-    @Published
     var isFavourite: Bool = false
     
     /// Error handling
-    @Published
     var recipeTitleIsError: Bool = false
     
-    @Published
     var difficultyIsError: Bool = false
     
-    @Published
     var servingIsError: Bool = false
     
-    @Published
     var prepTimeIsError: Bool = false
     
-    @Published
     var spicyIsError: Bool = false
     
-    @Published
     var categoryIsError: Bool = false
     
-    @Published
     var ingredientNameIsError: Bool = false
     
-    @Published
     var ingredientValueIsError: Bool = false
     
-    @Published
     var ingredientValueTypeIsError: Bool = false
     
-    @Published
     var ingredientListIsError: Bool = false
     
-    @Published
     var instructionIsError: Bool = false
     
-    @Published
     var instructionListIsError: Bool = false
     
-    @Published
     var validationErrors: [ValidateRecipeErrors] = []
 
     // MARK: - Properties
@@ -243,12 +214,12 @@ final class AddRecipeViewModel {
     /// Delete methods:
     
     func removeIngredientFromList(at index: Int) {
-        guard index >= 0 && index < ingredientsList.count else { return }
+        guard index >= 0, index < ingredientsList.count else { return }
         ingredientsList.remove(at: index)
     }
 
     func removeInstructionFromList(at index: Int) {
-        guard index >= 0 && index < instructionList.count else { return }
+        guard index >= 0, index < instructionList.count else { return }
         instructionList.remove(at: index)
     }
     
@@ -292,6 +263,8 @@ final class AddRecipeViewModel {
         ingredientsList = recipe.ingredientList
         instructionList = recipe.instructionList
         isFavourite = recipe.isFavourite
+        
+        instructionList.sort { $0.index < $1.index }
         
         if recipe.isImageSaved {
             let imageUrl = localFileManager.imageUrl(for: recipe.id.uuidString)
@@ -392,7 +365,7 @@ final class AddRecipeViewModel {
     }
     
     private func validatePerpTime() {
-        if prepTimeHours.isEmpty && prepTimeMinutes.isEmpty {
+        if prepTimeHours.isEmpty, prepTimeMinutes.isEmpty {
             recipeTitleIsError = true
             validationErrors.append(.prepTime)
             delegateDetailsError(.prepTime)

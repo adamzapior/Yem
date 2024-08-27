@@ -101,6 +101,8 @@ final class InstructionCell: UITableViewCell {
         deleteIcon.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(18)
             make.trailing.equalToSuperview().offset(-18)
+            make.height.equalTo(18.VAdapted)
+            make.width.equalTo(22.HAdapted)
         }
         
         indexLabel.snp.makeConstraints { make in

@@ -129,8 +129,8 @@ final class RecipeCell: UICollectionViewCell {
     private func setupUI() {
         /// ContainerView
         addSubview(containerView)
-        addSubview(titleLabel)
         containerView.addSubview(recipeImage)
+        containerView.addSubview(titleLabel)
         
         containerView.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(6)
@@ -147,7 +147,7 @@ final class RecipeCell: UICollectionViewCell {
         }
         
         /// Cooking info details:
-        addSubview(cookingInfoContainerView)
+        containerView.addSubview(cookingInfoContainerView)
         cookingInfoContainerView.addSubview(perpTimeLabel)
         cookingInfoContainerView.addSubview(spicyIcon)
         
@@ -156,27 +156,29 @@ final class RecipeCell: UICollectionViewCell {
             make.trailing.equalTo(containerView.snp.trailing).offset(-6)
             make.bottom.equalTo(containerView.snp.bottom).offset(-4)
             make.height.greaterThanOrEqualTo(40)
+            make.top.greaterThanOrEqualTo(titleLabel.snp.bottom).offset(8)
+            
+            spicyIcon.snp.makeConstraints { make in
+                make.top.equalTo(cookingInfoContainerView.snp.top).offset(6)
+                make.leading.equalTo(cookingInfoContainerView.snp.leading).offset(9)
+                make.height.width.equalTo(24)
+                make.bottom.lessThanOrEqualTo(cookingInfoContainerView.snp.bottom).offset(-6)
+            }
+            
+            perpTimeLabel.snp.makeConstraints { make in
+                make.top.equalTo(cookingInfoContainerView.snp.top).offset(6)
+                make.leading.equalTo(spicyIcon.snp.trailing).offset(6)
+                make.bottom.equalTo(cookingInfoContainerView.snp.bottom).offset(-6)
+                make.trailing.equalTo(cookingInfoContainerView.snp.trailing).offset(-2)
+            }
+            
+            cookingInfoContainerView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+            cookingInfoContainerView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+            
+            perpTimeLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+            perpTimeLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         }
         
-        spicyIcon.snp.makeConstraints { make in
-            make.top.equalTo(cookingInfoContainerView.snp.top).offset(6)
-            make.leading.equalTo(cookingInfoContainerView.snp.leading).offset(9)
-            make.height.width.equalTo(24)
-            make.bottom.lessThanOrEqualTo(cookingInfoContainerView.snp.bottom).offset(-6)
-        }
         
-        perpTimeLabel.snp.makeConstraints { make in
-            make.top.equalTo(cookingInfoContainerView.snp.top).offset(6)
-            make.leading.equalTo(spicyIcon.snp.trailing).offset(6)
-            make.bottom.equalTo(cookingInfoContainerView.snp.bottom).offset(-6)
-            make.trailing.equalTo(cookingInfoContainerView.snp.trailing).offset(-2)
-        }
-
-        cookingInfoContainerView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        cookingInfoContainerView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
-
-        perpTimeLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        perpTimeLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
     }
-
 }

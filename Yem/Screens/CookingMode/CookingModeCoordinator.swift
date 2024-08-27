@@ -22,20 +22,6 @@ final class CookingModeCoordinator: Destination {
 
         UIApplication.shared.isIdleTimerDisabled = true
 
-//        NotificationCenter.default.addObserver(
-//            self,
-//            selector: #selector(appDidEnterBackground),
-//            name: UIApplication.didEnterBackgroundNotification,
-//            object: nil
-//        )
-//
-//        NotificationCenter.default.addObserver(
-//            self,
-//            selector: #selector(appWillEnterForeground),
-//            name: UIApplication.willEnterForegroundNotification,
-//            object: nil
-//        )
-
 #if DEBUG
         trackLifetime()
 #endif
@@ -43,8 +29,6 @@ final class CookingModeCoordinator: Destination {
 
     deinit {
         UIApplication.shared.isIdleTimerDisabled = false
-
-//        NotificationCenter.default.removeObserver(self)
     }
 
     override func render() -> UIViewController {
@@ -111,18 +95,6 @@ final class CookingModeCoordinator: Destination {
         alertVC.modalTransitionStyle = .crossDissolve
         navigator?.presentAlert(alertVC)
     }
-
-//    // MARK: - App Lifecycle Handlers
-//
-//    @objc private func appDidEnterBackground() {
-//        // Kod do wykonania, gdy aplikacja wchodzi w tło
-//        viewModel.saveTimerState() // Możesz zapisać stan aplikacji
-//    }
-//
-//    @objc private func appWillEnterForeground() {
-//        // Kod do wykonania, gdy aplikacja wraca na pierwszy plan
-//        viewModel.restoreTimerState() // Możesz przywrócić stan aplikacji
-//    }
 }
 
 #if DEBUG

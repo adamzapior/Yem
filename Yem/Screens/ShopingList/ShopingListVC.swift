@@ -15,8 +15,22 @@ final class ShopingListVC: UIViewController {
     private let tableView = UITableView()
     private let emptyTableLabel = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
 
-    private lazy var addNavItem = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .plain, target: self, action: #selector(addItemButtonTapped))
-    private lazy var trashNavItem = UIBarButtonItem(image: UIImage(systemName: "trash"), style: .plain, target: self, action: #selector(trashButtonTapped))
+    private lazy var addNavItem = UIBarButtonItem(
+        image: UIImage(
+            systemName: "plus"
+        ),
+        style: .plain,
+        target: self,
+        action: #selector(addItemButtonTapped)
+    )
+    private lazy var trashNavItem = UIBarButtonItem(
+        image: UIImage(
+            systemName: "trash"
+        ),
+        style: .plain,
+        target: self,
+        action: #selector(trashButtonTapped)
+    )
 
     init(coordinator: ShopingListCoordinator, viewModel: ShopingListVM) {
         self.coordinator = coordinator

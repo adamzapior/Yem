@@ -74,3 +74,9 @@ extension RecipeModel {
         return Array(0...59)
     }
 }
+
+extension RecipeModel {
+    mutating func sortInstructionsByIndex() {
+        instructionList.sort { $0.index < $1.index }
+    }
+}

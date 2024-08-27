@@ -116,7 +116,6 @@ final class RecipesListVM {
             if let recipesForCategory = groupedRecipes[category], !recipesForCategory.isEmpty {
                 let section = Section(title: category, items: recipesForCategory)
                 sections.append(section)
-                print(section.title)
             }
         }
     }

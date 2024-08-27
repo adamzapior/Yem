@@ -122,19 +122,18 @@ class CookingModeViewController: UIViewController {
         view.backgroundColor = .systemBackground
         viewModel.delegate = self
 
-        coordinator?.navigator?.navigationController.interactivePopGestureRecognizer?.isEnabled = false
+        recipe.sortInstructionsByIndex()
 
         setupNavigationBarButtons()
-
         setupStepsLabel()
         setupTimerLabel()
         setupPageViewController()
         setupPageControl()
-
         setupArrowButtons() // Setup arrow buttons
         updateArrowButtonsVisibility() // Initial visibility update
-
         updateStepsLabel()
+
+        coordinator?.navigator?.navigationController.interactivePopGestureRecognizer?.isEnabled = false
     }
 
     // MARK: - UI Setup

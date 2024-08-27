@@ -87,6 +87,7 @@ final class AddIngredientSheetVC: UIViewController {
         setupTag()
         setupDelegate()
         setupDataSource()
+        configureKeyboardType() 
         
         let contentHeight = calculateContentHeight()
         let customDetentId = UISheetPresentationController.Detent.Identifier("customDetent")

@@ -110,6 +110,7 @@ final class IngredientsCell: UITableViewCell {
         ingredientNameLabel.snp.makeConstraints { make in
             make.top.equalTo(valueLabel.snp.bottom).offset(8)
             make.leading.equalTo(content.snp.leading).offset(24)
+            make.trailing.equalTo(trashIcon.snp.leading).offset(-12)
             make.bottom.equalToSuperview().inset(12)
             make.width.greaterThanOrEqualTo(36)
         }
@@ -117,7 +118,8 @@ final class IngredientsCell: UITableViewCell {
         trashIcon.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-12)
             make.centerY.equalToSuperview()
-
+            make.height.equalTo(18.VAdapted)
+            make.width.equalTo(22.HAdapted)
         }
     }
     

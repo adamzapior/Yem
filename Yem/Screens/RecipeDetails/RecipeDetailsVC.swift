@@ -246,12 +246,13 @@ final class RecipeDetailsVC: UIViewController {
             make.top.equalTo(categoryView.snp.bottom).offset(12)
             make.leading.equalTo(detailsContainer.snp.leading)
             make.width.equalTo(detailsContainer.snp.width).multipliedBy(0.5).offset(-4)
+            make.height.equalTo(prepTiemView.snp.height)
         }
       
         prepTiemView.snp.makeConstraints { make in
             make.top.equalTo(categoryView.snp.bottom).offset(12)
             make.trailing.equalTo(detailsContainer.snp.trailing)
-            make.width.equalTo(servingView.snp.width)
+            make.width.equalTo(difficultyView.snp.width)
         }
         
         spicyView.snp.makeConstraints { make in
@@ -301,11 +302,12 @@ final class RecipeDetailsVC: UIViewController {
         let ingredientsStackView = UIStackView()
         ingredientsStackView.axis = .vertical
         ingredientsStackView.spacing = 8
+
         ingredientsStackView.alignment = .fill
         ingredientsStackView.distribution = .fill
 
         ingredientsContainer.addSubview(ingredientsStackView)
-
+        
         ingredientsStackView.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview().inset(18)
             make.leading.equalToSuperview().offset(12)
