@@ -30,12 +30,12 @@ final class CoreDataManager: CoreDataManagerProtocol {
     init(persistentContainer: NSPersistentContainer) {
         self.persistentContainer = persistentContainer
         self.context = persistentContainer.viewContext
-        
+
 #if DEBUG
         trackLifetime()
 #endif
     }
-    
+
     // MARK: - Operations on current context
 
     func saveContext() {
@@ -49,8 +49,9 @@ final class CoreDataManager: CoreDataManagerProtocol {
     }
 
     func beginTransaction() {
-        context.undoManager = UndoManager()
-        context.undoManager?.beginUndoGrouping()
+        let undoManager = UndoManager()
+        context.undoManager = undoManager
+        undoManager.beginUndoGrouping()
     }
 
     func endTransaction() {
@@ -109,15 +110,18 @@ final class CoreDataManager: CoreDataManagerProtocol {
         guard let userInfo = notification.userInfo else { return nil }
 
         if let inserts = userInfo[NSInsertedObjectsKey] as? Set<NSManagedObject>,
-           let insertedObject = inserts.first(where: { $0 is T }) {
+           let insertedObject = inserts.first(where: { $0 is T })
+        {
             return .inserted(insertedObject)
         }
         if let deletes = userInfo[NSDeletedObjectsKey] as? Set<NSManagedObject>,
-           let deletedObject = deletes.first(where: { $0 is T }) {
+           let deletedObject = deletes.first(where: { $0 is T })
+        {
             return .deleted(deletedObject)
         }
         if let updates = userInfo[NSUpdatedObjectsKey] as? Set<NSManagedObject>,
-           let updatedObject = updates.first(where: { $0 is T }) {
+           let updatedObject = updates.first(where: { $0 is T })
+        {
             return .updated(updatedObject)
         }
 
