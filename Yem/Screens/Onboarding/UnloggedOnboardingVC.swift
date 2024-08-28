@@ -66,6 +66,7 @@ final class UnloggedOnboardingVC: UIViewController {
         view.backgroundColor = .systemBackground
         setupUI()
         setupDelegateAndDataSource()
+        setupVoiceOverAccessibility()
         
         loginButton.delegate = self
         registerButton.delegate = self
@@ -127,6 +128,16 @@ final class UnloggedOnboardingVC: UIViewController {
         
         loginButton.tag = 1
         registerButton.tag = 2
+    }
+    
+    private func setupVoiceOverAccessibility() {
+        loginButton.isAccessibilityElement = true
+        loginButton.accessibilityLabel = "Login button"
+        loginButton.accessibilityHint = "Click this button and go to login screen"
+        
+        registerButton.isAccessibilityElement = true
+        registerButton.accessibilityLabel = "Register password button"
+        registerButton.accessibilityHint = "Click this button and go to register screen"
     }
 }
 

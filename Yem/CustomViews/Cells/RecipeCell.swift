@@ -43,6 +43,7 @@ final class RecipeCell: UICollectionViewCell {
         fontWeight: .semibold,
         textColor: .ui.primaryText
     )
+    
     private var perpTimeLabel = TextLabel(
         fontStyle: .footnote,
         fontWeight: .regular,
@@ -86,19 +87,7 @@ final class RecipeCell: UICollectionViewCell {
         
         titleLabel.text = model.name
 
-        var hours = ""
-        var minutes = ""
-        
-        if model.perpTimeHours != "0", model.perpTimeHours != "1", model.perpTimeHours != "" {
-            hours = "\(model.perpTimeHours) hours"
-        } else if model.perpTimeHours == "1" {
-            hours = "\(model.perpTimeHours) hour"
-        }
-
-        if model.perpTimeMinutes != "0", model.perpTimeMinutes != "" {
-            minutes = "\(model.perpTimeMinutes) min"
-        }
-        perpTimeLabel.text = "\(hours) \(minutes)".trimmingCharacters(in: .whitespaces)
+        perpTimeLabel.text = model.getPerpTimeString()
         
         switch model.spicy {
         case .mild:
@@ -178,7 +167,5 @@ final class RecipeCell: UICollectionViewCell {
             perpTimeLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
             perpTimeLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         }
-        
-        
     }
 }

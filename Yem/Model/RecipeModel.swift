@@ -29,7 +29,7 @@ enum RecipeSpicy: String, CaseIterable {
     case veryHot = "Very hot"
 
     var displayName: String {
-        return self.rawValue
+        return rawValue
     }
 }
 
@@ -47,7 +47,7 @@ enum RecipeCategory: String, CaseIterable {
     case notSelected = "Not selected"
 
     var displayName: String {
-        return self.rawValue
+        return rawValue
     }
 }
 
@@ -57,7 +57,7 @@ enum RecipeDifficulty: String, CaseIterable {
     case hot = "Hard"
 
     var displayName: String {
-        return self.rawValue
+        return rawValue
     }
 }
 
@@ -78,5 +78,26 @@ extension RecipeModel {
 extension RecipeModel {
     mutating func sortInstructionsByIndex() {
         instructionList.sort { $0.index < $1.index }
+    }
+}
+
+extension RecipeModel {
+    func getPerpTimeString() -> String {
+        var perpTimeString = ""
+        var hours = ""
+        var minutes = ""
+
+        if perpTimeHours != "0", perpTimeHours != "1", perpTimeHours != "" {
+            hours = "\(perpTimeHours) hours"
+        } else if perpTimeHours == "1" {
+            hours = "\(perpTimeHours) hour"
+        }
+
+        if perpTimeMinutes != "0", perpTimeMinutes != "" {
+            minutes = "\(perpTimeMinutes) min"
+        }
+
+        perpTimeString = "\(hours) \(minutes)".trimmingCharacters(in: .whitespaces)
+        return perpTimeString
     }
 }

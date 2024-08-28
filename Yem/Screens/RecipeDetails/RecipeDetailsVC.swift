@@ -38,18 +38,14 @@ final class RecipeDetailsVC: UIViewController {
     private let instructionsSubtitleLabel = UILabel()
     private let instructionsContainer = UIView()
 
-    private var bookmarkIconString: String
-    private let bookmarkIconFilled: String = "bookmark.fill"
-    private let bookmarkIconEmpty: String = "bookmark"
-    
-    lazy var cookNavItem = UIBarButtonItem(
+    private lazy var cookNavItem = UIBarButtonItem(
         image: UIImage(systemName: "play"),
         style: .plain,
         target: self,
         action: #selector(playButtonTapped)
     )
         
-    lazy var basketNavItem = UIBarButtonItem(
+    private lazy var basketNavItem = UIBarButtonItem(
         image: UIImage(
             systemName: "basket"
         ),
@@ -58,7 +54,7 @@ final class RecipeDetailsVC: UIViewController {
         action: #selector(basketButtonTapped)
     )
     
-    lazy var bookmarkNavItem = UIBarButtonItem(
+    private lazy var bookmarkNavItem = UIBarButtonItem(
         image: UIImage(
             systemName: "\(bookmarkIconString)"
         ),
@@ -67,7 +63,7 @@ final class RecipeDetailsVC: UIViewController {
         action: #selector(bookmarkButtonTapped)
     )
 
-    lazy var pencilNavItem = UIBarButtonItem(
+    private lazy var pencilNavItem = UIBarButtonItem(
         image: UIImage(
             systemName: "pencil"
         ),
@@ -76,14 +72,15 @@ final class RecipeDetailsVC: UIViewController {
         action: #selector(pencilButtonTapped)
     )
 
-    lazy var trashNavItem = UIBarButtonItem(
+    // TODO: FIX!!!
+    private lazy var trashNavItem = UIBarButtonItem(
         image: UIImage(systemName: "trash"),
         style: .plain,
         target: self,
         action: #selector(trashButtonTapped)
     )
     
-    lazy var moreNavItem: UIBarButtonItem = {
+    private lazy var moreNavItem: UIBarButtonItem = {
         let editAction = UIAction(
             title: "Edit",
             image: UIImage(systemName: "pencil")
@@ -104,6 +101,10 @@ final class RecipeDetailsVC: UIViewController {
         let button = UIBarButtonItem(image: UIImage(systemName: "ellipsis"), menu: menu)
         return button
     }()
+    
+    private var bookmarkIconString: String
+    private let bookmarkIconFilled: String = "bookmark.fill"
+    private let bookmarkIconEmpty: String = "bookmark"
     
     // MARK: - Lifecycle
 
@@ -154,6 +155,8 @@ final class RecipeDetailsVC: UIViewController {
         setupInstructionsContainer()
         
         configureRecipeViewData()
+        
+        setupVoiceOverAccessibility()
     }
 
     // MARK: - UI Setup
@@ -320,10 +323,45 @@ final class RecipeDetailsVC: UIViewController {
                 name: ingredient.name.lowercased(),
                 value: "\(ingredient.value) \(ingredient.valueType.lowercased())"
             )
+            
+            ingredientView.isAccessibilityElement = true
+            ingredientView.accessibilityValue = "\(ingredient.value) \(ingredient.valueType) \(ingredient.name)"
 
             ingredientsStackView.addArrangedSubview(ingredientView)
         }
     }
+    
+//    private func setupIngredientsContainer() {
+//        contentView.addSubview(ingredientsContainer)
+//
+//        ingredientsContainer.snp.makeConstraints { make in
+//            make.top.equalTo(ingredientsSubtitleLabel.snp.bottom).offset(6)
+//            make.leading.trailing.equalToSuperview().inset(18)
+//            make.height.greaterThanOrEqualTo(64)
+//        }
+//
+//        let ingredientsStackView = UIStackView()
+//        ingredientsStackView.axis = .vertical
+//        ingredientsStackView.spacing = 12
+//        ingredientsStackView.alignment = .fill
+//        ingredientsStackView.distribution = .fill
+//
+//        ingredientsContainer.addSubview(ingredientsStackView)
+//
+//        ingredientsStackView.snp.makeConstraints { make in
+//            make.edges.equalToSuperview()
+//        }
+//
+//        for ingredient in recipe.ingredientList {
+//            let ingredientView = DetailsView()
+//            ingredientView.configure(
+//                titleText: "\(ingredient.value) \(ingredient.valueType.lowercased())",
+//                valueText: ingredient.name.lowercased()
+//            )
+//
+//            ingredientsStackView.addArrangedSubview(ingredientView)
+//        }
+//    }
     
     private func setupInstructionsSubtitleLabel() {
         contentView.addSubview(instructionsSubtitleLabel)
@@ -369,6 +407,10 @@ final class RecipeDetailsVC: UIViewController {
                 valueText: instruction.text
             )
 
+            instructionView.isAccessibilityElement = true
+            instructionView.accessibilityLabel = "This is \(instruction.index) step."
+            instructionView.accessibilityValue = "\(instruction.text)"
+
             instructionsStackView.addArrangedSubview(instructionView)
         }
     }
@@ -399,6 +441,65 @@ final class RecipeDetailsVC: UIViewController {
             titleText: "Difficulty",
             valueText: recipe.difficulty.rawValue
         )
+    }
+    
+    private func setupVoiceOverAccessibility() {
+        // Navigation bar items:
+        cookNavItem.isAccessibilityElement = true
+        cookNavItem.accessibilityLabel = "Cooking mode button"
+        cookNavItem.accessibilityHint = "Open cooking mode screen"
+        
+        basketNavItem.isAccessibilityElement = true
+        basketNavItem.accessibilityLabel = "Shoping cart button"
+        basketNavItem.accessibilityHint = "Add ingredients to shoping list"
+        
+        bookmarkNavItem.isAccessibilityElement = true
+        bookmarkNavItem.accessibilityLabel = "Bookmark button"
+        bookmarkNavItem.accessibilityHint = "Add recipe to favourites"
+
+        moreNavItem.isAccessibilityElement = true
+        moreNavItem.accessibilityLabel = "Menu button"
+        moreNavItem.accessibilityHint = "Open more recipe navigation buttons"
+        
+        // View:
+        
+        photoView.isAccessibilityElement = true
+        photoView.accessibilityLabel = "Recipe image"
+        
+        detailsSubtitleLabel.isAccessibilityElement = true
+        detailsSubtitleLabel.accessibilityLabel = "Recipe details"
+        
+        nameView.isAccessibilityElement = true
+        nameView.accessibilityLabel = "Recipe name"
+        nameView.accessibilityValue = recipe.name
+        
+        categoryView.isAccessibilityElement = true
+        categoryView.accessibilityLabel = "Recipe category"
+        categoryView.accessibilityValue = recipe.category.displayName
+
+        servingView.isAccessibilityElement = true
+        servingView.accessibilityLabel = "Recipe serving count"
+        servingView.accessibilityValue = recipe.serving
+        
+        prepTiemView.isAccessibilityElement = true
+        prepTiemView.accessibilityLabel = "Recipe perp time"
+        prepTiemView.accessibilityValue = recipe.getPerpTimeString()
+        
+        spicyView.isAccessibilityElement = true
+        spicyView.accessibilityLabel = "Recipe spicy level"
+        spicyView.accessibilityValue = recipe.spicy.displayName
+        
+        difficultyView.isAccessibilityElement = true
+        difficultyView.accessibilityLabel = "Recipe difficulty level"
+        difficultyView.accessibilityValue = recipe.difficulty.displayName
+        
+        ingredientsSubtitleLabel.isAccessibilityElement = true
+        ingredientsSubtitleLabel.accessibilityLabel = "Recipe ingredients"
+        ingredientsSubtitleLabel.accessibilityHint = "Listed below are all the ingredients needed for this recipe"
+        
+        instructionsSubtitleLabel.isAccessibilityElement = true
+        instructionsSubtitleLabel.accessibilityLabel = "Recipe details"
+        instructionsSubtitleLabel.accessibilityHint = "Listed below are all the steps you need to follow to cook this recipe"
     }
 }
 

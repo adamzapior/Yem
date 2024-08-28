@@ -13,18 +13,36 @@ final class RecipesListVC: UIViewController {
     weak var coordinator: RecipesListCoordinator?
     let viewModel: RecipesListVM
 
+    private lazy var settingsNavItem = UIBarButtonItem(
+        image: UIImage(
+            systemName: "gearshape"
+        ),
+        style: .plain,
+        target: self,
+        action: #selector(settingsButtonTapped)
+    )
+    private lazy var addRecipeNavItem = UIBarButtonItem(
+        image: UIImage(
+            systemName: "plus"
+        ),
+        style: .plain,
+        target: self,
+        action: #selector(addRecipeButtonTapped)
+    )
+
     private let emptyTableLabel = TextLabel(
         fontStyle: .body,
         fontWeight: .regular,
         textColor: .ui.secondaryText
     )
-    private var collectionView: UICollectionView!
 
-    lazy var searchResultVC = RecipesSearchResultsVC(
+    private lazy var collectionView = UICollectionView()
+    private lazy var searchController = UISearchController()
+
+    private lazy var searchResultVC = RecipesSearchResultsVC(
         coordinator: coordinator!,
         viewModel: viewModel
     )
-    private var searchController: UISearchController!
 
     // MARK: - Lifecycle
 
@@ -53,6 +71,8 @@ final class RecipesListVC: UIViewController {
         setupSearchController()
         setupCollectionView()
         setupEmptyTableLabel()
+
+        setupVoiceOverAccessibility()
 
         Task {
             viewModel.loadRecipes()
@@ -148,10 +168,30 @@ final class RecipesListVC: UIViewController {
     private func setupEmptyTableLabel() {
         view.addSubview(emptyTableLabel)
         emptyTableLabel.text = "Your recipes list is empty"
+        emptyTableLabel.numberOfLines = 0
 
         emptyTableLabel.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(18)
             make.centerX.equalToSuperview()
             make.centerY.equalToSuperview()
+        }
+    }
+
+    /// method for setting custom voice over commands without elements from CollectionView
+    private func setupVoiceOverAccessibility() {
+        settingsNavItem.isAccessibilityElement = true
+        settingsNavItem.accessibilityLabel = "Settings button"
+        settingsNavItem.accessibilityHint = "Open settings screen"
+
+        addRecipeNavItem.isAccessibilityElement = true
+        addRecipeNavItem.accessibilityLabel = "Add recipe button"
+        addRecipeNavItem.accessibilityHint = "Open add recipe screen"
+
+        emptyTableLabel.isAccessibilityElement = true
+
+        if emptyTableLabel.isHidden == false {
+            emptyTableLabel.accessibilityLabel = emptyTableLabel.text
+            emptyTableLabel.accessibilityHint = "Add recipes to see them in the list"
         }
     }
 }
@@ -188,6 +228,10 @@ extension RecipesListVC: UICollectionViewDelegate, UICollectionViewDataSource, U
             imageFetcherManager: viewModel.imageFetcherManager
         )
 
+        cell.isAccessibilityElement = true
+        cell.accessibilityLabel = "Recipe from \(section.title.displayName) category"
+        cell.accessibilityValue = "\(recipe.name) with perp time \(recipe.getPerpTimeString()) and \(recipe.spicy.displayName) spicy level"
+
         return cell
     }
 
@@ -209,6 +253,10 @@ extension RecipesListVC: UICollectionViewDelegate, UICollectionViewDataSource, U
             let sectionTitle = section.title
 
             headerView.configure(title: sectionTitle.rawValue)
+
+            headerView.isAccessibilityElement = true
+            headerView.accessibilityLabel = "\(sectionTitle.rawValue) section"
+            headerView.accessibilityValue = "Contains \(section.items.count) recipes"
 
             return headerView
         }
@@ -258,10 +306,8 @@ extension RecipesListVC {
     func setupNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = false
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "gearshape"), style: .done, target: self, action: #selector(settingsButtonTapped))
-        navigationItem.leftBarButtonItem?.tintColor = .ui.theme
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addRecipeButtonTapped))
-        navigationItem.rightBarButtonItem?.tintColor = .ui.theme
+        navigationItem.setLeftBarButton(settingsNavItem, animated: true)
+        navigationItem.setRightBarButton(addRecipeNavItem, animated: true)
     }
 
     @objc func addRecipeButtonTapped() {

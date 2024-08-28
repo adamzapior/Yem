@@ -14,10 +14,8 @@ import AVFoundation
 import Photos
 
 final class AddRecipeVC: UIViewController {
-    
     weak var coordinator: AddRecipeCoordinator?
     let viewModel: AddRecipeViewModel
-    
     
     private let scrollView = UIScrollView()
     private let contentView = UIView()
@@ -41,12 +39,12 @@ final class AddRecipeVC: UIViewController {
    
     private var nameTextfield = TextfieldWithIcon(
         iconImage: "info.square",
-        placeholderText: "Enter your recipe name*",
+        placeholderText: "Enter recipe name*",
         textColor: .ui.secondaryText
     )
     private var difficultyPicker = AddPicker(
         iconImage: "puzzlepiece.extension",
-        textOnButton: "Select difficulty*"
+        textOnButton: "Select difficulty level*"
     )
     private var servingPicker = AddPicker(
         iconImage: "person",
@@ -58,18 +56,12 @@ final class AddRecipeVC: UIViewController {
     )
     private var spicyPicker = AddPicker(
         iconImage: "leaf",
-        textOnButton: "Select spicy*"
+        textOnButton: "Select spicy level*"
     )
     private var categoryPicker = AddPicker(
         iconImage: "book",
-        textOnButton: "Select category*"
+        textOnButton: "Select recipe category*"
     )
-    
-    private lazy var difficultyPickerView = UIPickerView()
-    private lazy var servingsPickerView = UIPickerView()
-    private lazy var prepTimePickerView = UIPickerView()
-    private lazy var spicyPickerView = UIPickerView()
-    private lazy var categoryPickerView = UIPickerView()
     
     private let recipeDataStack: UIStackView = {
         let sv = UIStackView()
@@ -79,6 +71,14 @@ final class AddRecipeVC: UIViewController {
         return sv
     }()
     
+    private lazy var difficultyPickerView = UIPickerView()
+    private lazy var servingsPickerView = UIPickerView()
+    private lazy var prepTimePickerView = UIPickerView()
+    private lazy var spicyPickerView = UIPickerView()
+    private lazy var categoryPickerView = UIPickerView()
+    
+    private var cancellables: Set<AnyCancellable> = []
+
     // MARK: - Lifecycle
     
     init(coordinator: AddRecipeCoordinator, viewModel: AddRecipeViewModel) {
@@ -118,6 +118,8 @@ final class AddRecipeVC: UIViewController {
         setupTag()
         setupDelegate()
         setupDataSource()
+        
+        setupVoiceOverAccessibility()
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
@@ -203,6 +205,110 @@ final class AddRecipeVC: UIViewController {
         prepTimePicker.animateFadeIn()
         spicyPicker.animateFadeIn()
         categoryPicker.animateFadeIn()
+    }
+    
+    private func setupVoiceOverAccessibility() {
+        addPhotoView.isAccessibilityElement = true
+        addPhotoView.accessibilityLabel = "Photo view"
+        addPhotoView.accessibilityHint = "Click to add photo of your recipe"
+        
+        nameTextfield.isAccessibilityElement = true
+        nameTextfield.accessibilityLabel = "Name textfield"
+        nameTextfield.accessibilityHint = "Enter recipe name"
+        
+        viewModel.$recipeTitle
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newValue in
+                self?.nameTextfield.accessibilityValue = newValue
+                if !newValue.isEmpty {
+                    self?.nameTextfield.accessibilityHint = ""
+                } else {
+                    self?.nameTextfield.accessibilityHint = "Enter recipe name"
+                }
+            }
+            .store(in: &cancellables)
+        
+        difficultyPicker.isAccessibilityElement = true
+        difficultyPicker.accessibilityLabel = "Difficulty picker"
+        difficultyPicker.accessibilityHint = "Select difficulty level"
+        
+        viewModel.$difficulty
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newValue in
+                self?.difficultyPicker.accessibilityValue = newValue
+                if !newValue.isEmpty {
+                    self?.difficultyPicker.accessibilityHint = ""
+                } else {
+                    self?.difficultyPicker.accessibilityHint = "Select difficulty level"
+                }
+            }
+            .store(in: &cancellables)
+
+        servingPicker.isAccessibilityElement = true
+        servingPicker.accessibilityLabel = "Serving picker"
+        servingPicker.accessibilityHint = "Select serving"
+        
+        viewModel.$serving
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newValue in
+                self?.servingPicker.accessibilityValue = newValue
+                if !newValue.isEmpty {
+                    self?.servingPicker.accessibilityHint = ""
+                } else {
+                    self?.servingPicker.accessibilityHint = "Select serving"
+                }
+            }
+            .store(in: &cancellables)
+
+        prepTimePicker.isAccessibilityElement = true
+        prepTimePicker.accessibilityLabel = "Prep time picker"
+        prepTimePicker.accessibilityHint = "Enter preparation time"
+        
+        Publishers.CombineLatest(viewModel.$prepTimeHours, viewModel.$prepTimeMinutes)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] hours, minutes in
+                let combinedValue = "\(hours) hours and \(minutes) minutes"
+                self?.prepTimePicker.accessibilityValue = combinedValue
+
+                if !hours.isEmpty || !minutes.isEmpty {
+                    self?.prepTimePicker.accessibilityHint = ""
+                } else {
+                    self?.prepTimePicker.accessibilityHint = "Enter preparation time"
+                }
+            }
+            .store(in: &cancellables)
+
+        spicyPicker.isAccessibilityElement = true
+        spicyPicker.accessibilityLabel = "Spicy picker"
+        spicyPicker.accessibilityHint = "Select spicy level"
+        
+        viewModel.$spicy
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newValue in
+                self?.spicyPicker.accessibilityValue = newValue
+                if !newValue.isEmpty {
+                    self?.spicyPicker.accessibilityHint = ""
+                } else {
+                    self?.spicyPicker.accessibilityHint = "Select spicy level"
+                }
+            }
+            .store(in: &cancellables)
+
+        categoryPicker.isAccessibilityElement = true
+        categoryPicker.accessibilityLabel = "Category picker"
+        categoryPicker.accessibilityHint = "Select recipe category"
+        
+        viewModel.$category
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newValue in
+                self?.categoryPicker.accessibilityValue = newValue
+                if !newValue.isEmpty {
+                    self?.categoryPicker.accessibilityHint = ""
+                } else {
+                    self?.categoryPicker.accessibilityHint = "Select recipe category"
+                }
+            }
+            .store(in: &cancellables)
     }
     
     @objc private func dismissKeyboard() {
@@ -363,15 +469,15 @@ extension AddRecipeVC: TextfieldWithIconDelegate, AddPickerDelegate {
     func pickerTapped(item: AddPicker) {
         switch item.tag {
         case 1:
-            popUpPicker(for: difficultyPickerView, title: "Select difficulty")
+            popUpPicker(for: difficultyPickerView, title: "Select difficulty level")
         case 2:
             popUpPicker(for: servingsPickerView, title: "Select servings count")
         case 3:
-            popUpPicker(for: prepTimePickerView, title: "Select time perp")
+            popUpPicker(for: prepTimePickerView, title: "Select time prep")
         case 4:
-            popUpPicker(for: spicyPickerView, title: "Select spicy")
+            popUpPicker(for: spicyPickerView, title: "Select spicy level")
         case 5:
-            popUpPicker(for: categoryPickerView, title: "Select category")
+            popUpPicker(for: categoryPickerView, title: "Select recipe category")
         default:
             break
         }

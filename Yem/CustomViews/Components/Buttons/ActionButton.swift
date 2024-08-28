@@ -22,6 +22,12 @@ final class ActionButton: UIButton {
         
         self.addTarget(self, action: #selector(self.buttonTapped), for: .touchUpInside)
     }
+    
+    override var intrinsicContentSize: CGSize {
+        let size = super.intrinsicContentSize
+        let height = max(size.height, 42.VAdapted) // Minimum height
+        return CGSize(width: size.width, height: height)
+    }
 
     @available(*, unavailable)
     required init?(coder: NSCoder) {
@@ -39,6 +45,7 @@ final class ActionButton: UIButton {
             self.layer.shadowOffset = CGSize(width: 1, height: 1)
             self.layer.shadowOpacity = 0.3
             self.layer.shadowColor = UIColor.ui.theme.cgColor
+            self.layer.shadowPath = UIBezierPath(rect: self.bounds).cgPath
         }
     }
     
@@ -46,11 +53,11 @@ final class ActionButton: UIButton {
 
     private func setupUI() {
         self.layer.cornerRadius = 20
-        self.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
+        self.titleLabel?.font = UIFont.preferredFont(forTextStyle: .body)
         
-        self.snp.makeConstraints { make in
-            make.height.equalTo(54.HAdapted)
-        }
+//        self.snp.makeConstraints { make in
+//            make.height.equalTo(54.HAdapted)
+//        }
     }
         
     @objc private func buttonTapped() {

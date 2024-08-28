@@ -57,6 +57,8 @@ final class ShopingListVC: UIViewController {
         setupTableView()
         setupEmptyTableLabel()
 
+        setupVoiceOverAccessibility()
+
         Task {
             viewModel.loadShopingList()
         }
@@ -83,11 +85,24 @@ final class ShopingListVC: UIViewController {
     private func setupEmptyTableLabel() {
         view.addSubview(emptyTableLabel)
         emptyTableLabel.text = "Your shopping list is empty"
+        emptyTableLabel.numberOfLines = 0
 
         emptyTableLabel.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(18)
             make.centerX.equalToSuperview()
             make.centerY.equalToSuperview()
         }
+    }
+
+    /// method for setting custom voice over commands without elements from TableView
+    private func setupVoiceOverAccessibility() {
+        addNavItem.isAccessibilityElement = true
+        addNavItem.accessibilityLabel = "Add button"
+        addNavItem.accessibilityHint = "Open sheet to add new ingredient to list"
+
+        trashNavItem.isAccessibilityElement = true
+        trashNavItem.accessibilityLabel = "Delete button"
+        trashNavItem.accessibilityHint = "Use this button to clear your shoping list"
     }
 }
 
@@ -123,12 +138,19 @@ extension ShopingListVC: UITableViewDelegate, UITableViewDataSource {
             fatalError("ShopingListCell error")
         }
 
+        cell.isAccessibilityElement = true
+
         let section = ShopingListType.allCases[indexPath.section]
         switch section {
         case .unchecked:
             cell.configure(with: viewModel.uncheckedList[indexPath.row], type: .unchecked)
+            cell.accessibilityLabel = "This is cell from unchecked section"
+            cell.accessibilityValue = "\(viewModel.uncheckedList[indexPath.row].value) \(viewModel.uncheckedList[indexPath.row].valueType) \(viewModel.uncheckedList[indexPath.row].name)"
+
         case .checked:
             cell.configure(with: viewModel.checkedList[indexPath.row], type: .checked)
+            cell.accessibilityLabel = "This is cell from checked section"
+            cell.accessibilityValue = "\(viewModel.checkedList[indexPath.row].value) \(viewModel.checkedList[indexPath.row].valueType) \(viewModel.checkedList[indexPath.row].name)"
         }
 
         cell.delegate = self

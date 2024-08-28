@@ -12,7 +12,7 @@ class SettingsVC: UIViewController {
     let viewModel: SettingsViewModel
     weak var coordinator: SettingsCoordinator?
         
-    fileprivate var section: [SettingsOption] = []
+    private var section: [SettingsOption] = []
     private let tableView = UITableView()
     
     // MARK: - Lifecycle
@@ -45,9 +45,27 @@ class SettingsVC: UIViewController {
     // MARK: - UI Setup
     
     func configureSection() {
-        section.append(contentsOf: [SettingsOption(title: "Notifications", icon: UIImage(systemName: "bell") ?? .strokedCheckmark, iconBackgroundColor: .ui.theme)])
-        section.append(contentsOf: [SettingsOption(title: "About app", icon: UIImage(systemName: "info") ?? .strokedCheckmark, iconBackgroundColor: .ui.theme)])
-        section.append(contentsOf: [SettingsOption(title: "Logout", icon: UIImage(systemName: "lock.open") ?? .strokedCheckmark, iconBackgroundColor: .ui.theme)])
+        section.append(
+            contentsOf: [SettingsOption(
+                title: "Notifications",
+                icon: UIImage(systemName: "bell") ?? .strokedCheckmark,
+                iconBackgroundColor: .ui.theme
+            )]
+        )
+        section.append(
+            contentsOf: [SettingsOption(
+                title: "About app",
+                icon: UIImage(systemName: "info") ?? .strokedCheckmark,
+                iconBackgroundColor: .ui.theme
+            )]
+        )
+        section.append(
+            contentsOf: [SettingsOption(
+                title: "Logout",
+                icon: UIImage(systemName: "lock.open") ?? .strokedCheckmark,
+                iconBackgroundColor: .ui.theme
+            )]
+        )
     }
     
     func setupTableView() {
@@ -76,6 +94,23 @@ extension SettingsVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: SettingsCell.reuseID, for: indexPath) as? SettingsCell else { return UITableViewCell() }
         cell.configure(with: section[indexPath.row])
+        
+        cell.isAccessibilityElement = true
+        
+        switch indexPath.row {
+        case 0:
+            cell.accessibilityLabel = "Notification label"
+            cell.accessibilityHint = "Go to app notifications in your iPhone settings"
+        case 1:
+            cell.accessibilityLabel = "About app label"
+            cell.accessibilityHint = "Open about app info"
+        case 2:
+            cell.accessibilityLabel = "Logout label"
+            cell.accessibilityHint = "Click to logout from app"
+        default:
+            break
+        }
+        
         return cell
     }
     
@@ -97,8 +132,6 @@ extension SettingsVC: UITableViewDelegate, UITableViewDataSource {
         }
     }
 }
-
-// MARK: - Navigation
 
 #if DEBUG
 extension SettingsVC: LifetimeTrackable {

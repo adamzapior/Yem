@@ -5,14 +5,13 @@
 //  Created by Adam Zapiór on 21/01/2024.
 //
 
+import Combine
 import LifetimeTracker
 import UIKit
 
 final class AddInstructionSheetVC: UIViewController {
-    
     weak var coordinator: AddRecipeCoordinator?
     var viewModel: AddRecipeViewModel
-    
     
     private var textFieldContentView: UIView = {
         let content = UIView()
@@ -52,6 +51,8 @@ final class AddInstructionSheetVC: UIViewController {
         return stack
     }()
     
+    private var cancellables: Set<AnyCancellable> = []
+
     // MARK: - Lifecycle
     
     init(viewModel: AddRecipeViewModel, coordinator: AddRecipeCoordinator) {
@@ -80,6 +81,7 @@ final class AddInstructionSheetVC: UIViewController {
         configureTags()
         configureDelegate()
         setupUI()
+        setupVoiceOverAccessibility()
         
         let contentHeight = calculateContentHeight()
         let customDetentId = UISheetPresentationController.Detent.Identifier("customDetent")
@@ -169,7 +171,7 @@ final class AddInstructionSheetVC: UIViewController {
     }
     
     private func calculateContentHeight() -> CGFloat {
-        let marginsAndSpacings: CGFloat = 84
+        let marginsAndSpacings: CGFloat = 36
         let width = UIScreen.main.bounds.width - 24
         let size = CGSize(width: width, height: UIView.layoutFittingCompressedSize.height)
 
@@ -185,6 +187,31 @@ final class AddInstructionSheetVC: UIViewController {
         print(cancelButton.systemLayoutSizeFitting(size).height)
 
         return elementHeights + marginsAndSpacings
+    }
+    
+    func setupVoiceOverAccessibility() {
+        textField.isAccessibilityElement = true
+        textField.accessibilityLabel = "New instruction textfield"
+        textField.accessibilityValue = viewModel.instruction
+        textField.accessibilityHint = "Enter your instruction"
+        
+        viewModel.$instruction
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newName in
+                self?.textField.accessibilityValue = newName
+                if !newName.isEmpty {
+                    self?.textField.accessibilityHint = ""
+                }
+            }
+            .store(in: &cancellables)
+        
+        addButton.isAccessibilityElement = true
+        addButton.accessibilityLabel = "Add button"
+        addButton.accessibilityHint = "Add instruction to your instructions list"
+
+        cancelButton.isAccessibilityElement = true
+        cancelButton.accessibilityLabel = "Cancel button"
+        cancelButton.accessibilityHint = "Dismiss add instruction view"
     }
 }
 
@@ -219,9 +246,7 @@ extension AddInstructionSheetVC: UITextViewDelegate {
         }
         
         if let letters = textView.text {
-            if letters.count > 0 {
-                
-            }
+            if letters.count > 0 {}
         }
     }
 

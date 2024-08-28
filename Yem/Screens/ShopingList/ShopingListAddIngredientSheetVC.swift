@@ -5,6 +5,7 @@
 //  Created by Adam Zapiór on 25/08/2024.
 //
 
+import Combine
 import LifetimeTracker
 import UIKit
 
@@ -22,13 +23,13 @@ final class ShopingListAddIngredientSheetVC: UIViewController {
         placeholderText: "Enter your igredient name*",
         textColor: .ui.secondaryText
     )
-    private let countTextfield = TextfieldWithIcon(
+    private let ingredientValueTextfield = TextfieldWithIcon(
         backgroundColor: .ui.secondaryContainer,
         iconImage: "bag.badge.plus",
-        placeholderText: "Enter value*",
+        placeholderText: "Enter ingredient value*",
         textColor: .ui.secondaryText
     )
-    private let valueTypeCell = AddPicker(
+    private let ingredientValueTypePicker = AddPicker(
         backgroundColor: .ui.secondaryContainer,
         iconImage: "note.text.badge.plus",
         textOnButton: "Select value type*"
@@ -59,11 +60,11 @@ final class ShopingListAddIngredientSheetVC: UIViewController {
         stack.spacing = 8
         return stack
     }()
-    
+        
     private let screenWidth = UIScreen.main.bounds.width - 10
     private let screenHeight = UIScreen.main.bounds.height / 2
-    
-    let value: CGFloat = 0
+        
+    private var cancellables: Set<AnyCancellable> = []
     
     // MARK: - Lifecycle
     
@@ -91,6 +92,10 @@ final class ShopingListAddIngredientSheetVC: UIViewController {
         setupDelegate()
         setupDataSource()
         configureKeyboardType()
+
+        setupVoiceOverAccessibility()
+        
+        bindTextFields()
         
         let contentHeight = calculateContentHeight()
         let customDetentId = UISheetPresentationController.Detent.Identifier("customDetent")
@@ -120,8 +125,8 @@ final class ShopingListAddIngredientSheetVC: UIViewController {
         }
         
         stackView.addArrangedSubview(ingredientNameTextfield)
-        stackView.addArrangedSubview(countTextfield)
-        stackView.addArrangedSubview(valueTypeCell)
+        stackView.addArrangedSubview(ingredientValueTextfield)
+        stackView.addArrangedSubview(ingredientValueTypePicker)
         
         buttonsStackView.snp.makeConstraints { make in
             make.top.equalTo(stackView.snp.bottom).offset(12)
@@ -133,19 +138,75 @@ final class ShopingListAddIngredientSheetVC: UIViewController {
     }
     
     private func calculateContentHeight() -> CGFloat {
-        let marginsAndSpacings: CGFloat = 124
+        let marginsAndSpacings: CGFloat = 36
+        let bottomMargin: CGFloat = 16
         let width = UIScreen.main.bounds.width - 24
         let size = CGSize(width: width, height: UIView.layoutFittingCompressedSize.height)
 
         let elementHeights: CGFloat = [
             ingredientNameTextfield.systemLayoutSizeFitting(size).height,
-            countTextfield.systemLayoutSizeFitting(size).height,
-            valueTypeCell.systemLayoutSizeFitting(size).height,
+            ingredientValueTextfield.systemLayoutSizeFitting(size).height,
+            ingredientValueTypePicker.systemLayoutSizeFitting(size).height,
             addButton.systemLayoutSizeFitting(size).height,
             cancelButton.systemLayoutSizeFitting(size).height
         ].reduce(0, +)
 
-        return elementHeights + marginsAndSpacings
+        return elementHeights + marginsAndSpacings + bottomMargin
+    }
+    
+    private func setupVoiceOverAccessibility() {
+        ingredientNameTextfield.isAccessibilityElement = true
+        ingredientNameTextfield.accessibilityLabel = "Ingredient name"
+        ingredientNameTextfield.accessibilityValue = viewModel.ingredientName
+        ingredientNameTextfield.accessibilityHint = "Enter your ingredient name"
+        
+        viewModel.$ingredientName
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newName in
+                self?.ingredientNameTextfield.accessibilityValue = newName
+                if !newName.isEmpty {
+                    self?.ingredientNameTextfield.accessibilityHint = ""
+                }
+            }
+            .store(in: &cancellables)
+
+        ingredientValueTextfield.isAccessibilityElement = true
+        ingredientValueTextfield.accessibilityLabel = "Ingredient value"
+        ingredientValueTextfield.accessibilityValue = viewModel.ingredientValue
+        ingredientValueTextfield.accessibilityHint = "Enter ingredient value"
+        
+        viewModel.$ingredientValue
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newValue in
+                self?.ingredientValueTextfield.accessibilityValue = newValue
+                if !newValue.isEmpty {
+                    self?.ingredientValueTextfield.accessibilityHint = ""
+                }
+            }
+            .store(in: &cancellables)
+        
+        ingredientValueTypePicker.isAccessibilityElement = true
+        ingredientValueTypePicker.accessibilityLabel = "Ingredient value type"
+        ingredientValueTypePicker.accessibilityValue = viewModel.ingredientValueType
+        ingredientValueTypePicker.accessibilityHint = "Select ingredient value type"
+
+        viewModel.$ingredientValueType
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newValueType in
+                self?.ingredientValueTypePicker.accessibilityValue = newValueType
+                if !newValueType.isEmpty {
+                    self?.ingredientValueTypePicker.accessibilityHint = ""
+                }
+            }
+            .store(in: &cancellables)
+        
+        addButton.isAccessibilityElement = true
+        addButton.accessibilityLabel = "Add buton"
+        addButton.accessibilityHint = "This button will add your item to list"
+        
+        cancelButton.isAccessibilityElement = true
+        cancelButton.accessibilityLabel = "Cancel button"
+        cancelButton.accessibilityHint = "This button will dismiss this view, where you can add ingredient to list"
     }
 }
 
@@ -159,10 +220,10 @@ extension ShopingListAddIngredientSheetVC: TextfieldWithIconDelegate, AddPickerD
     func setupDelegate() {
         /// textfields:
         ingredientNameTextfield.delegate = self
-        countTextfield.delegate = self
+        ingredientValueTextfield.delegate = self
         
         /// picker:
-        valueTypeCell.delegate = self
+        ingredientValueTypePicker.delegate = self
         
         /// mainButton:
         addButton.delegate = self
@@ -174,7 +235,7 @@ extension ShopingListAddIngredientSheetVC: TextfieldWithIconDelegate, AddPickerD
     func setupTag() {
         /// textfields:
         ingredientNameTextfield.tag = 1
-        countTextfield.tag = 2
+        ingredientValueTextfield.tag = 2
         
         /// mainButton:
         addButton.tag = 1
@@ -185,33 +246,52 @@ extension ShopingListAddIngredientSheetVC: TextfieldWithIconDelegate, AddPickerD
         valueTypePickerView.dataSource = self
     }
     
+    private func bindTextFields() {
+        ingredientNameTextfield.textField
+            .textPublisher()
+            .sink { [weak self] text in
+                self?.viewModel.ingredientName = text
+            }
+            .store(in: &cancellables)
+
+        ingredientValueTextfield.textField
+            .textPublisher()
+            .sink { [weak self] text in
+                // Call ViewModel method to update value with filtering
+                self?.viewModel.updateIngredientValue(text)
+                // Update the textField text to match the filtered result
+                self?.ingredientValueTextfield.textField.text = self?.viewModel.ingredientValue
+            }
+            .store(in: &cancellables)
+    }
+    
     /// Update ViewModel
     func updateTextfieldsInViewModel(for textfield: TextfieldWithIcon) {
-        switch textfield.tag {
-        case 1:
-            if let text = textfield.textField.text {
-                viewModel.ingredientName = text
-            }
-        case 2:
-            if let text = textfield.textField.text {
-                let filteredText = text.filter { "0123456789".contains($0) }
-                textfield.textField.text = filteredText
-                viewModel.ingredientValue = filteredText
-            }
-        default: break
-        }
+//        switch textfield.tag {
+//        case 1: break
+//            if let text = textfield.textField.text {
+//                viewModel.ingredientName = text
+//            }
+//        case 2: break
+//            if let text = textfield.textField.text {
+//                let filteredText = text.filter { "0123456789".contains($0) }
+//                textfield.textField.text = filteredText
+//                viewModel.ingredientValue = filteredText
+//            }
+//        default: break
+//        }
     }
     
     func textFieldDidChange(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
-        updateTextfieldsInViewModel(for: textfield)
+//        updateTextfieldsInViewModel(for: textfield)
     }
     
     func textFieldDidBeginEditing(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
-        updateTextfieldsInViewModel(for: textfield)
+//        updateTextfieldsInViewModel(for: textfield)
     }
     
     func textFieldDidEndEditing(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
-        updateTextfieldsInViewModel(for: textfield)
+//        updateTextfieldsInViewModel(for: textfield)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -220,7 +300,7 @@ extension ShopingListAddIngredientSheetVC: TextfieldWithIconDelegate, AddPickerD
     }
     
     private func configureKeyboardType() {
-        countTextfield.keyboardType = .decimalPad
+        ingredientValueTextfield.keyboardType = .decimalPad
     }
     
     // Picker
@@ -281,8 +361,8 @@ extension ShopingListAddIngredientSheetVC: UIPickerViewDelegate, UIPickerViewDat
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         let selectedRow = viewModel.ingredientValueTypeArray[row]
-        valueTypeCell.textOnButton.text = selectedRow.displayName
-        valueTypeCell.textOnButton.textColor = .ui.primaryText
+        ingredientValueTypePicker.textOnButton.text = selectedRow.displayName
+        ingredientValueTypePicker.textOnButton.textColor = .ui.primaryText
         viewModel.ingredientValueType = selectedRow.displayName
     }
     
@@ -306,8 +386,8 @@ extension ShopingListAddIngredientSheetVC: UIPickerViewDelegate, UIPickerViewDat
             let selectedRow = pickerView.selectedRow(inComponent: 0)
  
             let selectedValueType = self.viewModel.ingredientValueTypeArray[selectedRow]
-            self.valueTypeCell.textOnButton.text = selectedValueType.displayName
-            self.valueTypeCell.textOnButton.textColor = .ui.primaryText
+            self.ingredientValueTypePicker.textOnButton.text = selectedValueType.displayName
+            self.ingredientValueTypePicker.textOnButton.textColor = .ui.primaryText
             self.viewModel.ingredientValueType = selectedValueType.displayName
         })
         
@@ -337,9 +417,9 @@ extension ShopingListAddIngredientSheetVC: ShopingListAddIngredientSheetVCDelega
         case .ingredientName:
             ingredientNameTextfield.setPlaceholderColor(.ui.placeholderError)
         case .ingredientValue:
-            countTextfield.setPlaceholderColor(.ui.placeholderError)
+            ingredientValueTextfield.setPlaceholderColor(.ui.placeholderError)
         case .ingredientValueType:
-            valueTypeCell.setPlaceholderColor(.ui.placeholderError)
+            ingredientValueTypePicker.setPlaceholderColor(.ui.placeholderError)
         case .ingredientList:
             break
         case .instruction:

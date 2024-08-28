@@ -10,7 +10,7 @@ import LifetimeTracker
 import UIKit
 
 final class RegisterOnboardingVC: UIViewController {
-    let coordinator: OnboardingCoordinator
+    weak var coordinator: OnboardingCoordinator?
     let viewModel: OnboardingVM
 
     var content = UIView()
@@ -33,7 +33,7 @@ final class RegisterOnboardingVC: UIViewController {
 
     let loginTextfield = TextfieldWithIcon(
         iconImage: "info",
-        placeholderText: "Enter your login...",
+        placeholderText: "Enter your e-mail...",
         textColor: .ui.secondaryText
     )
     let passwordTextfield = TextfieldWithIcon(
@@ -47,7 +47,7 @@ final class RegisterOnboardingVC: UIViewController {
         backgroundColor: .ui.addBackground,
         isShadownOn: true
     )
-    
+
     // MARK: - Lifecycle
 
     init(coordinator: OnboardingCoordinator, viewModel: OnboardingVM) {
@@ -72,12 +72,13 @@ final class RegisterOnboardingVC: UIViewController {
         setupUI()
         setupDelegate()
         setupTag()
-        setupTextfieldBehaviour() 
+        setupTextfieldBehaviour()
+        setupVoiceOverAccessibility()
 
         viewModel.delegateRegisterOnb = self
         loginButton.delegate = self
     }
-    
+
     // MARK: - UI Setup
 
     private func setupUI() {
@@ -131,11 +132,25 @@ final class RegisterOnboardingVC: UIViewController {
             make.leading.trailing.equalToSuperview().inset(12)
         }
     }
-    
+
     private func setupTextfieldBehaviour() {
         loginTextfield.textField.autocapitalizationType = .none
         passwordTextfield.textField.autocapitalizationType = .none
         passwordTextfield.textField.isSecureTextEntry = true
+    }
+
+    private func setupVoiceOverAccessibility() {
+        loginTextfield.isAccessibilityElement = true
+        loginTextfield.accessibilityLabel = "Login textfield"
+        loginTextfield.accessibilityHint = "Enter your e-mail"
+
+        passwordTextfield.isAccessibilityElement = true
+        passwordTextfield.accessibilityLabel = "Password textfield"
+        passwordTextfield.accessibilityHint = "Enter your password"
+
+        loginButton.isAccessibilityElement = true
+        loginButton.accessibilityLabel = "Register button"
+        loginButton.accessibilityHint = "Click this button and try to register"
     }
 }
 
@@ -212,7 +227,7 @@ extension RegisterOnboardingVC: TextfieldWithIconDelegate, ActionButtonDelegate 
                 let newUser = try await viewModel.createUser(email: viewModel.login, password: viewModel.password)
                 if let newUser = newUser {
                     await MainActor.run {
-                        coordinator.navigateToApp(user: newUser)
+                        coordinator?.navigateToApp(user: newUser)
                     }
                 }
             }
@@ -222,7 +237,7 @@ extension RegisterOnboardingVC: TextfieldWithIconDelegate, ActionButtonDelegate 
 
 extension RegisterOnboardingVC: RegisterOnboardingDelegate {
     func showRegisterErrorAlert() {
-        coordinator.presentAlert(title: "Something went wrong!", message: viewModel.validationError)
+        coordinator?.presentAlert(title: "Something went wrong!", message: viewModel.validationError)
     }
 }
 

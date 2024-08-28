@@ -53,19 +53,19 @@ final class AddRecipeViewModel {
     
     var selectedImage: UIImage?
     
-    var recipeTitle: String = ""
+    @Published var recipeTitle: String = ""
     
-    var difficulty: String = ""
+    @Published var difficulty: String = ""
     
-    var serving: String = ""
+    @Published var serving: String = ""
     
-    var prepTimeHours: String = ""
+    @Published var prepTimeHours: String = ""
     
-    var prepTimeMinutes: String = ""
+    @Published var prepTimeMinutes: String = ""
     
-    var spicy: String = ""
+    @Published var spicy: String = ""
     
-    var category: String = ""
+    @Published var category: String = ""
     
     var ingredientsList: [IngredientModel] = [] {
         didSet {
@@ -73,11 +73,11 @@ final class AddRecipeViewModel {
         }
     }
     
-    var ingredientName: String = ""
+    @Published var ingredientName: String = ""
     
-    var ingredientValue: String = ""
+    @Published var ingredientValue: String = ""
     
-    var ingredientValueType: String = ""
+    @Published var ingredientValueType: String = ""
     
     var instructionList: [InstructionModel] = [] {
         didSet {
@@ -85,7 +85,7 @@ final class AddRecipeViewModel {
         }
     }
     
-    var instruction: String = ""
+    @Published var instruction: String = ""
     
     var isFavourite: Bool = false
     

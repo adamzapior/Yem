@@ -32,7 +32,12 @@ final class AddRecipeInstructionsVC: UIViewController {
     private let tableViewHeader = InstructionTableHeaderView()
     private let tableViewFooter = IngredientsTableFooterView()
     
-    private let emptyTableLabel = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
+    private let emptyTableLabel = TextLabel(
+        fontStyle: .body,
+        fontWeight: .regular,
+        textColor: .ui.secondaryText,
+        textAlignment: .center
+    )
 
     // MARK: - Lifecycle
     
@@ -101,9 +106,11 @@ final class AddRecipeInstructionsVC: UIViewController {
     
     private func setupEmptyTableLabel() {
         view.addSubview(emptyTableLabel)
-        emptyTableLabel.text = "Your instruction list is empty"
+        emptyTableLabel.text = "Your ingredient list is empty"
+        emptyTableLabel.numberOfLines = 0
 
         emptyTableLabel.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(18)
             make.centerX.equalToSuperview()
             make.centerY.equalToSuperview()
         }
@@ -132,6 +139,10 @@ extension AddRecipeInstructionsVC: UITableViewDelegate, UITableViewDataSource, U
         cell.delegate = self
         cell.configure(with: viewModel.instructionList[indexPath.row])
         
+        cell.isAccessibilityElement = true
+        cell.accessibilityLabel = "This is \(indexPath.row + 1) added instruction cell"
+        cell.accessibilityValue = "\(viewModel.instructionList[indexPath.row].text)"
+
         return cell
     }
     

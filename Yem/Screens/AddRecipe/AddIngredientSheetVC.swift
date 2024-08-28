@@ -5,11 +5,11 @@
 //  Created by Adam Zapiór on 16/12/2023.
 //
 
+import Combine
 import LifetimeTracker
 import UIKit
 
 final class AddIngredientSheetVC: UIViewController {
-    
     weak var coordinator: AddRecipeCoordinator?
     var viewModel: AddRecipeViewModel
         
@@ -19,13 +19,13 @@ final class AddIngredientSheetVC: UIViewController {
         placeholderText: "Enter your igredient name*",
         textColor: .ui.secondaryText
     )
-    private let countTextfield = TextfieldWithIcon(
+    private let ingredientValueTextfield = TextfieldWithIcon(
         backgroundColor: .ui.secondaryContainer,
         iconImage: "bag.badge.plus",
         placeholderText: "Enter value*",
         textColor: .ui.secondaryText
     )
-    private let valueTypeCell = AddPicker(
+    private let ingredientValueTypePicker = AddPicker(
         backgroundColor: .ui.secondaryContainer,
         iconImage: "note.text.badge.plus",
         textOnButton: "Select value type*"
@@ -60,8 +60,8 @@ final class AddIngredientSheetVC: UIViewController {
     private let screenWidth = UIScreen.main.bounds.width - 10
     private let screenHeight = UIScreen.main.bounds.height / 2
     
-    let value: CGFloat = 0
-    
+    private var cancellables: Set<AnyCancellable> = []
+
     // MARK: - Lifecycle
     
     init(viewModel: AddRecipeViewModel, coordinator: AddRecipeCoordinator) {
@@ -87,7 +87,9 @@ final class AddIngredientSheetVC: UIViewController {
         setupTag()
         setupDelegate()
         setupDataSource()
-        configureKeyboardType() 
+        configureKeyboardType()
+        
+        setupVoiceOverAccessibility()
         
         let contentHeight = calculateContentHeight()
         let customDetentId = UISheetPresentationController.Detent.Identifier("customDetent")
@@ -117,8 +119,8 @@ final class AddIngredientSheetVC: UIViewController {
         }
         
         stackView.addArrangedSubview(ingredientNameTextfield)
-        stackView.addArrangedSubview(countTextfield)
-        stackView.addArrangedSubview(valueTypeCell)
+        stackView.addArrangedSubview(ingredientValueTextfield)
+        stackView.addArrangedSubview(ingredientValueTypePicker)
         
         buttonsStackView.snp.makeConstraints { make in
             make.top.equalTo(stackView.snp.bottom).offset(12)
@@ -131,18 +133,66 @@ final class AddIngredientSheetVC: UIViewController {
     
     private func calculateContentHeight() -> CGFloat {
         let marginsAndSpacings: CGFloat = 124
+        let bottomMargin: CGFloat = 16
         let width = UIScreen.main.bounds.width - 24
         let size = CGSize(width: width, height: UIView.layoutFittingCompressedSize.height)
 
         let elementHeights: CGFloat = [
             ingredientNameTextfield.systemLayoutSizeFitting(size).height,
-            countTextfield.systemLayoutSizeFitting(size).height,
-            valueTypeCell.systemLayoutSizeFitting(size).height,
+            ingredientValueTextfield.systemLayoutSizeFitting(size).height,
+            ingredientValueTypePicker.systemLayoutSizeFitting(size).height,
             addButton.systemLayoutSizeFitting(size).height,
             cancelButton.systemLayoutSizeFitting(size).height
         ].reduce(0, +)
 
-        return elementHeights + marginsAndSpacings
+        return elementHeights + marginsAndSpacings + bottomMargin
+    }
+    
+    func setupVoiceOverAccessibility() {
+        ingredientNameTextfield.isAccessibilityElement = true
+        ingredientNameTextfield.accessibilityLabel = "Ingredient name"
+        ingredientNameTextfield.accessibilityValue = viewModel.ingredientName
+        ingredientNameTextfield.accessibilityHint = "Enter your ingredient name"
+        
+        viewModel.$ingredientName
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newName in
+                self?.ingredientNameTextfield.accessibilityValue = newName
+                if !newName.isEmpty {
+                    self?.ingredientNameTextfield.accessibilityHint = ""
+                }
+            }
+            .store(in: &cancellables)
+
+        ingredientValueTextfield.isAccessibilityElement = true
+        ingredientValueTextfield.accessibilityLabel = "Ingredient value"
+        ingredientValueTextfield.accessibilityValue = viewModel.ingredientValue
+        ingredientValueTextfield.accessibilityHint = "Enter ingredient value"
+        
+        viewModel.$ingredientValue
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newValue in
+                self?.ingredientValueTextfield.accessibilityValue = newValue
+                if !newValue.isEmpty {
+                    self?.ingredientValueTextfield.accessibilityHint = ""
+                }
+            }
+            .store(in: &cancellables)
+        
+        ingredientValueTypePicker.isAccessibilityElement = true
+        ingredientValueTypePicker.accessibilityLabel = "Ingredient value type"
+        ingredientValueTypePicker.accessibilityValue = viewModel.ingredientValueType
+        ingredientValueTypePicker.accessibilityHint = "Select ingredient value type"
+
+        viewModel.$ingredientValueType
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newValueType in
+                self?.ingredientValueTypePicker.accessibilityValue = newValueType
+                if !newValueType.isEmpty {
+                    self?.ingredientValueTypePicker.accessibilityHint = ""
+                }
+            }
+            .store(in: &cancellables)
     }
 }
 
@@ -156,10 +206,10 @@ extension AddIngredientSheetVC: TextfieldWithIconDelegate, AddPickerDelegate, Ac
     func setupDelegate() {
         /// textfields:
         ingredientNameTextfield.delegate = self
-        countTextfield.delegate = self
+        ingredientValueTextfield.delegate = self
         
         /// picker:
-        valueTypeCell.delegate = self
+        ingredientValueTypePicker.delegate = self
         
         /// mainButton:
         addButton.delegate = self
@@ -171,7 +221,7 @@ extension AddIngredientSheetVC: TextfieldWithIconDelegate, AddPickerDelegate, Ac
     func setupTag() {
         /// textfields:
         ingredientNameTextfield.tag = 1
-        countTextfield.tag = 2
+        ingredientValueTextfield.tag = 2
         
         /// mainButton:
         addButton.tag = 1
@@ -217,7 +267,7 @@ extension AddIngredientSheetVC: TextfieldWithIconDelegate, AddPickerDelegate, Ac
     }
     
     private func configureKeyboardType() {
-        countTextfield.keyboardType = .decimalPad
+        ingredientValueTextfield.keyboardType = .decimalPad
     }
     
     // Picker
@@ -278,8 +328,8 @@ extension AddIngredientSheetVC: UIPickerViewDelegate, UIPickerViewDataSource {
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         let selectedRow = viewModel.ingredientValueTypeArray[row]
-        valueTypeCell.textOnButton.text = selectedRow.displayName
-        valueTypeCell.textOnButton.textColor = .ui.primaryText
+        ingredientValueTypePicker.textOnButton.text = selectedRow.displayName
+        ingredientValueTypePicker.textOnButton.textColor = .ui.primaryText
         viewModel.ingredientValueType = selectedRow.displayName
     }
     
@@ -303,8 +353,8 @@ extension AddIngredientSheetVC: UIPickerViewDelegate, UIPickerViewDataSource {
             let selectedRow = pickerView.selectedRow(inComponent: 0)
  
             let selectedValueType = self.viewModel.ingredientValueTypeArray[selectedRow]
-            self.valueTypeCell.textOnButton.text = selectedValueType.displayName
-            self.valueTypeCell.textOnButton.textColor = .ui.primaryText
+            self.ingredientValueTypePicker.textOnButton.text = selectedValueType.displayName
+            self.ingredientValueTypePicker.textOnButton.textColor = .ui.primaryText
             self.viewModel.ingredientValueType = selectedValueType.displayName
         })
         
@@ -334,9 +384,9 @@ extension AddIngredientSheetVC: AddIngredientSheetVCDelegate {
         case .ingredientName:
             ingredientNameTextfield.setPlaceholderColor(.ui.placeholderError)
         case .ingredientValue:
-            countTextfield.setPlaceholderColor(.ui.placeholderError)
+            ingredientValueTextfield.setPlaceholderColor(.ui.placeholderError)
         case .ingredientValueType:
-            valueTypeCell.setPlaceholderColor(.ui.placeholderError)
+            ingredientValueTypePicker.setPlaceholderColor(.ui.placeholderError)
         case .ingredientList:
             break
         case .instruction:

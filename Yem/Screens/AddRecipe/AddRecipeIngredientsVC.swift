@@ -34,7 +34,8 @@ final class AddRecipeIngredientsVC: UIViewController {
     private let emptyTableLabel = TextLabel(
         fontStyle: .body,
         fontWeight: .regular,
-        textColor: .ui.secondaryText
+        textColor: .ui.secondaryText,
+        textAlignment: .center
     )
 
     // MARK: - Lifecycle
@@ -113,8 +114,10 @@ final class AddRecipeIngredientsVC: UIViewController {
     private func setupEmptyTableLabel() {
         view.addSubview(emptyTableLabel)
         emptyTableLabel.text = "Your ingredient list is empty"
+        emptyTableLabel.numberOfLines = 0
 
         emptyTableLabel.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(18)
             make.centerX.equalToSuperview()
             make.centerY.equalToSuperview()
         }
@@ -149,6 +152,10 @@ extension AddRecipeIngredientsVC: UITableViewDelegate, UITableViewDataSource, In
 
         cell.delegate = self
         cell.configure(with: viewModel.ingredientsList[indexPath.row])
+        
+        cell.isAccessibilityElement = true
+        cell.accessibilityLabel = "This is \(indexPath.row + 1) added ingrendient cell"
+        cell.accessibilityValue = "\(viewModel.ingredientsList[indexPath.row].value) \(viewModel.ingredientsList[indexPath.row].valueType) \(viewModel.ingredientsList[indexPath.row].name)"
 
         return cell
     }

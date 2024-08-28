@@ -16,6 +16,12 @@ class RecipesSearchResultsVC: UIViewController {
 
     private var tableView = UITableView()
 
+    private let emptyTableLabel = TextLabel(
+        fontStyle: .body,
+        fontWeight: .regular,
+        textColor: .ui.secondaryText
+    )
+
     // MARK: - Lifecycle
 
     init(coordinator: RecipesListCoordinator, viewModel: RecipesListVM) {
@@ -23,9 +29,9 @@ class RecipesSearchResultsVC: UIViewController {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
 
-        #if DEBUG
-            trackLifetime()
-        #endif
+#if DEBUG
+        trackLifetime()
+#endif
     }
 
     @available(*, unavailable)
@@ -36,6 +42,9 @@ class RecipesSearchResultsVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
+        setupEmptyTableLabel()
+        setupVoiceOverAccessibility()
+        
         viewModel.delegateRecipesSearchResult = self
     }
 
@@ -52,6 +61,28 @@ class RecipesSearchResultsVC: UIViewController {
 
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+        }
+    }
+
+    private func setupEmptyTableLabel() {
+        view.addSubview(emptyTableLabel)
+        emptyTableLabel.text = "No recipes found"
+        emptyTableLabel.numberOfLines = 0
+
+        emptyTableLabel.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(18)
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview()
+        }
+    }
+    
+    /// method for setting custom voice over commands without elements from TableView
+    private func setupVoiceOverAccessibility() {
+        emptyTableLabel.isAccessibilityElement = true
+
+        if emptyTableLabel.isHidden == false {
+            emptyTableLabel.accessibilityLabel = emptyTableLabel.text
+            emptyTableLabel.accessibilityHint = "Add recipes to see them in the list"
         }
     }
 }
@@ -75,6 +106,10 @@ extension RecipesSearchResultsVC: UITableViewDelegate, UITableViewDataSource {
             localFileManager: viewModel.localFileManager,
             imageFetcherManager: viewModel.imageFetcherManager
         )
+
+        cell.isAccessibilityElement = true
+        cell.accessibilityValue = "\(recipe.name) with perp time \(recipe.getPerpTimeString()) and \(recipe.spicy.displayName) spicy level"
+
         return cell
     }
 
@@ -92,13 +127,19 @@ extension RecipesSearchResultsVC: UITableViewDelegate, UITableViewDataSource {
 extension RecipesSearchResultsVC: RecipesSearchResultDelegate {
     func reloadTable() {
         tableView.reloadData()
+        
+        if viewModel.filteredRecipes.isEmpty {
+            emptyTableLabel.isHidden = false
+        } else {
+            emptyTableLabel.isHidden = true
+        }
     }
 }
 
 #if DEBUG
-    extension RecipesSearchResultsVC: LifetimeTrackable {
-        class var lifetimeConfiguration: LifetimeConfiguration {
-            return LifetimeConfiguration(maxCount: 1, groupName: "ViewControllers")
-        }
+extension RecipesSearchResultsVC: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "ViewControllers")
     }
+}
 #endif
