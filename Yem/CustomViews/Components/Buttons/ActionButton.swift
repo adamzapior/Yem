@@ -24,9 +24,15 @@ final class ActionButton: UIButton {
     }
     
     override var intrinsicContentSize: CGSize {
-        let size = super.intrinsicContentSize
-        let height = max(size.height, 42.VAdapted) // Minimum height
+        let size = titleLabel?.intrinsicContentSize ?? CGSize.zero
+        let height = max(size.height, 42.VAdapted)
+            
         return CGSize(width: size.width, height: height)
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        titleLabel?.preferredMaxLayoutWidth = titleLabel?.frame.size.width ?? 0
     }
 
     @available(*, unavailable)
@@ -54,10 +60,8 @@ final class ActionButton: UIButton {
     private func setupUI() {
         self.layer.cornerRadius = 20
         self.titleLabel?.font = UIFont.preferredFont(forTextStyle: .body)
-        
-//        self.snp.makeConstraints { make in
-//            make.height.equalTo(54.HAdapted)
-//        }
+        self.titleLabel?.numberOfLines = 0
+        self.configuration?.titleLineBreakMode = .byWordWrapping
     }
         
     @objc private func buttonTapped() {
