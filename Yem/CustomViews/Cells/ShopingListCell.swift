@@ -66,6 +66,7 @@ class ShopingListCell: UITableViewCell {
 
         contentView.isUserInteractionEnabled = true // !!
         setupUI()
+        adjustCheckListIconSize()
     }
     
     @available(*, unavailable)
@@ -110,31 +111,34 @@ class ShopingListCell: UITableViewCell {
     
     private func setupUI() {
         addSubview(content)
-
+        
         content.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview().inset(4)
             make.left.right.equalToSuperview().inset(18)
-            make.height.greaterThanOrEqualTo(60)
         }
         
+        content.addSubview(checklistIcon)
         content.addSubview(valueLabel)
         content.addSubview(valueTypeLabel)
         content.addSubview(ingredientNameLabel)
-        content.addSubview(checklistIcon)
         
         valueLabel.snp.makeConstraints { make in
             make.leading.equalTo(content.snp.leading).offset(24)
             make.top.equalToSuperview().offset(12)
+            make.trailing.equalTo(valueTypeLabel.snp.leading).offset(-6)
         }
-        
+       
         valueTypeLabel.snp.makeConstraints { make in
-            make.leading.equalTo(valueLabel.snp.trailing).offset(4)
+            make.leading.equalTo(valueLabel.snp.trailing).offset(6)
+            make.trailing.equalTo(checklistIcon.snp.leading).offset(-12)
             make.top.equalToSuperview().offset(12)
             make.width.greaterThanOrEqualTo(84)
         }
-        
+
         ingredientNameLabel.snp.makeConstraints { make in
             make.top.equalTo(valueLabel.snp.bottom).offset(8)
+            make.top.equalTo(valueTypeLabel.snp.bottom).offset(8)
+        
             make.leading.equalTo(content.snp.leading).offset(24)
             make.trailing.equalTo(checklistIcon.snp.leading).offset(-12)
             make.bottom.equalToSuperview().inset(12)
@@ -147,8 +151,49 @@ class ShopingListCell: UITableViewCell {
             make.height.equalTo(18.VAdapted)
             make.width.equalTo(22.HAdapted)
         }
+        
+        valueLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        valueLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        
+        valueLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
+        valueLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+        
+        valueTypeLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        valueTypeLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        
+        valueTypeLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
+        valueTypeLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+    
+        ingredientNameLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        ingredientNameLabel.setContentCompressionResistancePriority(.required, for: .vertical)
     }
     
+    private func adjustCheckListIconSize() {
+        let categorySize = UIApplication.shared.preferredContentSizeCategory
+    
+        let size: CGSize
+        switch categorySize {
+        case .large, .medium, .small:
+            size = CGSize(width: 22.HAdapted, height: 18.VAdapted)
+        case .extraLarge:
+            size = CGSize(width: 22.HAdapted, height: 18.VAdapted)
+        case .extraExtraLarge:
+            size = CGSize(width: 30.HAdapted, height: 26.VAdapted)
+        case .extraExtraExtraLarge:
+            size = CGSize(width: 32.HAdapted, height: 28.VAdapted)
+        case .accessibilityMedium, .accessibilityLarge, .accessibilityExtraLarge, .accessibilityExtraExtraLarge, .accessibilityExtraExtraExtraLarge:
+            size = CGSize(width: 34.HAdapted, height: 30.VAdapted)
+        default:
+            size = CGSize(width: 22.HAdapted, height: 18.VAdapted)
+        }
+    
+        checklistIcon.snp.updateConstraints { make in
+            make.size.equalTo(size)
+        }
+    
+        layoutIfNeeded()
+    }
+
     @objc func didTapButtonAction() {
         let currentImage = checklistIcon.image
         
