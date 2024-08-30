@@ -138,7 +138,7 @@ final class ShopingListAddIngredientSheetVC: UIViewController {
     }
     
     private func calculateContentHeight() -> CGFloat {
-        let marginsAndSpacings: CGFloat = 36
+        let marginsAndSpacings: CGFloat = 124
         let bottomMargin: CGFloat = 16
         let width = UIScreen.main.bounds.width - 24
         let size = CGSize(width: width, height: UIView.layoutFittingCompressedSize.height)

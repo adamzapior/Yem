@@ -15,10 +15,11 @@ final class RegisterOnboardingVC: UIViewController {
 
     var content = UIView()
 
-    let textLabel = TextLabel(
+    let titleLabel = TextLabel(
         fontStyle: .title2,
         fontWeight: .light,
-        textColor: .ui.secondaryText
+        textColor: .ui.secondaryText,
+        textAlignment: .center
     )
     let loginLabel = TextLabel(
         fontStyle: .footnote,
@@ -32,7 +33,7 @@ final class RegisterOnboardingVC: UIViewController {
     )
 
     let loginTextfield = TextfieldWithIcon(
-        iconImage: "info",
+        iconImage: "person.circle",
         placeholderText: "Enter your e-mail...",
         textColor: .ui.secondaryText
     )
@@ -89,24 +90,25 @@ final class RegisterOnboardingVC: UIViewController {
             make.leading.trailing.bottom.equalToSuperview().inset(18)
         }
 
-        content.addSubview(textLabel)
+        content.addSubview(titleLabel)
         content.addSubview(loginLabel)
         content.addSubview(passwordLabel)
         content.addSubview(loginTextfield)
         content.addSubview(passwordTextfield)
         content.addSubview(loginButton)
 
-        textLabel.text = "Register"
+        titleLabel.text = "Register"
         loginLabel.text = "Login"
         passwordLabel.text = "Password"
 
-        textLabel.snp.makeConstraints { make in
+        titleLabel.snp.makeConstraints { make in
             make.top.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(18)
             make.centerX.equalToSuperview()
         }
 
         loginLabel.snp.makeConstraints { make in
-            make.top.equalTo(textLabel.snp.bottom).offset(12)
+            make.top.equalTo(titleLabel.snp.bottom).offset(12)
             make.leading.trailing.equalToSuperview().inset(12)
         }
 

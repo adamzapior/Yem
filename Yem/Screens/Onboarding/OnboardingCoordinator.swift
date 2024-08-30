@@ -42,6 +42,7 @@ final class OnboardingCoordinator: Destination {
     }
 
     func navigateTo(_ route: OnboardingRoute) {
+        let viewModel = viewModel
         switch route {
         case .login:
             let controller = LoginOnboardingVC(coordinator: self, viewModel: viewModel)
@@ -50,9 +51,8 @@ final class OnboardingCoordinator: Destination {
             let controller = RegisterOnboardingVC(coordinator: self, viewModel: viewModel)
             navigator?.presentScreen(controller, isAnimated: true)
         case .resetPassword:
-            break
-//            let controller = ResetPasswordVC(coordinator: self, viewModel: viewModel)
-//            navigator?.presentScreen(controller)
+            let controller = ResetPasswordVC(coordinator: self, viewModel: viewModel)
+            navigator?.presentScreen(controller)
         case .privacyPolicy:
             break
         }
@@ -79,6 +79,22 @@ final class OnboardingCoordinator: Destination {
         alertVC.modalPresentationStyle = .overFullScreen
         alertVC.modalTransitionStyle = .crossDissolve
         navigator?.presentAlert(alertVC)
+    }
+    
+    func presentPasswordResetAlert() {
+        let alertVC = ValidationAlertVC(title: "Password reset",
+                                        message: "Reset email sent successfully. Check your email.",
+                                        dismissCompletion: {
+                                            self.pop()
+                                        })
+
+        alertVC.modalPresentationStyle = .overFullScreen
+        alertVC.modalTransitionStyle = .crossDissolve
+        navigator?.presentAlert(alertVC)
+    }
+    
+    func pop() {
+        navigator?.pop()
     }
 }
 

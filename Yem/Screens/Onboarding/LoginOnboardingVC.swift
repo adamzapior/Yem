@@ -16,10 +16,11 @@ final class LoginOnboardingVC: UIViewController {
 
     var content = UIView()
 
-    let textLabel = TextLabel(
+    let titleLabel = TextLabel(
         fontStyle: .title2,
         fontWeight: .light,
-        textColor: .ui.secondaryText
+        textColor: .ui.secondaryText,
+        textAlignment: .center
     )
     let loginLabel = TextLabel(
         fontStyle: .footnote,
@@ -33,7 +34,7 @@ final class LoginOnboardingVC: UIViewController {
     )
 
     let loginTextfield = TextfieldWithIcon(
-        iconImage: "info",
+        iconImage: "person.circle",
         placeholderText: "Enter your e-mail...",
         textColor: .ui.secondaryText
     )
@@ -93,7 +94,7 @@ final class LoginOnboardingVC: UIViewController {
             make.leading.trailing.bottom.equalToSuperview().inset(18)
         }
 
-        content.addSubview(textLabel)
+        content.addSubview(titleLabel)
         content.addSubview(loginLabel)
         content.addSubview(passwordLabel)
         content.addSubview(loginTextfield)
@@ -101,17 +102,18 @@ final class LoginOnboardingVC: UIViewController {
         content.addSubview(loginButton)
         content.addSubview(resetButton)
 
-        textLabel.text = "Login to app"
+        titleLabel.text = "Login to app"
         loginLabel.text = "Login"
         passwordLabel.text = "Password"
 
-        textLabel.snp.makeConstraints { make in
+        titleLabel.snp.makeConstraints { make in
             make.top.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(18)
             make.centerX.equalToSuperview()
         }
 
         loginLabel.snp.makeConstraints { make in
-            make.top.equalTo(textLabel.snp.bottom).offset(12)
+            make.top.equalTo(titleLabel.snp.bottom).offset(12)
             make.leading.trailing.equalToSuperview().inset(12)
         }
 
@@ -135,16 +137,12 @@ final class LoginOnboardingVC: UIViewController {
         resetButton.snp.makeConstraints { make in
             make.top.equalTo(passwordTextfield.snp.bottom).offset(36)
             make.leading.trailing.equalToSuperview().inset(12)
-//            make.height.equalTo(42.VAdapted)
-
-            make.height.greaterThanOrEqualTo(42.VAdapted).priority(.high)
-            make.height.lessThanOrEqualTo(80).priority(.required)
         }
+        
 
         loginButton.snp.makeConstraints { make in
             make.top.equalTo(resetButton.snp.bottom).offset(24)
             make.leading.trailing.equalToSuperview().inset(12)
-//            make.height.equalTo(42.VAdapted)
         }
     }
 

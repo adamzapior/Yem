@@ -55,7 +55,7 @@ final class TextfieldWithIcon: UIView, UITextFieldDelegate {
         self.minViewHeight = minViewHeight
         self.backgroundColor = backgroundColor
         self.iconImage = iconImage
-        self.icon = IconImage(systemImage: iconImage, color: .ui.theme, textStyle: textStyle)
+        self.icon = IconImage(systemImage: iconImage, color: .ui.theme, textStyle: textStyle, contentMode: .scaleAspectFit	)
                 
         let placeholderText = NSAttributedString(
             string: "\(placeholderText)",
@@ -91,8 +91,8 @@ final class TextfieldWithIcon: UIView, UITextFieldDelegate {
         icon.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(24)
             make.centerY.equalTo(textField.snp.centerY)
-            make.width.equalTo(22)
-            make.height.equalTo(24)
+            make.width.equalTo(24.HAdapted)
+            make.height.equalTo(24.VAdapted)
         }
         
         textField.snp.makeConstraints { make in

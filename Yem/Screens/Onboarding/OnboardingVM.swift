@@ -16,9 +16,14 @@ protocol RegisterOnboardingDelegate: AnyObject {
     func showRegisterErrorAlert()
 }
 
+protocol ResetPasswordVCDelegate: AnyObject {
+    func showResetErrorAlert()
+}
+
 final class OnboardingVM {
     weak var delegeteLoginOnb: LoginOnboardingDelegate?
     weak var delegateRegisterOnb: RegisterOnboardingDelegate?
+    weak var delegateResetOnb: ResetPasswordVCDelegate?
 
     var authManager: AuthenticationManager
 
@@ -62,6 +67,15 @@ final class OnboardingVM {
             return nil
         }
     }
+    
+    func resetPassword(email: String) async throws {
+        do {
+            try await authManager.resetPassword(email: email)
+        } catch {
+            handleError(error)
+            showLoginErrorAlert()
+        }
+    }
 
     private func handleError(_ error: Error) {
         validationError = error.localizedDescription
@@ -80,6 +94,14 @@ extension OnboardingVM: RegisterOnboardingDelegate {
     func showRegisterErrorAlert() {
         DispatchQueue.main.async { [weak self] in
             self?.delegateRegisterOnb?.showRegisterErrorAlert()
+        }
+    }
+}
+
+extension OnboardingVM: ResetPasswordVCDelegate {
+    func showResetErrorAlert() {
+        DispatchQueue.main.async { [weak self] in
+            self?.delegateResetOnb?.showResetErrorAlert()
         }
     }
 }

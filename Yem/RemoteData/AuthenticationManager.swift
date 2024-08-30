@@ -57,6 +57,17 @@ final class AuthenticationManager {
 
         return UserModel(user: createdUser)
     }
+    
+    func resetPassword(email: String) async throws {
+        do {
+            let resetPass: Void = try await Auth.auth().sendPasswordReset(withEmail: email)
+        } catch {
+            let error = error as NSError
+            let authError = error.getError()
+            
+            throw authError
+        }
+    }
 
     func signOut() async throws {
         do {

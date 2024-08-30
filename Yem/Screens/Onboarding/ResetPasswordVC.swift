@@ -18,7 +18,8 @@ final class ResetPasswordVC: UIViewController {
     let titleLabel = TextLabel(
         fontStyle: .title2,
         fontWeight: .light,
-        textColor: .ui.secondaryText
+        textColor: .ui.secondaryText,
+        textAlignment: .center
     )
     let loginLabel = TextLabel(
         fontStyle: .footnote,
@@ -88,6 +89,7 @@ final class ResetPasswordVC: UIViewController {
 
         titleLabel.snp.makeConstraints { make in
             make.top.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(18)
             make.centerX.equalToSuperview()
         }
 
