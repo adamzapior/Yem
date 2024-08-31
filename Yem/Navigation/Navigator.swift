@@ -13,8 +13,6 @@ final class Navigator {
         start.navigator = self
     }
 
-    // MARK: - Configuration
-
     func attach(appWindow: UIWindow) {
         appWindow.rootViewController = navigationController
     }
@@ -22,8 +20,8 @@ final class Navigator {
     func setNavigationBarHidden(_ hidden: Bool = true) {
         navigationController.setNavigationBarHidden(hidden, animated: false)
     }
-
-    // MARK: - Navigation Commands
+    
+    // MARK: Navigation
 
     func presentDestination(_ destination: Destination) {
         print("DEBUG: Navigating to screen: \(destination)")
@@ -51,6 +49,15 @@ final class Navigator {
         }
     }
 
+    /* Example of usage popUpTo:
+     // RecipeDetailsCoordinator.swift
+     func backToRecipesList() {
+         navigator?.popUpTo(where: { destination in
+             return destination is RecipesListCoordinator
+         })
+     }
+     */
+
     func popUpToRoot() {
         navigationController.popToRootViewController(animated: true)
     }
@@ -60,8 +67,6 @@ final class Navigator {
         navigationController.setViewControllers([screen.render()], animated: true)
     }
 
-    // MARK: - Sheet Management
-
     func presentSheet(_ screen: UIViewController) {
         screen.modalPresentationStyle = .formSheet
         navigationController.present(screen, animated: true, completion: nil)
@@ -70,8 +75,6 @@ final class Navigator {
     func dismissSheet() {
         navigationController.dismiss(animated: true, completion: nil)
     }
-
-    // MARK: - Alert Management
 
     func presentAlert(_ vc: UIViewController) {
         navigationController.present(vc, animated: true, completion: nil)
