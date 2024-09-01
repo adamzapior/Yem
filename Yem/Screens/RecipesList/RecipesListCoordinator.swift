@@ -8,29 +8,48 @@
 import LifetimeTracker
 import UIKit
 
+extension RecipesListCoordinator {
+    enum RecipesListRoute {
+        case addRecipeScreen
+        case recipeDetailsScreen
+        case settingsScreen
+    }
+
+    typealias Route = RecipesListRoute
+}
+
 final class RecipesListCoordinator: Destination {
-    let authManager: AuthenticationManager
-    let repository: DataRepository
-    var viewModel: RecipesListVM
-    let localFileManager: LocalFileManagerProtocol
-    let imageFetcherManager: ImageFetcherManagerProtocol
+    private let authManager: AuthenticationManager
+    private let repository: DataRepository
+    private let localFileManager: LocalFileManagerProtocol
+    private let imageFetcherManager: ImageFetcherManagerProtocol
+
+    lazy var viewModel = RecipesListVM(
+        repository: repository,
+        localFileManager: localFileManager,
+        imageFetcherManager: imageFetcherManager
+    )
 
     init(
         repository: DataRepository,
-        viewModel: RecipesListVM,
         authManager: AuthenticationManager,
         localFileManager: LocalFileManagerProtocol,
         imageFetcherManager: ImageFetcherManagerProtocol
     ) {
         self.repository = repository
-        self.viewModel = viewModel
         self.authManager = authManager
         self.localFileManager = localFileManager
         self.imageFetcherManager = imageFetcherManager
+
+        print("DEBUG: RecipesListCoordinator - init")
         super.init()
 #if DEBUG
         trackLifetime()
 #endif
+    }
+
+    deinit {
+        print("DEBUG: RecipesListCoordinator - deinit")
     }
 
     override func render() -> UIViewController {
@@ -39,42 +58,34 @@ final class RecipesListCoordinator: Destination {
         return controller
     }
 
-    // MARK: Navigation
+    func navigateTo(_ route: Route, recipe: RecipeModel? = nil) {
+        switch route {
+        case .addRecipeScreen:
+            let coordinator = AddRecipeCoordinator(
+                repository: repository,
+                localFileManager: localFileManager,
+                imageFetcherManager: imageFetcherManager
+            )
 
-    func navigateToAddRecipeScreen() {
-        let viewModel = AddRecipeViewModel(
-            repository: repository,
-            localFileManager: localFileManager,
-            imageFetcherManager: imageFetcherManager
-        )
-        let coordinator = AddRecipeCoordinator(viewModel: viewModel)
-        coordinator.parentCoordinator = self
-        navigator?.presentDestination(coordinator)
-    }
+            coordinator.parentCoordinator = self
+            navigator?.presentDestination(coordinator)
+        case .recipeDetailsScreen:
+            guard let recipe = recipe else { return }
+            let coordinator = RecipeDetailsCoordinator(
+                recipe: recipe,
+                repository: repository,
+                localFileManager: localFileManager,
+                imageFetcherManager: imageFetcherManager
+            )
 
-    func navigateToRecipeDetail(with recipe: RecipeModel) {
-        let viewModel = RecipeDetailsVM(
-            recipe: recipe,
-            repository: repository,
-            localFileManager: localFileManager,
-            imageFetcher: imageFetcherManager
-        )
-        let coordinator = RecipeDetailsCoordinator(
-            viewModel: viewModel,
-            recipe: recipe,
-            repository: repository,
-            localFileManager: localFileManager,
-            imageFetcherManager: imageFetcherManager
-        )
-        coordinator.parentCoordinator = self
-        navigator?.presentDestination(coordinator)
-    }
+            coordinator.parentCoordinator = self
+            navigator?.presentDestination(coordinator)
+        case .settingsScreen:
+            let coordinator = SettingsCoordinator(authManager: authManager)
 
-    func navigateToSettings() {
-        let viewModel = SettingsViewModel(authManager: authManager)
-        let coordinator = SettingsCoordinator(viewModel: viewModel)
-        coordinator.parentCoordinator = self
-        navigator?.presentDestination(coordinator)
+            coordinator.parentCoordinator = self
+            navigator?.presentDestination(coordinator)
+        }
     }
 }
 

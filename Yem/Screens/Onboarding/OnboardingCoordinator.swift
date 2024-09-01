@@ -10,14 +10,32 @@ import Foundation
 import LifetimeTracker
 import UIKit
 
-final class OnboardingCoordinator: Destination {
-    let authManager: AuthenticationManager
-    let dataRepository: DataRepository
-    let localFileManager: LocalFileManagerProtocol
-    let imageFetcherManager: ImageFetcherManagerProtocol
+extension OnboardingCoordinator {
+    enum OnboardingRoute {
+        case login
+        case register
+        case resetPassword
+        case privacyPolicy
+    }
 
-    lazy var viewModel = OnboardingVM(authManager: authManager)
+    enum OnboardingAlertType {
+        case loginError
+        case registerError
+        case resetPasswordError
+    }
+
+    typealias Route = OnboardingRoute
+    typealias AlertType = OnboardingAlertType
+}
+
+final class OnboardingCoordinator: Destination {
     weak var parentCoordinator: AppCoordinator?
+
+    private let authManager: AuthenticationManager
+    private let dataRepository: DataRepository
+    private let localFileManager: LocalFileManagerProtocol
+    private let imageFetcherManager: ImageFetcherManagerProtocol
+    private let viewModel: OnboardingVM
 
     init(
         authManager: AuthenticationManager,
@@ -29,6 +47,7 @@ final class OnboardingCoordinator: Destination {
         self.dataRepository = dataRepository
         self.localFileManager = localFileManager
         self.imageFetcherManager = imageFetcherManager
+        self.viewModel = OnboardingVM(authManager: authManager)
         super.init()
 #if DEBUG
         trackLifetime()
@@ -41,7 +60,7 @@ final class OnboardingCoordinator: Destination {
         return controller
     }
 
-    func navigateTo(_ route: OnboardingRoute) {
+    func navigateTo(_ route: Route) {
         let viewModel = viewModel
         switch route {
         case .login:
@@ -74,35 +93,41 @@ final class OnboardingCoordinator: Destination {
         navigator?.changeRoot(screen: tabBarAdapter)
     }
 
-    func presentAlert(title: String, message: String) {
-        let alertVC = ValidationAlertVC(title: title, message: message)
-        alertVC.modalPresentationStyle = .overFullScreen
-        alertVC.modalTransitionStyle = .crossDissolve
-        navigator?.presentAlert(alertVC)
+    func presentAlert(_ type: AlertType, title: String, message: String) {
+        switch type {
+        case .loginError:
+            let alertVC = ValidationAlertVC(title: title, message: message)
+            alertVC.modalPresentationStyle = .overFullScreen
+            alertVC.modalTransitionStyle = .crossDissolve
+            navigator?.presentAlert(alertVC)
+        case .registerError:
+            let alertVC = ValidationAlertVC(title: title, message: message)
+            alertVC.modalPresentationStyle = .overFullScreen
+            alertVC.modalTransitionStyle = .crossDissolve
+            navigator?.presentAlert(alertVC)
+        case .resetPasswordError:
+            let alertVC = ValidationAlertVC(title: title,
+                                            message: message,
+                                            dismissCompletion: {
+                                                self.pop()
+                                            })
+            alertVC.modalPresentationStyle = .overFullScreen
+            alertVC.modalTransitionStyle = .crossDissolve
+            navigator?.presentAlert(alertVC)
+        }
     }
-    
-    func presentPasswordResetAlert() {
-        let alertVC = ValidationAlertVC(title: "Password reset",
-                                        message: "Reset email sent successfully. Check your email.",
-                                        dismissCompletion: {
-                                            self.pop()
-                                        })
 
-        alertVC.modalPresentationStyle = .overFullScreen
-        alertVC.modalTransitionStyle = .crossDissolve
-        navigator?.presentAlert(alertVC)
-    }
-    
     func pop() {
         navigator?.pop()
     }
-}
 
-enum OnboardingRoute {
-    case login
-    case register
-    case resetPassword
-    case privacyPolicy
+    func dismissSheet() {
+        navigator?.dismissSheet()
+    }
+
+    func dismissAlert() {
+        navigator?.dismissAlert()
+    }
 }
 
 #if DEBUG

@@ -8,12 +8,30 @@
 import LifetimeTracker
 import UIKit
 
+extension SettingsCoordinator {
+    enum SettingsRoute {
+        case logout
+        case systemSettings
+    }
+
+    enum SettingsAlertType {
+        case logout
+        case aboutApp
+    }
+
+    typealias Route = SettingsRoute
+    typealias AlertType = SettingsAlertType
+}
+
 final class SettingsCoordinator: Destination {
     weak var parentCoordinator: Destination?
-    let viewModel: SettingsViewModel
 
-    init(viewModel: SettingsViewModel) {
-        self.viewModel = viewModel
+    private let authManager: AuthenticationManager
+    private let viewModel: SettingsVM
+
+    init(authManager: AuthenticationManager) {
+        self.authManager = authManager
+        self.viewModel = SettingsVM(authManager: authManager)
         super.init()
 #if DEBUG
         trackLifetime()
@@ -27,40 +45,44 @@ final class SettingsCoordinator: Destination {
         return controller
     }
 
-    // MARK: Alerts
-
-    func presentAboutAppAlert() {
-        let title = "About this app"
-        let message = "Yem is an app created for portfolio and educational purposes by Adam Zapiór. You can check out more of my projects and GitHub under the username @adamzapior"
-        let alertVC = ValidationAlertVC(title: title, message: message)
-        alertVC.modalPresentationStyle = .overFullScreen
-        alertVC.modalTransitionStyle = .crossDissolve
-
-        navigator?.presentAlert(alertVC)
-    }
-
-    func presentLogoutAlert() {
-        let title = "Are you sure?"
-        let message = "Do you want to logout from app?"
-
-        let alertVC = DualOptionAlertVC(title: title, message: message) {
+    func navigateTo(_ route: Route) {
+        switch route {
+        case .logout:
             Task {
                 await self.viewModel.signOut()
                 NotificationCenter.default.post(name: NSNotification.Name("ResetApplication"), object: nil)
             }
-        } cancelAction: {
-            self.navigator?.dismissAlert()
+        case .systemSettings:
+            navigator?.presentSystemSettings()
         }
-        alertVC.modalPresentationStyle = .overFullScreen
-        alertVC.modalTransitionStyle = .crossDissolve
-
-        navigator?.presentAlert(alertVC)
     }
-    
-    // MARK: Navigation
 
-    func presentSystemSettings() {
-        navigator?.presentSystemSettings()
+    func present(_ alert: AlertType, title: String, message: String) {
+        switch alert {
+        case .logout:
+            let alertVC = DualOptionAlertVC(title: title, message: message) {
+                self.navigateTo(.logout)
+            } cancelAction: {
+                self.navigator?.dismissAlert()
+            }
+
+            navigator?.presentAlert(alertVC)
+        case .aboutApp:
+            let alertVC = ValidationAlertVC(title: title, message: message)
+            navigator?.presentAlert(alertVC)
+        }
+    }
+
+    func pop() {
+        navigator?.pop()
+    }
+
+    func dismissSheet() {
+        navigator?.dismissSheet()
+    }
+
+    func dismissAlert() {
+        navigator?.dismissAlert()
     }
 }
 

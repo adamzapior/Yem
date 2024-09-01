@@ -8,12 +8,48 @@
 import LifetimeTracker
 import UIKit
 
+extension AddRecipeCoordinator {
+    enum AddRecipeRoute {
+        case ingredientsList
+        case addIngredient
+        case instructions
+        case addInstruction
+    }
+
+    enum AddRecipeAlertType {
+        case permissionAlert
+        case validationAlert
+    }
+
+    typealias Route = AddRecipeRoute
+    typealias AlertType = AddRecipeAlertType
+}
+
 final class AddRecipeCoordinator: Destination {
-    let viewModel: AddRecipeViewModel
     weak var parentCoordinator: Destination?
 
-    init(viewModel: AddRecipeViewModel) {
-        self.viewModel = viewModel
+    private let repository: DataRepositoryProtocol
+    private let localFleManager: LocalFileManagerProtocol
+    private let imageFetcherManager: ImageFetcherManagerProtocol
+    private let recipe: RecipeModel?
+    private let viewModel: AddRecipeViewModel
+
+    init(
+        repository: DataRepositoryProtocol,
+        localFileManager: LocalFileManagerProtocol,
+        imageFetcherManager: ImageFetcherManagerProtocol,
+        recipe: RecipeModel? = nil
+    ) {
+        self.repository = repository
+        self.localFleManager = localFileManager
+        self.imageFetcherManager = imageFetcherManager
+        self.recipe = recipe
+        self.viewModel = AddRecipeViewModel(
+            repository: repository,
+            localFileManager: localFileManager,
+            imageFetcherManager: imageFetcherManager,
+            existingRecipe: recipe
+        )
         super.init()
 #if DEBUG
         trackLifetime()
@@ -27,7 +63,7 @@ final class AddRecipeCoordinator: Destination {
         return addRecipeVC
     }
 
-    func navigateTo(_ route: AddRecipeRoute) {
+    func navigateTo(_ route: Route) {
         let viewModel = viewModel
         switch route {
         case .ingredientsList:
@@ -47,30 +83,31 @@ final class AddRecipeCoordinator: Destination {
         }
     }
 
-    func showSettingsAlert(for resource: String) {
-        let title = "Access to \(resource) is required"
-        let message = "Please enable access to the \(resource) in Settings."
-        
-        let alertVC = DualOptionAlertVC(title: title, message: message) {
-            self.navigator?.presentSystemSettings()
-            self.dismissAlert()
-        } cancelAction: {
-            self.dismissAlert()
-        }
-        
-        alertVC.modalPresentationStyle = .overFullScreen
-        alertVC.modalTransitionStyle = .crossDissolve
-        navigator?.presentAlert(alertVC)
-    }
-    
+    func presentAlert(_ alertType: AlertType, title: String, message: String, resourceName: String? = nil) {
+        switch alertType {
+        case .permissionAlert:
+            let alertVC = DualOptionAlertVC(title: title, message: message) {
+                self.navigator?.presentSystemSettings()
+                self.dismissAlert()
+            } cancelAction: {
+                self.dismissAlert()
+            }
 
-    func presentValidationAlert(title: String, message: String) {
-        let alertVC = ValidationAlertVC(title: title, message: message)
-        alertVC.modalPresentationStyle = .overFullScreen
-        alertVC.modalTransitionStyle = .crossDissolve
-        navigator?.presentAlert(alertVC)
+            alertVC.modalPresentationStyle = .overFullScreen
+            alertVC.modalTransitionStyle = .crossDissolve
+            navigator?.presentAlert(alertVC)
+        case .validationAlert:
+            let alertVC = ValidationAlertVC(title: title, message: message)
+            alertVC.modalPresentationStyle = .overFullScreen
+            alertVC.modalTransitionStyle = .crossDissolve
+            navigator?.presentAlert(alertVC)
+        }
     }
-    
+
+    func pop() {
+        navigator?.pop()
+    }
+
     func dismissAlert() {
         navigator?.dismissAlert()
     }
@@ -79,16 +116,9 @@ final class AddRecipeCoordinator: Destination {
         navigator?.dismissSheet()
     }
 
-    func dismissVCStack() {
+    func popUptoRoot() {
         navigator?.popUpToRoot()
     }
-}
-
-enum AddRecipeRoute {
-    case ingredientsList
-    case addIngredient
-    case instructions
-    case addInstruction
 }
 
 #if DEBUG

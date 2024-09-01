@@ -77,10 +77,6 @@ final class TabBarCoordinator: UITabBarController, DestinationProviding {
 
         let recipesCoordinator = RecipesListCoordinator(
             repository: dataRepository,
-            viewModel: RecipesListVM(
-                repository: dataRepository,
-                localFileManager: localFileManager, imageFetcherManager: imageFetcherManager
-            ),
             authManager: authManager,
             localFileManager: localFileManager, imageFetcherManager: imageFetcherManager
         )
@@ -89,10 +85,7 @@ final class TabBarCoordinator: UITabBarController, DestinationProviding {
 
         let shoppingCoordinator = ShopingListCoordinator(
             parentCoordinator: self,
-            repository: dataRepository,
-            viewModel: ShopingListVM(
-                repository: dataRepository
-            )
+            repository: dataRepository
         )
         shoppingNavigator = Navigator(start: shoppingCoordinator)
         shoppingCoordinator.navigator = shoppingNavigator

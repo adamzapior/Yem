@@ -8,6 +8,21 @@
 import LifetimeTracker
 import UIKit
 
+extension CookingModeCoordinator {
+    enum CookingModeRoute {
+        case ingredientSheet
+        case timerSheet
+    }
+
+    enum CookingModeAlertType {
+        case exitScreen
+        case timerFinished
+    }
+
+    typealias Route = CookingModeRoute
+    typealias AlertType = CookingModeAlertType
+}
+
 final class CookingModeCoordinator: Destination {
     weak var parentCoordinator: Destination?
     let viewModel: CookingModeViewModel
@@ -42,22 +57,51 @@ final class CookingModeCoordinator: Destination {
         return controller
     }
 
-    func openIngredientsSheet() {
-        let controller = CookingIngredientsListSheetVC(
-            coordinator: self,
-            viewModel: viewModel
-        )
-        navigator?.presentSheet(controller)
+    func navigateTo(_ route: Route) {
+        switch route {
+        case .ingredientSheet:
+            let controller = CookingIngredientsListSheetVC(
+                coordinator: self,
+                viewModel: viewModel
+            )
+            navigator?.presentSheet(controller)
+        case .timerSheet:
+            let controller = CookingTimerSheetVC(
+                coordinator: self,
+                viewModel: viewModel
+            )
+            navigator?.presentSheet(controller)
+        }
     }
 
-    func openTimeSheet() {
-        let controller = CookingTimerSheetVC(
-            coordinator: self,
-            viewModel: viewModel
-        )
-        navigator?.presentSheet(controller)
+    func presentAlert(_ type: AlertType, title: String, message: String) {
+        switch type {
+        case .exitScreen:
+            let alertVC = DualOptionAlertVC(title: title, message: message) {
+                self.navigator?.pop()
+                self.dismissAlert()
+            } cancelAction: {
+                self.dismissAlert()
+            }
+            alertVC.modalPresentationStyle = .overFullScreen
+            alertVC.modalTransitionStyle = .crossDissolve
+            navigator?.presentAlert(alertVC)
+        case .timerFinished:
+            let alertVC = ValidationAlertVC(title: title,
+                                            message: message,
+                                            dismissCompletion: {
+                                                self.viewModel.stopVibration()
+                                            })
+            alertVC.modalPresentationStyle = .overFullScreen
+            alertVC.modalTransitionStyle = .crossDissolve
+            navigator?.presentAlert(alertVC)
+        }
     }
-
+    
+    func pop() {
+        navigator?.pop()
+    }
+    
     func dismissSheet() {
         navigator?.dismissSheet()
     }
@@ -66,35 +110,6 @@ final class CookingModeCoordinator: Destination {
         navigator?.dismissAlert()
     }
 
-    // MARK: Alerts
-
-    func presentExitAlert() {
-        let title = "Are your sure?"
-        let message = "Your progress and timer will not be saved."
-
-        let alertVC = DualOptionAlertVC(title: title, message: message) {
-            self.navigator?.pop()
-            self.dismissAlert()
-        } cancelAction: {
-            self.dismissAlert()
-        }
-
-        alertVC.modalPresentationStyle = .overFullScreen
-        alertVC.modalTransitionStyle = .crossDissolve
-        navigator?.presentAlert(alertVC)
-    }
-
-    func presentTimerStoppedAlert() {
-        let alertVC = ValidationAlertVC(title: "Your timer has ended!",
-                                        message: "⏰⏰⏰",
-                                        dismissCompletion: {
-                                            self.viewModel.stopVibration()
-                                        })
-
-        alertVC.modalPresentationStyle = .overFullScreen
-        alertVC.modalTransitionStyle = .crossDissolve
-        navigator?.presentAlert(alertVC)
-    }
 }
 
 #if DEBUG
