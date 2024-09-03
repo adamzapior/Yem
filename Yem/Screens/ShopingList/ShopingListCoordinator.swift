@@ -67,13 +67,19 @@ final class ShopingListCoordinator: Destination {
         }
     }
 
-    func presentAlert(_ type: AlertType, title: String, message: String) {
+    func presentAlert(_ type: AlertType,
+                       title: String,
+                       message: String,
+                       confirmAction: @escaping () -> Void,
+                       cancelAction: @escaping () -> Void
+    ) {
         switch type {
         case .clearList:
             let alertVC = DualOptionAlertVC(title: title, message: message) {
-                self.viewModel.clearShopingList()
+                confirmAction()
                 self.dismissAlert()
             } cancelAction: {
+                cancelAction()
                 self.dismissAlert()
             }
             alertVC.modalPresentationStyle = .overFullScreen

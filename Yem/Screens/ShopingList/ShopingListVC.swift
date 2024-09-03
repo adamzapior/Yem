@@ -5,15 +5,23 @@
 //  Created by Adam Zapiór on 06/12/2023.
 //
 
+import Combine
 import LifetimeTracker
 import UIKit
 
 final class ShopingListVC: UIViewController {
-    weak var coordinator: ShopingListCoordinator?
-    var viewModel: ShopingListVM
+    private weak var coordinator: ShopingListCoordinator?
+    private let viewModel: ShopingListVM
 
     private let tableView = UITableView()
-    private let emptyTableLabel = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
+    private let emptyTableLabel = TextLabel(
+        fontStyle: .body,
+        fontWeight: .regular,
+        textColor: .ui.secondaryText,
+        textAlignment: .center
+    )
+
+    private let activityIndicatorView = UIActivityIndicatorView()
 
     private lazy var addNavItem = UIBarButtonItem(
         image: UIImage(
@@ -29,8 +37,12 @@ final class ShopingListVC: UIViewController {
         ),
         style: .plain,
         target: self,
-        action: #selector(trashButtonTapped)
+        action: #selector(trashItemButtonTapped)
     )
+
+    private var cancellables = Set<AnyCancellable>()
+
+    // MARK: - Lifecycle
 
     init(coordinator: ShopingListCoordinator, viewModel: ShopingListVM) {
         self.coordinator = coordinator
@@ -51,17 +63,15 @@ final class ShopingListVC: UIViewController {
         view.backgroundColor = .systemBackground
         title = "Shoping list"
 
-        viewModel.delegate = self
-
         setupNavigationBarButtons()
         setupTableView()
         setupEmptyTableLabel()
-
+        setupActivityIndicatorView()
         setupVoiceOverAccessibility()
 
-        Task {
-            viewModel.loadShopingList()
-        }
+        observeViewModelEventOutput()
+        
+        viewModel.inputEvent.send(.viewDidLoad)
     }
 
     // MARK: - Setup UI
@@ -92,9 +102,25 @@ final class ShopingListVC: UIViewController {
             make.centerX.equalToSuperview()
             make.centerY.equalToSuperview()
         }
+
+        emptyTableLabel.isHidden = true
     }
 
-    /// method for setting custom voice over commands without elements from TableView
+    private func setupActivityIndicatorView() {
+        view.addSubview(activityIndicatorView)
+        activityIndicatorView.startAnimating()
+
+        activityIndicatorView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview()
+        }
+    }
+
+    private func hideActivityIndicatorView() {
+        activityIndicatorView.stopAnimating()
+        activityIndicatorView.isHidden = true
+    }
+
     private func setupVoiceOverAccessibility() {
         addNavItem.isAccessibilityElement = true
         addNavItem.accessibilityLabel = "Add button"
@@ -106,9 +132,53 @@ final class ShopingListVC: UIViewController {
     }
 }
 
-// MARK: -  TableView delegate & data source
+// MARK: - Observe ViewModel Output & UI actions
 
-extension ShopingListVC: UITableViewDelegate, UITableViewDataSource {
+extension ShopingListVC {
+    private func observeViewModelEventOutput() {
+        viewModel.outputPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [unowned self] event in
+                DispatchQueue.main.async { [weak self] in
+                    self?.handleViewModelOutput(event: event)
+                }
+            }
+            .store(in: &cancellables)
+        print(cancellables.count)
+    }
+}
+
+// MARK: - Handle Output & UI Actions
+
+extension ShopingListVC {
+    private func handleViewModelOutput(event: ShopingListVM.Output) {
+        switch event {
+        case .reloadTable:
+            tableView.reloadData()
+        case .initialDataFetched:
+            hideActivityIndicatorView()
+        case .updateListStatus(isEmpty: let result):
+            switch result {
+            case true:
+                emptyTableLabel.isHidden = false
+            case false:
+                emptyTableLabel.isHidden = true
+            }
+        }
+    }
+}
+
+// MARK: -  UITableViewDataSource
+
+extension ShopingListVC: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
+    }
+}
+
+// MARK: -  UITableViewDelegate
+
+extension ShopingListVC: UITableViewDelegate {
     func numberOfSections(in tableView: UITableView) -> Int {
         return ShopingListType.allCases.count
     }
@@ -138,68 +208,47 @@ extension ShopingListVC: UITableViewDelegate, UITableViewDataSource {
             fatalError("ShopingListCell error")
         }
 
-        cell.isAccessibilityElement = true
-
-        let section = ShopingListType.allCases[indexPath.section]
-        switch section {
+        let sectionType = ShopingListType.allCases[indexPath.section]
+        let model: ShopingListModel
+        switch sectionType {
         case .unchecked:
-            cell.configure(with: viewModel.uncheckedList[indexPath.row], type: .unchecked)
-            cell.accessibilityLabel = "This is cell from unchecked section"
-            cell.accessibilityValue = "\(viewModel.uncheckedList[indexPath.row].value) \(viewModel.uncheckedList[indexPath.row].valueType) \(viewModel.uncheckedList[indexPath.row].name)"
+            model = viewModel.uncheckedList[indexPath.row]
+            cell.configure(with: model, type: .unchecked)
 
         case .checked:
-            cell.configure(with: viewModel.checkedList[indexPath.row], type: .checked)
-            cell.accessibilityLabel = "This is cell from checked section"
-            cell.accessibilityValue = "\(viewModel.checkedList[indexPath.row].value) \(viewModel.checkedList[indexPath.row].valueType) \(viewModel.checkedList[indexPath.row].name)"
+            model = viewModel.checkedList[indexPath.row]
+            cell.configure(with: model, type: .checked)
         }
 
-        cell.delegate = self
+        cell.eventPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [unowned self] event in
+                DispatchQueue.main.async { [weak self] in
+                    self?.handleCellEvent(event: event, indexPath: indexPath)
+                }
+            }
+            .store(in: &cell.cancellables)
 
         return cell
     }
 
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return UITableView.automaticDimension
-    }
-}
+    // MARK: Cell Event
 
-// MARK: -  TableViewCell delegate
-
-extension ShopingListVC: ShopingListCellDelegate {
-    func checklistTapped(in cell: ShopingListCell) {
-        guard let indexPath = tableView.indexPath(for: cell) else {
-            return
-        }
+    func handleCellEvent(event: ShopingListCellEvent, indexPath: IndexPath) {
+        guard let sectionType = ShopingListType(rawValue: indexPath.section) else { return }
 
         var ingredient: ShopingListModel
-        switch indexPath.section {
-        case ShopingListType.unchecked.rawValue:
+        switch sectionType {
+        case .unchecked:
             ingredient = viewModel.uncheckedList[indexPath.row]
-        case ShopingListType.checked.rawValue:
+        case .checked:
             ingredient = viewModel.checkedList[indexPath.row]
-        default:
-            return
         }
-
         viewModel.updateIngredientCheckStatus(ingredient: &ingredient)
     }
 }
 
-// MARK: ViewModel delegate
-
-extension ShopingListVC: ShopingListVMDelegate {
-    func reloadTable() {
-        tableView.reloadData()
-
-        if viewModel.uncheckedList.isEmpty && viewModel.checkedList.isEmpty {
-            emptyTableLabel.isHidden = false
-        } else {
-            emptyTableLabel.isHidden = true
-        }
-    }
-}
-
-// MARK: - Navigation bar
+// MARK: - NavigationItems & Navigation
 
 extension ShopingListVC {
     func setupNavigationBarButtons() {
@@ -208,14 +257,30 @@ extension ShopingListVC {
         trashNavItem.tintColor = .red
     }
 
-    @objc func addItemButtonTapped(_ sender: UIBarButtonItem) {
-        coordinator?.presentAddItemSheet()
+    @objc func trashItemButtonTapped(_ sender: UIBarButtonItem) {
+        let title = "Remove ingredients"
+        let message = "Do you want to remove all ingredients from shoping list?"
+
+        guard let coordinator = coordinator else { return }
+
+        DispatchQueue.main.async { [weak self] in
+            coordinator.presentAlert(.clearList, title: title, message: message, confirmAction: {
+                self?.viewModel.clearShopingList()
+                coordinator.dismissAlert()
+            }) {
+                coordinator.dismissAlert()
+            }
+        }
     }
 
-    @objc func trashButtonTapped(_ sender: UIBarButtonItem) {
-        coordinator?.presentClearShopingListAlert()
+    @objc func addItemButtonTapped(_ sender: UIBarButtonItem) {
+        DispatchQueue.main.async { [weak self] in
+            self?.coordinator?.navigateTo(.addItemSheet)
+        }
     }
 }
+
+// MARK: - LifetimeTracker
 
 #if DEBUG
 extension ShopingListVC: LifetimeTrackable {

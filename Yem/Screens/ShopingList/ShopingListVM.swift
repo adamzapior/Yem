@@ -9,54 +9,67 @@ import Combine
 import Foundation
 import LifetimeTracker
 
-protocol ShopingListVMDelegate: AnyObject {
-    func reloadTable()
-}
+extension ShopingListVM {
+    enum Input {
+        case viewDidLoad
+    }
 
-protocol ShopingListAddIngredientSheetVCDelegate: AnyObject {
-    func delegateIngredientSheetError(_ type: ValidationErrorTypes)
+    enum Output {
+        case reloadTable
+        case initialDataFetched
+        case updateListStatus(isEmpty: Bool)
+    }
 }
 
 final class ShopingListVM {
     private let repository: DataRepositoryProtocol
-    private var cancellables: Set<AnyCancellable> = []
-
-    weak var delegate: ShopingListVMDelegate?
-    weak var delegateIngredientSheet: ShopingListAddIngredientSheetVCDelegate?
 
     var uncheckedList: [ShopingListModel] = []
     var checkedList: [ShopingListModel] = []
 
-    @Published var ingredientName: String = ""
-    @Published var ingredientValue: String = ""
-    @Published var ingredientValueType: String = ""
+    let inputEvent = PassthroughSubject<Input, Never>()
+    private var inputPublisher: AnyPublisher<Input, Never> {
+        inputEvent.eraseToAnyPublisher()
+    }
 
-    @Published var ingredientNameIsError: Bool = false
-    @Published var ingredientValueIsError: Bool = false
-    @Published var ingredientValueTypeIsError: Bool = false
+    private let outputEvent = PassthroughSubject<Output, Never>()
+    var outputPublisher: AnyPublisher<Output, Never> {
+        outputEvent.eraseToAnyPublisher()
+    }
 
-    var ingredientValueTypeArray: [IngredientValueType] = IngredientValueType.allCases
+    private var cancellables = Set<AnyCancellable>()
+
+    // MARK: Lifecycle
 
     init(repository: DataRepositoryProtocol) {
         self.repository = repository
 
         repository.shopingListPublisher
-            .sink(receiveValue: { [weak self] _ in
-                Task { [weak self] in
-                    self?.loadShopingList()
+            .sink(receiveValue: { [unowned self] _ in
+                Task {
+                    self.reloadShopingList()
                 }
             })
             .store(in: &cancellables)
+
+        observeInput()
 
 #if DEBUG
         trackLifetime()
 #endif
     }
 
+    // MARK: Public methods
+
     func loadShopingList() {
-        uncheckedList = repository.fetchShopingList(isChecked: false).successOrEmpty()
-        checkedList = repository.fetchShopingList(isChecked: true).successOrEmpty()
-        reloadTable()
+        Task {
+            uncheckedList = repository.fetchShopingList(isChecked: false).successOrEmpty()
+            checkedList = repository.fetchShopingList(isChecked: true).successOrEmpty()
+
+            outputEvent.send(.initialDataFetched)
+            checkIfShoppingListIsEmpty()
+            outputEvent.send(.reloadTable)
+        }
     }
 
     func updateIngredientCheckStatus(ingredient: inout ShopingListModel) {
@@ -71,98 +84,63 @@ final class ShopingListVM {
         }
 
         repository.updateShopingList(shopingList: ingredient)
-        reloadTable()
-    }
-
-    func addIngredientToList() -> Bool {
-        resetIngredientValidationFlags()
-        validateIngredientForm()
-
-        if hasIngredientValidationErrors() {
-            print("failed")
-            return false
-        }
-
-        repository.addIngredientsToShopingList(ingredients: [IngredientModel(id: UUID(), value: ingredientValue, valueType: ingredientValueType, name: ingredientName)])
-
-        clearIngredientProperties()
-        return true
+        outputEvent.send(.reloadTable)
     }
 
     func clearShopingList() {
         repository.clearShopingList()
-        reloadTable()
     }
 
-    func hasIngredientValidationErrors() -> Bool {
-        return ingredientNameIsError || ingredientValueIsError || ingredientValueTypeIsError
-    }
+    // MARK: Private methods
 
-    // MARK: - Validation
+    private func reloadShopingList() {
+        Task {
+            uncheckedList = repository.fetchShopingList(isChecked: false).successOrEmpty()
+            checkedList = repository.fetchShopingList(isChecked: true).successOrEmpty()
 
-    private func validateIngredientForm() {
-        validateIngredientName()
-        validateIngredientValue()
-        validateIngredientValueType()
-    }
-
-    private func resetIngredientValidationFlags() {
-        ingredientNameIsError = false
-        ingredientValueIsError = false
-        ingredientValueTypeIsError = false
-    }
-
-    private func validateIngredientName() {
-        if ingredientName.isEmpty {
-            ingredientNameIsError = true
-            delegateIngredientSheetError(.ingredientName)
+            checkIfShoppingListIsEmpty()
+            outputEvent.send(.reloadTable)
         }
     }
 
-    private func validateIngredientValue() {
-        let numberRegex = "^[0-9]+(\\.[0-9]{1,2})?$"
-        if ingredientValue.isEmpty || !NSPredicate(format: "SELF MATCHES %@", numberRegex).evaluate(with: ingredientValue) {
-            ingredientValueIsError = true
-            delegateIngredientSheetError(.ingredientValue)
-        }
-    }
+    private func checkIfShoppingListIsEmpty() {
+        let isEmpty = uncheckedList.isEmpty || checkedList.isEmpty
 
-    private func validateIngredientValueType() {
-        if ingredientValueType.isEmpty || !ingredientValueTypeArray.contains(where: { $0.displayName == ingredientValueType }) {
-            ingredientValueTypeIsError = true
-            delegateIngredientSheetError(.ingredientValueType)
-        }
-    }
-
-    private func clearIngredientProperties() {
-        ingredientName = ""
-        ingredientValue = ""
-        ingredientValueType = ""
-    }
-}
-
-// MARK: - ViewModel Delegates
-
-extension ShopingListVM: ShopingListAddIngredientSheetVCDelegate {
-    func delegateIngredientSheetError(_ type: ValidationErrorTypes) {
-        DispatchQueue.main.async {
-            self.delegateIngredientSheet?.delegateIngredientSheetError(type)
+        switch isEmpty {
+        case true:
+            outputEvent.send(.updateListStatus(isEmpty: true))
+        case false:
+            outputEvent.send(.updateListStatus(isEmpty: false))
         }
     }
 }
 
-extension ShopingListVM: ShopingListVMDelegate {
-    func reloadTable() {
-        DispatchQueue.main.async {
-            self.delegate?.reloadTable()
-        }
+// MARK: - Observe Input & Handling
+
+extension ShopingListVM {
+    private func observeInput() {
+        inputPublisher
+            .sink { [unowned self] event in
+                switch event {
+                case .viewDidLoad:
+                    self.handleViewDidLoad()
+                }
+            }
+            .store(in: &cancellables)
+    }
+
+    private func handleViewDidLoad() {
+        loadShopingList()
     }
 }
 
-enum ShopingListType: Int, CaseIterable {
-    case unchecked
-    case checked
+#if DEBUG
+extension ShopingListVM: LifetimeTrackable {
+    class var lifetimeConfiguration: LifetimeConfiguration {
+        return LifetimeConfiguration(maxCount: 1, groupName: "ViewModels")
+    }
 }
+#endif
 
 // MARK: - Result extension
 
@@ -177,11 +155,3 @@ extension Result where Success == [ShopingListModel], Failure == Error {
         }
     }
 }
-
-#if DEBUG
-extension ShopingListVM: LifetimeTrackable {
-    class var lifetimeConfiguration: LifetimeConfiguration {
-        return LifetimeConfiguration(maxCount: 1, groupName: "ViewModels")
-    }
-}
-#endif
