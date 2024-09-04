@@ -10,7 +10,7 @@ import LifetimeTracker
 import UIKit
 
 protocol ImageFetcherManagerProtocol {
-    func fetchImage(from url: URL, completion: @escaping (UIImage?) -> Void)
+    func fetchImage(from url: URL, completion: @escaping (Result<UIImage, Error>) -> Void)
 }
 
 final class ImageFetcherManager: ImageFetcherManagerProtocol {
@@ -20,7 +20,7 @@ final class ImageFetcherManager: ImageFetcherManagerProtocol {
 #endif
     }
 
-    func fetchImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
+    func fetchImage(from url: URL, completion: @escaping (Result<UIImage, Error>) -> Void) {
         let provider = LocalFileImageDataProvider(fileURL: url)
         let fetchImageView = UIImageView()
 
@@ -28,10 +28,12 @@ final class ImageFetcherManager: ImageFetcherManagerProtocol {
             switch result {
             case .success(let result):
                 DispatchQueue.main.async {
-                    completion(result.image)
+                    completion(.success(result.image))
                 }
-            case .failure:
-                completion(nil)
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
             }
         }
     }

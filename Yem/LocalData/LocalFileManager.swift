@@ -9,10 +9,10 @@ import LifetimeTracker
 import UIKit
 
 protocol LocalFileManagerProtocol {
-    func saveImage(with id: String, image: UIImage) -> Bool
-    func updateImage(with id: String, newImage: UIImage) -> Bool
-    func deleteImage(with id: String)
-    func imageUrl(for id: String) -> URL?
+    func saveImage(with id: String, image: UIImage) -> Result<Void, Error>
+    func updateImage(with id: String, newImage: UIImage) -> Result<Void, Error>
+    func deleteImage(with id: String) -> Result<Void, Error>
+    func imageUrl(for id: String) -> Result<URL, Error>
 }
 
 class LocalFileManager: FileManager, LocalFileManagerProtocol {
@@ -23,55 +23,56 @@ class LocalFileManager: FileManager, LocalFileManagerProtocol {
 #endif
     }
 
-    func saveImage(with id: String, image: UIImage) -> Bool {
+    func saveImage(with id: String, image: UIImage) -> Result<Void, Error> {
         guard let data = image.jpegData(compressionQuality: 0.5) else {
-            print("DEBUG: Could not convert image to JPEG")
-            return false
+            return .failure(NSError(domain: "ImageConversionError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Could not convert image to JPEG"]))
         }
 
         do {
             let url = URL.documentsDirectory.appendingPathComponent("\(id).jpg")
             try data.write(to: url)
-            return true
+            return .success(())
         } catch {
-            print(error.localizedDescription)
-            return false
+            return .failure(error)
         }
     }
 
-    func updateImage(with id: String, newImage: UIImage) -> Bool {
-        if let data = newImage.jpegData(compressionQuality: 0.5) {
-            let url = URL.documentsDirectory.appendingPathComponent("\(id).jpg")
-            do {
-                try data.write(to: url)
-                print("DEBUG: Image updated successfully")
-                return true
-            } catch {
-                print(error.localizedDescription)
-                return false
-            }
-        } else {
-            print("DEBUG: Could not process new image")
-            return false
+    func updateImage(with id: String, newImage: UIImage) -> Result<Void, Error> {
+        guard let data = newImage.jpegData(compressionQuality: 0.5) else {
+            return .failure(NSError(domain: "ImageConversionError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Could not process new image"]))
+        }
+
+        let url = URL.documentsDirectory.appendingPathComponent("\(id).jpg")
+        do {
+            try data.write(to: url)
+            print("DEBUG: Image updated successfully")
+            return .success(())
+        } catch {
+            return .failure(error)
         }
     }
 
-    func deleteImage(with id: String) {
+    func deleteImage(with id: String) -> Result<Void, Error> {
+        let url = URL.documentsDirectory.appendingPathComponent("\(id).jpg")
+        guard fileExists(atPath: url.path) else {
+            return .failure(NSError(domain: "FileNotFoundError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Image doesn't exist"]))
+        }
+
+        do {
+            try removeItem(at: url)
+            return .success(())
+        } catch {
+            return .failure(error)
+        }
+    }
+
+    func imageUrl(for id: String) -> Result<URL, Error> {
         let url = URL.documentsDirectory.appendingPathComponent("\(id).jpg")
         if fileExists(atPath: url.path) {
-            do {
-                try removeItem(at: url)
-            } catch {
-                print(error.localizedDescription)
-            }
+            return .success(url)
         } else {
-            print("DEBUG: Image doesn't exists")
+            return .failure(NSError(domain: "FileNotFoundError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Image URL not found"]))
         }
-    }
-
-    func imageUrl(for id: String) -> URL? {
-        let url = URL.documentsDirectory.appendingPathComponent("\(id).jpg")
-        return FileManager.default.fileExists(atPath: url.path) ? url : nil
     }
 }
 
