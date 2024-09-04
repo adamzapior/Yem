@@ -59,7 +59,7 @@ final class ShopingListVM {
 #endif
     }
 
-    // MARK: Public methods
+    // MARK: - Public methods
 
     func loadShopingList() {
         Task {
@@ -91,7 +91,7 @@ final class ShopingListVM {
         repository.clearShopingList()
     }
 
-    // MARK: Private methods
+    // MARK: - Private methods
 
     private func reloadShopingList() {
         Task {
@@ -115,7 +115,7 @@ final class ShopingListVM {
     }
 }
 
-// MARK: - Observe Input & Handling
+// MARK: - Observed Input & Handling
 
 extension ShopingListVM {
     private func observeInput() {
@@ -133,6 +133,8 @@ extension ShopingListVM {
         loadShopingList()
     }
 }
+
+// MARK: - LifetimeTracker
 
 #if DEBUG
 extension ShopingListVM: LifetimeTrackable {

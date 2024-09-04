@@ -101,6 +101,8 @@ final class ShopingListCoordinator: Destination {
     }
 }
 
+// MARK: - LifetimeTracker
+
 #if DEBUG
 extension ShopingListCoordinator: LifetimeTrackable {
     class var lifetimeConfiguration: LifetimeConfiguration {
