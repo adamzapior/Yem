@@ -57,9 +57,9 @@ final class ShopingListCoordinator: Destination {
     func navigateTo(_ route: ShopingListRoute) {
         switch route {
         case .addItemSheet:
-            let viewModel = AddIngredientSheetVM(repository: repository)
+            let viewModel = ShopingListAddItemSheetVM(repository: repository)
             navigator?.presentSheet(
-                ShopingListAddSheetVC(
+                ShopingListAddItemSheetVC(
                     viewModel: viewModel,
                     coordinator: self
                 )
