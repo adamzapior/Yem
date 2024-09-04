@@ -8,22 +8,6 @@
 import LifetimeTracker
 import UIKit
 
-extension RecipeDetailsCoordinator {
-    enum RecipeDetailsRoute {
-        case cookingMode
-        case recipeEditor
-    }
-
-    enum RecipeDetailsAlertType {
-        case addIngredientsToShopingList
-        case addToFavourites
-        case deleteRecipe
-    }
-
-    typealias Route = RecipeDetailsRoute
-    typealias AlertType = RecipeDetailsAlertType
-}
-
 final class RecipeDetailsCoordinator: Destination {
     weak var parentCoordinator: Destination?
 
@@ -31,8 +15,7 @@ final class RecipeDetailsCoordinator: Destination {
     private var repository: DataRepositoryProtocol
     private let localFileManager: LocalFileManagerProtocol
     private let imageFetcherManager: ImageFetcherManagerProtocol
-
-    let viewModel: RecipeDetailsVM
+    private let viewModel: RecipeDetailsVM
 
     init(
         recipe: RecipeModel,
@@ -78,7 +61,7 @@ final class RecipeDetailsCoordinator: Destination {
             coordinator.parentCoordinator = self
             navigator?.presentDestination(coordinator)
         case .recipeEditor:
-            let coordinator = AddRecipeCoordinator(
+            let coordinator = ManageRecipeCoordinator(
                 repository: repository,
                 localFileManager: localFileManager,
                 imageFetcherManager: imageFetcherManager,
@@ -90,34 +73,21 @@ final class RecipeDetailsCoordinator: Destination {
         }
     }
 
-    func presentAlert(_ type: AlertType, title: String, message: String) {
+    func presentAlert(
+        _ type: AlertType,
+
+        title: String,
+        message: String,
+
+        confirmAction: @escaping () -> Void,
+        cancelAction: @escaping () -> Void
+    ) {
         switch type {
-        case .addIngredientsToShopingList:
+        case .addIngredientsToShopingList, .addToFavourites, .deleteRecipe:
             let alertVC = DualOptionAlertVC(title: title, message: message) {
-                self.viewModel.addIngredientsToShopingList()
-                self.navigator?.dismissAlert()
+                confirmAction()
             } cancelAction: {
-                self.navigator?.dismissAlert()
-            }
-            alertVC.modalPresentationStyle = .overFullScreen
-            alertVC.modalTransitionStyle = .crossDissolve
-            navigator?.presentAlert(alertVC)
-        case .addToFavourites:
-            let alertVC = DualOptionAlertVC(title: title, message: message) {
-                self.viewModel.toggleFavouriteStatus()
-                self.navigator?.dismissAlert()
-            } cancelAction: {
-                self.navigator?.dismissAlert()
-            }
-            alertVC.modalPresentationStyle = .overFullScreen
-            alertVC.modalTransitionStyle = .crossDissolve
-            navigator?.presentAlert(alertVC)
-        case .deleteRecipe:
-            let alertVC = DualOptionAlertVC(title: title, message: message) {
-                self.viewModel.deleteRecipe()
-                self.navigator?.pop()
-            } cancelAction: {
-                self.navigator?.dismissAlert()
+                cancelAction()
             }
             alertVC.modalPresentationStyle = .overFullScreen
             alertVC.modalTransitionStyle = .crossDissolve
@@ -141,6 +111,23 @@ final class RecipeDetailsCoordinator: Destination {
         navigator?.dismissAlert()
     }
 }
+
+// MARK: Helpers
+
+extension RecipeDetailsCoordinator {
+    enum Route {
+        case cookingMode
+        case recipeEditor
+    }
+
+    enum AlertType {
+        case addIngredientsToShopingList
+        case addToFavourites
+        case deleteRecipe
+    }
+}
+
+// MARK: - LifetimeTracker
 
 #if DEBUG
 extension RecipeDetailsCoordinator: LifetimeTrackable {

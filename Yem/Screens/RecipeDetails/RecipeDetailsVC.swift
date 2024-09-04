@@ -5,14 +5,14 @@
 //  Created by Adam Zapiór on 20/02/2024.
 //
 
+import Combine
 import LifetimeTracker
 import SnapKit
 import UIKit
 
 final class RecipeDetailsVC: UIViewController {
-    let recipe: RecipeModel
-    let viewModel: RecipeDetailsVM
-    weak var coordinator: RecipeDetailsCoordinator?
+    private weak var coordinator: RecipeDetailsCoordinator?
+    private let viewModel: RecipeDetailsVM
         
     private let scrollView = UIScrollView()
     private let contentView = UIView()
@@ -37,6 +37,8 @@ final class RecipeDetailsVC: UIViewController {
     
     private let instructionsSubtitleLabel = UILabel()
     private let instructionsContainer = UIView()
+    
+    private var cancellables = Set<AnyCancellable>()
 
     private lazy var cookNavItem = UIBarButtonItem(
         image: UIImage(systemName: "play"),
@@ -77,7 +79,7 @@ final class RecipeDetailsVC: UIViewController {
         image: UIImage(systemName: "trash"),
         style: .plain,
         target: self,
-        action: #selector(trashButtonTapped)
+        action: #selector(trashItemButtonTapped)
     )
     
     private lazy var moreNavItem: UIBarButtonItem = {
@@ -93,7 +95,7 @@ final class RecipeDetailsVC: UIViewController {
             image: UIImage(systemName: "trash"),
             attributes: .destructive
         ) { [weak self] _ in
-            self?.trashButtonTapped(self!.trashNavItem)
+            self?.trashItemButtonTapped(self!.trashNavItem)
         }
         
         let menu = UIMenu(title: "", children: [editAction, deleteAction])
@@ -108,12 +110,11 @@ final class RecipeDetailsVC: UIViewController {
     
     // MARK: - Lifecycle
 
-    init(recipe: RecipeModel, viewModel: RecipeDetailsVM, coordinator: RecipeDetailsCoordinator) {
-        self.recipe = recipe
+    init(viewModel: RecipeDetailsVM, coordinator: RecipeDetailsCoordinator) {
         self.viewModel = viewModel
         self.coordinator = coordinator
         
-        if recipe.isFavourite {
+        if viewModel.recipe.isFavourite {
             bookmarkIconString = bookmarkIconFilled
         } else {
             bookmarkIconString = bookmarkIconEmpty
@@ -134,29 +135,24 @@ final class RecipeDetailsVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        viewModel.delegate = self
-        
         setupNavigationBarButtons()
         
         setupScrollView()
         setupContentView()
         
         setupPhotoView()
-        loadPhotoView()
-        
         setupDetailsSubtitleLabel()
         setupDetailsContainer()
         setupRecipeDetailsViews()
-        
         setupIngredientsSubtitleLabel()
         setupIngredientsContainer()
-        
         setupInstructionsSubtitleLabel()
         setupInstructionsContainer()
         
-        configureRecipeViewData()
-        
         setupVoiceOverAccessibility()
+        
+        observedViewModelOutput()
+        viewModel.inputEvent.send(.viewDidLoad)
     }
 
     // MARK: - UI Setup
@@ -190,15 +186,6 @@ final class RecipeDetailsVC: UIViewController {
             make.top.equalTo(contentView.snp.top).offset(18)
             make.leading.trailing.equalToSuperview().inset(18)
             make.height.equalTo(200)
-        }
-    }
-    
-    private func loadPhotoView() {
-        viewModel.loadRecipeImage(recipe: recipe) { image in
-            guard let image = image else {
-                return
-            }
-            self.photoView.updatePhoto(with: image)
         }
     }
     
@@ -271,6 +258,32 @@ final class RecipeDetailsVC: UIViewController {
             make.width.equalTo(spicyView.snp.width)
             make.bottom.equalToSuperview()
         }
+        
+        nameView.configure(
+            titleText: "Name",
+            valueText: viewModel.recipe.name
+        )
+        categoryView.configure(
+            titleText: "Category",
+            valueText: viewModel.recipe.category.rawValue
+        )
+        servingView.configure(
+            titleText: "Serving",
+            valueText: viewModel.recipe.serving
+        )
+        
+        prepTiemView.configure(
+            titleText: "Prep time",
+            valueText: "\(viewModel.recipe.perpTimeHours)h \(viewModel.recipe.perpTimeMinutes)min"
+        )
+        spicyView.configure(
+            titleText: "Spicy",
+            valueText: viewModel.recipe.spicy.rawValue
+        )
+        difficultyView.configure(
+            titleText: "Difficulty",
+            valueText: viewModel.recipe.difficulty.rawValue
+        )
     }
     
     private func setupIngredientsSubtitleLabel() {
@@ -317,11 +330,11 @@ final class RecipeDetailsVC: UIViewController {
             make.trailing.equalToSuperview()
         }
          
-        for ingredient in recipe.ingredientList {
+        for ingredient in viewModel.recipe.ingredientList {
             let ingredientView = IngredientView()
             ingredientView.configure(
                 name: ingredient.name.lowercased(),
-                value: "\(ingredient.value) \(ingredient.valueType.lowercased())"
+                value: "\(ingredient.value) \(ingredient.valueType.name.lowercased())"
             )
             
             ingredientView.isAccessibilityElement = true
@@ -330,39 +343,7 @@ final class RecipeDetailsVC: UIViewController {
             ingredientsStackView.addArrangedSubview(ingredientView)
         }
     }
-    
-//    private func setupIngredientsContainer() {
-//        contentView.addSubview(ingredientsContainer)
-//
-//        ingredientsContainer.snp.makeConstraints { make in
-//            make.top.equalTo(ingredientsSubtitleLabel.snp.bottom).offset(6)
-//            make.leading.trailing.equalToSuperview().inset(18)
-//            make.height.greaterThanOrEqualTo(64)
-//        }
-//
-//        let ingredientsStackView = UIStackView()
-//        ingredientsStackView.axis = .vertical
-//        ingredientsStackView.spacing = 12
-//        ingredientsStackView.alignment = .fill
-//        ingredientsStackView.distribution = .fill
-//
-//        ingredientsContainer.addSubview(ingredientsStackView)
-//
-//        ingredientsStackView.snp.makeConstraints { make in
-//            make.edges.equalToSuperview()
-//        }
-//
-//        for ingredient in recipe.ingredientList {
-//            let ingredientView = DetailsView()
-//            ingredientView.configure(
-//                titleText: "\(ingredient.value) \(ingredient.valueType.lowercased())",
-//                valueText: ingredient.name.lowercased()
-//            )
-//
-//            ingredientsStackView.addArrangedSubview(ingredientView)
-//        }
-//    }
-    
+
     private func setupInstructionsSubtitleLabel() {
         contentView.addSubview(instructionsSubtitleLabel)
          
@@ -400,7 +381,7 @@ final class RecipeDetailsVC: UIViewController {
             make.edges.equalToSuperview()
         }
          
-        for instruction in recipe.instructionList.sorted(by: { $0.index < $1.index }) {
+        for instruction in viewModel.recipe.instructionList.sorted(by: { $0.index < $1.index }) {
             let instructionView = DetailsView()
             instructionView.configure(
                 titleText: "STEP \(instruction.index)",
@@ -413,34 +394,6 @@ final class RecipeDetailsVC: UIViewController {
 
             instructionsStackView.addArrangedSubview(instructionView)
         }
-    }
-    
-    private func configureRecipeViewData() {
-        nameView.configure(
-            titleText: "Name",
-            valueText: recipe.name
-        )
-        categoryView.configure(
-            titleText: "Category",
-            valueText: recipe.category.rawValue
-        )
-        servingView.configure(
-            titleText: "Serving",
-            valueText: recipe.serving
-        )
-        
-        prepTiemView.configure(
-            titleText: "Prep time",
-            valueText: "\(recipe.perpTimeHours)h \(recipe.perpTimeMinutes)min"
-        )
-        spicyView.configure(
-            titleText: "Spicy",
-            valueText: recipe.spicy.rawValue
-        )
-        difficultyView.configure(
-            titleText: "Difficulty",
-            valueText: recipe.difficulty.rawValue
-        )
     }
     
     private func setupVoiceOverAccessibility() {
@@ -471,27 +424,27 @@ final class RecipeDetailsVC: UIViewController {
         
         nameView.isAccessibilityElement = true
         nameView.accessibilityLabel = "Recipe name"
-        nameView.accessibilityValue = recipe.name
+        nameView.accessibilityValue = viewModel.recipe.name
         
         categoryView.isAccessibilityElement = true
         categoryView.accessibilityLabel = "Recipe category"
-        categoryView.accessibilityValue = recipe.category.displayName
+        categoryView.accessibilityValue = viewModel.recipe.category.displayName
 
         servingView.isAccessibilityElement = true
         servingView.accessibilityLabel = "Recipe serving count"
-        servingView.accessibilityValue = recipe.serving
+        servingView.accessibilityValue = viewModel.recipe.serving
         
         prepTiemView.isAccessibilityElement = true
         prepTiemView.accessibilityLabel = "Recipe perp time"
-        prepTiemView.accessibilityValue = recipe.getPerpTimeString()
+        prepTiemView.accessibilityValue = viewModel.recipe.getPerpTimeString()
         
         spicyView.isAccessibilityElement = true
         spicyView.accessibilityLabel = "Recipe spicy level"
-        spicyView.accessibilityValue = recipe.spicy.displayName
+        spicyView.accessibilityValue = viewModel.recipe.spicy.displayName
         
         difficultyView.isAccessibilityElement = true
         difficultyView.accessibilityLabel = "Recipe difficulty level"
-        difficultyView.accessibilityValue = recipe.difficulty.displayName
+        difficultyView.accessibilityValue = viewModel.recipe.difficulty.displayName
         
         ingredientsSubtitleLabel.isAccessibilityElement = true
         ingredientsSubtitleLabel.accessibilityLabel = "Recipe ingredients"
@@ -503,10 +456,47 @@ final class RecipeDetailsVC: UIViewController {
     }
 }
 
-// MARK: - Navigation bar
+// MARK: - Observed Output & Handling
 
 extension RecipeDetailsVC {
-    func setupNavigationBarButtons() {
+    private func observedViewModelOutput() {
+        viewModel.outputPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [unowned self] event in
+                DispatchQueue.main.async { [weak self] in
+                    self?.handleViewModelOutput(event: event)
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func handleViewModelOutput(event: RecipeDetailsVM.Output) {
+        switch event {
+        case .recipeFavouriteValueChanged(let value):
+            changeBookmarkNavItemIcon(isRecipeFavourite: value)
+        case .updatePhoto(let image):
+            loadPhotoView(image: image)
+        }
+    }
+    
+    private func changeBookmarkNavItemIcon(isRecipeFavourite: Bool) {
+        switch isRecipeFavourite {
+        case true:
+            bookmarkNavItem.image = UIImage(systemName: bookmarkIconFilled)
+        case false:
+            bookmarkNavItem.image = UIImage(systemName: bookmarkIconEmpty)
+        }
+    }
+    
+    private func loadPhotoView(image: UIImage) {
+        photoView.updatePhoto(with: image)
+    }
+}
+
+// MARK: - NavigationItems & Navigation
+
+extension RecipeDetailsVC {
+    private func setupNavigationBarButtons() {
         navigationItem.setRightBarButtonItems(
             [
                 moreNavItem,
@@ -519,40 +509,73 @@ extension RecipeDetailsVC {
     }
     
     @objc func playButtonTapped(_ sender: UIBarButtonItem) {
-        coordinator?.navigateToCookingMode()
+        coordinator?.navigateTo(.cookingMode)
     }
     
     @objc func basketButtonTapped(_ sender: UIBarButtonItem) {
-        coordinator?.presentAddIngredientsToShopingListAlert()
-    }
-
-    @objc func bookmarkButtonTapped(_ sender: UIBarButtonItem) {
-        coordinator?.presentAddToFavouritesAlert()
-    }
-    
-    @objc func pencilButtonTapped(_ sender: UIBarButtonItem) {
-        coordinator?.navigateToRecipeEditor()
-    }
-
-    @objc func trashButtonTapped(_ sender: UIBarButtonItem) {
-        coordinator?.presentDeleteRecipeAlert()
-    }
-}
-
-// MARK: Delegate methods
-
-extension RecipeDetailsVC: RecipeDetailsVMDelegate {
-    func isFavouriteValueChanged(to: Bool) {
-        DispatchQueue.main.async {
-            switch to {
-            case true:
-                self.bookmarkNavItem.image = UIImage(systemName: self.bookmarkIconFilled)
-            case false:
-                self.bookmarkNavItem.image = UIImage(systemName: self.bookmarkIconEmpty)
+        let title = "Add ingredients to list"
+        let message = "Do you want o add all ingredients to shoping list?"
+        
+        guard let coordinator = coordinator else { return }
+          
+        DispatchQueue.main.async { [weak self] in
+            coordinator.presentAlert(.addIngredientsToShopingList, title: title, message: message, confirmAction: {
+                self?.viewModel.addIngredientsToShopingList()
+                coordinator.dismissAlert()
+            }) {
+                coordinator.dismissAlert()
             }
         }
     }
+
+    @objc func bookmarkButtonTapped(_ sender: UIBarButtonItem) {
+        let isFavorite = viewModel.isFavourite
+
+        let title = isFavorite ? "Remove from favorites" : "Add to favorites"
+        let message = isFavorite ? "Do you want to remove this recipe from your favorites?" : "Do you want to add this recipe to your favorites?"
+
+        guard let coordinator = coordinator else { return }
+          
+        DispatchQueue.main.async { [weak self] in
+            coordinator.presentAlert(.addToFavourites, title: title, message: message, confirmAction: {
+                self?.viewModel.toggleFavouriteStatus()
+                coordinator.dismissAlert()
+            }) {
+                coordinator.dismissAlert()
+            }
+        }
+    }
+    
+    @objc func pencilButtonTapped(_ sender: UIBarButtonItem) {
+        DispatchQueue.main.async { [weak self] in
+            self?.coordinator?.navigateTo(.recipeEditor)
+        }
+    }
+
+    @objc func trashItemButtonTapped(_ sender: UIBarButtonItem) {
+        let title = "Remove recipe"
+        let message = "Do you want to remove this recipe from your recipes list?"
+        
+        guard let coordinator = coordinator else { return }
+
+        DispatchQueue.main.async { [weak self] in
+            coordinator.presentAlert(.deleteRecipe, title: title, message: message, confirmAction: {
+                self?.viewModel.deleteRecipe()
+                coordinator.dismissAlert()
+            }) {
+                coordinator.dismissAlert()
+            }
+        }
+    }
+    
+    private func dismissAlert() {
+        DispatchQueue.main.async { [weak self] in
+            self?.coordinator?.dismissAlert()
+        }
+    }
 }
+
+// MARK: - LifetimeTracker
 
 #if DEBUG
 extension RecipeDetailsVC: LifetimeTrackable {

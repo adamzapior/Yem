@@ -104,7 +104,7 @@ final class ShopingListVM {
     }
 
     private func checkIfShoppingListIsEmpty() {
-        let isEmpty = uncheckedList.isEmpty || checkedList.isEmpty
+        let isEmpty = uncheckedList.isEmpty && checkedList.isEmpty
 
         switch isEmpty {
         case true:

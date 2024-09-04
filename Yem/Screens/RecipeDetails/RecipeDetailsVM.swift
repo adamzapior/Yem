@@ -5,24 +5,31 @@
 //  Created by Adam Zapiór on 20/02/2024.
 //
 
+import Combine
 import Foundation
 import Kingfisher
 import LifetimeTracker
 import UIKit
 
-protocol RecipeDetailsVMDelegate: AnyObject {
-    func isFavouriteValueChanged(to: Bool)
-}
-
 final class RecipeDetailsVM {
-    weak var delegate: RecipeDetailsVMDelegate?
-
-    let repository: DataRepositoryProtocol
-    let localFileManager: LocalFileManagerProtocol
-    let imageFetcher: ImageFetcherManagerProtocol
+    private let repository: DataRepositoryProtocol
+    private let localFileManager: LocalFileManagerProtocol
+    private let imageFetcher: ImageFetcherManagerProtocol
 
     var recipe: RecipeModel
     var isFavourite: Bool
+
+    let inputEvent = PassthroughSubject<Input, Never>()
+    private var inputPublisher: AnyPublisher<Input, Never> {
+        inputEvent.eraseToAnyPublisher()
+    }
+
+    private let outputEvent = PassthroughSubject<Output, Never>()
+    var outputPublisher: AnyPublisher<Output, Never> {
+        outputEvent.eraseToAnyPublisher()
+    }
+
+    private var cancellables = Set<AnyCancellable>()
 
     init(
         recipe: RecipeModel,
@@ -37,15 +44,11 @@ final class RecipeDetailsVM {
 
         isFavourite = recipe.isFavourite
 
-        print(recipe.isImageSaved.description)
+        observeInput()
 
 #if DEBUG
         trackLifetime()
 #endif
-    }
-
-    deinit {
-        print("DEBUG: RecipeDetailsVM deinit")
     }
 
     func loadRecipeImage(recipe: RecipeModel, completion: @escaping (UIImage?) -> Void) {
@@ -54,31 +57,75 @@ final class RecipeDetailsVM {
             return
         }
 
-        let imageUrl = localFileManager.imageUrl(for: recipe.id.uuidString)
-        guard let imageUrl = imageUrl else {
-            completion(nil)
-            return
-        }
+        let imageUrlResult = localFileManager.imageUrl(for: recipe.id.uuidString)
 
-        imageFetcher.fetchImage(from: imageUrl, completion: completion)
+        switch imageUrlResult {
+        case .success(let imageUrl):
+            imageFetcher.fetchImage(from: imageUrl) { result in
+                switch result {
+                case .success(let image):
+                    completion(image)
+                case .failure(let error):
+                    completion(nil)
+                    print("Error fetching image: \(error.localizedDescription)")
+                }
+            }
+        case .failure(let error):
+            print("Error retrieving image URL: \(error.localizedDescription)")
+        }
     }
+    
+    // Methods used in NavBar items : 
 
     func toggleFavouriteStatus() {
         let newFavouriteStatus = !recipe.isFavourite
         repository.updateRecipeFavouriteStatus(recipeId: recipe.id, isFavourite: newFavouriteStatus)
         recipe.isFavourite = newFavouriteStatus
         isFavourite = newFavouriteStatus
-        delegate?.isFavouriteValueChanged(to: newFavouriteStatus)
+        outputEvent.send(.recipeFavouriteValueChanged(to: newFavouriteStatus))
     }
 
     func addIngredientsToShopingList() {
-        repository.addIngredientsToShopingList(ingredients: recipe.ingredientList)
+        repository.addIngredientsToShoppingList(ingredients: recipe.ingredientList)
     }
 
     func deleteRecipe() {
         repository.deleteRecipe(withId: recipe.id)
     }
 }
+
+// MARK: - Observed Input
+
+extension RecipeDetailsVM {
+    private func observeInput() {
+        inputPublisher
+            .sink { [unowned self] event in
+                switch event {
+                case .viewDidLoad:
+                    self.loadRecipeImage(recipe: recipe) { image in
+                        guard let image = image else { return }
+                        self.outputEvent.send(.updatePhoto(image))
+                    }
+                }
+            }
+            .store(in: &cancellables)
+    }
+}
+
+// MARK: - Input & Output Definitions
+
+extension RecipeDetailsVM {
+    enum Input {
+        case viewDidLoad
+    }
+
+    enum Output {
+        case updatePhoto(UIImage)
+        case recipeFavouriteValueChanged(to: Bool)
+    }
+}
+
+// MARK: - LifetimeTracker
 
 #if DEBUG
 extension RecipeDetailsVM: LifetimeTrackable {

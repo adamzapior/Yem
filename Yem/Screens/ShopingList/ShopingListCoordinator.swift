@@ -77,10 +77,8 @@ final class ShopingListCoordinator: Destination {
         case .clearList:
             let alertVC = DualOptionAlertVC(title: title, message: message) {
                 confirmAction()
-                self.dismissAlert()
             } cancelAction: {
                 cancelAction()
-                self.dismissAlert()
             }
             alertVC.modalPresentationStyle = .overFullScreen
             alertVC.modalTransitionStyle = .crossDissolve
