@@ -11,26 +11,33 @@ import Foundation
 import LifetimeTracker
 
 protocol DataRepositoryProtocol {
+    // Publishers
     var recipesInsertedPublisher: PassthroughSubject<ObjectChange, Never> { get }
     var recipesDeletedPublisher: PassthroughSubject<ObjectChange, Never> { get }
     var recipesUpdatedPublisher: PassthroughSubject<ObjectChange, Never> { get }
     var shopingListPublisher: PassthroughSubject<ObjectChange, Never> { get }
 
-    func save() -> Bool
+    // Transaction managment
     func beginTransaction()
     func endTransaction()
     func rollbackTransaction()
+
+    // Recipe operations
     func doesRecipeExist(with id: UUID) -> Bool
-    func addRecipe(recipe: RecipeModel)
-    func updateRecipe(recipe: RecipeModel)
-    func updateRecipeFavouriteStatus(recipeId: UUID, isFavourite: Bool)
-    func deleteRecipe(withId id: UUID)
-    func fetchAllRecipes() -> Result<[RecipeModel], Error>
-    func fetchRecipesWithName(_ name: String) -> Result<[RecipeModel]?, Error>
-    func fetchShopingList(isChecked: Bool) -> Result<[ShopingListModel], Error>
-    func updateShopingList(shopingList: ShopingListModel)
-    func clearShopingList()
-    func addIngredientsToShopingList(ingredients: [IngredientModel])
+    func addRecipe(recipe: RecipeModel) throws
+    func updateRecipe(recipe: RecipeModel) throws
+    func updateRecipeFavouriteStatus(recipeId: UUID, isFavourite: Bool) throws
+    func deleteRecipe(withId id: UUID) throws
+
+    // Fetch data
+    func fetchAllRecipes() throws -> [RecipeModel]
+    func fetchRecipesWithName(_ name: String) throws -> [RecipeModel]?
+    func fetchShopingList(isChecked: Bool) throws -> [ShopingListModel]
+
+    // Shoping list operations
+    func updateShopingList(shopingList: ShopingListModel) throws
+    func clearShopingList() throws
+    func addIngredientsToShopingList(ingredients: [IngredientModel]) throws
 }
 
 final class DataRepository: DataRepositoryProtocol {
@@ -46,6 +53,290 @@ final class DataRepository: DataRepositoryProtocol {
     init(moc: CoreDataManagerProtocol) {
         self.moc = moc
 
+        observeCoreDateChanges()
+
+#if DEBUG
+        trackLifetime()
+#endif
+    }
+
+    // MARK: - Transaction Management
+
+    func beginTransaction() {
+        moc.beginTransaction()
+    }
+
+    func endTransaction() {
+        moc.endTransaction()
+    }
+
+    func rollbackTransaction() {
+        moc.rollbackTransaction()
+    }
+
+    // MARK: - Recipe operations
+
+    func doesRecipeExist(with id: UUID) -> Bool {
+        let fetchRequest: NSFetchRequest<RecipeEntity> = RecipeEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        fetchRequest.fetchLimit = 1
+
+        do {
+            let count = try moc.context.count(for: fetchRequest)
+            return count > 0
+        } catch {
+            print("DEBUG: Error checking if recipe exists: \(error)")
+            return false
+        }
+    }
+
+    func addRecipe(recipe: RecipeModel) throws {
+        let data = RecipeEntity(context: moc.context)
+        data.id = recipe.id
+        data.name = recipe.name
+        data.servings = recipe.serving
+        data.prepTimeHours = recipe.perpTimeHours
+        data.prepTimeMinutes = recipe.perpTimeMinutes
+        data.spicy = recipe.spicy.rawValue
+        data.category = recipe.category.rawValue
+        data.difficulty = recipe.difficulty.rawValue
+        data.isImageSaved = recipe.isImageSaved
+        data.isFavourite = recipe.isFavourite
+
+        let ingredientEntities = recipe.ingredientList.map { ingredientModel -> IngredientEntity in
+            let ingredientEntity = IngredientEntity(context: moc.context)
+            ingredientEntity.id = ingredientModel.id
+            ingredientEntity.name = ingredientModel.name
+            ingredientEntity.value = ingredientModel.value
+            ingredientEntity.valueType = ingredientModel.valueType.name
+            return ingredientEntity
+        }
+
+        data.ingredients = Set(ingredientEntities)
+
+        let instructionEntities = recipe.instructionList.map { instructionModel -> InstructionEntity in
+            let entity = InstructionEntity(context: moc.context)
+            entity.id = UUID()
+            entity.indexPath = instructionModel.index
+            entity.text = instructionModel.text
+            return entity
+        }
+
+        data.instructions = Set(instructionEntities)
+
+        do {
+            try saveContext()
+        } catch {
+            throw DataRepositoryError.failedToSaveContext(error)
+        }
+    }
+
+    func updateRecipe(recipe: RecipeModel) throws {
+        let fetchRequest: NSFetchRequest<RecipeEntity> = RecipeEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", recipe.id as CVarArg)
+
+        do {
+            let results = try moc.context.fetch(fetchRequest)
+            guard let recipeToUpdate = results.first else {
+                throw DataRepositoryError.entityNotFound
+            }
+
+            recipeToUpdate.name = recipe.name
+            recipeToUpdate.servings = recipe.serving
+            recipeToUpdate.prepTimeHours = recipe.perpTimeHours
+            recipeToUpdate.prepTimeMinutes = recipe.perpTimeMinutes
+            recipeToUpdate.spicy = recipe.spicy.rawValue
+            recipeToUpdate.category = recipe.category.rawValue
+            recipeToUpdate.difficulty = recipe.difficulty.rawValue
+            recipeToUpdate.isImageSaved = recipe.isImageSaved
+            recipeToUpdate.isFavourite = recipe.isFavourite
+
+            recipeToUpdate.ingredients = Set(recipe.ingredientList.map { ingredientModel -> IngredientEntity in
+                let ingredientEntity = IngredientEntity(context: moc.context)
+                ingredientEntity.id = ingredientModel.id
+                ingredientEntity.name = ingredientModel.name
+                ingredientEntity.value = ingredientModel.value
+                ingredientEntity.valueType = ingredientModel.valueType.name
+                return ingredientEntity
+            })
+
+            recipeToUpdate.instructions = Set(recipe.instructionList.map { instructionModel -> InstructionEntity in
+                let entity = InstructionEntity(context: moc.context)
+                entity.id = UUID()
+                entity.indexPath = instructionModel.index
+                entity.text = instructionModel.text
+                return entity
+            })
+
+            try saveContext()
+        } catch let error as DataRepositoryError {
+            throw error
+        } catch {
+            throw DataRepositoryError.failedToFetchData(error)
+        }
+    }
+
+    func updateRecipeFavouriteStatus(recipeId: UUID, isFavourite: Bool) throws {
+        let fetchRequest: NSFetchRequest<RecipeEntity> = RecipeEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", recipeId as CVarArg)
+
+        guard let recipeToUpdate = try moc.context.fetch(fetchRequest).first else {
+            print("DEBUG: No RecipeEntity found with the specified ID to update.")
+            return
+        }
+
+        recipeToUpdate.isFavourite = isFavourite
+        try saveContext()
+    }
+
+    // MARK: ShopingList operations
+
+    func addIngredientsToShopingList(ingredients: [IngredientModel]) throws {
+        let data = ShopingListEntity(context: moc.context)
+        data.id = UUID()
+        data.isChecked = false
+
+        for ingredient in ingredients {
+            data.name = ingredient.name
+            data.value = ingredient.value
+            data.valueType = ingredient.valueType.name
+        }
+
+        do {
+            try moc.context.save()
+            print("DEBUG: Ingredients added to shopping list and context saved.")
+        } catch {
+            print("DEBUG: Error adding ingredients to shopping list: \(error)")
+        }
+    }
+
+    func updateShopingList(shopingList: ShopingListModel) throws {
+        let fetchRequest: NSFetchRequest<ShopingListEntity> = ShopingListEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", shopingList.id as CVarArg)
+
+        guard let shopingListToUpdate = try moc.context.fetch(fetchRequest).first else {
+            print("DEBUG: No ShopingListEntity found with the specified ID to update.")
+            return
+        }
+
+        shopingListToUpdate.name = shopingList.name
+        shopingListToUpdate.value = shopingList.value
+        shopingListToUpdate.valueType = shopingList.valueType
+        shopingListToUpdate.isChecked = shopingList.isChecked
+
+        try saveContext()
+    }
+
+    func clearShopingList() throws {
+        let fetchRequest: NSFetchRequest<ShopingListEntity> = ShopingListEntity.fetchRequest()
+
+        do {
+            let results = try moc.context.fetch(fetchRequest)
+            for object in results {
+                moc.context.delete(object)
+            }
+            try moc.context.save()
+            print("DEBUG: All objects removed from ShopingListEntity and context saved.")
+        } catch {
+            print("DEBUG: Error clearing shopping list: \(error)")
+        }
+    }
+
+    // MARK: Delete methods
+
+    func deleteRecipe(withId id: UUID) throws {
+        let fetchRequest: NSFetchRequest<RecipeEntity> = RecipeEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+
+        guard let recipeToDelete = try moc.context.fetch(fetchRequest).first else {
+            print("DEBUG: No RecipeEntity found with the specified ID.")
+            return
+        }
+
+        moc.context.delete(recipeToDelete)
+        try saveContext()
+    }
+
+    // MARK: - Fetch Methods
+
+    func fetchAllRecipes() throws -> [RecipeModel] {
+        let fetchRequest: NSFetchRequest<RecipeEntity> = RecipeEntity.fetchRequest()
+
+        let entities = try moc.context.fetch(fetchRequest)
+        return entities.map { mapRecipeEntityToModel($0) }
+    }
+
+    func fetchRecipesWithName(_ name: String) throws -> [RecipeModel]? {
+        let fetchRequest: NSFetchRequest<RecipeEntity> = RecipeEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "name CONTAINS[cd] %@", name)
+
+        let entities = try moc.context.fetch(fetchRequest)
+        return entities.map { mapRecipeEntityToModel($0) }
+    }
+
+    func fetchShopingList(isChecked: Bool) throws -> [ShopingListModel] {
+        let fetchRequest: NSFetchRequest<ShopingListEntity> = ShopingListEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "isChecked == %@", NSNumber(value: isChecked))
+
+        let entities = try moc.context.fetch(fetchRequest)
+        return entities.map { mapShopingEntityToModel($0) }
+    }
+
+
+    private func saveContext() throws {
+        if moc.context.hasChanges {
+            do {
+                try moc.context.save()
+            } catch {
+                throw DataRepositoryError.failedToSaveContext(error)
+            }
+        }
+    }
+}
+
+// MARK: - Helper methods
+
+extension DataRepository {
+    func mapRecipeEntityToModel(_ recipeEntity: RecipeEntity) -> RecipeModel {
+        return RecipeModel(
+            id: recipeEntity.id,
+            name: recipeEntity.name,
+            serving: recipeEntity.servings,
+            perpTimeHours: recipeEntity.prepTimeHours,
+            perpTimeMinutes: recipeEntity.prepTimeMinutes,
+            spicy: RecipeSpicy(rawValue: recipeEntity.spicy) ?? .medium,
+            category: RecipeCategory(rawValue: recipeEntity.category) ?? .notSelected,
+            difficulty: RecipeDifficulty(rawValue: recipeEntity.difficulty) ?? .medium,
+            ingredientList: recipeEntity.ingredients.map { ingredient in
+                IngredientModel(
+                    id: ingredient.id,
+                    name: ingredient.name, value: ingredient.value,
+                    valueType: IngredientValueTypeModel.from(name: ingredient.valueType))
+            },
+            instructionList: recipeEntity.instructions.map { instruction in
+                InstructionModel(
+                    id: instruction.id,
+                    index: instruction.indexPath,
+                    text: instruction.text)
+            },
+            isImageSaved: recipeEntity.isImageSaved,
+            isFavourite: recipeEntity.isFavourite)
+    }
+
+    func mapShopingEntityToModel(_ shopingEntity: ShopingListEntity) -> ShopingListModel {
+        return ShopingListModel(
+            id: shopingEntity.id,
+            isChecked: shopingEntity.isChecked,
+            name: shopingEntity.name,
+            value: shopingEntity.value,
+            valueType: shopingEntity.valueType)
+    }
+}
+
+// MARK: - Observed CoreData publishers
+
+extension DataRepository {
+    func observeCoreDateChanges() {
         moc.allRecipesPublisher()
             .sink(receiveValue: { [weak self] recipeChange in
                 Task { [weak self] in
@@ -79,326 +370,20 @@ final class DataRepository: DataRepositoryProtocol {
                 }
             })
             .store(in: &cancellables)
-        
-#if DEBUG
-        trackLifetime()
-#endif
-    }
-
-    func save() -> Bool {
-        moc.saveContext()
-        return true
-    }
-
-    func beginTransaction() {
-        moc.beginTransaction()
-    }
-
-    func endTransaction() {
-        moc.endTransaction()
-    }
-
-    func rollbackTransaction() {
-        moc.rollbackTransaction()
-    }
-
-    func doesRecipeExist(with id: UUID) -> Bool {
-        let fetchRequest: NSFetchRequest<RecipeEntity> = RecipeEntity.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
-        fetchRequest.fetchLimit = 1
-
-        do {
-            let count = try moc.context.count(for: fetchRequest)
-            return count > 0
-        } catch {
-            print("DEBUG: Error checking if recipe exists: \(error)")
-            return false
-        }
-    }
-
-    func addRecipe(recipe: RecipeModel) {
-        let data = RecipeEntity(context: moc.context)
-        data.id = recipe.id
-        data.name = recipe.name
-        data.servings = recipe.serving
-        data.prepTimeHours = recipe.perpTimeHours
-        data.prepTimeMinutes = recipe.perpTimeMinutes
-        data.spicy = recipe.spicy.rawValue
-        data.category = recipe.category.rawValue
-        data.difficulty = recipe.difficulty.rawValue
-        data.isImageSaved = recipe.isImageSaved
-        data.isFavourite = recipe.isFavourite
-
-        var ingredientEntities = Set<IngredientEntity>()
-        for ingredientModel in recipe.ingredientList {
-            let ingredientEntity = IngredientEntity(context: moc.context)
-            ingredientEntity.id = ingredientModel.id
-            ingredientEntity.name = ingredientModel.name
-            ingredientEntity.value = ingredientModel.value
-            ingredientEntity.valueType = ingredientModel.valueType
-
-            ingredientEntities.insert(ingredientEntity)
-        }
-
-        data.ingredients = ingredientEntities
-
-        var instructionEntities = Set<InstructionEntity>()
-        for instructionList in recipe.instructionList {
-            let entity = InstructionEntity(context: moc.context)
-
-            entity.id = UUID()
-            entity.indexPath = instructionList.index
-            entity.text = instructionList.text
-
-            instructionEntities.insert(entity)
-        }
-
-        data.instructions = instructionEntities
-
-        do {
-            try moc.context.save()
-            print("DEBUG: Context saved after adding RecipeEntity")
-        } catch {
-            print("DEBUG: Error saving context: \(error)")
-        }
-    }
-
-    func updateRecipe(recipe: RecipeModel) {
-        let fetchRequest: NSFetchRequest<RecipeEntity> = RecipeEntity.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "id == %@", recipe.id as CVarArg)
-
-        do {
-            let results = try moc.context.fetch(fetchRequest)
-            if let recipeToUpdate = results.first {
-                // Update the fields
-                recipeToUpdate.name = recipe.name
-                recipeToUpdate.servings = recipe.serving
-                recipeToUpdate.prepTimeHours = recipe.perpTimeHours
-                recipeToUpdate.prepTimeMinutes = recipe.perpTimeMinutes
-                recipeToUpdate.spicy = recipe.spicy.rawValue
-                recipeToUpdate.category = recipe.category.rawValue
-                recipeToUpdate.difficulty = recipe.difficulty.rawValue
-                recipeToUpdate.isImageSaved = recipe.isImageSaved
-                recipeToUpdate.isFavourite = recipe.isFavourite
-
-                // Update ingredients
-                var ingredientEntities = Set<IngredientEntity>()
-                for ingredientModel in recipe.ingredientList {
-                    let ingredientEntity = IngredientEntity(context: moc.context)
-                    ingredientEntity.id = ingredientModel.id
-                    ingredientEntity.name = ingredientModel.name
-                    ingredientEntity.value = ingredientModel.value
-                    ingredientEntity.valueType = ingredientModel.valueType
-
-                    ingredientEntities.insert(ingredientEntity)
-                }
-
-                recipeToUpdate.ingredients = ingredientEntities
-
-                // Update instructions
-                var instructionEntities = Set<InstructionEntity>()
-                for instructionList in recipe.instructionList {
-                    let entity = InstructionEntity(context: moc.context)
-
-                    entity.id = UUID()
-                    entity.indexPath = instructionList.index
-                    entity.text = instructionList.text
-
-                    instructionEntities.insert(entity)
-                }
-
-                recipeToUpdate.instructions = instructionEntities
-
-                // Save the updated context
-                try moc.context.save()
-                print("DEBUG: RecipeEntity updated and context saved.")
-            } else {
-                print("DEBUG: No RecipeEntity found with the specified ID to update.")
-            }
-        } catch {
-            print("DEBUG: Error updating recipe: \(error)")
-        }
-    }
-
-    func updateRecipeFavouriteStatus(recipeId: UUID, isFavourite: Bool) {
-        let fetchRequest: NSFetchRequest<RecipeEntity> = RecipeEntity.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "id == %@", recipeId as CVarArg)
-
-        do {
-            let recipesToUpdate = try moc.context.fetch(fetchRequest)
-            guard let recipeToUpdate = recipesToUpdate.first else {
-                print("DEBUG: No RecipeEntity found with the specified ID to update.")
-                return
-            }
-
-            recipeToUpdate.isFavourite = isFavourite
-
-            try moc.context.save()
-            print("DEBUG: RecipeEntity favourite status updated and context saved.")
-        } catch {
-            print("DEBUG: Error updating recipe's favourite status: \(error)")
-        }
-    }
-
-    // MARK: Delete methods
-
-    func deleteRecipe(withId id: UUID) {
-        let fetchRequest: NSFetchRequest<RecipeEntity> = RecipeEntity.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
-
-        do {
-            let results = try moc.context.fetch(fetchRequest)
-            if let recipeToDelete = results.first {
-                moc.context.delete(recipeToDelete)
-                try moc.context.save()
-                print("DEBUG: RecipeEntity deleted and context saved.")
-            } else {
-                print("DEBUG: No RecipeEntity found with the specified ID.")
-            }
-        } catch {
-            print("DEBUG: Error deleting recipe: \(error)")
-        }
-    }
-
-    // MARK: Fetch methods
-
-    func fetchAllRecipes() -> Result<[RecipeModel], Error> {
-        do {
-            let recipes = try moc.fetchAllRecipes()
-
-            let result = recipes.map { recipe -> RecipeModel in
-                self.mapRecipeEntityToModel(recipe)
-            }
-            return .success(result)
-        } catch {
-            return .failure(error)
-        }
-    }
-
-    func fetchRecipesWithName(_ name: String) -> Result<[RecipeModel]?, Error> {
-        do {
-            guard let recipes = try moc.fetchRecipesWithName(name) else {
-                return .success(nil)
-            }
-
-            let result = recipes.map { recipe -> RecipeModel in
-                self.mapRecipeEntityToModel(recipe)
-            }
-
-            return .success(result)
-        } catch {
-            return .failure(error)
-        }
-    }
-
-    // MARK: Shoping list
-
-    func fetchShopingList(isChecked: Bool) -> Result<[ShopingListModel], Error> {
-        do {
-            let list = try moc.fetchShopingList(isChecked: isChecked).compactMap { $0 }
-
-            let result = list.map { list -> ShopingListModel in
-                ShopingListModel(id: list.id,
-                                 isChecked: list.isChecked,
-                                 name: list.name,
-                                 value: list.value,
-                                 valueType: list.valueType)
-            }
-            return .success(result)
-        } catch {
-            return .failure(error)
-        }
-    }
-
-    func updateShopingList(shopingList: ShopingListModel) {
-        let fetchRequest: NSFetchRequest<ShopingListEntity> = ShopingListEntity.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "id == %@", shopingList.id as CVarArg)
-
-        do {
-            let results = try moc.context.fetch(fetchRequest)
-            if let shopingListToUpdate = results.first {
-                /// Method fetch first result - one recipe is one uniqe id
-                shopingListToUpdate.name = shopingList.name
-                shopingListToUpdate.value = shopingList.value
-                shopingListToUpdate.valueType = shopingList.valueType
-                shopingListToUpdate.isChecked = shopingList.isChecked
-
-                if save() {
-                    print("DEBUG: ShopingListEntity updated and context saved.")
-                }
-            } else {
-                print("DEBUG: No ShopingListEntity found with the specified ID to update.")
-            }
-        } catch {
-            print("DEBUG: Error updating shoping list: \(error)")
-        }
-    }
-
-    func clearShopingList() {
-        let fetchRequest: NSFetchRequest<ShopingListEntity> = ShopingListEntity.fetchRequest()
-
-        do {
-            let results = try moc.context.fetch(fetchRequest)
-            for object in results {
-                moc.context.delete(object)
-            }
-            try moc.context.save()
-            print("DEBUG: All objects removed from ShopingListEntity and context saved.")
-        } catch {
-            print("DEBUG: Error clearing shopping list: \(error)")
-        }
-    }
-
-    /// Method used to add ingredients from recipe to shoping list in recipe details or single ingredient in shoping list screen
-    func addIngredientsToShopingList(ingredients: [IngredientModel]) {
-        let data = ShopingListEntity(context: moc.context)
-        data.id = UUID()
-        data.isChecked = false
-
-        for ingredient in ingredients {
-            data.name = ingredient.name
-            data.value = ingredient.value
-            data.valueType = ingredient.valueType
-        }
-
-        do {
-            try moc.context.save()
-            print("DEBUG: Ingredients added to shopping list and context saved.")
-        } catch {
-            print("DEBUG: Error adding ingredients to shopping list: \(error)")
-        }
     }
 }
+
+// MARK: - Error handling
 
 extension DataRepository {
-    func mapRecipeEntityToModel(_ recipeEntity: RecipeEntity) -> RecipeModel {
-        return RecipeModel(
-            id: recipeEntity.id,
-            name: recipeEntity.name,
-            serving: recipeEntity.servings,
-            perpTimeHours: recipeEntity.prepTimeHours,
-            perpTimeMinutes: recipeEntity.prepTimeMinutes,
-            spicy: RecipeSpicy(rawValue: recipeEntity.spicy) ?? .medium,
-            category: RecipeCategory(rawValue: recipeEntity.category) ?? .notSelected,
-            difficulty: RecipeDifficulty(rawValue: recipeEntity.difficulty) ?? .medium,
-            ingredientList: recipeEntity.ingredients.map { ingredient in
-                IngredientModel(
-                    id: ingredient.id,
-                    value: ingredient.value,
-                    valueType: ingredient.valueType,
-                    name: ingredient.name)
-            },
-            instructionList: recipeEntity.instructions.map { instruction in
-                InstructionModel(
-                    id: instruction.id,
-                    index: instruction.indexPath,
-                    text: instruction.text)
-            },
-            isImageSaved: recipeEntity.isImageSaved,
-            isFavourite: recipeEntity.isFavourite)
+    private enum DataRepositoryError: Error {
+        case entityNotFound
+        case failedToFetchData(Error)
+        case failedToSaveContext(Error)
+        case failedToDeleteEntity
+        case transactionFailure(String)
     }
 }
-
 
 #if DEBUG
 extension DataRepository: LifetimeTrackable {
