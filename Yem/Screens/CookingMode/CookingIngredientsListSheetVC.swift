@@ -5,10 +5,10 @@
 //  Created by Adam Zapiór on 18/08/2024.
 //
 
+import Combine
 import Foundation
 import LifetimeTracker
 import UIKit
-import Combine
 
 final class CookingIngredientsListSheetVC: UIViewController {
     weak var coordinator: CookingModeCoordinator?
@@ -16,7 +16,7 @@ final class CookingIngredientsListSheetVC: UIViewController {
 
     private let tableView = UITableView()
     private let emptyTableLabel = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
-    
+
     private var cancellables = Set<AnyCancellable>()
 
     init(coordinator: CookingModeCoordinator, viewModel: CookingModeViewModel) {
@@ -40,7 +40,7 @@ final class CookingIngredientsListSheetVC: UIViewController {
 
         setupTableView()
         setupSheet()
-        
+
         observeViewModelOutput()
     }
 
@@ -135,11 +135,11 @@ extension CookingIngredientsListSheetVC: UITableViewDataSource {
         switch sectionType {
         case .unchecked:
             model = viewModel.uncheckedList[indexPath.row]
-            cell.configure(with: model, type: .unchecked)
+            cell.configure(with: model, type: .unchecked, backgroundColor: .secondaryContainer)
 
         case .checked:
             model = viewModel.checkedList[indexPath.row]
-            cell.configure(with: model, type: .checked)
+            cell.configure(with: model, type: .checked, backgroundColor: .secondaryContainer)
         }
 
         cell.eventPublisher

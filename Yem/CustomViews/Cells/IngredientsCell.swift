@@ -37,7 +37,7 @@ final class IngredientsCell: UITableViewCell {
     private lazy var trashIcon: IconImage = {
         let icon = IconImage(
             systemImage: "trash",
-            color: .red,
+            color: .ui.deleteActionColor,
             textStyle: .body
         )
         let tapGesture = UITapGestureRecognizer(

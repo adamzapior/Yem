@@ -42,7 +42,7 @@ class ShopingListCell: UITableViewCell {
     private lazy var checklistIcon: IconImage = {
         let icon = IconImage(
             systemImage: checklistIconString,
-            color: .ui.cancelBackground,
+            color: .ui.checkboxColor,
             textStyle: .body
         )
         let tapGesture = UITapGestureRecognizer(
