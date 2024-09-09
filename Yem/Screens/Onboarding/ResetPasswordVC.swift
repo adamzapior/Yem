@@ -5,38 +5,40 @@
 //  Created by Adam Zapiór on 20/03/2024.
 //
 
-import FirebaseAuth
+import Combine
 import LifetimeTracker
 import UIKit
 
 final class ResetPasswordVC: UIViewController {
-    weak var coordinator: OnboardingCoordinator?
-    let viewModel: OnboardingVM
+    private weak var coordinator: OnboardingCoordinator?
+    private let viewModel: OnboardingVM
 
-    var content = UIView()
+    private let content = UIView()
 
-    let titleLabel = TextLabel(
+    private let titleLabel = TextLabel(
         fontStyle: .title2,
         fontWeight: .light,
         textColor: .ui.secondaryText,
         textAlignment: .center
     )
-    let loginLabel = TextLabel(
+    private let loginLabel = TextLabel(
         fontStyle: .footnote,
         fontWeight: .light,
         textColor: .ui.secondaryText
     )
-    let loginTextfield = TextfieldWithIcon(
+    private let loginTextfield = TextfieldWithIcon(
         iconImage: "info",
         placeholderText: "Enter your e-mail...",
         textColor: .ui.secondaryText
     )
 
-    let resetButton = ActionButton(
+    private let resetButton = ActionButton(
         title: "Try to reset...",
         backgroundColor: .ui.cancelBackground,
         isShadownOn: true
     )
+
+    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Lifecycle
 
@@ -60,13 +62,11 @@ final class ResetPasswordVC: UIViewController {
         view.backgroundColor = .systemBackground
 
         setupUI()
-        setupDelegate()
-        setupTag()
-        setupTextfieldBehaviour()
         setupTextfieldBehaviour()
 
-        viewModel.delegateResetOnb = self
-        resetButton.delegate = self
+        observeViewModelEventOutput()
+        observeTextfields()
+        observeActionButton()
     }
 
     // MARK: - UI Setup
@@ -127,74 +127,85 @@ final class ResetPasswordVC: UIViewController {
     }
 }
 
-extension ResetPasswordVC: TextfieldWithIconDelegate, ActionButtonDelegate {
-    func setupDelegate() {
-        loginTextfield.delegate = self
-    }
+// MARK: - Observe ViewModel Output & UI actions
 
-    func setupTag() {
-        loginTextfield.tag = 1
-    }
-
-    func textFieldDidBeginEditing(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
-        switch textfield.tag {
-        /// login:
-        case 1:
-            if let text = textfield.textField.text {
-                viewModel.login = text
+extension ResetPasswordVC {
+    private func observeViewModelEventOutput() {
+        viewModel.outputPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [unowned self] event in
+                self.handleViewModelOutput(event: event)
             }
-        default:
+            .store(in: &cancellables)
+    }
+
+    private func observeTextfields() {
+        loginTextfield.textField
+            .textPublisher
+            .sink { [unowned self] text in
+                self.viewModel.inputEvent.send(
+                    .sendString(
+                        .login(value: text ?? "")
+                    )
+                )
+            }
+            .store(in: &cancellables)
+    }
+
+    private func observeActionButton() {
+        resetButton
+            .tapPublisher
+            .sink { [unowned self] in
+                self.handleActionButtonEvent()
+            }
+            .store(in: &cancellables)
+    }
+}
+
+// MARK: - Handle Output & UI Actions
+
+extension ResetPasswordVC {
+    private func handleViewModelOutput(event: OnboardingVM.Output) {
+        switch event {
+        case .loginSuccesed:
             break
+        case .updateField(let textField):
+           handleUpdateField(for: textField)
+        case .showErrorAlert(let alert, message: let message):
+            presentAlert(alert, message: message)
         }
     }
 
-    func textFieldDidChange(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
-        switch textfield.tag {
-        /// login:
-        case 1:
-            if let text = textfield.textField.text {
-                viewModel.login = text
+    private func handleUpdateField(for field: OnboardingVM.LoginField) {
+        DispatchQueue.main.async { [weak self] in
+            if case .login(let value) = field {
+                self?.loginTextfield.textField.text = value
             }
-        default:
-            break
         }
     }
 
-    func textFieldDidEndEditing(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
-        switch textfield.tag {
-        /// login:
-        case 1:
-            if let text = textfield.textField.text {
-                viewModel.login = text
-            }
-        default:
-            break
-        }
-    }
-
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder() /// Hide keyboard
-        return true
-    }
-
-    func actionButtonTapped(_ button: ActionButton) {
+    private func handleActionButtonEvent() {
         Task {
-            do {
-                try await viewModel.resetPassword(email: viewModel.login)
+            try await viewModel.tryResetPassword()
+        }
+    }
+}
 
-                await MainActor.run {
-                    coordinator?.presentPasswordResetAlert()
-                }
+// MARK: - Navigation
+
+extension ResetPasswordVC {
+    private func presentAlert(_ type: OnboardingVM.AlertType, message: String) {
+        DispatchQueue.main.async { [weak self] in
+            if type == .resetPasswordFailed {
+                self?.coordinator?.presentAlert(.registerError, title: "Something went wrong!", message: message)
+            } else if type == .resetPasswordSuccesed {
+                self?.coordinator?.presentAlert(.registerError, title: "Password reset successfuly!", message: message)
             }
         }
     }
 }
 
-extension ResetPasswordVC: ResetPasswordVCDelegate {
-    func showResetErrorAlert() {
-        coordinator?.presentAlert(title: "Something went wrong!", message: viewModel.validationError)
-    }
-}
+// MARK: - LifetimeTracker
 
 #if DEBUG
 extension ResetPasswordVC: LifetimeTrackable {

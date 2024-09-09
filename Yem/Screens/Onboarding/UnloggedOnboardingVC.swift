@@ -5,19 +5,20 @@
 //  Created by Adam Zapiór on 20/03/2024.
 //
 
-import Kingfisher
+import Combine
+import CombineCocoa
 import LifetimeTracker
 import SnapKit
 import UIKit
 
 final class UnloggedOnboardingVC: UIViewController {
-    var viewModel: OnboardingVM
-    var coordinator: OnboardingCoordinator?
+    private weak var coordinator: OnboardingCoordinator?
+    private let viewModel: OnboardingVM
     
     private let scrollView = UIScrollView()
     private let contentView = UIView()
     
-    lazy var image = UIImageView()
+    private lazy var image = UIImageView()
         
     private let titleLabel = TextLabel(
         fontStyle: .title1,
@@ -43,6 +44,8 @@ final class UnloggedOnboardingVC: UIViewController {
         isShadownOn: true
     )
     
+    private var cancellables = Set<AnyCancellable>()
+
     // MARK: - Lifecycle
 
     init(viewModel: OnboardingVM, coordinator: OnboardingCoordinator) {
@@ -60,24 +63,13 @@ final class UnloggedOnboardingVC: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    deinit {
-        print("DEBUG: UnloggedOnboardingVC deinit")
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         setupUI()
-        setupDelegateAndDataSource()
         setupVoiceOverAccessibility()
-        
-        loginButton.delegate = self
-        registerButton.delegate = self
-        
-        loginButton.tag = 1
-        registerButton.tag = 2
-        
-//        coordinator?.navigator?.setNavigationBarHidden()
+    
+        observeButtons()
     }
 
     // MARK: - UI Setup
@@ -101,13 +93,10 @@ final class UnloggedOnboardingVC: UIViewController {
         contentView.snp.makeConstraints { make in
             make.top.trailing.leading.bottom.equalToSuperview()
             make.width.equalTo(view)
-//            make.width.equalToSuperview()
         }
         
         image.image = UIImage(named: "onboarding-image")
-//        image.sizeToFit()
         image.contentMode = .scaleAspectFit
-//        image.layer.cornerRadius = 64
         
         image.clipsToBounds = true
         
@@ -115,17 +104,8 @@ final class UnloggedOnboardingVC: UIViewController {
             make.top.equalToSuperview().offset(-64)
             make.leading.trailing.equalToSuperview()
             make.height.lessThanOrEqualTo(view.snp.height).multipliedBy(0.5)
-
-//            make.height.equalTo(.snp.height).multipliedBy(0.4).priority(.high)
         }
-        
-//        image.snp.makeConstraints { make in
-//              make.top.equalTo(view)
-//              make.leading.equalTo(view)
-//              make.trailing.equalTo(view)
-//              make.height.equalTo(view.snp.height).multipliedBy(0.4).priority(.high)
-//          }
-        
+
         titleLabel.text = "Welcome to Yem!"
         subtitleLabel.text = "Connect and enjoy. Your journey to unforgettable dining experiences starts here."
         	
@@ -151,14 +131,6 @@ final class UnloggedOnboardingVC: UIViewController {
         }
     }
     
-    private func setupDelegateAndDataSource() {
-        loginButton.delegate = self
-        registerButton.delegate = self
-        
-        loginButton.tag = 1
-        registerButton.tag = 2
-    }
-    
     private func setupVoiceOverAccessibility() {
         loginButton.isAccessibilityElement = true
         loginButton.accessibilityLabel = "Login button"
@@ -170,20 +142,67 @@ final class UnloggedOnboardingVC: UIViewController {
     }
 }
 
-// MARK: - Navigation
+// MARK: - Observe ViewModel Output & UI actions
 
-extension UnloggedOnboardingVC: ActionButtonDelegate {
-    func actionButtonTapped(_ button: ActionButton) {
-        switch button.tag {
-        case 1:
-            coordinator?.navigateTo(.login)
-        case 2:
-            coordinator?.navigateTo(.register)
-        default:
-            break
+extension UnloggedOnboardingVC {
+    private func observeButtons() {
+        loginButton
+            .tapPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [unowned self] in
+                self.handleActionButtonEvent(type: .login)
+            }
+            .store(in: &cancellables)
+        
+        registerButton
+            .tapPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [unowned self] in
+                self.handleActionButtonEvent(type: .register)
+            }
+            .store(in: &cancellables)
+    }
+}
+
+// MARK: - Handle Output & UI Actions
+
+extension UnloggedOnboardingVC {
+    private func handleActionButtonEvent(type: ButtonType) {
+        switch type {
+        case .login:
+            navigateToLoginScreen()
+        case .register:
+            navigateToRegisterScreen()
         }
     }
 }
+
+// MARK: - Navigation
+
+extension UnloggedOnboardingVC {
+    private func navigateToLoginScreen() {
+        DispatchQueue.main.async { [weak self] in
+            self?.coordinator?.navigateTo(.login)
+        }
+    }
+    
+    private func navigateToRegisterScreen() {
+        DispatchQueue.main.async { [weak self] in
+            self?.coordinator?.navigateTo(.register)
+        }
+    }
+}
+
+// MARK: - Helper enum
+
+extension UnloggedOnboardingVC {
+    private enum ButtonType {
+        case login
+        case register
+    }
+}
+
+// MARK: - LifetimeTracker
 
 #if DEBUG
 extension UnloggedOnboardingVC: LifetimeTrackable {
@@ -192,34 +211,3 @@ extension UnloggedOnboardingVC: LifetimeTrackable {
     }
 }
 #endif
-
-//        image.snp.makeConstraints { make in
-//            make.top.equalToSuperview()
-//            make.leading.trailing.equalToSuperview()
-//            make.bottom.equalTo(loginButton.snp.top).offset(-128)
-//        }
-//
-//        titleLabel.text = "Welcome to Yem!"
-//        subtitleLabel.text = "Connect and enjoy. Your journey to unforgettable dining experiences starts here."
-//
-//        titleLabel.snp.makeConstraints { make in
-//            make.top.equalTo(image.snp.bottom)
-//            make.leading.trailing.equalToSuperview()
-//        }
-//
-//        subtitleLabel.snp.makeConstraints { make in
-//            make.top.equalTo(titleLabel.snp.bottom).offset(-12)
-//            make.leading.trailing.equalToSuperview().inset(32)
-//            make.bottom.equalTo(loginButton.snp.top).offset(-12)
-//        }
-//
-//        loginButton.snp.makeConstraints { make in
-//            make.bottom.equalTo(registerButton.snp.top).offset(-18)
-//            make.leading.trailing.equalToSuperview().inset(32)
-//        }
-//
-//        registerButton.snp.makeConstraints { make in
-//            make.bottom.equalToSuperview().offset(-64)
-//            make.top.equalTo(loginButton.snp.bottom).offset(18)
-//            make.leading.trailing.equalToSuperview().inset(32)
-//        }

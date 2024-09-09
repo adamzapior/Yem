@@ -5,49 +5,54 @@
 //  Created by Adam Zapiór on 20/03/2024.
 //
 
-import FirebaseAuth
+import Combine
 import LifetimeTracker
 import UIKit
 
 final class RegisterOnboardingVC: UIViewController {
-    weak var coordinator: OnboardingCoordinator?
-    let viewModel: OnboardingVM
+    private weak var coordinator: OnboardingCoordinator?
+    private let viewModel: OnboardingVM
 
-    var content = UIView()
+    private var content = UIView()
 
-    let titleLabel = TextLabel(
+    private let titleLabel = TextLabel(
         fontStyle: .title2,
         fontWeight: .light,
         textColor: .ui.secondaryText,
         textAlignment: .center
     )
-    let loginLabel = TextLabel(
-        fontStyle: .footnote,
-        fontWeight: .light,
-        textColor: .ui.secondaryText
-    )
-    let passwordLabel = TextLabel(
+
+    private let loginLabel = TextLabel(
         fontStyle: .footnote,
         fontWeight: .light,
         textColor: .ui.secondaryText
     )
 
-    let loginTextfield = TextfieldWithIcon(
+    private let passwordLabel = TextLabel(
+        fontStyle: .footnote,
+        fontWeight: .light,
+        textColor: .ui.secondaryText
+    )
+
+    private let loginTextfield = TextfieldWithIcon(
         iconImage: "person.circle",
         placeholderText: "Enter your e-mail...",
         textColor: .ui.secondaryText
     )
-    let passwordTextfield = TextfieldWithIcon(
+
+    private let passwordTextfield = TextfieldWithIcon(
         iconImage: "staroflife",
         placeholderText: "Enter your new password...",
         textColor: .ui.secondaryText
     )
 
-    let loginButton = ActionButton(
+    private let registerButton = ActionButton(
         title: "Register...",
         backgroundColor: .ui.addBackground,
         isShadownOn: true
     )
+
+    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Lifecycle
 
@@ -71,13 +76,12 @@ final class RegisterOnboardingVC: UIViewController {
         view.backgroundColor = .systemBackground
 
         setupUI()
-        setupDelegate()
-        setupTag()
         setupTextfieldBehaviour()
         setupVoiceOverAccessibility()
 
-        viewModel.delegateRegisterOnb = self
-        loginButton.delegate = self
+        observeViewModelEventOutput()
+        observeTextfields()
+        observeActionButton()
     }
 
     // MARK: - UI Setup
@@ -95,7 +99,7 @@ final class RegisterOnboardingVC: UIViewController {
         content.addSubview(passwordLabel)
         content.addSubview(loginTextfield)
         content.addSubview(passwordTextfield)
-        content.addSubview(loginButton)
+        content.addSubview(registerButton)
 
         titleLabel.text = "Register"
         loginLabel.text = "Login"
@@ -129,7 +133,7 @@ final class RegisterOnboardingVC: UIViewController {
             make.height.greaterThanOrEqualTo(64)
         }
 
-        loginButton.snp.makeConstraints { make in
+        registerButton.snp.makeConstraints { make in
             make.top.equalTo(passwordTextfield.snp.bottom).offset(36)
             make.leading.trailing.equalToSuperview().inset(12)
         }
@@ -150,98 +154,110 @@ final class RegisterOnboardingVC: UIViewController {
         passwordTextfield.accessibilityLabel = "Password textfield"
         passwordTextfield.accessibilityHint = "Enter your password"
 
-        loginButton.isAccessibilityElement = true
-        loginButton.accessibilityLabel = "Register button"
-        loginButton.accessibilityHint = "Click this button and try to register"
+        registerButton.isAccessibilityElement = true
+        registerButton.accessibilityLabel = "Register button"
+        registerButton.accessibilityHint = "Click this button and try to register"
     }
 }
 
-extension RegisterOnboardingVC: TextfieldWithIconDelegate, ActionButtonDelegate {
-    func setupDelegate() {
-        loginTextfield.delegate = self
-        passwordTextfield.delegate = self
+// MARK: - Observe ViewModel Output & UI actions
+
+extension RegisterOnboardingVC {
+    private func observeViewModelEventOutput() {
+        viewModel.outputPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [unowned self] event in
+                self.handleViewModelOutput(event: event)
+            }
+            .store(in: &cancellables)
     }
 
-    func setupTag() {
-        loginTextfield.tag = 1
-        passwordTextfield.tag = 2
+    private func observeTextfields() {
+        loginTextfield.textField
+            .textPublisher
+            .sink { [unowned self] text in
+                self.viewModel.inputEvent.send(
+                    .sendString(
+                        .login(value: text ?? "")
+                    )
+                )
+            }
+            .store(in: &cancellables)
+
+        passwordTextfield.textField
+            .textPublisher
+            .sink { [unowned self] text in
+                self.viewModel.inputEvent.send(
+                    .sendString(
+                        .password(value: text ?? "")
+                    )
+                )
+            }
+            .store(in: &cancellables)
     }
 
-    func textFieldDidBeginEditing(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
-        switch textfield.tag {
-        /// login:
-        case 1:
-            if let text = textfield.textField.text {
-                viewModel.login = text
+    private func observeActionButton() {
+        registerButton
+            .tapPublisher
+            .sink { [unowned self] in
+                self.handleActionButtonEvent()
             }
-        /// password:
-        case 2:
-            if let text = textfield.textField.text {
-                viewModel.password = text
-            }
-        default:
-            break
+            .store(in: &cancellables)
+    }
+}
+
+// MARK: - Handle Output & UI Actions
+
+extension RegisterOnboardingVC {
+    private func handleViewModelOutput(event: OnboardingVM.Output) {
+        switch event {
+        case .loginSuccesed:
+            navigateToApp()
+        case .updateField(let textField):
+            handleUpdateField(for: textField)
+        case .showErrorAlert(let alert, message: let message):
+            presentAlert(alert, message: message)
         }
     }
 
-    func textFieldDidChange(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
-        switch textfield.tag {
-        /// login:
-        case 1:
-            if let text = textfield.textField.text {
-                viewModel.login = text
+    private func handleUpdateField(for field: OnboardingVM.LoginField) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            switch field {
+            case .login(value: let value):
+                loginTextfield.textField.text = value
+            case .password(value: let value):
+                passwordTextfield.textField.text = value
             }
-        /// password:
-        case 2:
-            if let text = textfield.textField.text {
-                viewModel.password = text
-            }
-        default:
-            break
         }
     }
 
-    func textFieldDidEndEditing(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
-        switch textfield.tag {
-        /// login:
-        case 1:
-            if let text = textfield.textField.text {
-                viewModel.login = text
-            }
-        /// password:
-        case 2:
-            if let text = textfield.textField.text {
-                viewModel.password = text
-            }
-        default:
-            break
-        }
-    }
-
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder() /// Hide keyboard
-        return true
-    }
-
-    func actionButtonTapped(_ button: ActionButton) {
+    private func handleActionButtonEvent() {
         Task {
-            do {
-                let newUser = try await viewModel.createUser(email: viewModel.login, password: viewModel.password)
-                if let newUser = newUser {
-                    await MainActor.run {
-                        coordinator?.navigateToApp(user: newUser)
-                    }
-                }
+            try await viewModel.tryToRegister()
+        }
+    }
+}
+
+// MARK: - Navigation
+
+extension RegisterOnboardingVC {
+    private func navigateToApp() {
+        DispatchQueue.main.async { [weak self] in
+            self?.coordinator?.navigateToApp()
+        }
+    }
+
+    private func presentAlert(_ type: OnboardingVM.AlertType, message: String) {
+        DispatchQueue.main.async { [weak self] in
+            if type == .registerFailed {
+                self?.coordinator?.presentAlert(.registerError, title: "Something went wrong!", message: message)
             }
         }
     }
 }
 
-extension RegisterOnboardingVC: RegisterOnboardingDelegate {
-    func showRegisterErrorAlert() {
-        coordinator?.presentAlert(title: "Something went wrong!", message: viewModel.validationError)
-    }
-}
+// MARK: - LifetimeTracker
 
 #if DEBUG
 extension RegisterOnboardingVC: LifetimeTrackable {

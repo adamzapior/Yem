@@ -77,7 +77,9 @@ final class OnboardingCoordinator: Destination {
         }
     }
 
-    func navigateToApp(user: UserModel) {
+    func navigateToApp() {
+        guard let user = viewModel.user else { return }
+        
         let tabBarCoordinator = TabBarCoordinator(
             currentUser: user,
             dataRepository: dataRepository,
@@ -129,6 +131,9 @@ final class OnboardingCoordinator: Destination {
         navigator?.dismissAlert()
     }
 }
+
+// MARK: - LifetimeTracker
+
 
 #if DEBUG
 extension OnboardingCoordinator: LifetimeTrackable {

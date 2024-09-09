@@ -5,56 +5,59 @@
 //  Created by Adam Zapiór on 20/03/2024.
 //
 
-import FirebaseAuth
+import Combine
+import CombineCocoa
 import LifetimeTracker
 import SnapKit
 import UIKit
 
 final class LoginOnboardingVC: UIViewController {
-    weak var coordinator: OnboardingCoordinator?
-    let viewModel: OnboardingVM
+    private weak var coordinator: OnboardingCoordinator?
+    private let viewModel: OnboardingVM
 
-    var content = UIView()
+    private var content = UIView()
 
-    let titleLabel = TextLabel(
+    private let titleLabel = TextLabel(
         fontStyle: .title2,
         fontWeight: .light,
         textColor: .ui.secondaryText,
         textAlignment: .center
     )
-    let loginLabel = TextLabel(
+    private let loginLabel = TextLabel(
         fontStyle: .footnote,
         fontWeight: .light,
         textColor: .ui.secondaryText
     )
-    let passwordLabel = TextLabel(
+    private let passwordLabel = TextLabel(
         fontStyle: .footnote,
         fontWeight: .light,
         textColor: .ui.secondaryText
     )
 
-    let loginTextfield = TextfieldWithIcon(
+    private let loginTextfield = TextfieldWithIcon(
         iconImage: "person.circle",
         placeholderText: "Enter your e-mail...",
         textColor: .ui.secondaryText
     )
-    let passwordTextfield = TextfieldWithIcon(
+    private let passwordTextfield = TextfieldWithIcon(
         iconImage: "staroflife",
         placeholderText: "Enter your password...",
         textColor: .ui.secondaryText
     )
 
-    let loginButton = ActionButton(
+    private let loginButton = ActionButton(
         title: "Try to login...",
         backgroundColor: .ui.addBackground,
         isShadownOn: true
     )
 
-    let resetButton = ActionButton(
+    private let resetButton = ActionButton(
         title: "Reset password",
         backgroundColor: .ui.cancelBackground,
         isShadownOn: true
     )
+
+    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Lifecycle
 
@@ -78,12 +81,12 @@ final class LoginOnboardingVC: UIViewController {
         view.backgroundColor = .systemBackground
 
         setupUI()
-        setupDelegate()
-        setupTag()
         setupTextfieldBehaviour()
         setupVoiceOverAccessibility()
 
-        viewModel.delegeteLoginOnb = self
+        observeViewModelEventOutput()
+        observeTextfields()
+        observeActionButtons()
     }
 
     private func setupUI() {
@@ -138,7 +141,6 @@ final class LoginOnboardingVC: UIViewController {
             make.top.equalTo(passwordTextfield.snp.bottom).offset(36)
             make.leading.trailing.equalToSuperview().inset(12)
         }
-        
 
         loginButton.snp.makeConstraints { make in
             make.top.equalTo(resetButton.snp.bottom).offset(24)
@@ -171,107 +173,131 @@ final class LoginOnboardingVC: UIViewController {
     }
 }
 
-// MARK: - Delegates
+// MARK: - Observe ViewModel Output & UI actions
 
-extension LoginOnboardingVC: TextfieldWithIconDelegate, ActionButtonDelegate {
-    func setupDelegate() {
-        loginTextfield.delegate = self
-        passwordTextfield.delegate = self
-
-        loginButton.delegate = self
-        resetButton.delegate = self
+extension LoginOnboardingVC {
+    private func observeViewModelEventOutput() {
+        viewModel.outputPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [unowned self] event in
+                self.handleViewModelOutput(event: event)
+            }
+            .store(in: &cancellables)
     }
 
-    func setupTag() {
-        loginTextfield.tag = 1
-        passwordTextfield.tag = 2
+    private func observeTextfields() {
+        loginTextfield.textField
+            .textPublisher
+            .sink { [unowned self] text in
+                self.viewModel.inputEvent.send(
+                    .sendString(
+                        .login(value: text ?? "")
+                    )
+                )
+            }
+            .store(in: &cancellables)
 
-        loginButton.tag = 1
-        resetButton.tag = 2
+        passwordTextfield.textField
+            .textPublisher
+            .sink { [unowned self] text in
+                self.viewModel.inputEvent.send(
+                    .sendString(
+                        .password(value: text ?? "")
+                    )
+                )
+            }
+            .store(in: &cancellables)
     }
 
-    func textFieldDidBeginEditing(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
-        switch textfield.tag {
-        /// login:
-        case 1:
-            if let text = textfield.textField.text {
-                viewModel.login = text
+    private func observeActionButtons() {
+        loginButton
+            .tapPublisher
+            .sink { [unowned self] in
+                self.handleActionButtonEvent(type: .login)
             }
-        /// password:
-        case 2:
-            if let text = textfield.textField.text {
-                viewModel.password = text
+            .store(in: &cancellables)
+
+        resetButton
+            .tapPublisher
+            .sink { [unowned self] in
+                self.handleActionButtonEvent(type: .resetPassword)
             }
-        default:
-            break
+            .store(in: &cancellables)
+    }
+}
+
+// MARK: - Handle Output & UI Actions
+
+extension LoginOnboardingVC {
+    private func handleViewModelOutput(event: OnboardingVM.Output) {
+        switch event {
+        case .loginSuccesed:
+            navigateToApp()
+        case .updateField(let textField):
+            handleUpdateField(for: textField)
+        case .showErrorAlert(let alert, message: let message):
+            presentAlert(alert, message: message)
         }
     }
 
-    func textFieldDidChange(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
-        switch textfield.tag {
-        /// login:
-        case 1:
-            if let text = textfield.textField.text {
-                viewModel.login = text
+    private func handleUpdateField(for field: OnboardingVM.LoginField) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            switch field {
+            case .login(value: let value):
+                loginTextfield.textField.text = value
+            case .password(value: let value):
+                passwordTextfield.textField.text = value
             }
-        /// password:
-        case 2:
-            if let text = textfield.textField.text {
-                viewModel.password = text
-            }
-        default:
-            break
         }
     }
 
-    func textFieldDidEndEditing(_ textfield: TextfieldWithIcon, didUpdateText text: String) {
-        switch textfield.tag {
-        /// login:
-        case 1:
-            if let text = textfield.textField.text {
-                viewModel.login = text
-            }
-        /// password:
-        case 2:
-            if let text = textfield.textField.text {
-                viewModel.password = text
-            }
-        default:
-            break
-        }
-    }
-
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder() /// Hide keyboard
-        return true
-    }
-
-    func actionButtonTapped(_ button: ActionButton) {
-        switch button.tag {
-        case 1:
+    private func handleActionButtonEvent(type: ButtonType) {
+        switch type {
+        case .login:
             Task {
-                do {
-                    let userModel = try await viewModel.loginUser(email: viewModel.login, password: viewModel.password)
-                    if let userModel = userModel {
-                        await MainActor.run {
-                            self.coordinator?.navigateToApp(user: userModel)
-                        }
-                    }
-                }
+                try await viewModel.tryToLogin()
             }
-        case 2:
-            coordinator?.navigateTo(.resetPassword)
-        default:
-            break
+        case .resetPassword:
+            navigateToResetPasswordScreen()
         }
     }
 }
 
-extension LoginOnboardingVC: LoginOnboardingDelegate {
-    func showLoginErrorAlert() {
-        coordinator?.presentAlert(title: "Something went wrong!", message: viewModel.validationError)
+// MARK: - Navigation
+
+extension LoginOnboardingVC {
+    private func navigateToApp() {
+        DispatchQueue.main.async { [weak self] in
+            self?.coordinator?.navigateToApp()
+        }
+    }
+    
+    private func navigateToResetPasswordScreen() {
+        DispatchQueue.main.async { [weak self] in
+            self?.coordinator?.navigateTo(.resetPassword)
+        }
+    }
+
+    private func presentAlert(_ type: OnboardingVM.AlertType, message: String) {
+        DispatchQueue.main.async { [weak self] in
+            if type == .loginFailed {
+                self?.coordinator?.presentAlert(.loginError, title: "Something went wrong!", message: message)
+            }
+        }
     }
 }
+
+// MARK: - Helper enum
+
+extension LoginOnboardingVC {
+    private enum ButtonType {
+        case login
+        case resetPassword
+    }
+}
+
+// MARK: - LifetimeTracker
 
 #if DEBUG
 extension LoginOnboardingVC: LifetimeTrackable {
