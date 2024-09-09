@@ -13,12 +13,19 @@ struct ColorTheme {
     var theme = UIColor.systemOrange
     var primaryText = UIColor(named: "primaryText")!
     var secondaryText = UIColor(named: "secondaryText")!
+    
     var primaryContainer = UIColor(named: "primaryContainer")!
     var secondaryContainer = UIColor(named: "secondaryContainer")!
+    
     var addBackground = UIColor(named: "addBackground")!
     var cancelBackground = UIColor(named: "cancelBackground")!
+    
     var divider = UIColor(named: "divider")!
     var placeholderError = UIColor(named: "placeholderError")!
+    
+    var checkboxColor = UIColor(named: "checkboxColor")!
+    var deleteActionColor = UIColor(named: "deleteActionColor")!
+    
     var spicyMild = UIColor(named: "spicyMild")!
     var spicyMedium = UIColor(named: "spicyMedium")!
     var spicyHot = UIColor(named: "spicyHot")!
