@@ -61,7 +61,7 @@ final class RecipesListCoordinator: Destination {
     func navigateTo(_ route: Route, recipe: RecipeModel? = nil) {
         switch route {
         case .addRecipeScreen:
-            let coordinator = AddRecipeCoordinator(
+            let coordinator = ManageRecipeCoordinator(
                 repository: repository,
                 localFileManager: localFileManager,
                 imageFetcherManager: imageFetcherManager
@@ -88,6 +88,9 @@ final class RecipesListCoordinator: Destination {
         }
     }
 }
+
+// MARK: - LifetimeTracker
+
 
 #if DEBUG
 extension RecipesListCoordinator: LifetimeTrackable {

@@ -6,16 +6,11 @@
 //
 
 import UIKit
-
-protocol IngredientsCellDelegate: AnyObject {
-    func trashTapped(in cell: IngredientsCell)
-}
+import Combine
 
 final class IngredientsCell: UITableViewCell {
     static let id: String = "IngredientsCell"
-    
-    weak var delegate: IngredientsCellDelegate?
-    
+        
     private let content: UIView = {
         let view = UIView()
         view.backgroundColor = .ui.primaryContainer
@@ -42,7 +37,7 @@ final class IngredientsCell: UITableViewCell {
     private lazy var trashIcon: IconImage = {
         let icon = IconImage(
             systemImage: "trash",
-            color: .ui.cancelBackground,
+            color: .red,
             textStyle: .body
         )
         let tapGesture = UITapGestureRecognizer(
@@ -53,6 +48,18 @@ final class IngredientsCell: UITableViewCell {
         icon.isUserInteractionEnabled = true
         return icon
     }()
+    
+    // MARK: Combine properties
+        
+    /// Publisher store
+    var eventPublisher: AnyPublisher<Void, Never> {
+        eventSubject.eraseToAnyPublisher()
+    }
+
+    /// Publisher
+    private let eventSubject = PassthroughSubject<Void, Never>()
+    
+    var cancellables = Set<AnyCancellable>()
         
     // MARK: Lifecycle
     
@@ -68,17 +75,16 @@ final class IngredientsCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        cancellables.removeAll()
     }
     
     // MARK: UI Setup
     
     func configure(with model: IngredientModel) {
         valueLabel.text = model.value
-        valueTypeLabel.text = model.valueType.lowercased()
+        valueTypeLabel.text = model.valueType.name.lowercased()
         ingredientNameLabel.text = model.name
     }
     
@@ -124,6 +130,6 @@ final class IngredientsCell: UITableViewCell {
     }
     
     @objc func didTapButtonAction() {
-        delegate?.trashTapped(in: self)
+        eventSubject.send(())
     }
 }

@@ -10,9 +10,10 @@ import LifetimeTracker
 import SnapKit
 import UIKit
 
-class CookingModeViewController: UIViewController {
-    let viewModel: CookingModeViewModel
-    weak var coordinator: CookingModeCoordinator?
+class CookingModeVC: UIViewController {
+    private weak var coordinator: CookingModeCoordinator?
+    private let viewModel: CookingModeViewModel
+
     var recipe: RecipeModel
 
     private var pageViewController = UIPageViewController(
@@ -38,7 +39,7 @@ class CookingModeViewController: UIViewController {
         image: UIImage(systemName: "chevron.backward"),
         style: .plain,
         target: self,
-        action: #selector(backButtonTapped)
+        action: #selector(navigationBackButtonTapped)
     )
 
     lazy var timerNavItem = UIBarButtonItem(
@@ -52,7 +53,7 @@ class CookingModeViewController: UIViewController {
         image: UIImage(systemName: "list.bullet"),
         style: .plain,
         target: self,
-        action: #selector(ingredientsButtonTapped)
+        action: #selector(ingredientsListButtonTapped)
     )
 
     lazy var leftArrowButton: UIButton = {
@@ -100,6 +101,8 @@ class CookingModeViewController: UIViewController {
         self.recipe = recipe
         super.init(nibName: nil, bundle: nil)
 
+        coordinator.setupNavigationBackGesture(isEnabled: false)
+
         #if DEBUG
             trackLifetime()
         #endif
@@ -108,7 +111,7 @@ class CookingModeViewController: UIViewController {
     deinit {
         NotificationCenter.default.removeObserver(self)
 
-        coordinator?.navigator?.navigationController.interactivePopGestureRecognizer?.isEnabled = true
+        coordinator?.setupNavigationBackGesture(isEnabled: true)
     }
 
     @available(*, unavailable)
@@ -120,7 +123,6 @@ class CookingModeViewController: UIViewController {
         super.viewDidLoad()
 
         view.backgroundColor = .systemBackground
-        viewModel.delegate = self
 
         recipe.sortInstructionsByIndex()
 
@@ -132,8 +134,8 @@ class CookingModeViewController: UIViewController {
         setupArrowButtons() // Setup arrow buttons
         updateArrowButtonsVisibility() // Initial visibility update
         updateStepsLabel()
-
-        coordinator?.navigator?.navigationController.interactivePopGestureRecognizer?.isEnabled = false
+        
+        observeViewModelOutput()
     }
 
     // MARK: - UI Setup
@@ -145,15 +147,6 @@ class CookingModeViewController: UIViewController {
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
             make.trailing.equalToSuperview().inset(32)
         }
-
-        timerLabel.text = ""
-
-        viewModel.$timeRemaining
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] timeRemaining in
-                self?.timerLabel.text = timeRemaining
-            }
-            .store(in: &cancellables)
     }
 
     private func setupStepsLabel() {
@@ -314,9 +307,53 @@ class CookingModeViewController: UIViewController {
     }
 }
 
-// MARK: - UIPageViewControllerDataSource, UIPageViewControllerDelegate
+// MARK: - Observed ViewModel Output & UI actions
 
-extension CookingModeViewController: UIPageViewControllerDataSource, UIPageViewControllerDelegate {
+extension CookingModeVC {
+    func observeViewModelOutput() {
+        viewModel.outputCookingModeEventPublisher
+            .sink { [unowned self] event in
+                handleViewModelOutput(event)
+            }
+            .store(in: &cancellables)
+    }
+    
+}
+
+// MARK: - Handle Output & UI Actions
+
+extension CookingModeVC {
+    private func handleViewModelOutput(_ event: CookingModeViewModel.CookingModeOutput) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            switch event {
+            case .timerStarted:
+                timerStartedAnimation()
+            case .sendTimeRemaningString(let value):
+                timerLabel.text = value
+            case .timerStopped:
+                timerFinishedAnimation()
+                presentTimerFinishedAlert()
+            }
+        }
+    }
+
+    private func timerStartedAnimation() {
+        if let timerButtonView = timerNavItem.value(forKey: "view") as? UIView {
+            timerButtonView.startShaking()
+        }
+    }
+
+    private func timerFinishedAnimation() {
+        if let timerButtonView = timerNavItem.value(forKey: "view") as? UIView {
+            timerButtonView.stopShaking()
+        }
+    }
+}
+
+// MARK: - UIPageViewControllerDataSource
+
+extension CookingModeVC: UIPageViewControllerDataSource {
     func pageViewController(
         _ pageViewController: UIPageViewController,
         viewControllerBefore viewController: UIViewController
@@ -336,7 +373,11 @@ extension CookingModeViewController: UIPageViewControllerDataSource, UIPageViewC
         index += 1
         return viewControllerAtIndex(index)
     }
+}
 
+// MARK: - UIPageViewControllerDelegate
+
+extension CookingModeVC: UIPageViewControllerDelegate {
     func pageViewController(
         _ pageViewController: UIPageViewController,
         didFinishAnimating finished: Bool,
@@ -352,9 +393,9 @@ extension CookingModeViewController: UIPageViewControllerDataSource, UIPageViewC
     }
 }
 
-// MARK: - Navigation bar
+// MARK: - NavigationItems & Navigation
 
-extension CookingModeViewController {
+extension CookingModeVC {
     func setupNavigationBarButtons() {
         navigationItem.setRightBarButtonItems(
             [
@@ -363,44 +404,41 @@ extension CookingModeViewController {
             ],
             animated: true
         )
-
         navigationItem.leftBarButtonItem = exitNavItem
     }
 
-    @objc func backButtonTapped() {
-        coordinator?.presentExitAlert()
+    @objc func navigationBackButtonTapped() {
+        DispatchQueue.main.async { [weak self] in
+            self?.coordinator?.presentAlert(.exitScreen, title: "Are your sure?", message: "Your progress and timer will not be saved.")
+        }
     }
 
-    @objc func ingredientsButtonTapped(_ sender: UIBarButtonItem) {
-        coordinator?.openIngredientsSheet()
+    @objc func ingredientsListButtonTapped(_ sender: UIBarButtonItem) {
+        DispatchQueue.main.async { [weak self] in
+            self?.coordinator?.navigateTo(.ingredientSheet)
+        }
     }
 
     @objc func timerButtonTapped(_ sender: UIBarButtonItem) {
-        coordinator?.openTimeSheet()
-    }
-}
-
-// MARK: - Delegates
-
-extension CookingModeViewController: CookingModeVCDelegate {
-    func timerStarted() {
-        if let timerButtonView = timerNavItem.value(forKey: "view") as? UIView {
-            timerButtonView.startShaking()
-            print("Timer started delegate")
+        DispatchQueue.main.async { [weak self] in
+            self?.coordinator?.navigateTo(.timerSheet)
         }
     }
 
-    func timerStopped() {
-        coordinator?.presentTimerStoppedAlert()
-        if let timerButtonView = timerNavItem.value(forKey: "view") as? UIView {
-            timerButtonView.stopShaking()
-            print("Timer started delegate")
+    private func presentTimerFinishedAlert() {
+        let title = "Your timer has ended!"
+        let message = "⏰⏰⏰"
+
+        DispatchQueue.main.async { [weak self] in
+            self?.coordinator?.presentAlert(.timerFinished, title: title, message: message)
         }
     }
 }
+
+// MARK: - LifetimeTracker
 
 #if DEBUG
-    extension CookingModeViewController: LifetimeTrackable {
+    extension CookingModeVC: LifetimeTrackable {
         class var lifetimeConfiguration: LifetimeConfiguration {
             return LifetimeConfiguration(maxCount: 1, groupName: "ViewControllers")
         }

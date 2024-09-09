@@ -7,37 +7,23 @@
 
 import UIKit
 
-protocol IngredientsTableFooterViewDelegate: AnyObject {
-    func addIconTapped(view: UIView)
-}
-
 final class IngredientsTableFooterView: UIView {
-    weak var delegate: IngredientsTableFooterViewDelegate?
-
-    private let screenWidth = UIScreen.main.bounds.width
-
-    private let addButton = ActionButton(
+    let addButton = ActionButton(
         title: "Add",
         backgroundColor: .ui.addBackground
     )
 
     private let content = UIView()
-
-    // MARK: Lifecycle
+    private let screenWidth = UIScreen.main.bounds.width
 
     override init(frame: CGRect) {
         super.init(frame: frame)
         configure()
-        configureComponents()
-        configureTags()
-        configureDelegateAndDataSource()
     }
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
-
-    // MARK: UI Setup
 
     private func configure() {
         addSubview(content)
@@ -57,34 +43,5 @@ final class IngredientsTableFooterView: UIView {
         }
 
         addButton.animateFadeIn()
-    }
-}
-
-// MARK: - Delegate & data source items
-
-extension IngredientsTableFooterView: ActionButtonDelegate {
-    func actionButtonTapped(_ button: ActionButton) {
-        switch button.tag {
-        case 1:
-            button.defaultOnTapAnimation()
-            delegate?.addIconTapped(view: self)
-        default:
-            break
-        }
-    }
-
-    private func configureComponents() {
-        configureTags()
-        configureDelegateAndDataSource()
-    }
-
-    private func configureTags() {
-        /// mainButton:
-        addButton.tag = 1
-    }
-
-    private func configureDelegateAndDataSource() {
-        /// mainButton:
-        addButton.delegate = self
     }
 }

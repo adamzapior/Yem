@@ -21,6 +21,9 @@ protocol DataRepositoryProtocol {
     func beginTransaction()
     func endTransaction()
     func rollbackTransaction()
+    
+    // Saving methods
+    func commitTransaction() throws 
 
     // Recipe operations
     func doesRecipeExist(with id: UUID) -> Bool
@@ -123,12 +126,6 @@ final class DataRepository: DataRepositoryProtocol {
         }
 
         data.instructions = Set(instructionEntities)
-
-        do {
-            try saveContext()
-        } catch {
-            throw DataRepositoryError.failedToSaveContext(error)
-        }
     }
 
     func updateRecipe(recipe: RecipeModel) throws {
@@ -167,12 +164,20 @@ final class DataRepository: DataRepositoryProtocol {
                 entity.text = instructionModel.text
                 return entity
             })
-
+//
+//            try saveContext()
+//        } catch let error as DataRepositoryError {
+//            throw error
+//        } catch {
+//            throw DataRepositoryError.failedToFetchData(error)
+        }
+    }
+    
+    func commitTransaction() throws {
+        do {
             try saveContext()
-        } catch let error as DataRepositoryError {
-            throw error
         } catch {
-            throw DataRepositoryError.failedToFetchData(error)
+            throw error
         }
     }
 

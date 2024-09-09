@@ -65,10 +65,13 @@ final class SettingsCoordinator: Destination {
             } cancelAction: {
                 self.navigator?.dismissAlert()
             }
-
+            alertVC.modalPresentationStyle = .overFullScreen
+            alertVC.modalTransitionStyle = .crossDissolve
             navigator?.presentAlert(alertVC)
         case .aboutApp:
             let alertVC = ValidationAlertVC(title: title, message: message)
+            alertVC.modalPresentationStyle = .overFullScreen
+            alertVC.modalTransitionStyle = .crossDissolve
             navigator?.presentAlert(alertVC)
         }
     }
@@ -85,6 +88,9 @@ final class SettingsCoordinator: Destination {
         navigator?.dismissAlert()
     }
 }
+
+// MARK: - LifetimeTracker
+
 
 #if DEBUG
 extension SettingsCoordinator: LifetimeTrackable {

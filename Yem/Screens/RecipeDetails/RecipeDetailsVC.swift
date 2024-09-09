@@ -456,7 +456,7 @@ final class RecipeDetailsVC: UIViewController {
     }
 }
 
-// MARK: - Observed Output & Handling
+// MARK: - Observe ViewModel Output & UI actions
 
 extension RecipeDetailsVC {
     private func observedViewModelOutput() {
@@ -469,27 +469,37 @@ extension RecipeDetailsVC {
             }
             .store(in: &cancellables)
     }
-    
+}
+
+// MARK: - Handle Output & UI Actions
+
+extension RecipeDetailsVC {
     private func handleViewModelOutput(event: RecipeDetailsVM.Output) {
         switch event {
         case .recipeFavouriteValueChanged(let value):
-            changeBookmarkNavItemIcon(isRecipeFavourite: value)
+            handleBookmarkIconItemUpdate(isRecipeFavourite: value)
         case .updatePhoto(let image):
             loadPhotoView(image: image)
         }
     }
     
-    private func changeBookmarkNavItemIcon(isRecipeFavourite: Bool) {
-        switch isRecipeFavourite {
-        case true:
-            bookmarkNavItem.image = UIImage(systemName: bookmarkIconFilled)
-        case false:
-            bookmarkNavItem.image = UIImage(systemName: bookmarkIconEmpty)
+    private func handleBookmarkIconItemUpdate(isRecipeFavourite: Bool) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            
+            switch isRecipeFavourite {
+            case true:
+                bookmarkNavItem.image = UIImage(systemName: bookmarkIconFilled)
+            case false:
+                bookmarkNavItem.image = UIImage(systemName: bookmarkIconEmpty)
+            }
         }
     }
     
     private func loadPhotoView(image: UIImage) {
-        photoView.updatePhoto(with: image)
+        DispatchQueue.main.async { [weak self] in
+            self?.photoView.updatePhoto(with: image)
+        }
     }
 }
 
@@ -509,7 +519,9 @@ extension RecipeDetailsVC {
     }
     
     @objc func playButtonTapped(_ sender: UIBarButtonItem) {
-        coordinator?.navigateTo(.cookingMode)
+        DispatchQueue.main.async { [weak self] in
+            self?.coordinator?.navigateTo(.cookingMode)
+        }
     }
     
     @objc func basketButtonTapped(_ sender: UIBarButtonItem) {

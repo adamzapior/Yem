@@ -11,34 +11,48 @@ import Kingfisher
 import LifetimeTracker
 import UIKit
 
-protocol RecipesListVMDelegate: AnyObject {
-    func reloadTable()
-}
-
-protocol RecipesSearchResultDelegate: AnyObject {
-    func reloadTable()
-}
-
 final class RecipesListVM {
-    weak var delegate: RecipesListVMDelegate?
-    weak var delegateRecipesSearchResult: RecipesSearchResultDelegate?
-
-    let repository: DataRepositoryProtocol
     let localFileManager: LocalFileManagerProtocol
     let imageFetcherManager: ImageFetcherManagerProtocol
-    
+    private let repository: DataRepositoryProtocol
+   
     var sections: [Section] = []
     
-    var recipes: [RecipeModel] = [] {
-        didSet {
-            filterRecipes(query: currentQuery)
-        }
-    }
-    
+    var recipes: [RecipeModel] = []
     var filteredRecipes: [RecipeModel] = []
     
-    private var currentQuery: String = ""
+    @Published var currentQuery: String = ""
     
+    // MARK: Input events
+    
+    let inputRecipesListEvent = PassthroughSubject<RecipesListInput, Never>()
+    let inputSearchResultsEvent = PassthroughSubject<RecipesSearchResultInput, Never>()
+
+    // MARK: Input publishers
+    
+    private var inputRecipesListEventPublisher: AnyPublisher<RecipesListInput, Never> {
+        inputRecipesListEvent.eraseToAnyPublisher()
+    }
+    
+    private var inputSearchResultsPublisher: AnyPublisher<RecipesSearchResultInput, Never> {
+        inputSearchResultsEvent.eraseToAnyPublisher()
+    }
+    
+    // MARK: Output events
+    
+    private let outputRecipesListEvent = PassthroughSubject<RecipesListOutput, Never>()
+    private let outputSearchResultsEvent = PassthroughSubject<RecipesSearchResultOutput, Never>()
+
+    // MARK: Output publishers
+    
+    var outputPublisher: AnyPublisher<RecipesListOutput, Never> {
+        outputRecipesListEvent.eraseToAnyPublisher()
+    }
+
+    var outputSearchResultsPublisher: AnyPublisher<RecipesSearchResultOutput, Never> {
+        outputSearchResultsEvent.eraseToAnyPublisher()
+    }
+
     private var cancellables: Set<AnyCancellable> = []
     
     init(
@@ -50,61 +64,48 @@ final class RecipesListVM {
         self.localFileManager = localFileManager
         self.imageFetcherManager = imageFetcherManager
         
-        repository.recipesInsertedPublisher
-            .sink(receiveValue: { [weak self] _ in
-                Task { [weak self] in
-                    self?.loadRecipes()
-                }
-            })
-            .store(in: &cancellables)
-        
-        repository.recipesUpdatedPublisher
-            .sink(receiveValue: { [weak self] _ in
-                Task { [weak self] in
-                    self?.loadRecipes()
-                }
-            })
-            .store(in: &cancellables)
-        
-        repository.recipesDeletedPublisher
-            .sink(receiveValue: { [weak self] _ in
-                Task { [weak self] in
-                    self?.loadRecipes()
-                }
-            })
-            .store(in: &cancellables)
+        observeRepositoryPublishers()
+        observeRecipesListInput()
+        observeSearchableQuery()
+        observeRecipesSearchResultsInput()
         
 #if DEBUG
         trackLifetime()
 #endif
     }
     
-    // MARK: - Public methods
+    // MARK: - Fetch methods
     
     func loadRecipes() {
-        let result = repository.fetchAllRecipes()
-        switch result {
-        case .success(let result):
-            DispatchQueue.main.async {
-                self.recipes = result
+        Task {
+            do {
+                let recipes = try repository.fetchAllRecipes()
+                self.recipes = recipes
                 self.groupRecipesByCategory()
-                self.reloadTable()
+                outputRecipesListEvent.send(.initialDataFetched)
+                outputRecipesListEvent.send(.updateListStatus(isEmpty: recipes.isEmpty))
+                outputRecipesListEvent.send(.reloadTable)
+            } catch {
+                print("DEBUG: Error loading recipes: \(error.localizedDescription)")
             }
-        case .failure(let error):
-            print("DEBUG: Error loading recipes: \(error)")
         }
     }
     
-    func filterRecipes(query: String) {
-        currentQuery = query
-        if query.isEmpty {
-            filteredRecipes = recipes
-        } else {
-            filteredRecipes = recipes.filter { $0.name.lowercased().contains(query.lowercased()) }
+    func reloadRecipesList() {
+        Task {
+            do {
+                let recipes = try repository.fetchAllRecipes()
+                self.recipes = recipes
+                self.groupRecipesByCategory()
+                outputRecipesListEvent.send(.updateListStatus(isEmpty: recipes.isEmpty))
+                outputRecipesListEvent.send(.reloadTable)
+            } catch {
+                print("DEBUG: Error loading recipes: \(error.localizedDescription)")
+            }
         }
-        reloadSearchableTable()
     }
 
+    
     // MARK: - Private methods
 
     private func groupRecipesByCategory() {
@@ -119,30 +120,126 @@ final class RecipesListVM {
             }
         }
     }
-}
-
-// MARK: - Delegates
-
-extension RecipesListVM: RecipesListVMDelegate {
-    func reloadTable() {
-        DispatchQueue.main.async {
-            self.delegate?.reloadTable()
+    
+    private func filterRecipes(query: String) {
+        if query.isEmpty {
+            filteredRecipes = recipes
+        } else {
+            filteredRecipes = recipes.filter { $0.name.lowercased().contains(query.lowercased()) }
         }
     }
 }
 
-extension RecipesListVM: RecipesSearchResultDelegate {
-    func reloadSearchableTable() {
-        DispatchQueue.main.async {
-            self.delegateRecipesSearchResult?.reloadTable()
-        }
+// MARK: Observed repository publishers
+
+extension RecipesListVM {
+    private func observeRepositoryPublishers() {
+        repository.recipesInsertedPublisher
+            .sink(receiveValue: { [unowned self] _ in
+                Task {
+                    self.reloadRecipesList()
+                }
+            })
+            .store(in: &cancellables)
+        
+        repository.recipesUpdatedPublisher
+            .sink(receiveValue: { [unowned self] _ in
+                Task {
+                    self.reloadRecipesList()
+                }
+            })
+            .store(in: &cancellables)
+        
+        repository.recipesDeletedPublisher
+            .sink(receiveValue: { [unowned self] _ in
+                Task {
+                    self.reloadRecipesList()
+                }
+            })
+            .store(in: &cancellables)
     }
 }
 
-struct Section {
-    let title: RecipeCategory
-    let items: [RecipeModel]
+// MARK: - Observed properties
+
+extension RecipesListVM {
+    private func observeSearchableQuery() {
+        $currentQuery
+            .sink { [unowned self] newValue in
+                filterRecipes(query: newValue)
+                outputSearchResultsEvent.send(.updateListStatus(isEmpty: filteredRecipes.isEmpty))
+                outputSearchResultsEvent.send(.reloadTable)
+            }
+            .store(in: &cancellables)
+    }
 }
+
+// MARK: Observed Input
+
+extension RecipesListVM {
+    private func observeRecipesListInput() {
+        inputRecipesListEventPublisher
+            .sink { [unowned self] event in
+                switch event {
+                case .viewDidLoad:
+                    loadRecipes()
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func observeRecipesSearchResultsInput() {
+        inputSearchResultsPublisher
+            .sink { [unowned self] event in
+                switch event {
+                case .viewDidLoad:
+                    outputSearchResultsEvent.send(.updateListStatus(isEmpty: filteredRecipes.isEmpty))
+                case .sendQueryValue(let value):
+                    currentQuery = value
+                }
+            }
+            .store(in: &cancellables)
+    }
+}
+
+// MARK: - Input & Output - definition for ViewModel & RecipesListVC
+
+extension RecipesListVM {
+    enum RecipesListInput {
+        case viewDidLoad
+    }
+    
+    enum RecipesListOutput {
+        case reloadTable
+        case initialDataFetched
+        case updateListStatus(isEmpty: Bool)
+    }
+}
+
+// MARK: - Input & Output - definition for ViewModel & RecipesSearchResultsVC
+
+extension RecipesListVM {
+    enum RecipesSearchResultInput {
+        case viewDidLoad
+        case sendQueryValue(String)
+    }
+    
+    enum RecipesSearchResultOutput {
+        case reloadTable
+        case updateListStatus(isEmpty: Bool)
+    }
+}
+
+// MARK: - Helper enums
+
+extension RecipesListVM {
+    struct Section {
+        let title: RecipeCategory
+        let items: [RecipeModel]
+    }
+}
+
+// MARK: - LifetimeTracker
 
 #if DEBUG
 extension RecipesListVM: LifetimeTrackable {

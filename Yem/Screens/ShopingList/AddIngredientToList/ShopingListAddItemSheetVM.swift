@@ -22,7 +22,7 @@ final class ShopingListAddItemSheetVM {
 
     private var validationErrors: [ValidationError] = []
 
-    var ingredientValueTypeArray: [IngredientValueTypeModel] = IngredientValueTypeModel.allCases 
+    var ingredientValueTypeArray: [IngredientValueTypeModel] = IngredientValueTypeModel.allCases
 
     let inputEvent = PassthroughSubject<Input, Never>()
     private var inputPublisher: AnyPublisher<Input, Never> {
@@ -53,11 +53,12 @@ final class ShopingListAddItemSheetVM {
     func addIngredientToShoppingList() -> Result<Void, ValidationErrors> {
         resetIngredientValidationFlags()
         let ingredient = IngredientModel(id: UUID(), name: ingredientName, value: ingredientValue, valueType: .init(name: ingredientValueType))
+        
         let validationResult = validateIngredient(ingredient)
 
         switch validationResult {
         case .success:
-            repository.addIngredientsToShoppingList(ingredients: [ingredient])
+            try! repository.addIngredientsToShopingList(ingredients: [ingredient])
             return .success(())
         case .failure(let error):
             return .failure(error)
@@ -203,6 +204,16 @@ extension ShopingListAddItemSheetVM {
 
     struct ValidationErrors: Error {
         let errors: [ValidationError]
+    }
+}
+
+// MARK: - Accessibility
+
+extension ShopingListAddItemSheetVM {
+    enum AccessibilityElement {
+        case ingredientNameTextField
+        case ingredientValueTextField
+        case ingredientValueTypePicker
     }
 }
 

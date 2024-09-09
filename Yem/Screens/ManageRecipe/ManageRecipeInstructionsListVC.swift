@@ -5,18 +5,16 @@
 //  Created by Adam Zapiór on 10/12/2023.
 //
 
+import Combine
+import CombineCocoa
 import Foundation
 import LifetimeTracker
 import UIKit
 
-final class AddRecipeInstructionsVC: UIViewController {
-    // MARK: - Properties
-
-    let viewModel: AddRecipeViewModel
-    weak var coordinator: AddRecipeCoordinator?
+final class ManageRecipeInstructionsListVC: UIViewController {
+    private weak var coordinator: ManageRecipeCoordinator?
+    private let viewModel: ManageRecipeVM
     
-    // MARK: - View properties
-
     private let pageStackView: UIStackView = {
         let sv = UIStackView()
         sv.axis = .horizontal
@@ -39,9 +37,11 @@ final class AddRecipeInstructionsVC: UIViewController {
         textAlignment: .center
     )
 
+    private var cancellables = Set<AnyCancellable>()
+    
     // MARK: - Lifecycle
     
-    init(viewModel: AddRecipeViewModel, coordinator: AddRecipeCoordinator) {
+    init(viewModel: ManageRecipeVM, coordinator: ManageRecipeCoordinator) {
         self.viewModel = viewModel
         self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
@@ -60,14 +60,16 @@ final class AddRecipeInstructionsVC: UIViewController {
         view.backgroundColor = .systemBackground
         title = "Instructions"
 
-        viewModel.delegateInstructions = self
-
         setupNavigationBarButtons()
         setupTableView()
         setupTableViewFooter()
         setupTableViewHeader()
         setupEmptyTableLabel()
-        setupEmptyTableLabelisHidden()
+        
+        observeViewModelOutput()
+        observeActionButton()
+        
+        viewModel.inputInstructionsListEvent.send(.viewDidLoad)
     }
     
     private func setupTableView() {
@@ -90,8 +92,6 @@ final class AddRecipeInstructionsVC: UIViewController {
     }
     
     private func setupTableViewFooter() {
-        tableViewFooter.delegate = self
-        
         tableViewFooter.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 200)
         tableViewFooter.backgroundColor = UIColor.ui.background
         tableView.tableFooterView = tableViewFooter
@@ -114,20 +114,74 @@ final class AddRecipeInstructionsVC: UIViewController {
             make.centerX.equalToSuperview()
             make.centerY.equalToSuperview()
         }
-    }
-    
-    private func setupEmptyTableLabelisHidden() {
-        if viewModel.instructionList.isEmpty {
-            emptyTableLabel.isHidden = false
-        } else {
-            emptyTableLabel.isHidden = true
-        }
         
-        emptyTableLabel.textColor = .ui.secondaryText
+        emptyTableLabel.isHidden = true
     }
 }
 
-extension AddRecipeInstructionsVC: UITableViewDelegate, UITableViewDataSource, UITableViewDragDelegate, UITableViewDropDelegate, InstructionCellDelegate {
+// MARK: - Observe ViewModel Output & UI actions
+
+extension ManageRecipeInstructionsListVC {
+    private func observeViewModelOutput() {
+        viewModel.outputInstructionsListPublisher
+            .sink { [unowned self] event in
+                DispatchQueue.main.async { [weak self] in
+                    guard let self else { return }
+                    switch event {
+                    case .reloadTable:
+                        tableView.reloadData()
+                    case .updateListStatus(isEmpty: let value):
+                        setEmptyLabelVisible(value)
+                        handleAccessibilityUpdate(isEmpty: value)
+                    case .validationError(let type):
+                        handleValidationError(type)
+                    }
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func observeActionButton() {
+        tableViewFooter.addButton
+            .tapPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [unowned self] in
+                self.handleActionButtonEvent()
+            }
+            .store(in: &cancellables)
+    }
+}
+
+// MARK: - Handle Output & UI Actions
+
+extension ManageRecipeInstructionsListVC {
+    private func handleActionButtonEvent() {
+        navigateToAddInstructionSheet()
+    }
+    
+    private func setEmptyLabelVisible(_ isListEmpty: Bool) {
+        switch isListEmpty {
+        case true:
+            emptyTableLabel.isHidden = false
+        case false:
+            emptyTableLabel.isHidden = true
+        }
+    }
+    
+    private func handleAccessibilityUpdate(isEmpty: Bool) {
+        emptyTableLabel.accessibilityHint = isEmpty ? "Add instruction to list" : nil
+    }
+    
+    private func handleValidationError(_ type: ManageRecipeVM.ErrorType.Instructions) {
+        if type == .instructionList {
+            emptyTableLabel.textColor = .ui.placeholderError
+        }
+    }
+}
+
+// MARK: UITableViewDataSource
+
+extension ManageRecipeInstructionsListVC: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.instructionList.count
     }
@@ -136,29 +190,49 @@ extension AddRecipeInstructionsVC: UITableViewDelegate, UITableViewDataSource, U
         guard let cell = tableView.dequeueReusableCell(withIdentifier: InstructionCell.id, for: indexPath) as? InstructionCell else {
             fatalError("instructionCell error")
         }
-        cell.delegate = self
         cell.configure(with: viewModel.instructionList[indexPath.row])
         
         cell.isAccessibilityElement = true
         cell.accessibilityLabel = "This is \(indexPath.row + 1) added instruction cell"
         cell.accessibilityValue = "\(viewModel.instructionList[indexPath.row].text)"
+        
+        cell.eventPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [unowned self] _ in
+                DispatchQueue.main.async { [weak self] in
+                    self?.handleCellEvent(indexPath: indexPath)
+                }
+            }
+            .store(in: &cell.cancellables)
 
         return cell
     }
     
-    func tableView(_ tableView: UITableView,
-                   itemsForBeginning session: UIDragSession,
-                   at indexPath: IndexPath) -> [UIDragItem]
-    {
+    // MARK: Cell Event
+
+    func handleCellEvent(indexPath: IndexPath) {
+        viewModel.removeInstructionFromList(at: indexPath.row)
+    }
+}
+
+// MARK: UITableViewDelegate & UITableViewDragDelegate & UITableViewDropDelegate
+
+extension ManageRecipeInstructionsListVC: UITableViewDelegate, UITableViewDragDelegate, UITableViewDropDelegate {
+    func tableView(
+        _ tableView: UITableView,
+        itemsForBeginning session: UIDragSession,
+        at indexPath: IndexPath
+    ) -> [UIDragItem] {
         let item = viewModel.instructionList[indexPath.row]
         let itemProvider = NSItemProvider(object: item.text as NSString)
         let dragItem = UIDragItem(itemProvider: itemProvider)
         return [dragItem]
     }
     
-    func tableView(_ tableView: UITableView,
-                   performDropWith coordinator: UITableViewDropCoordinator)
-    {
+    func tableView(
+        _ tableView: UITableView,
+        performDropWith coordinator: UITableViewDropCoordinator
+    ) {
         if let destinationIndexPath = coordinator.destinationIndexPath,
            let sourceIndexPath = coordinator.items.first?.sourceIndexPath
         {
@@ -178,68 +252,62 @@ extension AddRecipeInstructionsVC: UITableViewDelegate, UITableViewDataSource, U
         }
     }
         
-    func tableView(_ tableView: UITableView,
-                   dropSessionDidUpdate session: UIDropSession,
-                   withDestinationIndexPath destinationIndexPath: IndexPath?) -> UITableViewDropProposal
-    {
+    func tableView(
+        _ tableView: UITableView,
+        dropSessionDidUpdate session: UIDropSession,
+        withDestinationIndexPath destinationIndexPath: IndexPath?
+    ) -> UITableViewDropProposal {
         return UITableViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
     }
-    
-    func didTapButton(in cell: InstructionCell) {
-        DispatchQueue.main.async {
-            guard let indexPath = self.tableView.indexPath(for: cell) else { return }
-            self.viewModel.removeInstructionFromList(at: indexPath.row)
-            self.viewModel.updateInstructionIndexes()
-            self.tableView.reloadData()
-        }
-    }
 }
 
-extension AddRecipeInstructionsVC: IngredientsTableFooterViewDelegate {
-    func addIconTapped(view: UIView) {
-        addInstructionTapped()
-    }
-}
+// MARK: - NavigationItems & Navigation
 
-extension AddRecipeInstructionsVC: AddRecipeInstructionsVCDelegate {
-    func reloadInstructionTable() {
-        tableView.reloadData()
-        setupEmptyTableLabelisHidden()
-    }
-    
-    func delegateInstructionsError(_ type: ValidationErrorTypes) {
-        if type == .instructionList {
-            emptyTableLabel.textColor = .ui.placeholderError
-        }
-    }
-}
-
-// MARK: - Navigation
-
-extension AddRecipeInstructionsVC {
+extension ManageRecipeInstructionsListVC {
     private func setupNavigationBarButtons() {
         let nextButtonItem = UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(saveButtonTapped))
         navigationItem.rightBarButtonItem = nextButtonItem
     }
-    
+
     @objc func saveButtonTapped(_ sender: UIBarButtonItem) {
-        let result = viewModel.saveRecipe()
-        if result {
-            coordinator?.dismissVCStack()
-        } else {
-            let errorMessages = viewModel.validationErrors.map { $0.description }.joined(separator: "\n")
-            coordinator?.presentValidationAlert(title: "We can't save your recipe", message: errorMessages)
+        do {
+            try viewModel.saveRecipe()
+            popUpToRoot()
+        } catch let validationError as ManageRecipeVM.ValidationError {
+            let errorMessages = validationError.localizedDescription
+            presentValidationAlert(title: "An error occurred", message: errorMessages)
+        } catch {
+            presentValidationAlert(title: "An error occurred", message: error.localizedDescription)
         }
     }
     
-    /// Navigate to Add Instruction Sheet
-    private func addInstructionTapped() {
-        coordinator?.navigateTo(.addInstruction)
+    private func popUpToRoot() {
+        DispatchQueue.main.async { [weak self] in
+            self?.coordinator?.popUptoRoot()
+        }
+    }
+    
+    private func presentValidationAlert(title: String, message: String) {
+        DispatchQueue.main.async { [weak self] in
+            self?.coordinator?.presentAlert(
+                .validationAlert,
+                title: title,
+                message: message
+            )
+        }
+    }
+    
+    private func navigateToAddInstructionSheet() {
+        DispatchQueue.main.async { [weak self] in
+            self?.coordinator?.navigateTo(.addInstruction)
+        }
     }
 }
 
+// MARK: - LifetimeTracker
+
 #if DEBUG
-extension AddRecipeInstructionsVC: LifetimeTrackable {
+extension ManageRecipeInstructionsListVC: LifetimeTrackable {
     class var lifetimeConfiguration: LifetimeConfiguration {
         return LifetimeConfiguration(maxCount: 1, groupName: "ViewControllers")
     }

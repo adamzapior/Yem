@@ -118,6 +118,9 @@ final class TabBarCoordinator: UITabBarController, DestinationProviding {
     }
 }
 
+// MARK: - LifetimeTracker
+
+
 #if DEBUG
 extension TabBarCoordinatorAdapter: LifetimeTrackable {
     class var lifetimeConfiguration: LifetimeConfiguration {

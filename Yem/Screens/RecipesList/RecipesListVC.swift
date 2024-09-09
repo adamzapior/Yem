@@ -5,13 +5,14 @@
 //  Created by Adam Zapiór on 06/12/2023.
 //
 
+import Combine
 import LifetimeTracker
 import SnapKit
 import UIKit
 
 final class RecipesListVC: UIViewController {
-    weak var coordinator: RecipesListCoordinator?
-    let viewModel: RecipesListVM
+    private weak var coordinator: RecipesListCoordinator?
+    private let viewModel: RecipesListVM
 
     private lazy var settingsNavItem = UIBarButtonItem(
         image: UIImage(
@@ -44,6 +45,10 @@ final class RecipesListVC: UIViewController {
         viewModel: viewModel
     )
 
+    private let activityIndicatorView = UIActivityIndicatorView()
+
+    private var cancellables = Set<AnyCancellable>()
+
     // MARK: - Lifecycle
 
     init(coordinator: RecipesListCoordinator, viewModel: RecipesListVM) {
@@ -65,18 +70,20 @@ final class RecipesListVC: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         title = "Recipes"
-        viewModel.delegate = self
 
         setupNavigationBar()
         setupSearchController()
         setupCollectionView()
         setupEmptyTableLabel()
-
+        setupActivityIndicatorView()
         setupVoiceOverAccessibility()
 
-        Task {
-            viewModel.loadRecipes()
-        }
+        observeViewModelEventOutput()
+        viewModel.inputRecipesListEvent.send(.viewDidLoad)
+    }
+
+    deinit {
+        print("DEBUG: RecipesListVC - deinit")
     }
 
     // MARK: - UI Setup
@@ -95,6 +102,7 @@ final class RecipesListVC: UIViewController {
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: layout)
 
         collectionView.collectionViewLayout = setupLayout()
+        collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.register(RecipeCell.self, forCellWithReuseIdentifier: RecipeCell.id)
@@ -141,10 +149,23 @@ final class RecipesListVC: UIViewController {
                 section.boundarySupplementaryItems = [self.supplementaryHeaderItem(forSection: sectionIndex)]
                 return section
             case RecipeCategory.appetizers, RecipeCategory.sideDishes, RecipeCategory.notSelected:
-                let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(170), heightDimension: .absolute(170))
+//                let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(170), heightDimension: .absolute(170))
+//                let item = NSCollectionLayoutItem(layoutSize: itemSize)
+//
+//                let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(170), heightDimension: .absolute(170))
+//                let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+//
+//                let section = NSCollectionLayoutSection(group: group)
+//                section.orthogonalScrollingBehavior = .continuous
+//                section.interGroupSpacing = 7
+//                section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 5, bottom: 10, trailing: 5)
+//                section.boundarySupplementaryItems = [self.supplementaryHeaderItem(forSection: sectionIndex)]
+//                return section
+
+                let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.5), heightDimension: .fractionalHeight(0.5))
                 let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
-                let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(170), heightDimension: .absolute(170))
+                let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(0.5))
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
 
                 let section = NSCollectionLayoutSection(group: group)
@@ -175,6 +196,23 @@ final class RecipesListVC: UIViewController {
             make.centerX.equalToSuperview()
             make.centerY.equalToSuperview()
         }
+
+        emptyTableLabel.isHidden = true
+    }
+
+    private func setupActivityIndicatorView() {
+        view.addSubview(activityIndicatorView)
+        activityIndicatorView.startAnimating()
+
+        activityIndicatorView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview()
+        }
+    }
+
+    private func hideActivityIndicatorView() {
+        activityIndicatorView.stopAnimating()
+        activityIndicatorView.isHidden = true
     }
 
     /// method for setting custom voice over commands without elements from CollectionView
@@ -186,26 +224,58 @@ final class RecipesListVC: UIViewController {
         addRecipeNavItem.isAccessibilityElement = true
         addRecipeNavItem.accessibilityLabel = "Add recipe button"
         addRecipeNavItem.accessibilityHint = "Open add recipe screen"
+    }
+}
 
-        emptyTableLabel.isAccessibilityElement = true
+// MARK: - Observed ViewModel Output & UI actions
 
-        if emptyTableLabel.isHidden == false {
-            emptyTableLabel.accessibilityLabel = emptyTableLabel.text
-            emptyTableLabel.accessibilityHint = "Add recipes to see them in the list"
+extension RecipesListVC {
+    private func observeViewModelEventOutput() {
+        viewModel.outputPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [unowned self] event in
+                self.handleViewModelOutput(event: event)
+            }
+            .store(in: &cancellables)
+    }
+}
+
+// MARK: - Handle Output & UI Actions
+
+extension RecipesListVC {
+    private func handleViewModelOutput(event: RecipesListVM.RecipesListOutput) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+
+            switch event {
+            case .reloadTable:
+                collectionView.reloadData()
+            case .initialDataFetched:
+                hideActivityIndicatorView()
+            case .updateListStatus(isEmpty: let result):
+                switch result {
+                case true:
+                    emptyTableLabel.isHidden = false
+                case false:
+                    emptyTableLabel.isHidden = true
+                }
+            }
         }
     }
 }
 
-// MARK: - Delegates
+// MARK: - UISearchResultsUpdating
 
 extension RecipesListVC: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         guard let searchText = searchController.searchBar.text else { return }
-        viewModel.filterRecipes(query: searchText)
+        viewModel.inputSearchResultsEvent.send(.sendQueryValue(searchText))
     }
 }
 
-extension RecipesListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+// MARK: - UICollectionViewDataSource
+
+extension RecipesListVC: UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return viewModel.sections.count
     }
@@ -219,7 +289,7 @@ extension RecipesListVC: UICollectionViewDelegate, UICollectionViewDataSource, U
         let recipe = section.items[indexPath.item]
 
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecipeCell.id, for: indexPath) as! RecipeCell
-        cell.recipeImage.image = nil
+        cell.prepareForReuse()
 
         cell.configure(
             with: recipe,
@@ -233,14 +303,6 @@ extension RecipesListVC: UICollectionViewDelegate, UICollectionViewDataSource, U
         cell.accessibilityValue = "\(recipe.name) with perp time \(recipe.getPerpTimeString()) and \(recipe.spicy.displayName) spicy level"
 
         return cell
-    }
-
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        if viewModel.sections[section].items.isEmpty {
-            return .zero
-        } else {
-            return CGSize(width: collectionView.bounds.width, height: 25)
-        }
     }
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
@@ -261,6 +323,18 @@ extension RecipesListVC: UICollectionViewDelegate, UICollectionViewDataSource, U
             return headerView
         }
     }
+}
+
+// MARK: - UICollectionViewDelegate
+
+extension RecipesListVC: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        if viewModel.sections[section].items.isEmpty {
+            return .zero
+        } else {
+            return CGSize(width: collectionView.bounds.width, height: 25)
+        }
+    }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 0, left: 0, bottom: 5, right: 0)
@@ -270,7 +344,7 @@ extension RecipesListVC: UICollectionViewDelegate, UICollectionViewDataSource, U
         let section = viewModel.sections[indexPath.section]
         let recipe = section.items[indexPath.item]
 
-        coordinator?.navigateToRecipeDetail(with: recipe)
+        coordinator?.navigateTo(.recipeDetailsScreen, recipe: recipe)
     }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
@@ -288,36 +362,24 @@ extension RecipesListVC: UICollectionViewDelegate, UICollectionViewDataSource, U
     }
 }
 
-extension RecipesListVC: RecipesListVMDelegate {
-    func reloadTable() {
-        collectionView.reloadData()
-
-        if viewModel.sections.isEmpty {
-            emptyTableLabel.isHidden = false
-        } else {
-            emptyTableLabel.isHidden = true
-        }
-    }
-}
-
-// MARK: - Navigation
+// MARK: - NavigationItems & Navigation
 
 extension RecipesListVC {
     func setupNavigationBar() {
-        navigationController?.navigationBar.prefersLargeTitles = false
-
         navigationItem.setLeftBarButton(settingsNavItem, animated: true)
         navigationItem.setRightBarButton(addRecipeNavItem, animated: true)
     }
 
     @objc func addRecipeButtonTapped() {
-        coordinator?.navigateToAddRecipeScreen()
+        coordinator?.navigateTo(.addRecipeScreen)
     }
 
     @objc func settingsButtonTapped() {
-        coordinator?.navigateToSettings()
+        coordinator?.navigateTo(.settingsScreen)
     }
 }
+
+// MARK: - LifetimeTracker
 
 #if DEBUG
 extension RecipesListVC: LifetimeTrackable {

@@ -5,19 +5,23 @@
 //  Created by Adam Zapiór on 07/12/2023.
 //
 
+import Combine
 import UIKit
 
-protocol AddPhotoViewDelegate: AnyObject {
-    func addPhotoViewTapped()
-}
-
 final class PhotoView: UIView {
-    weak var delegate: AddPhotoViewDelegate?
-
     private var icon: IconImage
     private let imageView = UIImageView()
     private var iconString: String
     private var enableAnimations: Bool
+
+    /// Publisher store
+    var tapPublisher: AnyPublisher<Void, Never> {
+        tapSubject.eraseToAnyPublisher()
+    }
+
+    /// Publisher
+    private let tapSubject = PassthroughSubject<Void, Never>()
+    private var cancellables = Set<AnyCancellable>()
 
     // MARK: Lifecycle
 
@@ -42,7 +46,7 @@ final class PhotoView: UIView {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     // MARK: UI Setup
 
     private func commonInit() {
@@ -74,12 +78,7 @@ final class PhotoView: UIView {
         }
     }
 
-    // MARK: Delegate method
-
     @objc private func addPhotoViewTapped() {
-        if enableAnimations {
-            defaultOnTapAnimation()
-        }
-        delegate?.addPhotoViewTapped()
+        tapSubject.send(())
     }
 }

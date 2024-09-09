@@ -5,22 +5,25 @@
 //  Created by Adam Zapiór on 25/07/2024.
 //
 
-import Kingfisher
+import Combine
 import LifetimeTracker
 import SnapKit
 import UIKit
 
 class RecipesSearchResultsVC: UIViewController {
-    let coordinator: RecipesListCoordinator
-    let viewModel: RecipesListVM
+    private weak var coordinator: RecipesListCoordinator?
+    private let viewModel: RecipesListVM
 
     private var tableView = UITableView()
 
     private let emptyTableLabel = TextLabel(
         fontStyle: .body,
         fontWeight: .regular,
-        textColor: .ui.secondaryText
+        textColor: .ui.secondaryText,
+        textAlignment: .center
     )
+
+    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Lifecycle
 
@@ -44,8 +47,9 @@ class RecipesSearchResultsVC: UIViewController {
         setupTableView()
         setupEmptyTableLabel()
         setupVoiceOverAccessibility()
-        
-        viewModel.delegateRecipesSearchResult = self
+
+        observeViewModelEventOutput()
+        viewModel.inputSearchResultsEvent.send(.viewDidLoad)
     }
 
     // MARK: - UI Setup
@@ -74,22 +78,56 @@ class RecipesSearchResultsVC: UIViewController {
             make.centerX.equalToSuperview()
             make.centerY.equalToSuperview()
         }
+
+        emptyTableLabel.isHidden = true
     }
-    
-    /// method for setting custom voice over commands without elements from TableView
+
     private func setupVoiceOverAccessibility() {
         emptyTableLabel.isAccessibilityElement = true
 
-        if emptyTableLabel.isHidden == false {
-            emptyTableLabel.accessibilityLabel = emptyTableLabel.text
-            emptyTableLabel.accessibilityHint = "Add recipes to see them in the list"
+        emptyTableLabel.accessibilityLabel = emptyTableLabel.text
+        emptyTableLabel.accessibilityHint = "Add recipes to see them in the list"
+    }
+}
+
+// MARK: - Observe ViewModel Output & UI actions
+
+extension RecipesSearchResultsVC {
+    private func observeViewModelEventOutput() {
+        viewModel.outputSearchResultsPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [unowned self] event in
+                self.handleViewModelOutput(event: event)
+            }
+            .store(in: &cancellables)
+    }
+}
+
+// MARK: - Handle Output & UI Actions
+
+extension RecipesSearchResultsVC {
+    private func handleViewModelOutput(event: RecipesListVM.RecipesSearchResultOutput) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+
+            switch event {
+            case .reloadTable:
+                tableView.reloadData()
+            case .updateListStatus(isEmpty: let result):
+                switch result {
+                case true:
+                    emptyTableLabel.isHidden = false
+                case false:
+                    emptyTableLabel.isHidden = true
+                }
+            }
         }
     }
 }
 
-// MARK: - Delegates
+// MARK: - UITableViewDataSource
 
-extension RecipesSearchResultsVC: UITableViewDelegate, UITableViewDataSource {
+extension RecipesSearchResultsVC: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.filteredRecipes.count
     }
@@ -112,7 +150,11 @@ extension RecipesSearchResultsVC: UITableViewDelegate, UITableViewDataSource {
 
         return cell
     }
+}
 
+// MARK: - UITableViewDelegate
+
+extension RecipesSearchResultsVC: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 128.VAdapted
     }
@@ -120,21 +162,11 @@ extension RecipesSearchResultsVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let recipe = viewModel.filteredRecipes[indexPath.row]
-        coordinator.navigateToRecipeDetail(with: recipe)
+        coordinator?.navigateTo(.recipeDetailsScreen, recipe: recipe)
     }
 }
 
-extension RecipesSearchResultsVC: RecipesSearchResultDelegate {
-    func reloadTable() {
-        tableView.reloadData()
-        
-        if viewModel.filteredRecipes.isEmpty {
-            emptyTableLabel.isHidden = false
-        } else {
-            emptyTableLabel.isHidden = true
-        }
-    }
-}
+// MARK: - LifetimeTracker
 
 #if DEBUG
 extension RecipesSearchResultsVC: LifetimeTrackable {

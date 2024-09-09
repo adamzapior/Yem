@@ -9,15 +9,15 @@ import LifetimeTracker
 import UIKit
 
 class SettingsVC: UIViewController {
-    let viewModel: SettingsViewModel
-    weak var coordinator: SettingsCoordinator?
+    private weak var coordinator: SettingsCoordinator?
+    private let viewModel: SettingsVM
         
     private var section: [SettingsOption] = []
     private let tableView = UITableView()
     
     // MARK: - Lifecycle
 
-    init(viewModel: SettingsViewModel, coordinator: SettingsCoordinator) {
+    init(viewModel: SettingsVM, coordinator: SettingsCoordinator) {
         self.viewModel = viewModel
         self.coordinator = coordinator
         
@@ -84,9 +84,9 @@ class SettingsVC: UIViewController {
     }
 }
     
-// MARK: Delegate methods
+// MARK: UITableViewDataSource
 
-extension SettingsVC: UITableViewDelegate, UITableViewDataSource {
+extension SettingsVC: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         self.section.count
     }
@@ -113,7 +113,11 @@ extension SettingsVC: UITableViewDelegate, UITableViewDataSource {
         
         return cell
     }
-    
+}
+
+// MARK: UITableViewDelegate
+
+extension SettingsVC: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
@@ -122,16 +126,50 @@ extension SettingsVC: UITableViewDelegate, UITableViewDataSource {
         tableView.deselectRow(at: indexPath, animated: true) // Optional: for visual feedback
         switch indexPath.row {
         case 0:
-            coordinator?.presentSystemSettings()
+            navigateToSystemSettings()
         case 1:
-            coordinator?.presentAboutAppAlert()
+            presentAboutAppAlert()
         case 2:
-            coordinator?.presentLogoutAlert()
+            presentLogoutAlert()
         default:
             break
         }
     }
 }
+
+// MARK: - Navigation
+
+extension SettingsVC {
+    private func navigateToSystemSettings() {
+        DispatchQueue.main.async { [weak self] in
+            self?.coordinator?.navigateTo(.systemSettings)
+        }
+    }
+    
+    private func presentAboutAppAlert() {
+        let title = "About this app"
+        let message = """
+        Yem is an app created for portfolio and educational purposes by Adam Zapiór. \
+        You can check out more of my projects and GitHub under the username @adamzapior
+        """
+        
+        DispatchQueue.main.async { [weak self] in
+            self?.coordinator?.present(.aboutApp, title: title,
+                                       message: message)
+        }
+    }
+    
+    private func presentLogoutAlert() {
+        let title = "Are you sure?"
+        let message = "Do you want to logout from app?"
+        
+        DispatchQueue.main.async { [weak self] in
+            self?.coordinator?.present(.logout, title: title, message: message)
+        }
+    }
+}
+
+// MARK: - LifetimeTracker
 
 #if DEBUG
 extension SettingsVC: LifetimeTrackable {
@@ -140,9 +178,3 @@ extension SettingsVC: LifetimeTrackable {
     }
 }
 #endif
-
-struct SettingsOption {
-    let title: String
-    let icon: UIImage
-    let iconBackgroundColor: UIColor
-}

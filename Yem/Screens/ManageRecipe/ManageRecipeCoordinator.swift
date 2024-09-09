@@ -8,7 +8,7 @@
 import LifetimeTracker
 import UIKit
 
-extension AddRecipeCoordinator {
+extension ManageRecipeCoordinator {
     enum AddRecipeRoute {
         case ingredientsList
         case addIngredient
@@ -25,14 +25,14 @@ extension AddRecipeCoordinator {
     typealias AlertType = AddRecipeAlertType
 }
 
-final class AddRecipeCoordinator: Destination {
+final class ManageRecipeCoordinator: Destination {
     weak var parentCoordinator: Destination?
 
     private let repository: DataRepositoryProtocol
     private let localFleManager: LocalFileManagerProtocol
     private let imageFetcherManager: ImageFetcherManagerProtocol
     private let recipe: RecipeModel?
-    private let viewModel: AddRecipeViewModel
+    private let viewModel: ManageRecipeVM
 
     init(
         repository: DataRepositoryProtocol,
@@ -44,7 +44,7 @@ final class AddRecipeCoordinator: Destination {
         self.localFleManager = localFileManager
         self.imageFetcherManager = imageFetcherManager
         self.recipe = recipe
-        self.viewModel = AddRecipeViewModel(
+        self.viewModel = ManageRecipeVM(
             repository: repository,
             localFileManager: localFileManager,
             imageFetcherManager: imageFetcherManager,
@@ -57,28 +57,28 @@ final class AddRecipeCoordinator: Destination {
     }
 
     override func render() -> UIViewController {
-        let addRecipeVC = AddRecipeVC(coordinator: self, viewModel: viewModel)
-        addRecipeVC.destination = self
-        addRecipeVC.hidesBottomBarWhenPushed = true
-        return addRecipeVC
+        let detailsFormVC = ManageRecipeDetailsFromVC(coordinator: self, viewModel: viewModel)
+        detailsFormVC.destination = self
+        detailsFormVC.hidesBottomBarWhenPushed = true
+        return detailsFormVC
     }
 
     func navigateTo(_ route: Route) {
         let viewModel = viewModel
         switch route {
         case .ingredientsList:
-            let controller = AddRecipeIngredientsVC(viewModel: viewModel, coordinator: self)
+            let controller = ManageRecipeIngredientsListVC(viewModel: viewModel, coordinator: self)
             navigator?.presentScreen(controller)
         case .addIngredient:
-            let controller = AddIngredientSheetVC(viewModel: viewModel, coordinator: self)
+            let controller = ManageRecipeIngredientFormVC(viewModel: viewModel, coordinator: self)
             navigator?.presentSheet(controller)
 
         case .instructions:
-            let controller = AddRecipeInstructionsVC(viewModel: viewModel, coordinator: self)
+            let controller = ManageRecipeInstructionsListVC(viewModel: viewModel, coordinator: self)
             navigator?.presentScreen(controller)
 
         case .addInstruction:
-            let controller = AddInstructionSheetVC(viewModel: viewModel, coordinator: self)
+            let controller = ManageRecipeInstructionFormVC(viewModel: viewModel, coordinator: self)
             navigator?.presentSheet(controller)
         }
     }
@@ -121,8 +121,10 @@ final class AddRecipeCoordinator: Destination {
     }
 }
 
+// MARK: - LifetimeTracker
+
 #if DEBUG
-extension AddRecipeCoordinator: LifetimeTrackable {
+extension ManageRecipeCoordinator: LifetimeTrackable {
     class var lifetimeConfiguration: LifetimeConfiguration {
         return LifetimeConfiguration(maxCount: 1, groupName: "Coordinators")
     }

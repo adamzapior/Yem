@@ -94,6 +94,9 @@ final class AppCoordinator: Destination {
     }
 }
 
+// MARK: - LifetimeTracker
+
+
 #if DEBUG
 extension SplashScreenViewController: LifetimeTrackable {
     class var lifetimeConfiguration: LifetimeConfiguration {

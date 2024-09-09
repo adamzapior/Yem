@@ -7,15 +7,7 @@
 
 import UIKit
 
-protocol ActionButtonDelegate: AnyObject {
-    func actionButtonTapped(_ button: ActionButton)
-}
-
 final class ActionButton: UIButton {
-    weak var delegate: ActionButtonDelegate?
-    
-    // MARK: - Lifecycle
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.setupUI()
@@ -55,8 +47,6 @@ final class ActionButton: UIButton {
         }
     }
     
-    // MARK: UI Setup
-
     private func setupUI() {
         self.layer.cornerRadius = 20
         self.titleLabel?.font = UIFont.preferredFont(forTextStyle: .body)
@@ -65,7 +55,6 @@ final class ActionButton: UIButton {
     }
         
     @objc private func buttonTapped() {
-        self.delegate?.actionButtonTapped(self)
         self.defaultOnTapAnimation()
     }
 }

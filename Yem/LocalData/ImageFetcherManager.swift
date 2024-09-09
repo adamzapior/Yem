@@ -10,7 +10,8 @@ import LifetimeTracker
 import UIKit
 
 protocol ImageFetcherManagerProtocol {
-    func fetchImage(from url: URL, completion: @escaping (Result<UIImage, Error>) -> Void)
+//    func fetchImage(from url: URL, completion: @escaping (Result<UIImage, Error>) -> Void)
+    func fetchImage(from url: URL, completion: @escaping (UIImage?) -> Void)
 }
 
 final class ImageFetcherManager: ImageFetcherManagerProtocol {
@@ -19,8 +20,8 @@ final class ImageFetcherManager: ImageFetcherManagerProtocol {
         trackLifetime()
 #endif
     }
-
-    func fetchImage(from url: URL, completion: @escaping (Result<UIImage, Error>) -> Void) {
+    
+    func fetchImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
         let provider = LocalFileImageDataProvider(fileURL: url)
         let fetchImageView = UIImageView()
 
@@ -28,15 +29,31 @@ final class ImageFetcherManager: ImageFetcherManagerProtocol {
             switch result {
             case .success(let result):
                 DispatchQueue.main.async {
-                    completion(.success(result.image))
+                    completion(result.image)
                 }
-            case .failure(let error):
-                DispatchQueue.main.async {
-                    completion(.failure(error))
-                }
+            case .failure:
+                completion(nil)
             }
         }
     }
+
+//    func fetchImage(from url: URL, completion: @escaping (Result<UIImage, Error>) -> Void) {
+//        let provider = LocalFileImageDataProvider(fileURL: url)
+//        let fetchImageView = UIImageView()
+//
+//        fetchImageView.kf.setImage(with: provider) { result in
+//            switch result {
+//            case .success(let result):
+//                DispatchQueue.main.async {
+//                    completion(.success(result.image))
+//                }
+//            case .failure(let error):
+//                DispatchQueue.main.async {
+//                    completion(.failure(error))
+//                }
+//            }
+//        }
+//    }
 }
 
 #if DEBUG

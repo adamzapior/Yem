@@ -10,43 +10,64 @@ import Combine
 import Foundation
 import LifetimeTracker
 
-protocol CookingIngredientsListSheetVCDelegate: AnyObject {
-    func reloadTable()
-    func timerStoppedWhenIngredientSheetOpen()
-}
-
-protocol CookingModeVCDelegate: AnyObject {
-    func timerStarted()
-    func timerStopped()
-}
-
-protocol CookingTimerSheetVCDelegate: AnyObject {
-    func timerStoppedWhenTimerSheetOpen()
-}
-
 final class CookingModeViewModel {
-    weak var delegate: CookingModeVCDelegate?
-    weak var delegateIngredientSheet: CookingIngredientsListSheetVCDelegate?
-    weak var delegateTimerSheet: CookingTimerSheetVCDelegate?
-
-    let recipe: RecipeModel
-    let repository: DataRepositoryProtocol
+    private let recipe: RecipeModel
+    private let repository: DataRepositoryProtocol
 
     var uncheckedList: [ShopingListModel] = []
     var checkedList: [ShopingListModel] = []
 
     var timer: Timer?
-    var hours: Int = 0
-    var minutes: Int = 0
-    var seconds: Int = 0
+    @Published var hours: Int = 0
+    @Published var minutes: Int = 0
+    @Published var seconds: Int = 0
     private(set) var selectedTime: TimeInterval = 0
 
-    var vibrationTimer: Timer?
+    private var vibrationTimer: Timer?
 
     var timerPublisher: AnyCancellable?
 
-    @Published
-    var timeRemaining: String = ""
+    @Published var timeRemaining: String = ""
+
+    // MARK: Input events
+
+    let inputCookingModeEvent = PassthroughSubject<CookingModeInput, Never>()
+    let inputCookingIngredientsListSheetEvent = PassthroughSubject<CookingIngredientsListSheetInput, Never>()
+    let inputCookingTimerSheetEvent = PassthroughSubject<CookingTimerSheetInput, Never>()
+
+    // MARK: Input publishers
+
+    private var inputCookingModePublisher: AnyPublisher<CookingModeInput, Never> {
+        inputCookingModeEvent.eraseToAnyPublisher()
+    }
+
+    private var inputCookingIngredientsListSheetPublisher: AnyPublisher<CookingIngredientsListSheetInput, Never> {
+        inputCookingIngredientsListSheetEvent.eraseToAnyPublisher()
+    }
+
+    private var inputCookingTimerSheetPublisher: AnyPublisher<CookingTimerSheetInput, Never> {
+        inputCookingTimerSheetEvent.eraseToAnyPublisher()
+    }
+
+    // MARK: Output events
+
+    private let outputCookingModeEvent = PassthroughSubject<CookingModeOutput, Never>()
+    private let outputCookingIngredientsListSheetEvent = PassthroughSubject<CookingIngredientsListSheetOutput, Never>()
+    private let outputCookingTimerSheetEvent = PassthroughSubject<CookingTimerSheetOutput, Never>()
+
+    // MARK: Output publishers
+
+    var outputCookingModeEventPublisher: AnyPublisher<CookingModeOutput, Never> {
+        outputCookingModeEvent.eraseToAnyPublisher()
+    }
+
+    var outputCookingIngredientsListSheetEventPublisher: AnyPublisher<CookingIngredientsListSheetOutput, Never> {
+        outputCookingIngredientsListSheetEvent.eraseToAnyPublisher()
+    }
+
+    var outputCookingTimerSheetPublisher: AnyPublisher<CookingTimerSheetOutput, Never> {
+        outputCookingTimerSheetEvent.eraseToAnyPublisher()
+    }
 
     private var cancellables = Set<AnyCancellable>()
 
@@ -60,6 +81,9 @@ final class CookingModeViewModel {
         self.repository = repository
         self.uncheckedList = mapIngredientsToShoppingList(ingredients: recipe.ingredientList)
 
+        observeCookingTimerSheetInput()
+        observeTimerProperties()
+
 #if DEBUG
         trackLifetime()
 #endif
@@ -71,8 +95,6 @@ final class CookingModeViewModel {
 
     // MARK: - Public methods
 
-    // Ingredient list methods
-
     func mapIngredientsToShoppingList(ingredients: [IngredientModel]) -> [ShopingListModel] {
         return ingredients.map { ingredient in
             ShopingListModel(
@@ -80,7 +102,7 @@ final class CookingModeViewModel {
                 isChecked: false,
                 name: ingredient.name,
                 value: ingredient.value,
-                valueType: ingredient.valueType
+                valueType: ingredient.valueType.name
             )
         }
     }
@@ -96,9 +118,7 @@ final class CookingModeViewModel {
             uncheckedList.append(ingredient)
         }
 
-        DispatchQueue.main.async {
-            self.delegateIngredientSheet?.reloadTable()
-        }
+        outputCookingIngredientsListSheetEvent.send(.reloadIngredientTable)
     }
 
     func clearPickerVariables() {
@@ -107,16 +127,14 @@ final class CookingModeViewModel {
         seconds = 0
     }
 
-    // Timer methods
-
     func startTimer(with time: TimeInterval? = nil) {
-        print("Starting timer.")
+        print("DEBUG: Starting timer.")
         if let time = time {
             selectedTime = time
         } else {
             selectedTime = TimeInterval(hours * 3600 + minutes * 60 + seconds)
         }
-        print("Initial Selected Time: \(selectedTime)")
+        print("DEBUG: Initial Selected Time: \(selectedTime)")
 
         if selectedTime > 0 {
             // Invalidate any existing timer
@@ -129,11 +147,10 @@ final class CookingModeViewModel {
                 .sink { [weak self] _ in
                     self?.updateTimer()
                 }
-
-            delegate?.timerStarted()
-            print("Timer started.")
+            outputCookingModeEvent.send(.timerStarted)
+            print("DEBUG: Timer started.")
         } else {
-            print("Selected time is 0 or less, not starting timer.")
+            print("DEBUG: Selected time is 0 or less, not starting timer.")
         }
     }
 
@@ -153,26 +170,29 @@ final class CookingModeViewModel {
             print("Time left: \(hours) hr \(minutes) min \(seconds) sec")
 
             timeRemaining = String(format: "%02d:%02d:%02d", hours, minutes, seconds)
-
+            outputCookingModeEvent.send(.sendTimeRemaningString(timeRemaining))
         } else {
             timeRemaining = ""
+            outputCookingModeEvent.send(.sendTimeRemaningString(timeRemaining))
+            
+            // Cancel the timer publisher to stop updates
+            timerPublisher?.cancel()
+            timerPublisher = nil // Clear the reference
 
+            cancellables.removeAll()
             timer?.invalidate()
             timer = nil
             print("Timer finished")
 
-            cancellables.removeAll()
             notifyDelegatesTimerStopped()
             startVibration()
         }
     }
 
     private func notifyDelegatesTimerStopped() {
-        DispatchQueue.main.async {
-            self.delegate?.timerStopped()
-            self.delegateIngredientSheet?.timerStoppedWhenIngredientSheetOpen()
-            self.delegateTimerSheet?.timerStoppedWhenTimerSheetOpen()
-        }
+        outputCookingModeEvent.send(.timerStopped)
+        outputCookingIngredientsListSheetEvent.send(.timerStopped)
+        outputCookingTimerSheetEvent.send(.timerStopped)
     }
 
     private func startVibration() {
@@ -186,6 +206,106 @@ final class CookingModeViewModel {
     }
 }
 
+// MARK: - Observed input
+
+extension CookingModeViewModel {
+    private func observeCookingTimerSheetInput() {
+        inputCookingTimerSheetPublisher
+            .sink { [unowned self] event in
+                switch event {
+                case .viewDidLoad:
+                    break
+                case .startTimer:
+                    startTimer()
+                case .sendPickerValue(let picker):
+                    switch picker {
+                    case .hours(let value):
+                        hours = value
+                    case .minutes(let value):
+                        minutes = value
+                    case .seconds(let value):
+                        seconds = value
+                    }
+                }
+            }
+            .store(in: &cancellables)
+    }
+}
+
+// MARK: - Observed properties
+
+extension CookingModeViewModel {
+    private func observeTimerProperties() {
+        $hours
+            .sink { [unowned self] value in
+                self.outputCookingTimerSheetEvent.send(.updatePickerValue(.hours(value)))
+            }
+            .store(in: &cancellables)
+
+        $minutes
+            .sink { [unowned self] value in
+                self.outputCookingTimerSheetEvent.send(.updatePickerValue(.minutes(value)))
+            }
+            .store(in: &cancellables)
+
+        $seconds
+            .sink { [unowned self] value in
+                self.outputCookingTimerSheetEvent.send(.updatePickerValue(.seconds(value)))
+            }
+            .store(in: &cancellables)
+    }
+}
+
+// MARK: - Input & Output - CookingModeVC
+
+extension CookingModeViewModel {
+    enum CookingModeInput {
+        case viewDidLoad
+    }
+
+    enum CookingModeOutput {
+        case timerStarted
+        case sendTimeRemaningString(String)
+        case timerStopped
+    }
+}
+
+// MARK: - Input & Output - CookingIngredientsListSheetVC
+
+extension CookingModeViewModel {
+    enum CookingIngredientsListSheetInput {
+        case viewDidLoad
+    }
+
+    enum CookingIngredientsListSheetOutput {
+        case timerStopped
+        case reloadIngredientTable
+    }
+}
+
+// MARK: - Input & Output - CookingTimerSheetVC
+
+extension CookingModeViewModel {
+    enum CookingTimerSheetInput {
+        case viewDidLoad
+        case startTimer
+        case sendPickerValue(PickerValue)
+    }
+
+    enum CookingTimerSheetOutput {
+        case timerStopped
+        case updatePickerValue(PickerValue)
+    }
+
+    enum PickerValue {
+        case hours(Int)
+        case minutes(Int)
+        case seconds(Int)
+    }
+}
+
+// MARK: - LifetimeTracker
+
 #if DEBUG
 extension CookingModeViewModel: LifetimeTrackable {
     class var lifetimeConfiguration: LifetimeConfiguration {
@@ -193,41 +313,3 @@ extension CookingModeViewModel: LifetimeTrackable {
     }
 }
 #endif
-
-// MARK: - Unused code:
-
-//    func saveTimerState() {
-//        UserDefaults.standard.set(Date(), forKey: "TimerStartDate")
-//        UserDefaults.standard.set(selectedTime, forKey: "TimerDuration")
-//    }
-//
-//    func restoreTimerState() {
-//        guard timer == nil else {
-//            print("test")
-//            return
-//        }
-//
-//        if let startDate = UserDefaults.standard.value(forKey: "TimerStartDate") as? Date,
-//           let duration = UserDefaults.standard.value(forKey: "TimerDuration") as? TimeInterval
-//        {
-//            let currentDate = Date()
-//            let timePassed = currentDate.timeIntervalSince(startDate)
-//            let result = max(duration - timePassed, 0)
-//
-//            print("Restoring timer state.")
-//            print("Current Date: \(currentDate)")
-//            print("Start Date: \(startDate)")
-//            print("Time Passed: \(timePassed)")
-//            print("Restored Selected Time: \(result)")
-//
-//            if selectedTime > 0 {
-//                startTimer(with: result)
-//            } else {
-//                timeRemaining = "00:00:00"
-//                print("Timer already finished while in background.")
-//            }
-//        } else {
-//            timeRemaining = "00:00:00"
-//            print("No saved timer state found.")
-//        }
-//    }

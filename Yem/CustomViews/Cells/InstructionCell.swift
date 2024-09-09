@@ -6,16 +6,12 @@
 //
 
 import UIKit
+import Combine
 
-protocol InstructionCellDelegate: AnyObject {
-    func didTapButton(in cell: InstructionCell)
-}
 
 final class InstructionCell: UITableViewCell {
     static let id: String = "InstructionCell"
-    
-    weak var delegate: InstructionCellDelegate?
-    
+        
     private let content: UIView = {
         let view = UIView()
         view.backgroundColor = .ui.primaryContainer
@@ -46,6 +42,33 @@ final class InstructionCell: UITableViewCell {
         return icon
     }()
     
+    private lazy var trashIcon: IconImage = {
+        let icon = IconImage(
+            systemImage: "trash",
+            color: .red,
+            textStyle: .body
+        )
+        let tapGesture = UITapGestureRecognizer(
+            target: self,
+            action: #selector(didTapButtonAction)
+        )
+        icon.addGestureRecognizer(tapGesture)
+        icon.isUserInteractionEnabled = true
+        return icon
+    }()
+    
+    // MARK: Combine properties
+        
+    /// Publisher store
+    var eventPublisher: AnyPublisher<Void, Never> {
+        eventSubject.eraseToAnyPublisher()
+    }
+
+    /// Publisher
+    private let eventSubject = PassthroughSubject<Void, Never>()
+    
+    var cancellables = Set<AnyCancellable>()
+    
     // MARK: Lifecycle
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -60,10 +83,9 @@ final class InstructionCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        cancellables.removeAll()
     }
     
     // MARK: UI Setup
@@ -74,13 +96,6 @@ final class InstructionCell: UITableViewCell {
     }
     
     private func setupUI() {
-        let deleteIcon = IconImage(systemImage: "trash", color: .red, textStyle: .body)
-        deleteIcon.isUserInteractionEnabled = true
-        content.addSubview(deleteIcon)
-
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapButtonAction))
-        deleteIcon.addGestureRecognizer(tapGesture)
-        
         addSubview(content)
         
         content.snp.makeConstraints { make in
@@ -88,7 +103,7 @@ final class InstructionCell: UITableViewCell {
             make.left.right.equalToSuperview().inset(18)
             make.height.greaterThanOrEqualTo(60)
         }
-        content.addSubview(deleteIcon)
+        content.addSubview(trashIcon)
         content.addSubview(moveIcon)
         content.addSubview(indexLabel)
         content.addSubview(textTextView)
@@ -98,7 +113,7 @@ final class InstructionCell: UITableViewCell {
             make.leading.equalToSuperview().offset(18)
         }
         
-        deleteIcon.snp.makeConstraints { make in
+        trashIcon.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(18)
             make.trailing.equalToSuperview().offset(-18)
             make.height.equalTo(18.VAdapted)
@@ -118,6 +133,6 @@ final class InstructionCell: UITableViewCell {
     }
 
     @objc func didTapButtonAction() {
-        delegate?.didTapButton(in: self)
+        eventSubject.send(())
     }
 }

@@ -5,18 +5,13 @@
 //  Created by Adam Zapiór on 06/03/2024.
 //
 
+import Combine
 import UIKit
-
-protocol ShopingListCellDelegate: AnyObject {
-    func checklistTapped(in cell: ShopingListCell)
-}
 
 class ShopingListCell: UITableViewCell {
     static let id: String = "ShopingListCell"
     
-    weak var delegate: ShopingListCellDelegate?
-    
-    var cellType: ShopingListCellType = .unchecked
+    lazy var cellType: ShopingListCellType = .unchecked
     
     private let content: UIView = {
         let view = UIView()
@@ -25,12 +20,12 @@ class ShopingListCell: UITableViewCell {
         return view
     }()
     
-    private let valueLabel = TextLabel(
+    private let ingredientValueLabel = TextLabel(
         fontStyle: .body,
         fontWeight: .semibold,
         textColor: .ui.theme
     )
-    private let valueTypeLabel = TextLabel(
+    private let ingredientValueTypeLabel = TextLabel(
         fontStyle: .body,
         fontWeight: .regular,
         textColor: .ui.secondaryText
@@ -52,19 +47,31 @@ class ShopingListCell: UITableViewCell {
         )
         let tapGesture = UITapGestureRecognizer(
             target: self,
-            action: #selector(didTapButtonAction)
+            action: #selector(didTapChecklistButton)
         )
         icon.addGestureRecognizer(tapGesture)
         icon.isUserInteractionEnabled = true
         return icon
     }()
     
+    // MARK: Combine properties
+        
+    /// Publisher store
+    var eventPublisher: AnyPublisher<ShopingListCellEvent, Never> {
+        eventSubject.eraseToAnyPublisher()
+    }
+
+    /// Publisher
+    private let eventSubject = PassthroughSubject<ShopingListCellEvent, Never>()
+    
+    var cancellables = Set<AnyCancellable>()
+    
     // MARK: Lifecycle
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        contentView.isUserInteractionEnabled = true // !!
+        contentView.isUserInteractionEnabled = true
         setupUI()
         adjustCheckListIconSize()
     }
@@ -73,11 +80,10 @@ class ShopingListCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        cancellables.removeAll()
     }
     
     override func layoutSubviews() {
@@ -95,8 +101,8 @@ class ShopingListCell: UITableViewCell {
     func configure(with model: ShopingListModel, type: ShopingListCellType, backgroundColor: UIColor = .ui.primaryContainer) {
         cellType = type
         
-        valueLabel.text = model.value
-        valueTypeLabel.text = model.valueType.lowercased()
+        ingredientValueLabel.text = model.value
+        ingredientValueTypeLabel.text = model.valueType.lowercased()
         ingredientNameLabel.text = model.name
         
         // Set background color
@@ -107,6 +113,9 @@ class ShopingListCell: UITableViewCell {
         } else {
             checklistIcon.image = UIImage(systemName: checklistIconString)
         }
+        
+        setupAccessibilityForChecklistIcon()
+        updateAccessibilityValueAndHint(for: checklistIcon, state: cellType)
     }
     
     private func setupUI() {
@@ -118,26 +127,26 @@ class ShopingListCell: UITableViewCell {
         }
         
         content.addSubview(checklistIcon)
-        content.addSubview(valueLabel)
-        content.addSubview(valueTypeLabel)
+        content.addSubview(ingredientValueLabel)
+        content.addSubview(ingredientValueTypeLabel)
         content.addSubview(ingredientNameLabel)
         
-        valueLabel.snp.makeConstraints { make in
+        ingredientValueLabel.snp.makeConstraints { make in
             make.leading.equalTo(content.snp.leading).offset(24)
             make.top.equalToSuperview().offset(12)
-            make.trailing.equalTo(valueTypeLabel.snp.leading).offset(-6)
+            make.trailing.equalTo(ingredientValueTypeLabel.snp.leading).offset(-6)
         }
        
-        valueTypeLabel.snp.makeConstraints { make in
-            make.leading.equalTo(valueLabel.snp.trailing).offset(6)
+        ingredientValueTypeLabel.snp.makeConstraints { make in
+            make.leading.equalTo(ingredientValueLabel.snp.trailing).offset(6)
             make.trailing.equalTo(checklistIcon.snp.leading).offset(-12)
             make.top.equalToSuperview().offset(12)
             make.width.greaterThanOrEqualTo(84)
         }
 
         ingredientNameLabel.snp.makeConstraints { make in
-            make.top.equalTo(valueLabel.snp.bottom).offset(8)
-            make.top.equalTo(valueTypeLabel.snp.bottom).offset(8)
+            make.top.equalTo(ingredientValueLabel.snp.bottom).offset(8)
+            make.top.equalTo(ingredientValueTypeLabel.snp.bottom).offset(8)
         
             make.leading.equalTo(content.snp.leading).offset(24)
             make.trailing.equalTo(checklistIcon.snp.leading).offset(-12)
@@ -152,17 +161,17 @@ class ShopingListCell: UITableViewCell {
             make.width.equalTo(22.HAdapted)
         }
         
-        valueLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        valueLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        ingredientValueLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        ingredientValueLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         
-        valueLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
-        valueLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+        ingredientValueLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
+        ingredientValueLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         
-        valueTypeLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        valueTypeLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        ingredientValueTypeLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        ingredientValueTypeLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         
-        valueTypeLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
-        valueTypeLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+        ingredientValueTypeLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
+        ingredientValueTypeLabel.setContentCompressionResistancePriority(.required, for: .vertical)
     
         ingredientNameLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
         ingredientNameLabel.setContentCompressionResistancePriority(.required, for: .vertical)
@@ -193,8 +202,24 @@ class ShopingListCell: UITableViewCell {
     
         layoutIfNeeded()
     }
+    
+    private func setupAccessibilityForChecklistIcon() {
+        checklistIcon.isAccessibilityElement = true
+        checklistIcon.accessibilityLabel = "Checklist button"
+        checklistIcon.accessibilityTraits = .none /// delete default traits
+        updateAccessibilityValueAndHint(for: checklistIcon, state: cellType)
+    }
 
-    @objc func didTapButtonAction() {
+    private func updateAccessibilityValueAndHint(for icon: UIImageView, state: ShopingListCellType) {
+        icon.accessibilityValue = state == .unchecked
+            ? "Item is marked as to buy"
+            : "Item is marked as bought"
+        icon.accessibilityHint = state == .unchecked
+            ? "Mark as checked"
+            : "Mark as unchecked"
+    }
+
+    @objc func didTapChecklistButton() {
         let currentImage = checklistIcon.image
         
         if currentImage == UIImage(systemName: checklistIconString) {
@@ -203,11 +228,16 @@ class ShopingListCell: UITableViewCell {
             checklistIcon.image = UIImage(systemName: checklistIconString)
         }
         
-        delegate?.checklistTapped(in: self)
+        updateAccessibilityValueAndHint(for: checklistIcon, state: cellType)
+        eventSubject.send(.checklistIconTapped)
     }
 }
 
 enum ShopingListCellType {
     case unchecked
     case checked
+}
+
+enum ShopingListCellEvent {
+    case checklistIconTapped
 }

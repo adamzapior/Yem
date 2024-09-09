@@ -8,13 +8,16 @@
 import Foundation
 import LifetimeTracker
 import UIKit
+import Combine
 
 final class CookingIngredientsListSheetVC: UIViewController {
     weak var coordinator: CookingModeCoordinator?
-    var viewModel: CookingModeViewModel
+    private let viewModel: CookingModeViewModel
 
     private let tableView = UITableView()
     private let emptyTableLabel = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
+    
+    private var cancellables = Set<AnyCancellable>()
 
     init(coordinator: CookingModeCoordinator, viewModel: CookingModeViewModel) {
         self.coordinator = coordinator
@@ -35,16 +38,20 @@ final class CookingIngredientsListSheetVC: UIViewController {
         view.backgroundColor = .systemBackground
         title = "Shoping list"
 
-        viewModel.delegateIngredientSheet = self
         setupTableView()
+        setupSheet()
+        
+        observeViewModelOutput()
+    }
 
+    // MARK: - Setup UI
+
+    private func setupSheet() {
         if let presentationController = presentationController as? UISheetPresentationController {
             presentationController.detents = [.medium(), .large()]
             presentationController.prefersGrabberVisible = true
         }
     }
-
-    // MARK: - Setup UI
 
     private func setupTableView() {
         tableView.delegate = self
@@ -63,9 +70,37 @@ final class CookingIngredientsListSheetVC: UIViewController {
     }
 }
 
-// MARK: -  TableView delegate & data source
+// MARK: - Observed ViewModel Output & UI actions
 
-extension CookingIngredientsListSheetVC: UITableViewDelegate, UITableViewDataSource {
+extension CookingIngredientsListSheetVC {
+    private func observeViewModelOutput() {
+        viewModel.outputCookingIngredientsListSheetEventPublisher
+            .sink { [weak self] event in
+                self?.handleViewModelOutput(event)
+            }
+            .store(in: &cancellables)
+    }
+}
+
+// MARK: - Handle Output & UI Actions
+
+extension CookingIngredientsListSheetVC {
+    private func handleViewModelOutput(_ event: CookingModeViewModel.CookingIngredientsListSheetOutput) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            switch event {
+            case .timerStopped:
+                presentTimerFinishedAlert()
+            case .reloadIngredientTable:
+                tableView.reloadData()
+            }
+        }
+    }
+}
+
+// MARK: -  UITableViewDataSource
+
+extension CookingIngredientsListSheetVC: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         return ShopingListType.allCases.count
     }
@@ -95,57 +130,66 @@ extension CookingIngredientsListSheetVC: UITableViewDelegate, UITableViewDataSou
             fatalError("ShopingListCell error")
         }
 
-        let section = ShopingListType.allCases[indexPath.section]
-        switch section {
+        let sectionType = ShopingListType.allCases[indexPath.section]
+        let model: ShopingListModel
+        switch sectionType {
         case .unchecked:
-            cell.configure(with: viewModel.uncheckedList[indexPath.row], type: .unchecked, backgroundColor: .ui.secondaryContainer)
+            model = viewModel.uncheckedList[indexPath.row]
+            cell.configure(with: model, type: .unchecked)
+
         case .checked:
-            cell.configure(with: viewModel.checkedList[indexPath.row], type: .checked, backgroundColor: .ui.secondaryContainer)
+            model = viewModel.checkedList[indexPath.row]
+            cell.configure(with: model, type: .checked)
         }
 
-        cell.delegate = self
+        cell.eventPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [unowned self] event in
+                DispatchQueue.main.async { [weak self] in
+                    self?.handleCellEvent(event: event, indexPath: indexPath)
+                }
+            }
+            .store(in: &cell.cancellables)
 
         return cell
     }
 
+    // MARK: Cell Event
+
+    func handleCellEvent(event: ShopingListCellEvent, indexPath: IndexPath) {
+        guard let sectionType = ShopingListType(rawValue: indexPath.section) else { return }
+
+        var ingredient: ShopingListModel
+        switch sectionType {
+        case .unchecked:
+            ingredient = viewModel.uncheckedList[indexPath.row]
+        case .checked:
+            ingredient = viewModel.checkedList[indexPath.row]
+        }
+        viewModel.updateIngredientCheckStatus(ingredient: &ingredient)
+    }
+}
+
+// MARK: -  UITableViewDelegate
+
+extension CookingIngredientsListSheetVC: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
 }
 
-// MARK: -  TableViewCell delegate
+// MARK: - Navigation
 
-extension CookingIngredientsListSheetVC: ShopingListCellDelegate {
-    func checklistTapped(in cell: ShopingListCell) {
-        guard let indexPath = tableView.indexPath(for: cell) else {
-            return
-        }
+extension CookingIngredientsListSheetVC {
+    private func presentTimerFinishedAlert() {
+        let title = "Your timer has ended!"
+        let message = "⏰⏰⏰"
 
-        var ingredient: ShopingListModel
-        switch indexPath.section {
-        case ShopingListType.unchecked.rawValue:
-            ingredient = viewModel.uncheckedList[indexPath.row]
-        case ShopingListType.checked.rawValue:
-            ingredient = viewModel.checkedList[indexPath.row]
-        default:
-            return
-        }
-
-        viewModel.updateIngredientCheckStatus(ingredient: &ingredient)
+        coordinator?.presentAlert(.timerFinished, title: title, message: message)
     }
 }
 
-// MARK: ViewModel delegate
-
-extension CookingIngredientsListSheetVC: CookingIngredientsListSheetVCDelegate {
-    func timerStoppedWhenIngredientSheetOpen() {
-        coordinator?.presentTimerStoppedAlert()
-    }
-
-    func reloadTable() {
-        tableView.reloadData()
-    }
-}
+// MARK: - LifetimeTracker
 
 #if DEBUG
 extension CookingIngredientsListSheetVC: LifetimeTrackable {

@@ -7,6 +7,12 @@
 
 import UIKit
 
+struct SettingsOption {
+    let title: String
+    let icon: UIImage
+    let iconBackgroundColor: UIColor
+}
+
 class SettingsCell: UITableViewCell {
     static let reuseID = "SettingsCell"
     

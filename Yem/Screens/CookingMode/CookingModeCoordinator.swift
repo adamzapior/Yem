@@ -25,10 +25,8 @@ extension CookingModeCoordinator {
 
 final class CookingModeCoordinator: Destination {
     weak var parentCoordinator: Destination?
-    let viewModel: CookingModeViewModel
-    let recipe: RecipeModel
-
-    private var isTimerActive: Bool = false
+    private let viewModel: CookingModeViewModel
+    private let recipe: RecipeModel
 
     init(viewModel: CookingModeViewModel, recipe: RecipeModel) {
         self.viewModel = viewModel
@@ -47,7 +45,7 @@ final class CookingModeCoordinator: Destination {
     }
 
     override func render() -> UIViewController {
-        let controller = CookingModeViewController(
+        let controller = CookingModeVC(
             viewModel: viewModel,
             coordinator: self,
             recipe: recipe
@@ -98,6 +96,10 @@ final class CookingModeCoordinator: Destination {
         }
     }
     
+    func setupNavigationBackGesture(isEnabled: Bool) {
+        navigator?.setupNavigationBackGesture(isEnabled: isEnabled)
+    }
+    
     func pop() {
         navigator?.pop()
     }
@@ -111,6 +113,9 @@ final class CookingModeCoordinator: Destination {
     }
 
 }
+
+// MARK: - LifetimeTracker
+
 
 #if DEBUG
 extension CookingModeCoordinator: LifetimeTrackable {

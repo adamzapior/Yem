@@ -51,46 +51,68 @@ final class RecipeDetailsVM {
 #endif
     }
 
-    func loadRecipeImage(recipe: RecipeModel, completion: @escaping (UIImage?) -> Void) {
+    func toggleFavouriteStatus() {
+        Task {
+            do {
+                let newFavouriteStatus = !recipe.isFavourite
+                try repository.updateRecipeFavouriteStatus(recipeId: recipe.id, isFavourite: newFavouriteStatus)
+                recipe.isFavourite = newFavouriteStatus
+                isFavourite = newFavouriteStatus
+                outputEvent.send(.recipeFavouriteValueChanged(to: newFavouriteStatus))
+            } catch {
+                print("Error when updating favourite status: \(error)")
+            }
+        }
+    }
+
+    func addIngredientsToShopingList() {
+        do {
+            try repository.addIngredientsToShopingList(ingredients: recipe.ingredientList)
+        } catch {
+            print("Error adding ingredients to shoping list: \(error)")
+        }
+    }
+
+    func deleteRecipe() {
+        do {
+            try repository.deleteRecipe(withId: recipe.id)
+
+        } catch {
+            print("Error with delete recipe method: \(error)")
+        }
+    }
+
+    private func loadRecipeImage(recipe: RecipeModel, completion: @escaping (UIImage?) -> Void) {
         guard recipe.isImageSaved else {
             completion(nil)
             return
         }
-
-        let imageUrlResult = localFileManager.imageUrl(for: recipe.id.uuidString)
-
-        switch imageUrlResult {
-        case .success(let imageUrl):
-            imageFetcher.fetchImage(from: imageUrl) { result in
-                switch result {
-                case .success(let image):
+        
+        if let imageUrl = localFileManager.imageUrl(for: recipe.id.uuidString) {
+                imageFetcher.fetchImage(from: imageUrl) { [weak self] image in
+                    guard self != nil else { return }
                     completion(image)
-                case .failure(let error):
-                    completion(nil)
-                    print("Error fetching image: \(error.localizedDescription)")
+//                    self.recipeImage.image = image
+//                    self.recipeImage.isHidden = (image == nil)
                 }
             }
-        case .failure(let error):
-            print("Error retrieving image URL: \(error.localizedDescription)")
-        }
-    }
-    
-    // Methods used in NavBar items : 
 
-    func toggleFavouriteStatus() {
-        let newFavouriteStatus = !recipe.isFavourite
-        repository.updateRecipeFavouriteStatus(recipeId: recipe.id, isFavourite: newFavouriteStatus)
-        recipe.isFavourite = newFavouriteStatus
-        isFavourite = newFavouriteStatus
-        outputEvent.send(.recipeFavouriteValueChanged(to: newFavouriteStatus))
-    }
-
-    func addIngredientsToShopingList() {
-        repository.addIngredientsToShoppingList(ingredients: recipe.ingredientList)
-    }
-
-    func deleteRecipe() {
-        repository.deleteRecipe(withId: recipe.id)
+//        let imageUrlResult = localFileManager.imageUrl(for: recipe.id.uuidString)
+//
+//        switch imageUrlResult {
+//        case .success(let imageUrl):
+//            imageFetcher.fetchImage(from: imageUrl) { result in
+//                switch result {
+//                case .success(let image):
+//                    completion(image)
+//                case .failure(let error):
+//                    completion(nil)
+//                    print("Error fetching image: \(error.localizedDescription)")
+//                }
+//            }
+//        case .failure(let error):
+//            print("Error retrieving image URL: \(error.localizedDescription)")
+//        }
     }
 }
 
@@ -112,7 +134,7 @@ extension RecipeDetailsVM {
     }
 }
 
-// MARK: - Input & Output Definitions
+// MARK: - Input & Output definitions
 
 extension RecipeDetailsVM {
     enum Input {

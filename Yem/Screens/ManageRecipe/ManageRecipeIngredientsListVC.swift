@@ -5,17 +5,15 @@
 //  Created by Adam Zapiór on 10/12/2023.
 //
 
+import Combine
+import CombineCocoa
 import LifetimeTracker
 import UIKit
 
-final class AddRecipeIngredientsVC: UIViewController {
-    // MARK: - ViewModel
-    
-    let viewModel: AddRecipeViewModel
-    weak var coordinator: AddRecipeCoordinator?
-    
-    // MARK: - View properties
-    
+final class ManageRecipeIngredientsListVC: UIViewController {
+    private weak var coordinator: ManageRecipeCoordinator?
+    private let viewModel: ManageRecipeVM
+        
     private let pageStackView: UIStackView = {
         let sv = UIStackView()
         sv.axis = .horizontal
@@ -23,10 +21,7 @@ final class AddRecipeIngredientsVC: UIViewController {
         sv.spacing = 4
         return sv
     }()
-    
-    private let pageCount = 3
-    private var pageViews = [UIView]()
-    
+        
     private let tableView = UITableView()
     private let tableViewHeader = IngredientsTableHeaderView()
     private let tableViewFooter = IngredientsTableFooterView()
@@ -37,10 +32,12 @@ final class AddRecipeIngredientsVC: UIViewController {
         textColor: .ui.secondaryText,
         textAlignment: .center
     )
+    
+    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Lifecycle
     
-    init(viewModel: AddRecipeViewModel, coordinator: AddRecipeCoordinator) {
+    init(viewModel: ManageRecipeVM, coordinator: ManageRecipeCoordinator) {
         self.viewModel = viewModel
         self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
@@ -58,18 +55,20 @@ final class AddRecipeIngredientsVC: UIViewController {
     override func viewDidLoad() {
         view.backgroundColor = .systemBackground
         title = "Ingredients"
-    
-        viewModel.delegateIngredients = self
-        
+            
         setupNavigationBarButtons()
         
         setupTableView()
         setupTableViewHeader()
         setupTableViewFooter()
         setupEmptyTableLabel()
-        setupEmptyTableLabelisHidden()
+        
+        observeViewModelOutput()
+        observeActionButton()
         
         setupAnimations()
+        
+        viewModel.inputIngredientsListEvent.send(.viewDidLoad)
     }
     
     override func viewDidLayoutSubviews() {
@@ -97,8 +96,6 @@ final class AddRecipeIngredientsVC: UIViewController {
     }
     
     private func setupTableViewFooter() {
-        tableViewFooter.delegate = self
-        
         tableViewFooter.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 200)
         tableViewFooter.backgroundColor = UIColor.ui.background
         tableView.tableFooterView = tableViewFooter
@@ -121,16 +118,8 @@ final class AddRecipeIngredientsVC: UIViewController {
             make.centerX.equalToSuperview()
             make.centerY.equalToSuperview()
         }
-    }
-    
-    private func setupEmptyTableLabelisHidden() {
-        if viewModel.ingredientsList.isEmpty {
-            emptyTableLabel.isHidden = false
-        } else {
-            emptyTableLabel.isHidden = true
-        }
         
-        emptyTableLabel.textColor = .ui.secondaryText
+        emptyTableLabel.isHidden = true
     }
     
     private func setupAnimations() {
@@ -138,9 +127,75 @@ final class AddRecipeIngredientsVC: UIViewController {
     }
 }
 
-// MARK: -  TableView delegate & data source
+// MARK: - Observe ViewModel Output & UI actions
 
-extension AddRecipeIngredientsVC: UITableViewDelegate, UITableViewDataSource, IngredientsCellDelegate {
+extension ManageRecipeIngredientsListVC {
+    private func observeViewModelOutput() {
+        viewModel.outputIngredientsListEventPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [unowned self] event in
+                handleViewModelOutput(for: event)
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func observeActionButton() {
+        tableViewFooter.addButton
+            .tapPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [unowned self] in
+                self.handleActionButtonEvent()
+            }
+            .store(in: &cancellables)
+    }
+}
+
+// MARK: - Handle Output & UI Actions
+
+extension ManageRecipeIngredientsListVC {
+    private func handleViewModelOutput(for event: ManageRecipeVM.IngredientsListOutput) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            
+            switch event {
+            case .reloadTable:
+                tableView.reloadData()
+            case .updateListStatus(isEmpty: let value):
+                handleEmptyLabelVisible(value)
+                handleAccessibilityUpdate(isTableEmpty: value)
+            case .validationError(let type):
+                handleValidationError(type)
+            }
+        }
+    }
+
+    private func handleActionButtonEvent() {
+        navigateToAddIngredientSheet()
+    }
+    
+    private func handleEmptyLabelVisible(_ value: Bool) {
+        switch value {
+        case true:
+            emptyTableLabel.isHidden = false
+        case false:
+            emptyTableLabel.isHidden = true
+        }
+    }
+    
+    private func handleAccessibilityUpdate(isTableEmpty: Bool) {
+        emptyTableLabel.accessibilityHint = isTableEmpty ? "Add ingredient to list" : nil
+    }
+    
+    func handleValidationError(_ type: ManageRecipeVM.ErrorType.Ingredients) {
+        if type == .ingredientsList {
+            emptyTableLabel.textColor = .ui.placeholderError
+        }
+    }
+}
+
+// MARK: - UITableViewDataSource
+
+extension ManageRecipeIngredientsListVC {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.ingredientsList.count
     }
@@ -150,50 +205,42 @@ extension AddRecipeIngredientsVC: UITableViewDelegate, UITableViewDataSource, In
             fatalError("IngredientsCell error")
         }
 
-        cell.delegate = self
         cell.configure(with: viewModel.ingredientsList[indexPath.row])
         
         cell.isAccessibilityElement = true
         cell.accessibilityLabel = "This is \(indexPath.row + 1) added ingrendient cell"
         cell.accessibilityValue = "\(viewModel.ingredientsList[indexPath.row].value) \(viewModel.ingredientsList[indexPath.row].valueType) \(viewModel.ingredientsList[indexPath.row].name)"
+        
+        cell.eventPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [unowned self] event in
+                DispatchQueue.main.async { [weak self] in
+                    self?.handleCellEvent(indexPath: indexPath)
+                }
+            }
+            .store(in: &cell.cancellables)
 
         return cell
     }
     
+    // MARK: Cell Event
+
+    func handleCellEvent(indexPath: IndexPath) {
+        viewModel.removeIngredientFromList(at: indexPath.row)
+    }
+}
+
+// MARK: -  UITableViewDelegate
+
+extension ManageRecipeIngredientsListVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
-    
-    func trashTapped(in cell: IngredientsCell) {
-        DispatchQueue.main.async {
-            guard let indexPath = self.tableView.indexPath(for: cell) else { return }
-            self.viewModel.removeIngredientFromList(at: indexPath.row)
-        }
-    }
 }
 
-extension AddRecipeIngredientsVC: AddRecipeIngredientsVCDelegate {
-    func delegateIngredientsError(_ type: ValidationErrorTypes) {
-        if type == .ingredientList {
-            emptyTableLabel.textColor = .ui.placeholderError
-        }
-    }
-    
-    func reloadIngredientsTable() {
-        tableView.reloadData()
-        setupEmptyTableLabelisHidden()
-    }
-}
+// MARK: - NavigationItems & Navigation
 
-extension AddRecipeIngredientsVC: IngredientsTableFooterViewDelegate {
-    func addIconTapped(view: UIView) {
-        addIgredientTapped()
-    }
-}
-
-// MARK: - Navigation
-
-extension AddRecipeIngredientsVC {
+extension ManageRecipeIngredientsListVC {
     func setupNavigationBarButtons() {
         let nextButtonItem = UIBarButtonItem(
             title: "Next",
@@ -205,16 +252,22 @@ extension AddRecipeIngredientsVC {
     }
     
     @objc func nextButtonTapped(_ sender: UIBarButtonItem) {
-        coordinator?.navigateTo(.instructions)
+        DispatchQueue.main.async { [weak self] in
+            self?.coordinator?.navigateTo(.instructions)
+        }
     }
 
-    func addIgredientTapped() {
-        coordinator?.navigateTo(.addIngredient)
+    func navigateToAddIngredientSheet() {
+        DispatchQueue.main.async { [weak self] in
+            self?.coordinator?.navigateTo(.addIngredient)
+        }
     }
 }
 
+// MARK: - LifetimeTracker
+
 #if DEBUG
-extension AddRecipeIngredientsVC: LifetimeTrackable {
+extension ManageRecipeIngredientsListVC: LifetimeTrackable {
     class var lifetimeConfiguration: LifetimeConfiguration {
         return LifetimeConfiguration(maxCount: 1, groupName: "ViewControllers")
     }

@@ -71,6 +71,7 @@ final class RecipeCell: UICollectionViewCell {
         super.prepareForReuse()
 
         recipeImage.image = nil
+        recipeImage.isHidden = true
         recipeImage.kf.cancelDownloadTask()
     }
     
@@ -101,17 +102,52 @@ final class RecipeCell: UICollectionViewCell {
         }
         
         if model.isImageSaved, let fileManager = localFileManager, let imageFetcher = imageFetcherManager {
+            
+//            if let imageUrl = fileManager.imageUrl1(for: model.id.uuidString) {
+//                imageFetcher.fetchImage1(from: imageUrl) { [weak self] image in
+//                    guard let self = self else { return }
+//                    if let image = image {
+//                        self.recipeImage.image = image
+//                        self.recipeImage.isHidden = false
+//                    } else {
+//                        self.recipeImage.isHidden = true
+//                    }
+//                }
+//            }
+            
             if let imageUrl = fileManager.imageUrl(for: model.id.uuidString) {
-                imageFetcher.fetchImage(from: imageUrl) { [weak self] image in
-                    guard let self = self else { return }
-                    if let image = image {
+                    imageFetcher.fetchImage(from: imageUrl) { [weak self] image in
+                        guard let self = self else { return }
                         self.recipeImage.image = image
-                        self.recipeImage.isHidden = false
-                    } else {
-                        self.recipeImage.isHidden = true
+                        self.recipeImage.isHidden = (image == nil)
                     }
                 }
-            }
+                
+                //            var url: URL? = nil
+                //
+                //            let getURL = fileManager.imageUrl(for: model.getStringForURL())
+                //            switch getURL {
+                //            case .success(let result):
+                //                url = result
+                //            case .failure(let error):
+                //                print("Error fetching image: \(error.localizedDescription)")
+                //                return
+                //            }
+                //
+                //            guard let url else { return }
+                //
+                //            imageFetcher.fetchImage(from: url) { [weak self] result in
+                //                DispatchQueue.main.async { [weak self] in
+                //                    switch result {
+                //                    case .success(let fetchedImage):
+                //                        self?.recipeImage.image = fetchedImage
+                //                        self?.recipeImage.isHidden = false
+                //                    case .failure:
+                //                        self?.recipeImage.isHidden = true
+                //                    }
+                //                }
+                //            }
+            
         }
     }
     

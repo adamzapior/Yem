@@ -12,7 +12,8 @@ protocol LocalFileManagerProtocol {
     func saveImage(with id: String, image: UIImage) -> Result<Void, Error>
     func updateImage(with id: String, newImage: UIImage) -> Result<Void, Error>
     func deleteImage(with id: String) -> Result<Void, Error>
-    func imageUrl(for id: String) -> Result<URL, Error>
+//    func imageUrl(for id: String) -> Result<URL, Error>
+    func imageUrl(for id: String) -> URL?
 }
 
 class LocalFileManager: FileManager, LocalFileManagerProtocol {
@@ -65,15 +66,20 @@ class LocalFileManager: FileManager, LocalFileManagerProtocol {
             return .failure(error)
         }
     }
-
-    func imageUrl(for id: String) -> Result<URL, Error> {
+    
+    func imageUrl(for id: String) -> URL? {
         let url = URL.documentsDirectory.appendingPathComponent("\(id).jpg")
-        if fileExists(atPath: url.path) {
-            return .success(url)
-        } else {
-            return .failure(NSError(domain: "FileNotFoundError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Image URL not found"]))
-        }
+        return FileManager.default.fileExists(atPath: url.path) ? url : nil
     }
+
+//    func imageUrl(for id: String) -> Result<URL, Error> {
+//        let url = URL.documentsDirectory.appendingPathComponent("\(id).jpg")
+//        if fileExists(atPath: url.path) {
+//            return .success(url)
+//        } else {
+//            return .failure(NSError(domain: "FileNotFoundError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Image URL not found"]))
+//        }
+//    }
 }
 
 #if DEBUG

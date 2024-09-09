@@ -6,12 +6,13 @@
 //
 
 import Combine
+import CombineCocoa
 import LifetimeTracker
 import UIKit
 
-final class AddInstructionSheetVC: UIViewController {
-    weak var coordinator: AddRecipeCoordinator?
-    var viewModel: AddRecipeViewModel
+final class ManageRecipeInstructionFormVC: UIViewController {
+    private weak var coordinator: ManageRecipeCoordinator?
+    private let viewModel: ManageRecipeVM
     
     private var textFieldContentView: UIView = {
         let content = UIView()
@@ -20,9 +21,15 @@ final class AddInstructionSheetVC: UIViewController {
         return content
     }()
     
+//    private let instructionTextfield = TextfieldWithIcon(
+//        iconImage: "note",
+//        placeholderText: "Add new instruction...",
+//        textColor: .ui.secondaryText
+//    )
+    
     private var icon: IconImage!
     private var iconImage: String
-    private var nameOfRow = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText)
+    private var titleLabel = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.primaryText)
     private var nameOfRowText: String
     private var textStyle: UIFont.TextStyle
     private var placeholder = TextLabel(fontStyle: .body, fontWeight: .regular, textColor: .ui.secondaryText)
@@ -55,7 +62,7 @@ final class AddInstructionSheetVC: UIViewController {
 
     // MARK: - Lifecycle
     
-    init(viewModel: AddRecipeViewModel, coordinator: AddRecipeCoordinator) {
+    init(viewModel: ManageRecipeVM, coordinator: ManageRecipeCoordinator) {
         self.viewModel = viewModel
         self.coordinator = coordinator
         self.iconImage = "note"
@@ -76,37 +83,15 @@ final class AddInstructionSheetVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel.delegateInstructionSheet = self
         
-        configureTags()
-        configureDelegate()
         setupUI()
+        setupSheet()
         setupVoiceOverAccessibility()
+        hideKeyboardWhenTappedAround()
         
-        let contentHeight = calculateContentHeight()
-        let customDetentId = UISheetPresentationController.Detent.Identifier("customDetent")
-        let contentDetent = UISheetPresentationController.Detent.custom(identifier: customDetentId) { _ in
-            contentHeight
-        }
-        
-        if let presentationController = presentationController as? UISheetPresentationController {
-            presentationController.detents = [contentDetent]
-            presentationController.prefersGrabberVisible = true
-        }
-        
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-        view.addGestureRecognizer(tapGesture)
-    }
-    
-    private func configureTags() {
-        addButton.tag = 1
-        cancelButton.tag = 2
-    }
-    
-    private func configureDelegate() {
-        textField.delegate = self
-        addButton.delegate = self
-        cancelButton.delegate = self
+        observeViewModelEventOutput()
+        observeTextFields()
+        observeButtons()
     }
         
     private func setupUI() {
@@ -117,7 +102,7 @@ final class AddInstructionSheetVC: UIViewController {
         
         view.addSubview(textFieldContentView)
         textFieldContentView.addSubview(icon)
-        textFieldContentView.addSubview(nameOfRow)
+        textFieldContentView.addSubview(titleLabel)
         textFieldContentView.addSubview(textField)
         textFieldContentView.addSubview(placeholder)
         
@@ -134,17 +119,17 @@ final class AddInstructionSheetVC: UIViewController {
             make.height.equalTo(24)
         }
         
-        nameOfRow.snp.makeConstraints { make in
+        titleLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(12)
             make.centerY.equalTo(icon)
             make.leading.equalTo(icon.snp.trailing).offset(12)
             make.trailing.equalToSuperview().offset(-18)
         }
         
-        nameOfRow.text = "Instruction"
+        titleLabel.text = "Instruction"
         
         textField.snp.makeConstraints { make in
-            make.top.equalTo(nameOfRow.snp.bottom).offset(6)
+            make.top.equalTo(titleLabel.snp.bottom).offset(6)
             make.leading.trailing.equalToSuperview().inset(18)
             make.bottom.equalToSuperview().offset(-12)
             make.height.greaterThanOrEqualTo(172)
@@ -170,6 +155,19 @@ final class AddInstructionSheetVC: UIViewController {
         }
     }
     
+    private func setupSheet() {
+        let contentHeight = calculateContentHeight()
+        let customDetentId = UISheetPresentationController.Detent.Identifier("customDetent")
+        let contentDetent = UISheetPresentationController.Detent.custom(identifier: customDetentId) { _ in
+            contentHeight
+        }
+        
+        if let presentationController = presentationController as? UISheetPresentationController {
+            presentationController.detents = [contentDetent]
+            presentationController.prefersGrabberVisible = true
+        }
+    }
+    
     private func calculateContentHeight() -> CGFloat {
         let marginsAndSpacings: CGFloat = 36
         let width = UIScreen.main.bounds.width - 24
@@ -180,30 +178,14 @@ final class AddInstructionSheetVC: UIViewController {
             addButton.systemLayoutSizeFitting(size).height,
             cancelButton.systemLayoutSizeFitting(size).height
         ].reduce(0, +)
-        
-        print(textFieldContentView.systemLayoutSizeFitting(size).height)
-
-        print(addButton.systemLayoutSizeFitting(size).height)
-        print(cancelButton.systemLayoutSizeFitting(size).height)
-
+ 
         return elementHeights + marginsAndSpacings
     }
     
-    func setupVoiceOverAccessibility() {
+    private func setupVoiceOverAccessibility() {
         textField.isAccessibilityElement = true
         textField.accessibilityLabel = "New instruction textfield"
-        textField.accessibilityValue = viewModel.instruction
         textField.accessibilityHint = "Enter your instruction"
-        
-        viewModel.$instruction
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] newName in
-                self?.textField.accessibilityValue = newName
-                if !newName.isEmpty {
-                    self?.textField.accessibilityHint = ""
-                }
-            }
-            .store(in: &cancellables)
         
         addButton.isAccessibilityElement = true
         addButton.accessibilityLabel = "Add button"
@@ -215,72 +197,117 @@ final class AddInstructionSheetVC: UIViewController {
     }
 }
 
-// MARK: - ViewModel & Button delegate:
+// MARK: - Observe ViewModel Output & UI actions
 
-extension AddInstructionSheetVC: AddInstructionSheetVCDelegate {
-    func delegateInstructionError(_ type: ValidationErrorTypes) {
+extension ManageRecipeInstructionFormVC {
+    private func observeViewModelEventOutput() {
+        viewModel.outputInstructionFormPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [unowned self] event in
+                self.handleViewModelOutput(for: event)
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func observeTextFields() {
+        textField
+            .textPublisher
+            .sink { [unowned self] text in
+                self.viewModel.inputInstructionFormEvent.send(.sendInstructionValue(text ?? ""))
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func observeButtons() {
+        addButton
+            .tapPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [unowned self] _ in
+                self.handleActionButtonEvent(type: .add)
+            }
+            .store(in: &cancellables)
+            
+        cancelButton
+            .tapPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [unowned self] _ in
+                self.handleActionButtonEvent(type: .cancel)
+            }
+            .store(in: &cancellables)
+    }
+}
+
+// MARK: - Handle Output & UI Actions
+
+extension ManageRecipeInstructionFormVC {
+    private func handleViewModelOutput(for event: ManageRecipeVM.InstructionFormOutput) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            switch event {
+            case .updateInstructionValue(let value):
+                handleInstructionString(value)
+            case .validationError(let type):
+                handleValidationError(type)
+            }
+        }
+    }
+    
+    private func handleInstructionString(_ value: String) {
+        textField.text = value
+            
+        let isStringEmpty = value.isEmpty
+        switch isStringEmpty {
+        case true:
+            placeholder.animateFadeIn()
+        case false:
+            placeholder.animateFadeOut()
+        }
+    }
+    
+    private func handleValidationError(_ type: ManageRecipeVM.ErrorType.Instructions) {
         if type == .instruction {
             placeholder.textColor = .ui.placeholderError
         }
     }
-}
 
-extension AddInstructionSheetVC: UITextViewDelegate {
-    func textViewDidBeginEditing(_ textView: UITextView) {
-        if let text = textView.text {
-            viewModel.instruction = text
-        }
-        
-        if textView.text.isEmpty == false {
-            placeholder.text = ""
-        }
-        
-        if viewModel.instruction.isEmpty {
-            placeholder.textColor = .clear
-        }
-    }
-
-    func textViewDidChange(_ textView: UITextView) {
-        if let text = textView.text {
-            viewModel.instruction = text
-        }
-        
-        if let letters = textView.text {
-            if letters.count > 0 {}
-        }
-    }
-
-    func textViewDidEndEditing(_ textView: UITextView) {
-        if viewModel.instruction.isEmpty {
-            placeholder.textColor = .ui.secondaryText
+    private func handleActionButtonEvent(type: ActionButtonType) {
+        switch type {
+        case .add:
+            do {
+                try viewModel.addInstructionToList()
+                dismissSheet()
+            } catch (let error) {
+                print("DEBUG: \(error)")
+            }
+        case .cancel:
+            dismissSheet()
         }
     }
 }
 
-extension AddInstructionSheetVC: ActionButtonDelegate {
-    func actionButtonTapped(_ button: ActionButton) {
-        switch button.tag {
-        case 1:
-            button.defaultOnTapAnimation()
-            let success = viewModel.addInstructionToList()
-            if success {
-                coordinator?.dismissSheet()
-            } else {}
-        case 2:
-            button.defaultOnTapAnimation()
-            coordinator?.dismissSheet()
-        default: break
+// MARK: - Navigation
+
+extension ManageRecipeInstructionFormVC {
+    private func dismissSheet() {
+        DispatchQueue.main.async { [weak self] in
+            self?.coordinator?.dismissSheet()
         }
     }
-    
-    // for view
-    @objc private func dismissKeyboard() {
-        view.endEditing(true)
+}
+
+// MARK: - Helper enum
+
+extension ManageRecipeInstructionFormVC {
+    private enum ActionButtonType {
+        case add
+        case cancel
     }
 }
+
+// MARK: - LifetimeTracker
 
 #if DEBUG
-extension AddInstructionSheetVC: LifetimeTrackable {
+extension ManageRecipeInstructionFormVC: LifetimeTrackable {
     class var lifetimeConfiguration: LifetimeConfiguration {
         return LifetimeConfiguration(maxCount: 1, groupName: "ViewControllers")
     }

@@ -8,8 +8,8 @@
 import Foundation
 import LifetimeTracker
 
-final class SettingsViewModel {
-    let authManager: AuthenticationManager
+final class SettingsVM {
+    private let authManager: AuthenticationManager
 
     init(authManager: AuthenticationManager) {
         self.authManager = authManager
@@ -28,8 +28,11 @@ final class SettingsViewModel {
     }
 }
 
+// MARK: - LifetimeTracker
+
+
 #if DEBUG
-extension SettingsViewModel: LifetimeTrackable {
+extension SettingsVM: LifetimeTrackable {
     class var lifetimeConfiguration: LifetimeConfiguration {
         return LifetimeConfiguration(maxCount: 1, groupName: "ViewModels")
     }

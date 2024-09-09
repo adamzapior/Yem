@@ -87,6 +87,9 @@ final class SplashViewModel {
     }
 }
 
+// MARK: - LifetimeTracker
+
+
 #if DEBUG
     extension SplashCoordinator: LifetimeTrackable {
         class var lifetimeConfiguration: LifetimeConfiguration {

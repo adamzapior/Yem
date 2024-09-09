@@ -5,25 +5,26 @@
 //  Created by Adam Zapiór on 11/12/2023.
 //
 
+import Combine
 import UIKit
 
-protocol AddPickerDelegate: AnyObject {
-    func setupDelegate()
-    func setupDataSource()
-    func setupTag()
-    func pickerTapped(item: AddPicker)
-}
+final class AddPickerView: UIView {
+    var textOnButton = UILabel()
 
-final class AddPicker: UIView {
-    weak var delegate: AddPickerDelegate?
-        
     private var minViewHeight: CGFloat?
     private var icon: IconImage!
     private var iconImage: String
-    private var textStyle: UIFont.TextStyle
-    
+    private let textStyle: UIFont.TextStyle
     private let button = UIButton()
-    var textOnButton = UILabel()
+            
+    /// Publisher store
+    var tapPublisher: AnyPublisher<Void, Never> {
+        tapSubject.eraseToAnyPublisher()
+    }
+
+    /// Publisher
+    private let tapSubject = PassthroughSubject<Void, Never>()
+    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Lifecycle
     
@@ -61,9 +62,8 @@ final class AddPicker: UIView {
     // MARK: UI Setup
     
     func setPlaceholderColor(_ color: UIColor) {
-        self.textOnButton.textColor = color
-
-       }
+        textOnButton.textColor = color
+    }
     
     private func configure() {
         addSubview(icon)
@@ -87,20 +87,23 @@ final class AddPicker: UIView {
             make.trailing.equalToSuperview().offset(6)
         }
         
+        textOnButton.font = UIFont.preferredFont(forTextStyle: .body)
+        textOnButton.adjustsFontForContentSizeCategory = true
+        textOnButton.maximumContentSizeCategory = .accessibilityLarge
+        
         textOnButton.snp.makeConstraints { make in
             make.leading.equalTo(button.snp.leading).offset(18)
             make.centerY.equalTo(button.snp.centerY)
+            make.trailing.equalTo(button.snp.trailing).offset(-18)
         }
         
-        self.snp.makeConstraints { make in
+        snp.makeConstraints { make in
             make.height.greaterThanOrEqualTo(minViewHeight ?? 32)
         }
     }
     
-    // MARK: - Delegate methods
-    
     @objc private func buttonTapped() {
-        self.defaultOnTapAnimation()
-        delegate?.pickerTapped(item: self)
+        defaultOnTapAnimation()
+        tapSubject.send(())
     }
 }

@@ -47,7 +47,7 @@ final class ValidationAlertVC: UIViewController {
     
     override func viewDidLoad() {
         view.backgroundColor = UIColor.black.withAlphaComponent(0.75)
-        
+
         setupContainerView()
         setupTitleLabel()
         setupErrorLabel()
@@ -67,6 +67,7 @@ final class ValidationAlertVC: UIViewController {
             make.centerX.centerY.equalToSuperview()
             make.height.greaterThanOrEqualTo(200)
             make.leading.trailing.equalToSuperview().inset(24)
+            // TODO: app top/bottom contrainsts
         }
     }
     

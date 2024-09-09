@@ -14,3 +14,8 @@ struct ShopingListModel: Equatable {
     var value: String
     var valueType: String
 }
+
+enum ShopingListType: Int, CaseIterable {
+    case unchecked
+    case checked
+}

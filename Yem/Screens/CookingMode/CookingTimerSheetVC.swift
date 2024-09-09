@@ -5,21 +5,25 @@
 //  Created by Adam Zapiór on 19/08/2024.
 //
 
+import Combine
+import CombineCocoa
 import LifetimeTracker
 import SnapKit
 import UIKit
 
 class CookingTimerSheetVC: UIViewController {
     weak var coordinator: CookingModeCoordinator?
-    var viewModel: CookingModeViewModel
+    private let viewModel: CookingModeViewModel
 
-    private var pickerView = UIPickerView()
+    private let pickerView = UIPickerView()
 
     private let timerButton = ActionButton(
         title: "Set timer",
         backgroundColor: .addBackground,
         isShadownOn: true
     )
+
+    private var cancellables = Set<AnyCancellable>()
 
     init(
         coordinator: CookingModeCoordinator? = nil,
@@ -45,15 +49,19 @@ class CookingTimerSheetVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         view.backgroundColor = .systemBackground
-
-        timerButton.delegate = self
-        viewModel.delegateTimerSheet = self
 
         setupPickerView()
         setTimerButton()
+        setupSheet()
 
+        viewModel.clearPickerVariables()
+
+        observeViewModelOuput()
+        observeActionButton()
+    }
+
+    private func setupSheet() {
         let contentHeight = calculateContentHeight()
         let customDetentId = UISheetPresentationController.Detent.Identifier("customDetent")
         let contentDetent = UISheetPresentationController.Detent.custom(identifier: customDetentId) { _ in
@@ -64,8 +72,22 @@ class CookingTimerSheetVC: UIViewController {
             presentationController.detents = [contentDetent]
             presentationController.prefersGrabberVisible = true
         }
+    }
 
-        viewModel.clearPickerVariables()
+    private func calculateContentHeight() -> CGFloat {
+        let marginsAndSpacings: CGFloat = 24
+        let width = UIScreen.main.bounds.width - 24
+        let size = CGSize(width: width, height: UIView.layoutFittingCompressedSize.height)
+
+        let elementHeights: CGFloat = [
+            pickerView.systemLayoutSizeFitting(size).height,
+            timerButton.systemLayoutSizeFitting(size).height
+        ].reduce(0, +)
+
+        print(pickerView.systemLayoutSizeFitting(size).height)
+        print(timerButton.systemLayoutSizeFitting(size).height)
+
+        return elementHeights + marginsAndSpacings
     }
 
     private func setupPickerView() {
@@ -88,27 +110,11 @@ class CookingTimerSheetVC: UIViewController {
             make.leading.trailing.equalToSuperview().inset(12)
         }
     }
-
-    private func calculateContentHeight() -> CGFloat {
-        let marginsAndSpacings: CGFloat = 24
-        let width = UIScreen.main.bounds.width - 24
-        let size = CGSize(width: width, height: UIView.layoutFittingCompressedSize.height)
-
-        let elementHeights: CGFloat = [
-            pickerView.systemLayoutSizeFitting(size).height,
-            timerButton.systemLayoutSizeFitting(size).height
-        ].reduce(0, +)
-
-        print(pickerView.systemLayoutSizeFitting(size).height)
-        print(timerButton.systemLayoutSizeFitting(size).height)
-
-        return elementHeights + marginsAndSpacings
-    }
 }
 
-// MARK: - UIPickerViewDataSource, UIPickerViewDelegate
+// MARK: - UIPickerViewDataSource
 
-extension CookingTimerSheetVC: UIPickerViewDelegate, UIPickerViewDataSource {
+extension CookingTimerSheetVC: UIPickerViewDataSource {
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 3
     }
@@ -125,7 +131,11 @@ extension CookingTimerSheetVC: UIPickerViewDelegate, UIPickerViewDataSource {
             return 0
         }
     }
+}
 
+// MARK: - UIPickerViewDelegate
+
+extension CookingTimerSheetVC: UIPickerViewDelegate {
     func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat {
         return pickerView.frame.size.width / 3
     }
@@ -157,20 +167,77 @@ extension CookingTimerSheetVC: UIPickerViewDelegate, UIPickerViewDataSource {
     }
 }
 
-// MARK: - Delegates
+// MARK: - Observed ViewModel Output & UI actions
 
-extension CookingTimerSheetVC: ActionButtonDelegate {
-    func actionButtonTapped(_ button: ActionButton) {
+extension CookingTimerSheetVC {
+    private func observeViewModelOuput() {
+        viewModel.outputCookingTimerSheetPublisher
+            .sink { [unowned self] event in
+                self.handleViewModelOutput(event)
+            }
+            .store(in: &cancellables)
+    }
+
+    private func observeActionButton() {
+        timerButton
+            .tapPublisher
+            .sink { [unowned self] in
+                handleActionButtonEvent()
+            }
+            .store(in: &cancellables)
+    }
+}
+
+// MARK: - Handle Output & UI Actions
+
+extension CookingTimerSheetVC {
+    private func handleViewModelOutput(_ event: CookingModeViewModel.CookingTimerSheetOutput) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            switch event {
+            case .timerStopped:
+                presentTimerFinishedAlert()
+            case .updatePickerValue(let picker):
+                handlePickerValues(picker)
+            }
+        }
+    }
+
+    private func handlePickerValues(_ pickerType: CookingModeViewModel.PickerValue) {
+        switch pickerType {
+        case .hours(let value):
+            pickerView.selectRow(value, inComponent: 0, animated: true)
+        case .minutes(let value):
+            pickerView.selectRow(value, inComponent: 1, animated: true)
+        case .seconds(let value):
+            pickerView.selectRow(value, inComponent: 2, animated: true)
+        }
+    }
+
+    private func handleActionButtonEvent() {
         viewModel.startTimer()
-        coordinator?.dismissSheet()
+        dismissSheet()
     }
 }
 
-extension CookingTimerSheetVC: CookingTimerSheetVCDelegate {
-    func timerStoppedWhenTimerSheetOpen() {
-        coordinator?.presentTimerStoppedAlert()
+// MARK: - Navigation
+
+extension CookingTimerSheetVC {
+    private func presentTimerFinishedAlert() {
+        let title = "Your timer has ended!"
+        let message = "⏰⏰⏰"
+
+        coordinator?.presentAlert(.timerFinished, title: title, message: message)
+    }
+
+    private func dismissSheet() {
+        DispatchQueue.main.async { [weak self] in
+            self?.coordinator?.dismissSheet()
+        }
     }
 }
+
+// MARK: - LifetimeTracker
 
 #if DEBUG
 extension CookingTimerSheetVC: LifetimeTrackable {

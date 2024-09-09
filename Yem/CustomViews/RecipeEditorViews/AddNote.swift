@@ -7,14 +7,7 @@
 
 import UIKit
 
-protocol AddNoteDelegate: AnyObject {
-    func textFieldDidBeginEditing(_ textfield: AddNote, didUpdateText text: String)
-    func textFieldDidChange(_ textfield: AddNote, didUpdateText text: String)
-    func textFieldDidEndEditing(_ textfield: AddNote, didUpdateText text: String)
-}
-
 final class AddNote: UIView {
-    weak var delegate: AddNoteDelegate?
     
     private var icon: IconImage!
     private var iconImage: String
@@ -116,19 +109,5 @@ final class AddNote: UIView {
         }
         
         placeholder.text = "Enter new step..."
-    }
-}
-
-extension AddNote: UITextViewDelegate {
-    func textViewDidBeginEditing(_ textView: UITextView) {
-        delegate?.textFieldDidBeginEditing(self, didUpdateText: textView.text)
-    }
-
-    func textViewDidChange(_ textView: UITextView) {
-        delegate?.textFieldDidChange(self, didUpdateText: textView.text)
-    }
-
-    func textViewDidEndEditing(_ textView: UITextView) {
-        delegate?.textFieldDidEndEditing(self, didUpdateText: textView.text)
     }
 }

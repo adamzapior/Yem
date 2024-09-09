@@ -63,12 +63,17 @@ final class ShopingListVM {
 
     func loadShopingList() {
         Task {
-            uncheckedList = repository.fetchShopingList(isChecked: false).successOrEmpty()
-            checkedList = repository.fetchShopingList(isChecked: true).successOrEmpty()
+            do {
+                uncheckedList = try repository.fetchShopingList(isChecked: false)
+                checkedList = try repository.fetchShopingList(isChecked: true)
 
-            outputEvent.send(.initialDataFetched)
-            checkIfShoppingListIsEmpty()
-            outputEvent.send(.reloadTable)
+                outputEvent.send(.initialDataFetched)
+                checkIfShoppingListIsEmpty()
+                outputEvent.send(.reloadTable)
+            } catch {
+                // Handle error fetching shopping lists
+                print("Error fetching shopping list: \(error)")
+            }
         }
     }
 
@@ -82,24 +87,36 @@ final class ShopingListVM {
             ingredient.isChecked = false
             uncheckedList.append(ingredient)
         }
-
-        repository.updateShopingList(shopingList: ingredient)
+        do {
+            try repository.updateShopingList(shopingList: ingredient)
+        } catch {
+            print("Error when shoping list updated: \(error)")
+        }
         outputEvent.send(.reloadTable)
     }
 
     func clearShopingList() {
-        repository.clearShopingList()
+        do {
+            try repository.clearShopingList()
+        } catch {
+            print("Error clearing shopping list: \(error)")
+        }
     }
 
     // MARK: - Private methods
 
     private func reloadShopingList() {
         Task {
-            uncheckedList = repository.fetchShopingList(isChecked: false).successOrEmpty()
-            checkedList = repository.fetchShopingList(isChecked: true).successOrEmpty()
+            do {
+                uncheckedList = try repository.fetchShopingList(isChecked: false)
+                checkedList = try repository.fetchShopingList(isChecked: true)
 
-            checkIfShoppingListIsEmpty()
-            outputEvent.send(.reloadTable)
+                checkIfShoppingListIsEmpty()
+                outputEvent.send(.reloadTable)
+            } catch {
+                // Handle error fetching shopping lists
+                print("Error reloading shopping list: \(error)")
+            }
         }
     }
 
