@@ -106,4 +106,10 @@ final class Navigator {
             self.navigationController.viewControllers = []
         }
     }
+    
+    // MARK: - Support methods
+    
+    func setupNavigationBackGesture(isEnabled: Bool) {
+        navigationController.interactivePopGestureRecognizer?.isEnabled = isEnabled
+    }
 }
