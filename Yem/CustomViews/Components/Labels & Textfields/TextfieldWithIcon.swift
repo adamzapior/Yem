@@ -9,8 +9,7 @@ final class TextfieldWithIcon: UIView, UITextFieldDelegate {
         }
     }
     
-    var minViewHeight: CGFloat?
-    
+    private let iconContainer = UIView()
     private var icon: IconImage!
     private var iconImage: String
     private var textStyle: UIFont.TextStyle
@@ -35,7 +34,6 @@ final class TextfieldWithIcon: UIView, UITextFieldDelegate {
     }
     
     convenience init(
-        minViewHeight: CGFloat? = nil,
         backgroundColor: UIColor? = .ui.primaryContainer,
         iconImage: String,
         placeholderText: String,
@@ -43,14 +41,13 @@ final class TextfieldWithIcon: UIView, UITextFieldDelegate {
         keyboardType: UIKeyboardType = .default
     ) {
         self.init(frame: .zero)
-        self.minViewHeight = minViewHeight
         self.backgroundColor = backgroundColor
         self.iconImage = iconImage
         self.icon = IconImage(
             systemImage: iconImage,
             color: .ui.theme,
             textStyle: textStyle,
-            contentMode: .scaleAspectFit
+            contentMode: .center
         )
         self.keyboardType = keyboardType
         
@@ -60,6 +57,8 @@ final class TextfieldWithIcon: UIView, UITextFieldDelegate {
         )
         
         textField.attributedPlaceholder = placeholderText
+        textField.font = UIFont.preferredFont(forTextStyle: .body)
+        textField.adjustsFontForContentSizeCategory = true
         
         configure()
     }
@@ -73,43 +72,42 @@ final class TextfieldWithIcon: UIView, UITextFieldDelegate {
     }
     
     // MARK: UI Setup
-    
+
+
     private func configure() {
-        addSubview(icon)
+        iconContainer.addSubview(icon)
+        addSubview(iconContainer)
         addSubview(textField)
-        
+
         layer.cornerRadius = 20
-        
-        textField.delegate = self
-        textField.backgroundColor = backgroundColor
-        textField.font = UIFont.preferredFont(forTextStyle: .body)
-        textField.keyboardType = keyboardType
-        
+
         icon.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+        
+        icon.maximumContentSizeCategory = .accessibilityMedium
+
+
+        iconContainer.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(24)
             make.centerY.equalTo(textField.snp.centerY)
-            make.width.equalTo(24.HAdapted)
-            make.height.equalTo(24.VAdapted)
+            make.width.height.equalTo(40)
         }
-        
+
         textField.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview().inset(2)
-            make.leading.equalTo(icon.snp.trailing).offset(22)
+            make.leading.equalTo(iconContainer.snp.trailing).offset(22)
             make.trailing.equalToSuperview().offset(-9)
         }
-                
-        snp.makeConstraints { make in
-            make.height.greaterThanOrEqualTo(minViewHeight ?? 32)
-        }
     }
-
+    
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         defaultOnTapAnimation()
         return true
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder() // Hides the keyboard
+        textField.resignFirstResponder()
         return true
     }
 }

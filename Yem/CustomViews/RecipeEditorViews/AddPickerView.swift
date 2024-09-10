@@ -11,12 +11,11 @@ import UIKit
 final class AddPickerView: UIView {
     var textOnButton = UILabel()
 
-    private var minViewHeight: CGFloat?
+    private let iconContainer = UIView()
     private var icon: IconImage!
     private var iconImage: String
     private let textStyle: UIFont.TextStyle
-    private let button = UIButton()
-            
+
     /// Publisher store
     var tapPublisher: AnyPublisher<Void, Never> {
         tapSubject.eraseToAnyPublisher()
@@ -25,84 +24,86 @@ final class AddPickerView: UIView {
     /// Publisher
     private let tapSubject = PassthroughSubject<Void, Never>()
     private var cancellables = Set<AnyCancellable>()
-    
+
     // MARK: - Lifecycle
-    
+
     override init(frame: CGRect) {
         /// default values
         self.iconImage = "plus"
         self.textStyle = .body
 
         super.init(frame: frame)
-        self.icon = IconImage(systemImage: iconImage, color: .ui.theme, textStyle: textStyle)
+        self.icon = IconImage(systemImage: iconImage, color: .ui.theme, textStyle: textStyle, contentMode: .scaleAspectFit)
+        setupTapGesture()
     }
-    
+
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     convenience init(
-        minViewHeight: CGFloat? = nil,
         backgroundColor: UIColor? = UIColor.ui.primaryContainer,
         iconImage: String,
         textOnButton: String
     ) {
         self.init(frame: .zero)
-        self.minViewHeight = minViewHeight ?? 32
         self.backgroundColor = backgroundColor
         self.iconImage = iconImage
-        self.icon = IconImage(systemImage: iconImage, color: .ui.theme, textStyle: textStyle)
+        self.icon = IconImage(systemImage: iconImage, color: .ui.theme, textStyle: textStyle, contentMode: .center)
         self.textOnButton.text = textOnButton
         self.textOnButton.textColor = .ui.secondaryText
-        
+
         configure()
     }
-    
+
     // MARK: UI Setup
-    
+
     func setPlaceholderColor(_ color: UIColor) {
         textOnButton.textColor = color
     }
-    
+
     private func configure() {
-        addSubview(icon)
-        addSubview(button)
+        iconContainer.addSubview(icon)
+        addSubview(iconContainer)
         addSubview(textOnButton)
-        
+
         layer.cornerRadius = 20
-        
-        button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
-        
+
         icon.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+
+        icon.maximumContentSizeCategory = .accessibilityMedium
+
+        iconContainer.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(24)
-            make.centerY.equalTo(button.snp.centerY)
-            make.width.equalTo(22)
-            make.height.equalTo(24)
+            make.centerY.equalTo(textOnButton.snp.centerY)
+            make.width.height.equalTo(40) // Ustaw stały rozmiar kontenera
         }
-        
-        button.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview().inset(12)
-            make.leading.equalTo(icon.snp.trailing).offset(4)
-            make.trailing.equalToSuperview().offset(6)
+
+        textOnButton.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview().inset(16)
+            make.leading.equalTo(iconContainer.snp.trailing).offset(22)
+            make.trailing.equalToSuperview().offset(-9)
         }
-        
+
         textOnButton.font = UIFont.preferredFont(forTextStyle: .body)
         textOnButton.adjustsFontForContentSizeCategory = true
-        textOnButton.maximumContentSizeCategory = .accessibilityLarge
-        
-        textOnButton.snp.makeConstraints { make in
-            make.leading.equalTo(button.snp.leading).offset(18)
-            make.centerY.equalTo(button.snp.centerY)
-            make.trailing.equalTo(button.snp.trailing).offset(-18)
-        }
-        
-        snp.makeConstraints { make in
-            make.height.greaterThanOrEqualTo(minViewHeight ?? 32)
-        }
+        textOnButton.adjustsFontSizeToFitWidth = true
+        textOnButton.minimumScaleFactor = 0.5
+        textOnButton.lineBreakMode = .byClipping
     }
-    
-    @objc private func buttonTapped() {
+
+    // MARK: - Gesture Setup
+
+    private func setupTapGesture() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(viewTapped))
+        addGestureRecognizer(tapGesture)
+        isUserInteractionEnabled = true
+    }
+
+    @objc private func viewTapped() {
         defaultOnTapAnimation()
         tapSubject.send(())
     }
