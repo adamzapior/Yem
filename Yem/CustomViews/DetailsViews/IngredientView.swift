@@ -10,9 +10,11 @@ import SnapKit
 import UIKit
 
 final class IngredientView: UIView {
+    private let contaierView = UIView()
+    
     private let valueLabel = TextLabel(
-        fontStyle: .callout,
-        fontWeight: .regular,
+        fontStyle: .body,
+        fontWeight: .semibold,
         textColor: .ui.theme
     )
     private let nameLabel = TextLabel(
@@ -44,23 +46,25 @@ final class IngredientView: UIView {
         valueLabel.text = value
     }
 
+    
     func setupUI() {
-        addSubview(valueLabel)
-        addSubview(nameLabel)
+        addSubview(contaierView)
+        contaierView.addSubview(valueLabel)
+        contaierView.addSubview(nameLabel)
+        
+        contaierView.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(12)
+        }
 
-        valueLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        valueLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
-
-        nameLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        nameLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        self.backgroundColor = UIColor.ui.primaryContainer
 
         valueLabel.snp.makeConstraints { make in
-            make.leading.top.bottom.equalToSuperview()
+            make.leading.top.trailing.equalToSuperview()
         }
 
         nameLabel.snp.makeConstraints { make in
-            make.leading.equalTo(valueLabel.snp.trailing).offset(6)
-            make.top.equalTo(valueLabel.snp.top)
+            make.leading.equalToSuperview()
+            make.top.equalTo(valueLabel.snp.bottom).offset(4)
             make.bottom.equalToSuperview()
             make.trailing.equalToSuperview().offset(-6)
         }

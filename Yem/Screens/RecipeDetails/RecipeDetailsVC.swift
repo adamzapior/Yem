@@ -305,7 +305,7 @@ final class RecipeDetailsVC: UIViewController {
     private func setupIngredientsContainer() {
         contentView.addSubview(ingredientsContainer)
         
-        ingredientsContainer.backgroundColor = UIColor.ui.primaryContainer
+//        ingredientsContainer.backgroundColor = UIColor.ui.primaryContainer
         ingredientsContainer.layer.cornerRadius = 10
         ingredientsContainer.clipsToBounds = true
         
@@ -317,7 +317,7 @@ final class RecipeDetailsVC: UIViewController {
         
         let ingredientsStackView = UIStackView()
         ingredientsStackView.axis = .vertical
-        ingredientsStackView.spacing = 8
+        ingredientsStackView.spacing = 12
 
         ingredientsStackView.alignment = .fill
         ingredientsStackView.distribution = .fill
@@ -325,9 +325,8 @@ final class RecipeDetailsVC: UIViewController {
         ingredientsContainer.addSubview(ingredientsStackView)
         
         ingredientsStackView.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview().inset(18)
-            make.leading.equalToSuperview().offset(12)
-            make.trailing.equalToSuperview()
+            make.edges.equalToSuperview()
+
         }
          
         for ingredient in viewModel.recipe.ingredientList {

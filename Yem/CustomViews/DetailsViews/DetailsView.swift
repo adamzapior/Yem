@@ -11,7 +11,7 @@ import UIKit
 
 class DetailsView: UIView {
     private let titleTextLabel = TextLabel(
-        fontStyle: .footnote,
+        fontStyle: .callout,
         fontWeight: .semibold,
         textColor: .ui.theme
     )
