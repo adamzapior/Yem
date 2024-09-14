@@ -9,6 +9,10 @@ import UIKit
 @testable import Yem
 
 final class MockImageFetcherManager: ImageFetcherManagerProtocol {
+    func fetchImage(from url: URL, completion: @escaping (Result<UIImage, any Error>) -> Void) {
+        completion(.success(stubbedImage!))
+    }
+    
     var stubbedImage: UIImage?
 
     init(stubbedImage: UIImage?) {

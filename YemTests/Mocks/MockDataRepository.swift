@@ -11,6 +11,37 @@ import Combine
 import Foundation
 
 final class MockDataRepository: DataRepositoryProtocol {
+    func commitTransaction() throws {
+        mockSaveSuccess = true
+    }
+    
+    func fetchAllRecipes() throws -> [Yem.RecipeModel] {
+        return mockRecipes
+    }
+    
+    func fetchRecipesWithName(_ name: String) throws -> [Yem.RecipeModel]? {
+        let filteredRecipes = mockRecipes.filter { $0.name.contains(name) }
+        return filteredRecipes
+    }
+    
+    func fetchShopingList(isChecked: Bool) throws -> [Yem.ShopingListModel] {
+        if isChecked {
+            return checkedItems
+        } else {
+            return uncheckedItems
+        }
+    }
+    
+    func addIngredientsToShopingList(ingredients: [Yem.IngredientModel]) throws {
+        let newItem = ShopingListModel(id: ingredients.first!.id,
+                                       isChecked: false,
+                                       name: ingredients.first!.name,
+                                       value: ingredients.first!.value,
+                                       valueType: ingredients.first!.valueType.name)
+        uncheckedItems.append(newItem)
+        shopingListPublisher.send(completion: .finished)
+    }
+    
     var recipesInsertedPublisher = PassthroughSubject<ObjectChange, Never>()
     var recipesDeletedPublisher = PassthroughSubject<ObjectChange, Never>()
     var recipesUpdatedPublisher = PassthroughSubject<ObjectChange, Never>()
@@ -96,12 +127,12 @@ final class MockDataRepository: DataRepositoryProtocol {
         clearShopingListCalled = true
     }
 
-    func addIngredientsToShopingList(ingredients: [Yem.IngredientModel]) {
+    func addIngredientsToShoppingList(ingredients: [Yem.IngredientModel]) {
         let newItem = ShopingListModel(id: ingredients.first!.id,
                                        isChecked: false,
                                        name: ingredients.first!.name,
                                        value: ingredients.first!.value,
-                                       valueType: ingredients.first!.valueType)
+                                       valueType: ingredients.first!.valueType.name)
         uncheckedItems.append(newItem)
         shopingListPublisher.send(completion: .finished)
     }
