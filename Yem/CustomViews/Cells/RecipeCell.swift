@@ -44,7 +44,7 @@ final class RecipeCell: UICollectionViewCell {
         textColor: .ui.primaryText
     )
     
-    private var perpTimeLabel = TextLabel(
+    private var prepTimeLabel = TextLabel(
         fontStyle: .footnote,
         fontWeight: .regular,
         textColor: .ui.secondaryText
@@ -60,6 +60,7 @@ final class RecipeCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
+        setupLineBreakModeStrategyForLables()
     }
   
     @available(*, unavailable)
@@ -88,7 +89,7 @@ final class RecipeCell: UICollectionViewCell {
         
         titleLabel.text = model.name
 
-        perpTimeLabel.text = model.getPerpTimeString()
+        prepTimeLabel.text = model.getPerpTimeString()
         
         switch model.spicy {
         case .mild:
@@ -99,55 +100,17 @@ final class RecipeCell: UICollectionViewCell {
             spicyIcon.tintColor = .ui.spicyHot
         case .veryHot:
             spicyIcon.tintColor = .ui.spicyVeryHot
+        default: break
         }
         
         if model.isImageSaved, let fileManager = localFileManager, let imageFetcher = imageFetcherManager {
-            
-//            if let imageUrl = fileManager.imageUrl1(for: model.id.uuidString) {
-//                imageFetcher.fetchImage1(from: imageUrl) { [weak self] image in
-//                    guard let self = self else { return }
-//                    if let image = image {
-//                        self.recipeImage.image = image
-//                        self.recipeImage.isHidden = false
-//                    } else {
-//                        self.recipeImage.isHidden = true
-//                    }
-//                }
-//            }
-            
             if let imageUrl = fileManager.imageUrl(for: model.id.uuidString) {
-                    imageFetcher.fetchImage(from: imageUrl) { [weak self] image in
-                        guard let self = self else { return }
-                        self.recipeImage.image = image
-                        self.recipeImage.isHidden = (image == nil)
-                    }
+                imageFetcher.fetchImage(from: imageUrl) { [weak self] image in
+                    guard let self = self else { return }
+                    self.recipeImage.image = image
+                    self.recipeImage.isHidden = (image == nil)
                 }
-                
-                //            var url: URL? = nil
-                //
-                //            let getURL = fileManager.imageUrl(for: model.getStringForURL())
-                //            switch getURL {
-                //            case .success(let result):
-                //                url = result
-                //            case .failure(let error):
-                //                print("Error fetching image: \(error.localizedDescription)")
-                //                return
-                //            }
-                //
-                //            guard let url else { return }
-                //
-                //            imageFetcher.fetchImage(from: url) { [weak self] result in
-                //                DispatchQueue.main.async { [weak self] in
-                //                    switch result {
-                //                    case .success(let fetchedImage):
-                //                        self?.recipeImage.image = fetchedImage
-                //                        self?.recipeImage.isHidden = false
-                //                    case .failure:
-                //                        self?.recipeImage.isHidden = true
-                //                    }
-                //                }
-                //            }
-            
+            }
         }
     }
     
@@ -170,10 +133,10 @@ final class RecipeCell: UICollectionViewCell {
             make.leading.equalTo(containerView.snp.leading).offset(12)
             make.trailing.equalTo(containerView.snp.trailing).offset(-6)
         }
-        
+                
         /// Cooking info details:
         containerView.addSubview(cookingInfoContainerView)
-        cookingInfoContainerView.addSubview(perpTimeLabel)
+        cookingInfoContainerView.addSubview(prepTimeLabel)
         cookingInfoContainerView.addSubview(spicyIcon)
         
         cookingInfoContainerView.snp.makeConstraints { make in
@@ -190,7 +153,7 @@ final class RecipeCell: UICollectionViewCell {
                 make.bottom.lessThanOrEqualTo(cookingInfoContainerView.snp.bottom).offset(-6)
             }
             
-            perpTimeLabel.snp.makeConstraints { make in
+            prepTimeLabel.snp.makeConstraints { make in
                 make.top.equalTo(cookingInfoContainerView.snp.top).offset(6)
                 make.leading.equalTo(spicyIcon.snp.trailing).offset(6)
                 make.bottom.equalTo(cookingInfoContainerView.snp.bottom).offset(-6)
@@ -200,8 +163,13 @@ final class RecipeCell: UICollectionViewCell {
             cookingInfoContainerView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
             cookingInfoContainerView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
             
-            perpTimeLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-            perpTimeLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+            prepTimeLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+            prepTimeLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         }
+    }
+    
+    private func setupLineBreakModeStrategyForLables() {
+        titleLabel.lineBreakMode = .byTruncatingTail
+        prepTimeLabel.lineBreakMode = .byTruncatingTail
     }
 }

@@ -35,7 +35,6 @@ struct RecipeModel {
         entity.isImageSaved = self.isImageSaved
         entity.isFavourite = self.isFavourite
 
-        // Tworzenie encji dla list składników i instrukcji
         let ingredientEntities = self.ingredientList.map { $0.createEntity(context: context) }
         let instructionEntities = self.instructionList.map { $0.createEntity(context: context) }
 
@@ -43,45 +42,6 @@ struct RecipeModel {
         entity.instructions = Set(instructionEntities)
 
         return entity
-    }
-}
-
-enum RecipeSpicy: String, CaseIterable {
-    case mild = "Mild"
-    case medium = "Medium"
-    case hot = "Hot"
-    case veryHot = "Very hot"
-
-    var displayName: String {
-        return rawValue
-    }
-}
-
-enum RecipeCategory: String, CaseIterable {
-    case breakfast = "Breakfast"
-    case lunch = "Lunch"
-    case dinner = "Dinner"
-    case vegan = "Vegan"
-    case vegetarian = "Vegetarian"
-    case desserts = "Desserts"
-    case snacks = "Snacks"
-    case beverages = "Beverages"
-    case appetizers = "Appetizers"
-    case sideDishes = "Side Dishes"
-    case notSelected = "Not selected"
-
-    var displayName: String {
-        return rawValue
-    }
-}
-
-enum RecipeDifficulty: String, CaseIterable {
-    case easy = "Easy"
-    case medium = "Medium"
-    case hot = "Hard"
-
-    var displayName: String {
-        return rawValue
     }
 }
 

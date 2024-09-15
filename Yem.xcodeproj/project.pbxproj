@@ -114,7 +114,6 @@
 		58C3E4B22C67CBD0005CAC3E /* ShopingListVM_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58C3E4B12C67CBD0005CAC3E /* ShopingListVM_Tests.swift */; };
 		58C5814C2B93D884000D3B7D /* UILabelExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58C5814B2B93D884000D3B7D /* UILabelExt.swift */; };
 		58C5814E2B94BB49000D3B7D /* IngredientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58C5814D2B94BB49000D3B7D /* IngredientView.swift */; };
-		58C66A4F2B5D3E000042C7CD /* AddNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58C66A4E2B5D3E000042C7CD /* AddNote.swift */; };
 		58D5E7D92B3C6FE2007FC9E8 /* DefaultOnTapAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D5E7D82B3C6FE2007FC9E8 /* DefaultOnTapAnimation.swift */; };
 		58D5F9C02B27A84700A72619 /* AddPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D5F9BF2B27A84700A72619 /* AddPickerView.swift */; };
 		58D5F9C22B27B3F600A72619 /* TextfieldWithIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D5F9C12B27B3F600A72619 /* TextfieldWithIcon.swift */; };
@@ -235,7 +234,6 @@
 		58C3E4B12C67CBD0005CAC3E /* ShopingListVM_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopingListVM_Tests.swift; sourceTree = "<group>"; };
 		58C5814B2B93D884000D3B7D /* UILabelExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabelExt.swift; sourceTree = "<group>"; };
 		58C5814D2B94BB49000D3B7D /* IngredientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientView.swift; sourceTree = "<group>"; };
-		58C66A4E2B5D3E000042C7CD /* AddNote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNote.swift; sourceTree = "<group>"; };
 		58D5E7D82B3C6FE2007FC9E8 /* DefaultOnTapAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultOnTapAnimation.swift; sourceTree = "<group>"; };
 		58D5F9BF2B27A84700A72619 /* AddPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPickerView.swift; sourceTree = "<group>"; };
 		58D5F9C12B27B3F600A72619 /* TextfieldWithIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextfieldWithIcon.swift; sourceTree = "<group>"; };
@@ -343,6 +341,16 @@
 			path = Core;
 			sourceTree = "<group>";
 		};
+		5828C1182C96C73A00228545 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				58D5F9BF2B27A84700A72619 /* AddPickerView.swift */,
+				58F2F8432B9131D700ACE336 /* DetailsView.swift */,
+				58C5814D2B94BB49000D3B7D /* IngredientView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		582E71AC2B62C7A3002D3164 /* Alerts */ = {
 			isa = PBXGroup;
 			children = (
@@ -405,8 +413,7 @@
 		58356B322B1FD891000AC548 /* CustomViews */ = {
 			isa = PBXGroup;
 			children = (
-				58ACE3A52BB8F8C600766D4B /* RecipeEditorViews */,
-				58ACE3A62BB8F90800766D4B /* DetailsViews */,
+				5828C1182C96C73A00228545 /* Views */,
 				582E71AC2B62C7A3002D3164 /* Alerts */,
 				58D5F9BE2B27A7D400A72619 /* Components */,
 				5887468A2B2E073000EC5E11 /* Cells */,
@@ -569,24 +576,6 @@
 				58A208FB2C7A9B0700A0AE9E /* CoreDataManager_Tests.swift */,
 			);
 			path = CoreData;
-			sourceTree = "<group>";
-		};
-		58ACE3A52BB8F8C600766D4B /* RecipeEditorViews */ = {
-			isa = PBXGroup;
-			children = (
-				58D5F9BF2B27A84700A72619 /* AddPickerView.swift */,
-				58C66A4E2B5D3E000042C7CD /* AddNote.swift */,
-			);
-			path = RecipeEditorViews;
-			sourceTree = "<group>";
-		};
-		58ACE3A62BB8F90800766D4B /* DetailsViews */ = {
-			isa = PBXGroup;
-			children = (
-				58F2F8432B9131D700ACE336 /* DetailsView.swift */,
-				58C5814D2B94BB49000D3B7D /* IngredientView.swift */,
-			);
-			path = DetailsViews;
 			sourceTree = "<group>";
 		};
 		58AD97E32BDADF5B002A6C40 /* Navigation */ = {
@@ -847,7 +836,6 @@
 				583D899B2C6E8ED90063067A /* AnimateFadeInAndOut.swift in Sources */,
 				5887468E2B2E1AA000EC5E11 /* ManageRecipeIngredientFormVC.swift in Sources */,
 				58356B5B2B2267BE000AC548 /* ManageRecipeDetailsFormVC.swift in Sources */,
-				58C66A4F2B5D3E000042C7CD /* AddNote.swift in Sources */,
 				588746912B2E400000EC5E11 /* ActionButton.swift in Sources */,
 				58C259CF2C147ADE004BCEC2 /* SplashScreenCoordinator.swift in Sources */,
 				58AB57BD2B588E8400053C74 /* DataRepository.swift in Sources */,
