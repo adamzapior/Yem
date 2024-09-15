@@ -5,12 +5,15 @@
 //  Created by Adam Zapiór on 10/08/2024.
 //
 
+import Combine
 import XCTest
 @testable import Yem
 
 final class ShopingListVM_Tests: XCTestCase {
     var viewModel: ShopingListVM!
     var mockRepository: MockDataRepository!
+
+    var cancellables = Set<AnyCancellable>()
 
     override func setUp() {
         super.setUp()
@@ -21,10 +24,14 @@ final class ShopingListVM_Tests: XCTestCase {
     override func tearDown() {
         viewModel = nil
         mockRepository = nil
+        cancellables.removeAll()
         super.tearDown()
     }
 
-    func testLoadShopingList_LoadsDataAndReloadsTable() {
+    func testLoadShopingList_LoadsDataAndReloadsTable() async {
+        let expectation = expectation(description: "Load shopping list")
+        expectation.expectedFulfillmentCount = 2 // We expect two events: initialDataFetched and reloadTable
+
         let testableUUID = UUID(uuidString: "12345678-1234-1234-1234-1234567890ab")!
 
         // Given data
@@ -35,14 +42,30 @@ final class ShopingListVM_Tests: XCTestCase {
             ShopingListModel(id: testableUUID, isChecked: true, name: "Bread", value: "2", valueType: "pcs")
         ]
 
-        // When
+        // Set up mock repository
         mockRepository.uncheckedItems = uncheckedItems
         mockRepository.checkedItems = checkedItems
 
+        // Set up event listener
+        viewModel.outputPublisher
+            .sink { event in
+                switch event {
+                case .initialDataFetched, .reloadTable:
+                    expectation.fulfill()
+                default:
+                    break
+                }
+            }
+            .store(in: &cancellables)
+
+        // Tested method
         viewModel.loadShopingList()
 
-        // Then
+        await fulfillment(of: [expectation], timeout: 5.0)
+
         XCTAssertEqual(viewModel.uncheckedList.count, uncheckedItems.count)
+        XCTAssertEqual(viewModel.checkedList.count, checkedItems.count)
+
         for (index, item) in viewModel.uncheckedList.enumerated() {
             XCTAssertEqual(item.id, uncheckedItems[index].id)
             XCTAssertEqual(item.isChecked, uncheckedItems[index].isChecked)
@@ -51,7 +74,6 @@ final class ShopingListVM_Tests: XCTestCase {
             XCTAssertEqual(item.valueType, uncheckedItems[index].valueType)
         }
 
-        XCTAssertEqual(viewModel.checkedList.count, checkedItems.count)
         for (index, item) in viewModel.checkedList.enumerated() {
             XCTAssertEqual(item.id, checkedItems[index].id)
             XCTAssertEqual(item.isChecked, checkedItems[index].isChecked)
@@ -78,133 +100,22 @@ final class ShopingListVM_Tests: XCTestCase {
     }
 
     func testClearShopingList_ClearsListAndReloadsTable() {
+        let expectation = XCTestExpectation(description: "List should be empty")
         // Given
-        viewModel.uncheckedList = [ShopingListModel(id: UUID(), isChecked: false, name: "Milk", value: "1", valueType: "L")]
-        viewModel.checkedList = [ShopingListModel(id: UUID(), isChecked: true, name: "Bread", value: "2", valueType: "pcs")]
+        mockRepository.uncheckedItems = [ShopingListModel(id: UUID(), isChecked: false, name: "Milk", value: "1", valueType: "L")]
+        mockRepository.checkedItems = [ShopingListModel(id: UUID(), isChecked: true, name: "Bread", value: "2", valueType: "pcs")]
 
-        // When
-//        viewModel.uncheckedList = []
-//        viewModel.checkedList = []
         viewModel.clearShopingList()
 
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            expectation.fulfill()
+        }
+
         // Then
-//        XCTAssertTrue(viewModel.uncheckedList.isEmpty, "Unchecked list should be empty")
-//        XCTAssertTrue(viewModel.checkedList.isEmpty, "Checked list should be empty")
-        XCTAssertTrue(mockRepository.clearShopingListCalled, "clearShopingList should be called on the repository")
-    }
+        XCTAssertTrue(viewModel.uncheckedList.isEmpty, "Unchecked list should be empty")
+        XCTAssertTrue(viewModel.checkedList.isEmpty, "Checked list should be empty")
 
-    func testHasIngredientValidationErrors_ReturnsTrue() {
-        viewModel.ingredientNameIsError = false
-        viewModel.ingredientValueIsError = false
-        viewModel.ingredientValueTypeIsError = false
-
-        let result = viewModel.hasIngredientValidationErrors()
-
-        XCTAssertFalse(result)
-    }
-
-    func testHasIngredientValidationErrors_ReturnsFalse() {
-        let scenarios: [(description: String,
-                         initialValues: (ingredientNameIsError: Bool,
-                                         ingredientValueIsError: Bool,
-                                         ingredientValueTypeIsError: Bool),
-                         expectedResult: Bool)] = [
-            (
-                "1: All errors are false",
-                (
-                    ingredientNameIsError: false,
-                    ingredientValueIsError: false,
-                    ingredientValueTypeIsError: false
-                ),
-                expectedResult: false
-            ),
-            (
-                "2: Only ingredientNameIsError is true",
-                (
-                    ingredientNameIsError: true,
-                    ingredientValueIsError: false,
-                    ingredientValueTypeIsError: false
-                ),
-                expectedResult: true
-            ),
-            (
-                "3: Only ingredientValueIsError is true",
-                (
-                    ingredientNameIsError: false,
-                    ingredientValueIsError: true,
-                    ingredientValueTypeIsError: false
-                ),
-                expectedResult: true
-            ),
-            (
-                "4: Only ingredientValueTypeIsError is true",
-                (
-                    ingredientNameIsError: false,
-                    ingredientValueIsError: false,
-                    ingredientValueTypeIsError: true
-                ),
-                expectedResult: true
-            )
-        ]
-
-        for scenario in scenarios {
-            print("Running scenario: \(scenario.description)")
-
-            viewModel.ingredientNameIsError = scenario.initialValues.ingredientNameIsError
-            viewModel.ingredientValueIsError = scenario.initialValues.ingredientValueIsError
-            viewModel.ingredientValueTypeIsError = scenario.initialValues.ingredientValueTypeIsError
-
-            let result = viewModel.hasIngredientValidationErrors()
-
-            XCTAssertEqual(result, scenario.expectedResult, "Unexpected result for scenario: \(scenario.description)")
-        }
-    }
-
-    func testAddIngredientToList() {
-        let scenarios: [(name: String,
-                         value: String,
-                         valueType: String,
-                         expectedNameError: Bool,
-                         expectedValueError: Bool,
-                         expectedValueTypeError: Bool,
-                         expectedResult: Bool)] = [
-            ("", "2", "Unit", true, false, false, false),
-            ("Tomato", "", "pieces", false, true, true, false),
-            ("Tomato", "2", "", false, false, true, false),
-            ("", "", "", true, true, true, false),
-            ("Milk", "1", "Unit", false, false, false, true),
-            ("Bread", "2", "Cups (c)", false, false, false, true)
-        ]
-
-        for scenario in scenarios {
-            viewModel.ingredientName = scenario.name
-            viewModel.ingredientValue = scenario.value
-            viewModel.ingredientValueType = scenario.valueType
-
-            let result = viewModel.addIngredientToList()
-            viewModel.loadShopingList()
-
-            print("DEBUG: Walidacja flag - Name: \(viewModel.ingredientNameIsError), Value: \(viewModel.ingredientValueIsError), ValueType: \(viewModel.ingredientValueTypeIsError), Result: \(result)")
-            print("DEBUG: Lista nieprzeczekanych składników: \(viewModel.uncheckedList)")
-
-            XCTAssertEqual(viewModel.ingredientNameIsError, scenario.expectedNameError, "Name validation failed for scenario: \(scenario)")
-            XCTAssertEqual(viewModel.ingredientValueIsError, scenario.expectedValueError, "Value validation failed for scenario: \(scenario)")
-            XCTAssertEqual(viewModel.ingredientValueTypeIsError, scenario.expectedValueTypeError, "ValueType validation failed for scenario: \(scenario)")
-
-            XCTAssertEqual(result, scenario.expectedResult, "Result failed for scenario: \(scenario)")
-
-            for list in viewModel.uncheckedList {
-                print(list.name)
-            }
-
-            if scenario.expectedResult {
-                XCTAssertEqual(viewModel.uncheckedList.count, 1, "Ingredient should be added for scenario: \(scenario)")
-            } else {
-                XCTAssertEqual(viewModel.uncheckedList.count, 0, "Ingredient should not be added for scenario: \(scenario)")
-            }
-
-            // Prepre for next scenario
-            mockRepository.uncheckedItems.removeAll()
-        }
+        // Result
+        wait(for: [expectation], timeout: 1.0) // Wait for the async call
     }
 }

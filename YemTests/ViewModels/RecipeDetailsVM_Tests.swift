@@ -5,6 +5,7 @@
 //  Created by Adam Zapiór on 11/08/2024.
 //
 
+import Combine
 import XCTest
 @testable import Yem
 
@@ -14,16 +15,18 @@ final class RecipeDetailsVM_Tests: XCTestCase {
     var mockLocalFileManager: MockLocalFileManager!
     var imageFetcher: MockImageFetcherManager!
 
+    var cancellables = Set<AnyCancellable>()
+
     private let unsavedImageRecipeModel = RecipeModel(
         id: UUID(),
         name: "Burger",
         serving: "1",
         perpTimeHours: "1",
         perpTimeMinutes: "0",
-        spicy: RecipeSpicy(rawValue: RecipeSpicy.mild.displayName) ?? .medium,
-        category: RecipeCategory(rawValue: RecipeCategory.appetizers.displayName) ?? .notSelected,
-        difficulty: RecipeDifficulty(rawValue: RecipeDifficulty.medium.displayName) ?? .medium,
-        ingredientList: [IngredientModel(id: UUID(), value: "200", valueType: "g", name: "Flour")],
+        spicy: RecipeSpicy(value: RecipeSpicy.mild.displayName),
+        category: RecipeCategory(value: RecipeCategory.appetizers.displayName),
+        difficulty: RecipeDifficulty(value: RecipeDifficulty.medium.displayName),
+        ingredientList: [IngredientModel(id: UUID(), name: "Flour", value: "200", valueType: IngredientValueTypeModel.grams)],
         instructionList: [InstructionModel(id: UUID(), index: 1, text: "Mix the ingredients")],
         isImageSaved: false,
         isFavourite: true
@@ -35,25 +38,25 @@ final class RecipeDetailsVM_Tests: XCTestCase {
         serving: "1",
         perpTimeHours: "1",
         perpTimeMinutes: "0",
-        spicy: RecipeSpicy(rawValue: RecipeSpicy.mild.displayName) ?? .medium,
-        category: RecipeCategory(rawValue: RecipeCategory.appetizers.displayName) ?? .notSelected,
-        difficulty: RecipeDifficulty(rawValue: RecipeDifficulty.medium.displayName) ?? .medium,
-        ingredientList: [IngredientModel(id: UUID(), value: "200", valueType: "g", name: "Flour")],
+        spicy: RecipeSpicy(value: RecipeSpicy.mild.displayName),
+        category: RecipeCategory(value: RecipeCategory.appetizers.displayName),
+        difficulty: RecipeDifficulty(value: RecipeDifficulty.medium.displayName),
+        ingredientList: [IngredientModel(id: UUID(), name: "Flour", value: "200", valueType: IngredientValueTypeModel.grams)],
         instructionList: [InstructionModel(id: UUID(), index: 1, text: "Mix the ingredients")],
         isImageSaved: true,
         isFavourite: true
     )
-    
+
     private let isNotFavouriteRecipeModel = RecipeModel(
         id: UUID(),
         name: "Burger",
         serving: "1",
         perpTimeHours: "1",
         perpTimeMinutes: "0",
-        spicy: RecipeSpicy(rawValue: RecipeSpicy.mild.displayName) ?? .medium,
-        category: RecipeCategory(rawValue: RecipeCategory.appetizers.displayName) ?? .notSelected,
-        difficulty: RecipeDifficulty(rawValue: RecipeDifficulty.medium.displayName) ?? .medium,
-        ingredientList: [IngredientModel(id: UUID(), value: "200", valueType: "g", name: "Flour")],
+        spicy: RecipeSpicy(value: RecipeSpicy.mild.displayName),
+        category: RecipeCategory(value: RecipeCategory.appetizers.displayName),
+        difficulty: RecipeDifficulty(value: RecipeDifficulty.medium.displayName),
+        ingredientList: [IngredientModel(id: UUID(), name: "Flour", value: "200", valueType: IngredientValueTypeModel.grams)],
         instructionList: [InstructionModel(id: UUID(), index: 1, text: "Mix the ingredients")],
         isImageSaved: true,
         isFavourite: false
@@ -84,13 +87,13 @@ final class RecipeDetailsVM_Tests: XCTestCase {
         if fileManager.fileExists(atPath: testImageURL.path) {
             try? fileManager.removeItem(at: testImageURL)
         }
-        
+
         mockRepository = nil
         mockLocalFileManager = nil
         imageFetcher = nil
         viewModel = nil
     }
-    
+
     // MARK: - loadRecipeImage
 
     func testLoadRecipeImage_WhenImageIsNotSaved_ShouldReturnNil() {
@@ -142,56 +145,48 @@ final class RecipeDetailsVM_Tests: XCTestCase {
 
         waitForExpectations(timeout: 1.0, handler: nil)
     }
-    
-    // MARK: - toggleFavouriteStatus
 
-    
     func testToggleFavouriteStatus() {
-        // Given
+        let expectation = XCTestExpectation(description: "Favourite status should toggle")
         viewModel.recipe = isNotFavouriteRecipeModel
-        
-        // When
+
+        // Tested method
         viewModel.toggleFavouriteStatus()
-        
-        // Then
-        XCTAssertTrue(viewModel.isFavourite)
-        XCTAssertTrue(mockRepository.isUpdateRecipeCalled)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            expectation.fulfill()
+        }
+
+        // Result
+        wait(for: [expectation], timeout: 1.0) // Wait for the async call
+        XCTAssertTrue(viewModel.recipe.isFavourite)
     }
 
-    
     // MARK: - addIngredientsToShopingList
 
     func testAddIngredientsToShopingList() {
-        // Given
         XCTAssertTrue(mockRepository.uncheckedItems.isEmpty)
-       
+
         viewModel.recipe = unsavedImageRecipeModel
-        
-        // When
+
         viewModel.addIngredientsToShopingList()
-        
-        // Then
+
         XCTAssertEqual(mockRepository.uncheckedItems.count, 1)
         XCTAssertEqual(mockRepository.uncheckedItems.first?.name, "Flour")
     }
-    
+
     // MARK: - deleteRecipe
-    
+
     func testDeleteRecipe() {
-        // Given
         mockRepository.mockRecipes.append(unsavedImageRecipeModel)
-        
-        // When
+
         viewModel.deleteRecipe()
-        
-        // Then
+
         XCTAssertTrue(mockRepository.mockRecipes.isEmpty)
     }
-
-    
 }
 
-    // MARK: - Helper Methods
+// MARK: - Helper Methods
 
 extension RecipeDetailsVM_Tests {
     func createTemporaryImageFile() -> URL {

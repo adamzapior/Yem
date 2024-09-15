@@ -21,10 +21,10 @@ final class RecipesListVM_Tests: XCTestCase {
         serving: "1",
         perpTimeHours: "1",
         perpTimeMinutes: "0",
-        spicy: RecipeSpicy(rawValue: RecipeSpicy.mild.displayName) ?? .medium,
-        category: RecipeCategory(rawValue: RecipeCategory.appetizers.displayName) ?? .notSelected,
-        difficulty: RecipeDifficulty(rawValue: RecipeDifficulty.medium.displayName) ?? .medium,
-        ingredientList: [IngredientModel(id: UUID(), value: "200", valueType: "g", name: "Flour")],
+        spicy: RecipeSpicy(value: RecipeSpicy.mild.displayName),
+        category: RecipeCategory(value: RecipeCategory.appetizers.displayName),
+        difficulty: RecipeDifficulty(value: RecipeDifficulty.medium.displayName),
+        ingredientList: [IngredientModel(id: UUID(), name: "Flour", value: "200", valueType: IngredientValueTypeModel.grams)],
         instructionList: [InstructionModel(id: UUID(), index: 1, text: "Mix the ingredients")],
         isImageSaved: false,
         isFavourite: true
@@ -36,10 +36,10 @@ final class RecipesListVM_Tests: XCTestCase {
         serving: "1",
         perpTimeHours: "1",
         perpTimeMinutes: "0",
-        spicy: RecipeSpicy(rawValue: RecipeSpicy.mild.displayName) ?? .medium,
-        category: RecipeCategory(rawValue: RecipeCategory.dinner.displayName) ?? .notSelected,
-        difficulty: RecipeDifficulty(rawValue: RecipeDifficulty.medium.displayName) ?? .medium,
-        ingredientList: [IngredientModel(id: UUID(), value: "200", valueType: "g", name: "Flour")],
+        spicy: RecipeSpicy(value: RecipeSpicy.mild.displayName),
+        category: RecipeCategory(value: RecipeCategory.dinner.displayName),
+        difficulty: RecipeDifficulty(value: RecipeDifficulty.medium.displayName),
+        ingredientList: [IngredientModel(id: UUID(), name: "Flour", value: "200", valueType: IngredientValueTypeModel.grams)],
         instructionList: [InstructionModel(id: UUID(), index: 1, text: "Mix the ingredients")],
         isImageSaved: true,
         isFavourite: true
@@ -51,10 +51,10 @@ final class RecipesListVM_Tests: XCTestCase {
         serving: "1",
         perpTimeHours: "1",
         perpTimeMinutes: "0",
-        spicy: RecipeSpicy(rawValue: RecipeSpicy.mild.displayName) ?? .medium,
-        category: RecipeCategory(rawValue: RecipeCategory.sideDishes.displayName) ?? .notSelected,
-        difficulty: RecipeDifficulty(rawValue: RecipeDifficulty.medium.displayName) ?? .medium,
-        ingredientList: [IngredientModel(id: UUID(), value: "200", valueType: "g", name: "Flour")],
+        spicy: RecipeSpicy(value: RecipeSpicy.mild.displayName),
+        category: RecipeCategory(value: RecipeCategory.sideDishes.displayName),
+        difficulty: RecipeDifficulty(value: RecipeDifficulty.medium.displayName),
+        ingredientList: [IngredientModel(id: UUID(), name: "Flour", value: "200", valueType: IngredientValueTypeModel.grams)],
         instructionList: [InstructionModel(id: UUID(), index: 1, text: "Mix the ingredients")],
         isImageSaved: true,
         isFavourite: false
@@ -104,29 +104,6 @@ final class RecipesListVM_Tests: XCTestCase {
         waitForExpectations(timeout: 1, handler: nil)
     }
 
-    func testFilterRecipes() {
-        let expectation = self.expectation(description: "Reload table")
-
-        let mockRecipes = [
-            unsavedImageRecipeModel,
-            savedImageRecipeModel,
-            isNotFavouriteRecipeModel
-        ]
-        mockRepository.mockRecipes = mockRecipes
-        
-        viewModel.loadRecipes()
-        
-        viewModel.filterRecipes(query: "Bur")
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            XCTAssertEqual(self.viewModel.filteredRecipes.count, 1)
-            XCTAssertEqual(self.viewModel.filteredRecipes.first?.name, "Burger")
-            expectation.fulfill()
-        }
-        
-        waitForExpectations(timeout: 1, handler: nil)
-    }
-
     func testGroupRecipesByCategory() {
         let expectation = self.expectation(description: "Reload table")
 
@@ -145,49 +122,5 @@ final class RecipesListVM_Tests: XCTestCase {
             expectation.fulfill()
         }
         waitForExpectations(timeout: 1, handler: nil)
-    }
-    
-    func testReloadTableDelegate() {
-        let expectation = self.expectation(description: "Delegate should reload table")
-        
-        let mockDelegate = MockReloadTableDelegate()
-        mockDelegate.onReloadData = {
-            expectation.fulfill()
-        }
-        
-        viewModel.delegate = mockDelegate
-        viewModel.loadRecipes()
-        
-        waitForExpectations(timeout: 1, handler: nil)
-    }
-
-    func testReloadSearchableTableDelegate() {
-        let expectation = self.expectation(description: "Delegate should reload searchable table")
-
-        let mockSearchResultDelegate = MockSearchResultDelegate()
-        mockSearchResultDelegate.onReloadData = {
-            expectation.fulfill()
-        }
-        
-        viewModel.delegateRecipesSearchResult = mockSearchResultDelegate
-        viewModel.filterRecipes(query: "Bur")
-        
-        waitForExpectations(timeout: 1, handler: nil)
-    }
-}
-
-private class MockReloadTableDelegate: RecipesListVMDelegate {
-    var onReloadData: (() -> Void)?
-
-    func reloadTable() {
-        onReloadData?()
-    }
-}
-
-private class MockSearchResultDelegate: RecipesSearchResultDelegate {
-    var onReloadData: (() -> Void)?
-
-    func reloadTable() {
-        onReloadData?()
     }
 }

@@ -23,16 +23,16 @@ final class CoreDataManagerTests: XCTestCase {
         category: .vegan,
         difficulty: .medium,
         ingredientList: [
-            IngredientModel(id: UUID(), value: "2", valueType: IngredientValueType.unit.rawValue, name: "Avocado"),
-            IngredientModel(id: UUID(), value: "200", valueType: IngredientValueType.grams.rawValue, name: "Black Beans"),
-            IngredientModel(id: UUID(), value: "150", valueType: IngredientValueType.grams.rawValue, name: "Corn"),
-            IngredientModel(id: UUID(), value: "1", valueType: IngredientValueType.unit.rawValue, name: "Onion"),
-            IngredientModel(id: UUID(), value: "2", valueType: IngredientValueType.tablespoons.rawValue, name: "Olive Oil"),
-            IngredientModel(id: UUID(), value: "1", valueType: IngredientValueType.teaspoons.rawValue, name: "Cumin"),
-            IngredientModel(id: UUID(), value: "1", valueType: IngredientValueType.teaspoons.rawValue, name: "Chili Powder"),
-            IngredientModel(id: UUID(), value: "8", valueType: IngredientValueType.unit.rawValue, name: "Taco Shells"),
-            IngredientModel(id: UUID(), value: "1", valueType: IngredientValueType.unit.rawValue, name: "Lime"),
-            IngredientModel(id: UUID(), value: "A pinch", valueType: IngredientValueType.pinch.rawValue, name: "Salt")
+            IngredientModel(id: UUID(), name: "Avocado", value: "2", valueType: IngredientValueTypeModel.unit),
+            IngredientModel(id: UUID(), name: "Black Beans", value: "200", valueType: IngredientValueTypeModel.grams),
+            IngredientModel(id: UUID(), name: "Corn", value: "150", valueType: IngredientValueTypeModel.grams),
+            IngredientModel(id: UUID(), name: "Onion", value: "1", valueType: IngredientValueTypeModel.unit),
+            IngredientModel(id: UUID(), name: "Olive Oil", value: "2", valueType: IngredientValueTypeModel.tablespoons),
+            IngredientModel(id: UUID(), name: "Cumin", value: "1", valueType: IngredientValueTypeModel.pinch),
+            IngredientModel(id: UUID(), name: "Chili Powder", value: "1", valueType: IngredientValueTypeModel.pinch),
+            IngredientModel(id: UUID(), name: "Taco Shells", value: "8", valueType: IngredientValueTypeModel.unit),
+            IngredientModel(id: UUID(), name: "Lime", value: "1", valueType: IngredientValueTypeModel.unit),
+            IngredientModel(id: UUID(), name: "Salt", value: "1", valueType: IngredientValueTypeModel.pinch)
         ],
         instructionList: [
             InstructionModel(id: UUID(), index: 1, text: "Chop the avocado, onion, and prepare other ingredients."),
@@ -48,7 +48,6 @@ final class CoreDataManagerTests: XCTestCase {
         isImageSaved: true,
         isFavourite: false
     )
-
     override func setUp() {
         super.setUp()
         testStack = CoreDataTestStack()
@@ -65,7 +64,7 @@ final class CoreDataManagerTests: XCTestCase {
     func testBeginTransaction() {
         coreDataManager.beginTransaction()
        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             let undoManager = self.coreDataManager.context.undoManager
            
             XCTAssertNotNil(undoManager, "Undo manager should be set")
@@ -92,7 +91,6 @@ final class CoreDataManagerTests: XCTestCase {
     }
 
     func testSaveRecipe() throws {
-        // Given
         let recipe = RecipeEntity(using: testStack.context)
         print("Recipe Entity: \(recipe)")
     
@@ -101,23 +99,21 @@ final class CoreDataManagerTests: XCTestCase {
         recipe.prepTimeHours = sampleRecipe.perpTimeHours
         recipe.prepTimeMinutes = sampleRecipe.perpTimeMinutes
         recipe.servings = sampleRecipe.serving
-        recipe.spicy = sampleRecipe.spicy.rawValue
-        recipe.category = sampleRecipe.category.rawValue
-        recipe.difficulty = sampleRecipe.difficulty.rawValue
+        recipe.spicy = sampleRecipe.spicy.displayName
+        recipe.category = sampleRecipe.category.displayName
+        recipe.difficulty = sampleRecipe.difficulty.displayName
         recipe.isImageSaved = sampleRecipe.isImageSaved
         recipe.isFavourite = sampleRecipe.isFavourite
     
-        // Add ingredients
         for ingredient in sampleRecipe.ingredientList {
             let ingredientEntity = IngredientEntity(using: testStack.context)
             ingredientEntity.id = ingredient.id
             ingredientEntity.name = ingredient.name
             ingredientEntity.value = ingredient.value
-            ingredientEntity.valueType = ingredient.valueType
+            ingredientEntity.valueType = ingredient.valueType.name
             recipe.addToIngredients(ingredientEntity)
         }
     
-        // Add instructions
         for instruction in sampleRecipe.instructionList {
             let instructionEntity = InstructionEntity(using: testStack.context)
             instructionEntity.id = instruction.id
@@ -128,7 +124,7 @@ final class CoreDataManagerTests: XCTestCase {
     
         print("Recipe Entity: \(recipe)")
 
-        // Zapis do kontekstu
+        // Save contex
         do {
             try testStack.context.save()
         } catch {
@@ -149,9 +145,9 @@ final class CoreDataManagerTests: XCTestCase {
         XCTAssertEqual(fetchedRecipe.prepTimeHours, sampleRecipe.perpTimeHours, "The preparation hours should match")
         XCTAssertEqual(fetchedRecipe.prepTimeMinutes, sampleRecipe.perpTimeMinutes, "The preparation minutes should match")
         XCTAssertEqual(fetchedRecipe.servings, sampleRecipe.serving, "The servings should match")
-        XCTAssertEqual(fetchedRecipe.spicy, sampleRecipe.spicy.rawValue, "The spiciness level should match")
-        XCTAssertEqual(fetchedRecipe.category, sampleRecipe.category.rawValue, "The category should match")
-        XCTAssertEqual(fetchedRecipe.difficulty, sampleRecipe.difficulty.rawValue, "The difficulty level should match")
+        XCTAssertEqual(fetchedRecipe.spicy, sampleRecipe.spicy.displayName, "The spiciness level should match")
+        XCTAssertEqual(fetchedRecipe.category, sampleRecipe.category.displayName, "The category should match")
+        XCTAssertEqual(fetchedRecipe.difficulty, sampleRecipe.difficulty.displayName, "The difficulty level should match")
         XCTAssertEqual(fetchedRecipe.isImageSaved, sampleRecipe.isImageSaved, "The image saved flag should match")
         XCTAssertEqual(fetchedRecipe.isFavourite, sampleRecipe.isFavourite, "The favourite flag should match")
     }
@@ -168,9 +164,9 @@ final class CoreDataManagerTests: XCTestCase {
         recipe.prepTimeHours = sampleRecipe.perpTimeHours
         recipe.prepTimeMinutes = sampleRecipe.perpTimeMinutes
         recipe.servings = sampleRecipe.serving
-        recipe.spicy = sampleRecipe.spicy.rawValue
-        recipe.category = sampleRecipe.category.rawValue
-        recipe.difficulty = sampleRecipe.difficulty.rawValue
+        recipe.spicy = sampleRecipe.spicy.displayName
+        recipe.category = sampleRecipe.category.displayName
+        recipe.difficulty = sampleRecipe.difficulty.displayName
         recipe.isImageSaved = sampleRecipe.isImageSaved
         recipe.isFavourite = sampleRecipe.isFavourite
     
@@ -179,7 +175,7 @@ final class CoreDataManagerTests: XCTestCase {
             ingredientEntity.id = ingredient.id
             ingredientEntity.name = ingredient.name
             ingredientEntity.value = ingredient.value
-            ingredientEntity.valueType = ingredient.valueType
+            ingredientEntity.valueType = ingredient.valueType.name
             recipe.addToIngredients(ingredientEntity)
         }
     

@@ -5,21 +5,24 @@
 //  Created by Adam Zapiór on 05/08/2024.
 //
 
+import Combine
 import XCTest
 @testable import Yem
 
 class AddRecipeViewModel_Tests: XCTestCase {
-    var viewModel: AddRecipeViewModel!
+    var viewModel: ManageRecipeVM!
     var mockRepository: MockDataRepository!
     var mockLocalFileManager: MockLocalFileManager!
     var mockImageFetcherManager: MockImageFetcherManager!
+
+    var cancellables = Set<AnyCancellable>()
 
     override func setUp() {
         super.setUp()
         mockRepository = MockDataRepository()
         mockLocalFileManager = MockLocalFileManager()
         mockImageFetcherManager = MockImageFetcherManager(stubbedImage: nil)
-        viewModel = AddRecipeViewModel(
+        viewModel = ManageRecipeVM(
             repository: mockRepository,
             localFileManager: mockLocalFileManager,
             imageFetcherManager: mockImageFetcherManager
@@ -29,6 +32,9 @@ class AddRecipeViewModel_Tests: XCTestCase {
     override func tearDown() {
         viewModel = nil
         mockRepository = nil
+        mockLocalFileManager = nil
+        mockImageFetcherManager = nil
+        cancellables.removeAll()
         super.tearDown()
     }
 
@@ -41,11 +47,12 @@ class AddRecipeViewModel_Tests: XCTestCase {
                          expectedNameError: Bool,
                          expectedValueError: Bool,
                          expectedValueTypeError: Bool,
-                         expectedResult: Bool)] = [
-            ("", "2", "pieces", true, false, false, false),
-            ("Tomato", "", "pieces", false, true, false, false),
-            ("Tomato", "2", "", false, false, true, false),
-            ("", "", "", true, true, true, false)
+                         shouldThrow: Bool)] = [
+            ("", "2", "pieces", true, false, false, true),
+            ("Tomato", "", "pieces", false, true, false, true),
+            ("Tomato", "2", "", false, false, true, true),
+            ("", "", "", true, true, true, true),
+            ("Tomato", "2", "pieces", false, false, false, false)
         ]
 
         for scenario in scenarios {
@@ -53,48 +60,61 @@ class AddRecipeViewModel_Tests: XCTestCase {
             viewModel.ingredientValue = scenario.value
             viewModel.ingredientValueType = scenario.valueType
 
-            let result = viewModel.addIngredientToList()
+            if scenario.shouldThrow {
+                XCTAssertThrowsError(try viewModel.addIngredientToList()) { error in
+                    XCTAssertTrue(error is ManageRecipeVM.ValidationError, "Unexpected error type: \(type(of: error))")
+                }
+            } else {
+                XCTAssertNoThrow(try viewModel.addIngredientToList())
+            }
 
             XCTAssertEqual(viewModel.ingredientNameIsError, scenario.expectedNameError, "Name validation failed for scenario: \(scenario)")
             XCTAssertEqual(viewModel.ingredientValueIsError, scenario.expectedValueError, "Value validation failed for scenario: \(scenario)")
             XCTAssertEqual(viewModel.ingredientValueTypeIsError, scenario.expectedValueTypeError, "ValueType validation failed for scenario: \(scenario)")
 
-            XCTAssertEqual(result, scenario.expectedResult, "Result failed for scenario: \(scenario)")
-
-            if scenario.expectedResult {
+            if !scenario.shouldThrow {
                 XCTAssertEqual(viewModel.ingredientsList.count, 1, "Ingredient should be added for scenario: \(scenario)")
             } else {
                 XCTAssertEqual(viewModel.ingredientsList.count, 0, "Ingredient should not be added for scenario: \(scenario)")
             }
 
-            // Prepre for next scenario
             viewModel.ingredientsList.removeAll()
         }
     }
 
     func testAddInstructiontoListSuccess() {
-        viewModel.instruction = "Do smth"
+        // Przygotowanie
+        viewModel.instruction = "Do something"
 
-        let result = viewModel.addInstructionToList()
+        // Działanie
+        XCTAssertNoThrow(try viewModel.addInstructionToList(), "Adding instruction should not throw an error")
 
-        let instructionValidation = viewModel.instructionIsError
+        // Sprawdzenie
+        XCTAssertFalse(viewModel.instructionIsError, "Instruction should not have validation errors")
+        XCTAssertEqual(viewModel.instructionList.count, 1, "Instruction list should have one item")
 
-        XCTAssertFalse(instructionValidation)
+        if let addedInstruction = viewModel.instructionList.first {
+            XCTAssertEqual(addedInstruction.text, "Do something", "Added instruction should have correct text")
+            XCTAssertEqual(addedInstruction.index, 1, "Added instruction should have correct index")
+        } else {
+            XCTFail("Instruction was not added to the list")
+        }
 
-        XCTAssertTrue(result)
-        XCTAssertEqual(viewModel.instructionList.count, 1)
+        // Sprawdzenie, czy właściwości zostały wyczyszczone
+        XCTAssertTrue(viewModel.instruction.isEmpty, "Instruction property should be cleared after adding")
     }
 
     func testAddInstructiontoListFailure() {
-        viewModel.instruction = ""
+        viewModel.instruction = "" // Pusty string powinien spowodować błąd walidacji
 
-        let result = viewModel.addInstructionToList()
+        XCTAssertThrowsError(try viewModel.addInstructionToList()) { error in
+            XCTAssertTrue(error is ManageRecipeVM.ValidationError, "Unexpected error type: \(type(of: error))")
+            if let validationError = error as? ManageRecipeVM.ValidationError {
+                XCTAssertEqual(validationError.localizedDescription, "Add instruction to list failed")
+            }
+        }
 
-        let instructionValidation = viewModel.instructionIsError
-
-        XCTAssertTrue(instructionValidation)
-
-        XCTAssertFalse(result)
+        XCTAssertTrue(viewModel.instructionIsError)
         XCTAssertEqual(viewModel.instructionList.count, 0)
     }
 
@@ -152,9 +172,9 @@ class AddRecipeViewModel_Tests: XCTestCase {
             (
                 // 1: Delete 2nd ingredient
                 [
-                    IngredientModel(id: UUID(), value: "2", valueType: "pieces", name: "Tomato"),
-                    IngredientModel(id: UUID(), value: "3", valueType: "pieces", name: "Ketchup"),
-                    IngredientModel(id: UUID(), value: "1", valueType: "cloves", name: "Garlic")
+                    IngredientModel(id: UUID(), name: "Tomato", value: "2", valueType: IngredientValueTypeModel(name: "pieces")),
+                    IngredientModel(id: UUID(), name: "Ketchup", value: "3", valueType: IngredientValueTypeModel(name: "pieces")),
+                    IngredientModel(id: UUID(), name: "Garlic", value: "1", valueType: IngredientValueTypeModel(name: "cloves"))
                 ],
                 1, // Index to delete
                 ["Tomato", "Garlic"] // Expected ingredients
@@ -162,9 +182,9 @@ class AddRecipeViewModel_Tests: XCTestCase {
             (
                 // 2: Delete 1st ingredient
                 [
-                    IngredientModel(id: UUID(), value: "2", valueType: "pieces", name: "Tomato"),
-                    IngredientModel(id: UUID(), value: "3", valueType: "pieces", name: "Ketchup"),
-                    IngredientModel(id: UUID(), value: "1", valueType: "cloves", name: "Garlic")
+                    IngredientModel(id: UUID(), name: "Tomato", value: "2", valueType: IngredientValueTypeModel(name: "pieces")),
+                    IngredientModel(id: UUID(), name: "Ketchup", value: "3", valueType: IngredientValueTypeModel(name: "pieces")),
+                    IngredientModel(id: UUID(), name: "Garlic", value: "1", valueType: IngredientValueTypeModel(name: "cloves"))
                 ],
                 0, // Index to delete
                 ["Ketchup", "Garlic"] // Expected ingredients
@@ -172,9 +192,9 @@ class AddRecipeViewModel_Tests: XCTestCase {
             (
                 // 3: Delete last ingredient
                 [
-                    IngredientModel(id: UUID(), value: "2", valueType: "pieces", name: "Tomato"),
-                    IngredientModel(id: UUID(), value: "3", valueType: "pieces", name: "Ketchup"),
-                    IngredientModel(id: UUID(), value: "1", valueType: "cloves", name: "Garlic")
+                    IngredientModel(id: UUID(), name: "Tomato", value: "2", valueType: IngredientValueTypeModel(name: "pieces")),
+                    IngredientModel(id: UUID(), name: "Ketchup", value: "3", valueType: IngredientValueTypeModel(name: "pieces")),
+                    IngredientModel(id: UUID(), name: "Garlic", value: "1", valueType: IngredientValueTypeModel(name: "cloves"))
                 ],
                 2, // Index to delete
                 ["Tomato", "Ketchup"] // Expected ingredients
@@ -182,8 +202,8 @@ class AddRecipeViewModel_Tests: XCTestCase {
             (
                 // 4: Delete instruction with incorrect index
                 [
-                    IngredientModel(id: UUID(), value: "2", valueType: "pieces", name: "Tomato"),
-                    IngredientModel(id: UUID(), value: "3", valueType: "pieces", name: "Ketchup")
+                    IngredientModel(id: UUID(), name: "Tomato", value: "2", valueType: IngredientValueTypeModel(name: "pieces")),
+                    IngredientModel(id: UUID(), name: "Ketchup", value: "3", valueType: IngredientValueTypeModel(name: "pieces"))
                 ],
                 3, // Index to delete
                 ["Tomato", "Ketchup"] // Expected ingredients
@@ -191,7 +211,7 @@ class AddRecipeViewModel_Tests: XCTestCase {
             (
                 // 5: Removing the only ingredient
                 [
-                    IngredientModel(id: UUID(), value: "2", valueType: "pieces", name: "Tomato")
+                    IngredientModel(id: UUID(), name: "Tomato", value: "2", valueType: IngredientValueTypeModel(name: "pieces"))
                 ],
                 0, // Index to delete
                 [] // // Expected ingredients
@@ -280,26 +300,6 @@ class AddRecipeViewModel_Tests: XCTestCase {
         }
     }
 
-    // MARK: Recipe validation and saving methods
-
-    func testDoesRecipeExist_ExistingRecipe_ReturnsTrue() {
-        let existingId = UUID()
-        mockRepository.mockRecipeExists = true
-
-        let result = viewModel.doesRecipeExist(id: existingId)
-
-        XCTAssertTrue(result)
-    }
-
-    func testDoesRecipeExist_NonExistingRecipe_ReturnsFalse() {
-        let nonExistingId = UUID()
-        mockRepository.mockRecipeExists = false
-
-        let result = viewModel.doesRecipeExist(id: nonExistingId)
-
-        XCTAssertFalse(result)
-    }
-
     func testSaveRecipe() {
         let scenarios: [(description: String,
                          initialValues: (recipeID: UUID,
@@ -357,7 +357,7 @@ class AddRecipeViewModel_Tests: XCTestCase {
                     category: "Dinner",
                     difficulty: "Easy",
                     ingredientsList: [
-                        IngredientModel(id: UUID(), value: "200", valueType: "g", name: "Flour")
+                        IngredientModel(id: UUID(), name: "Flour", value: "200", valueType: IngredientValueTypeModel(name: "grams"))
                     ],
                     instructionList: [
                         InstructionModel(id: UUID(), index: 1, text: "Mix the ingredients")
@@ -385,7 +385,7 @@ class AddRecipeViewModel_Tests: XCTestCase {
                     category: "Dinner",
                     difficulty: "Easy",
                     ingredientsList: [
-                        IngredientModel(id: UUID(), value: "200", valueType: "grams", name: "Flour")
+                        IngredientModel(id: UUID(), name: "Flour", value: "200", valueType: IngredientValueTypeModel.grams)
                     ],
                     instructionList: [
                         InstructionModel(id: UUID(), index: 1, text: "Mix the ingredients")
@@ -422,19 +422,23 @@ class AddRecipeViewModel_Tests: XCTestCase {
             mockRepository.mockRecipeExists = scenario.mockRecipeExists
             mockRepository.mockSaveSuccess = scenario.mockSaveSuccess
 
-            // Calling the saveRecipe method
-            let result = viewModel.saveRecipe()
-
-            // Checking the function result
-            XCTAssertEqual(result, scenario.expectedResult, "Failed on scenario: \(scenario.description)")
+            do {
+                try viewModel.saveRecipe()
+            } catch {
+                // Checking the number of validation errors
+                if scenario.expectedValidationErrorsCount > 0 {
+                    XCTAssertEqual(viewModel.validationErrors.count, scenario.expectedValidationErrorsCount, "Validation error count mismatch on scenario: \(scenario.description)")
+                } else {
+                    XCTFail("Unexpected error occurred during \(scenario.description): \(error)")
+                }
+            }
 
             // Checking the number of validation errors
             XCTAssertEqual(viewModel.validationErrors.count, scenario.expectedValidationErrorsCount, "Validation error count mismatch on scenario: \(scenario.description)")
 
             // Checking if the add recipe method in the repository was called
-            XCTAssertEqual(mockRepository.isAddRecipeCalled, scenario.isAddRecipeCalled, "Repository method call mismatch on scenario: \(scenario.description)")
-
             // Checking if the update recipe method in the repository was called
+            XCTAssertEqual(mockRepository.isAddRecipeCalled, scenario.isAddRecipeCalled, "Repository method call mismatch on scenario: \(scenario.description)")
             XCTAssertEqual(mockRepository.isUpdateRecipeCalled, scenario.isUpdateRecipeCalled, "Repository update method call mismatch on scenario: \(scenario.description)")
 
             // Prepare for the next loop iteration
@@ -445,12 +449,17 @@ class AddRecipeViewModel_Tests: XCTestCase {
         }
     }
 
+    // **Scenario**
+    /// Test only validation properties without validation, in default properties should be set to false
     func testHasValidationErrors_AllFieldsValid_ReturnsFalse() {
         let result = viewModel.hasRecipeValidationErrors()
 
         XCTAssertFalse(result)
     }
 
+    /// **Scenario**
+    /// Test only validation properties without validation, in default properties should be set to false
+    /// In that case one of properties is set to true and result should return true
     func testHasValidationErrors_WithErrors_ReturnsTrue() {
         viewModel.recipeTitleIsError = true
         let result = viewModel.hasRecipeValidationErrors()
@@ -472,31 +481,31 @@ class AddRecipeViewModel_Tests: XCTestCase {
             ("Instructions", { self.viewModel.instructionList = [] }),
 
 //            // Invalid numbers
-//            ("Serving - negative", { self.viewModel.serving = "-1" }),
-//            ("PrepTimeHours - negative", { self.viewModel.prepTimeHours = "-1" }),
-//            ("PrepTimeMinutes - negative", { viewModel.prepTimeMinutes = "-1" }),
-//            ("Serving - non-numeric", { viewModel.serving = "abc" }),
-//            ("PrepTimeHours - non-numeric", { viewModel.prepTimeHours = "abc" }),
-//            ("PrepTimeMinutes - non-numeric", { viewModel.prepTimeMinutes = "abc" }),
+            ("Serving - negative", { self.viewModel.serving = "-1" }),
+            ("PrepTimeHours - negative", { self.viewModel.prepTimeHours = "-1" }),
+            ("PrepTimeMinutes - negative", { self.viewModel.prepTimeMinutes = "-1" }),
+            ("Serving - non-numeric", { self.viewModel.serving = "abc" }),
+            ("PrepTimeHours - non-numeric", { self.viewModel.prepTimeHours = "abc" }),
+            ("PrepTimeMinutes - non-numeric", { self.viewModel.prepTimeMinutes = "abc" }),
 
-//            // Out of range values
-//            ("PrepTimeMinutes - over 60", { self.viewModel.prepTimeMinutes = "61" }),
-//            ("PrepTimeHours - unrealistic", { self.viewModel.prepTimeHours = "1000" }),
+            // Out of range values
+            ("PrepTimeMinutes - over 60", { self.viewModel.prepTimeMinutes = "61" }),
+            ("PrepTimeHours - unrealistic", { self.viewModel.prepTimeHours = "1000" }),
 
             // Edge cases for Ingredients and Instructions
             ("Ingredients - empty name", {
                 self.viewModel.ingredientsList = [
-                    IngredientModel(id: UUID(), value: "200", valueType: "g", name: "")
+                    IngredientModel(id: UUID(), name: "", value: "200", valueType: IngredientValueTypeModel(name: "g"))
                 ]
             }),
             ("Ingredients - negative value", {
                 self.viewModel.ingredientsList = [
-                    IngredientModel(id: UUID(), value: "-200", valueType: "g", name: "Flour")
+                    IngredientModel(id: UUID(), name: "Flour", value: "-200", valueType: IngredientValueTypeModel(name: "g"))
                 ]
             }),
             ("Ingredients - non-numeric value", {
                 self.viewModel.ingredientsList = [
-                    IngredientModel(id: UUID(), value: "abc", valueType: "g", name: "Flour")
+                    IngredientModel(id: UUID(), name: "Flour", value: "abc", valueType: IngredientValueTypeModel(name: "g"))
                 ]
             }),
             ("Instructions - empty text", {
@@ -512,7 +521,7 @@ class AddRecipeViewModel_Tests: XCTestCase {
             }),
             ("Ingredients and Instructions - both invalid", {
                 self.viewModel.ingredientsList = [
-                    IngredientModel(id: UUID(), value: "-200", valueType: "g", name: "")
+                    IngredientModel(id: UUID(), name: "", value: "-200", valueType: IngredientValueTypeModel(name: "g"))
                 ]
                 self.viewModel.instructionList = [
                     InstructionModel(id: UUID(), index: 1, text: "")
@@ -531,6 +540,159 @@ class AddRecipeViewModel_Tests: XCTestCase {
             XCTAssertFalse(viewModel.hasRecipeValidationErrors(), "\(scenario.field) validation failed")
         }
     }
+
+    // MARK: - Test observe input & output
+
+    /// **Scenario**
+    /// Test input and output for recipe properties
+    /// RecipeTitle should be trimed to max 32 characters
+    func testRecipePropertiesForInputAndOutput() {
+        // Expectations
+        let expectationRecipeTitle = XCTestExpectation(description: "Wait for recipe title update")
+        let expectationDifficulty = XCTestExpectation(description: "Wait for difficulty update")
+        let expectationServings = XCTestExpectation(description: "Wait for servings update")
+        let expectationPrepTime = XCTestExpectation(description: "Wait for prep time update")
+        let expectationSpicy = XCTestExpectation(description: "Wait for spicy update")
+        let expectationCategory = XCTestExpectation(description: "Wait for category update")
+
+        let expectationIngredientName = XCTestExpectation(description: "Wait for ingredient name update")
+        let expectationIngredientValue = XCTestExpectation(description: "Wait for ingredient value update")
+        let expectationIngredientValueType = XCTestExpectation(description: "Wait ingredient value type update")
+
+        let expectationInstruction = XCTestExpectation(description: "Wait for instruction update")
+
+        let testedModel = RecipeModel(
+            id: UUID(),
+            name: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.",
+            serving: "1",
+            perpTimeHours: "1",
+            perpTimeMinutes: "2",
+            spicy: .mild,
+            category: .breakfast,
+            difficulty: .easy,
+            ingredientList: [IngredientModel(id: UUID(), name: "Egg", value: "1", valueType: IngredientValueTypeModel.unit)],
+            instructionList: [InstructionModel(id: UUID(), index: 1, text: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.")],
+            isImageSaved: false,
+            isFavourite: false
+        )
+
+        // Observed properties
+        var observedRecipeTitle = ""
+        var observedDifficulty = ""
+        var observedServings = ""
+        var observedPrepTime = ""
+        var observedSpicy = ""
+        var observedCategory = ""
+
+        var observedIngredientName = ""
+        var observedIngredientValue = ""
+        var observedIngredientValueType = ""
+
+        var observedInstruction = ""
+
+        // Observe output
+        viewModel.outputDetailsFormEventPublisher
+            .sink { event in
+                if case .updateDetailsField(let details) = event {
+                    switch details {
+                    case .recipeTitle(let value):
+                        observedRecipeTitle = value
+                        expectationRecipeTitle.fulfill()
+                    case .difficulty(let value):
+                        observedDifficulty = value
+                        expectationDifficulty.fulfill()
+                    case .servings(let value):
+                        observedServings = value
+                        expectationServings.fulfill()
+                    case .prepTime(let prepTime):
+                        switch prepTime {
+                        case .hours: break
+                        case .minutes: break
+                        case .fullTime(let value):
+                            observedPrepTime = value
+                            expectationPrepTime.fulfill()
+                        }
+                    case .spicy(let value):
+                        observedSpicy = value
+                        expectationSpicy.fulfill()
+                    case .category(let value):
+                        observedCategory = value
+                        expectationCategory.fulfill()
+                    }
+                }
+            }
+            .store(in: &cancellables)
+
+        viewModel.outputIngredientFormEventPublisher
+            .sink { event in
+                if case .updateIngredientForm(let form) = event {
+                    switch form {
+                    case .ingredientName(let value):
+                        observedIngredientName = value
+                        expectationIngredientName.fulfill()
+                    case .ingredientValue(let value):
+                        observedIngredientValue = value
+                        expectationIngredientValue.fulfill()
+                    case .ingredientValueType(let value):
+                        observedIngredientValueType = value
+                        expectationIngredientValueType.fulfill()
+                    }
+                }
+            }
+            .store(in: &cancellables)
+
+        viewModel.outputInstructionFormPublisher
+            .sink { event in
+                if case .updateInstructionValue(let string) = event {
+                    observedInstruction = string
+                    expectationInstruction.fulfill()
+                }
+            }
+            .store(in: &cancellables)
+
+        // Send input
+        viewModel.inputDetailsFormEvent.send(.sendDetailsValues(.recipeTitle(testedModel.name)))
+        viewModel.inputDetailsFormEvent.send(.sendDetailsValues(.difficulty(testedModel.difficulty.displayName)))
+
+        viewModel.inputDetailsFormEvent.send(.sendDetailsValues(.prepTime(.hours(testedModel.perpTimeHours))))
+        viewModel.inputDetailsFormEvent.send(.sendDetailsValues(.prepTime(.minutes(testedModel.perpTimeMinutes))))
+
+        viewModel.inputDetailsFormEvent.send(.sendDetailsValues(.servings(testedModel.serving)))
+        viewModel.inputDetailsFormEvent.send(.sendDetailsValues(.spicy(testedModel.spicy.displayName)))
+        viewModel.inputDetailsFormEvent.send(.sendDetailsValues(.category(testedModel.category.displayName)))
+
+        viewModel.inputIngredientFormEvent.send(.sendIngredientValues(.ingredientName(testedModel.ingredientList.first!.name)))
+        viewModel.inputIngredientFormEvent.send(.sendIngredientValues(.ingredientValue(testedModel.ingredientList.first!.value)))
+        viewModel.inputIngredientFormEvent.send(.sendIngredientValues(.ingredientValueType(testedModel.ingredientList.first!.valueType.name)))
+
+        viewModel.inputInstructionFormEvent.send(.sendInstructionValue(testedModel.instructionList.first!.text))
+
+        let formattedRecipeTitle = String(testedModel.name.prefix(32))
+        let formattedPrepTime = RecipeModel.getPerpTimeString(testedModel)
+
+        wait(for: [expectationRecipeTitle,
+                   expectationDifficulty,
+                   expectationPrepTime,
+                   expectationServings,
+                   expectationSpicy,
+                   expectationCategory,
+                   expectationIngredientName,
+                   expectationIngredientValue,
+                   expectationIngredientValueType,
+                   expectationInstruction],
+             timeout: 1.0)
+
+        XCTAssertEqual(observedRecipeTitle, formattedRecipeTitle, "Recipe title should be trimmed to 32 characters")
+        XCTAssertEqual(observedDifficulty, testedModel.difficulty.displayName, "Difficulty value is not valid")
+        XCTAssertEqual(observedPrepTime, formattedPrepTime(), "Difficulty value is not valid")
+        XCTAssertEqual(observedServings, testedModel.serving, "Servings value is not valid")
+        XCTAssertEqual(observedSpicy, testedModel.spicy.displayName, "Spicy value is not valid")
+        XCTAssertEqual(observedCategory, testedModel.category.displayName, "Category value is not valid")
+        XCTAssertEqual(observedIngredientName, testedModel.ingredientList.first?.name, "Ingredient name is not valid")
+        XCTAssertEqual(observedIngredientValue, testedModel.ingredientList.first?.value, "Ingredient value is not valid")
+        XCTAssertEqual(observedIngredientValueType, testedModel.ingredientList.first?.valueType.name, "Ingredient value type is not valid")
+        XCTAssertEqual(observedInstruction, testedModel.instructionList.first?.text, "Instruction value is not valid")
+    }
 }
 
 extension AddRecipeViewModel_Tests {
@@ -543,7 +705,7 @@ extension AddRecipeViewModel_Tests {
         viewModel.spicy = RecipeSpicy.medium.displayName
         viewModel.category = RecipeCategory.dinner.displayName
         viewModel.difficulty = RecipeDifficulty.easy.displayName
-        viewModel.ingredientsList = [IngredientModel(id: UUID(), value: "1", valueType: IngredientValueType.kilograms.displayName, name: "Meat")]
+        viewModel.ingredientsList = [IngredientModel(id: UUID(), name: "Meat", value: "1", valueType: IngredientValueTypeModel.grams)]
         viewModel.instructionList = [InstructionModel(id: UUID(), index: 1, text: "Do something")]
         viewModel.isFavourite = false
         viewModel.selectedImage = nil

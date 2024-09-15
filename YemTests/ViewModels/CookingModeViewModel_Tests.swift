@@ -11,53 +11,15 @@ import XCTest
 
 @testable import Yem
 
-// Mock Delegates
-class MockCookingModeVCDelegate: CookingModeVCDelegate {
-    var timerStartedCalled = false
-    var timerStoppedCalled = false
-
-    func timerStarted() {
-        timerStartedCalled = true
-    }
-
-    func timerStopped() {
-        timerStoppedCalled = true
-    }
-}
-
-class MockCookingIngredientsListSheetVCDelegate: CookingIngredientsListSheetVCDelegate {
-    var reloadTableCalled = false
-    var timerStoppedWhenIngredientSheetOpenCalled = false
-
-    func reloadTable() {
-        reloadTableCalled = true
-    }
-
-    func timerStoppedWhenIngredientSheetOpen() {
-        timerStoppedWhenIngredientSheetOpenCalled = true
-    }
-}
-
-class MockCookingTimerSheetVCDelegate: CookingTimerSheetVCDelegate {
-    var timerStoppedWhenTimerSheetOpenCalled = false
-
-    func timerStoppedWhenTimerSheetOpen() {
-        timerStoppedWhenTimerSheetOpenCalled = true
-    }
-}
-
 class CookingModeViewModelTests: XCTestCase {
     var viewModel: CookingModeViewModel!
-    var mockDelegate: MockCookingModeVCDelegate!
-    var mockIngredientDelegate: MockCookingIngredientsListSheetVCDelegate!
-    var mockTimerDelegate: MockCookingTimerSheetVCDelegate!
     var mockRepository: MockDataRepository!
+
+    var cancellables = Set<AnyCancellable>()
 
     override func setUp() {
         super.setUp()
-        mockDelegate = MockCookingModeVCDelegate()
-        mockIngredientDelegate = MockCookingIngredientsListSheetVCDelegate()
-        mockTimerDelegate = MockCookingTimerSheetVCDelegate()
+
         mockRepository = MockDataRepository()
 
         let sampleRecipe = RecipeModel(
@@ -70,16 +32,16 @@ class CookingModeViewModelTests: XCTestCase {
             category: .vegan,
             difficulty: .medium,
             ingredientList: [
-                IngredientModel(id: UUID(), value: "2", valueType: IngredientValueType.unit.rawValue, name: "Avocado"),
-                IngredientModel(id: UUID(), value: "200", valueType: IngredientValueType.grams.rawValue, name: "Black Beans"),
-                IngredientModel(id: UUID(), value: "150", valueType: IngredientValueType.grams.rawValue, name: "Corn"),
-                IngredientModel(id: UUID(), value: "1", valueType: IngredientValueType.unit.rawValue, name: "Onion"),
-                IngredientModel(id: UUID(), value: "2", valueType: IngredientValueType.tablespoons.rawValue, name: "Olive Oil"),
-                IngredientModel(id: UUID(), value: "1", valueType: IngredientValueType.teaspoons.rawValue, name: "Cumin"),
-                IngredientModel(id: UUID(), value: "1", valueType: IngredientValueType.teaspoons.rawValue, name: "Chili Powder"),
-                IngredientModel(id: UUID(), value: "8", valueType: IngredientValueType.unit.rawValue, name: "Taco Shells"),
-                IngredientModel(id: UUID(), value: "1", valueType: IngredientValueType.unit.rawValue, name: "Lime"),
-                IngredientModel(id: UUID(), value: "A pinch", valueType: IngredientValueType.pinch.rawValue, name: "Salt")
+                IngredientModel(id: UUID(), name: "Avocado", value: "2", valueType: IngredientValueTypeModel.unit),
+                IngredientModel(id: UUID(), name: "Black Beans", value: "200", valueType: IngredientValueTypeModel.grams),
+                IngredientModel(id: UUID(), name: "Corn", value: "150", valueType: IngredientValueTypeModel.grams),
+                IngredientModel(id: UUID(), name: "Onion", value: "1", valueType: IngredientValueTypeModel.unit),
+                IngredientModel(id: UUID(), name: "Olive Oil", value: "2", valueType: IngredientValueTypeModel.tablespoons),
+                IngredientModel(id: UUID(), name: "Cumin", value: "1", valueType: IngredientValueTypeModel.pinch),
+                IngredientModel(id: UUID(), name: "Chili Powder", value: "1", valueType: IngredientValueTypeModel.pinch),
+                IngredientModel(id: UUID(), name: "Taco Shells", value: "8", valueType: IngredientValueTypeModel.unit),
+                IngredientModel(id: UUID(), name: "Lime", value: "1", valueType: IngredientValueTypeModel.unit),
+                IngredientModel(id: UUID(), name: "Salt", value: "1", valueType: IngredientValueTypeModel.pinch)
             ],
             instructionList: [
                 InstructionModel(id: UUID(), index: 1, text: "Chop the avocado, onion, and prepare other ingredients."),
@@ -97,19 +59,17 @@ class CookingModeViewModelTests: XCTestCase {
         )
 
         viewModel = CookingModeViewModel(recipe: sampleRecipe, repository: mockRepository)
-        viewModel.delegate = mockDelegate
-        viewModel.delegateIngredientSheet = mockIngredientDelegate
-        viewModel.delegateTimerSheet = mockTimerDelegate
     }
 
     override func tearDown() {
         viewModel = nil
-        mockDelegate = nil
-        mockIngredientDelegate = nil
-        mockTimerDelegate = nil
         mockRepository = nil
+        cancellables.removeAll()
+
         super.tearDown()
     }
+
+    // TODO: to fix
 
     func testStartTimerWithValidTime() {
         let expectation = self.expectation(description: "Timer should start")
@@ -121,10 +81,7 @@ class CookingModeViewModelTests: XCTestCase {
         viewModel.startTimer()
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            XCTAssertTrue(self.mockDelegate.timerStartedCalled)
-
             XCTAssertNotNil(self.viewModel.timerPublisher)
-
             expectation.fulfill()
         }
 
@@ -132,29 +89,56 @@ class CookingModeViewModelTests: XCTestCase {
     }
 
     func testStartTimerWithZeroTime() {
+        let expectation = self.expectation(description: "Timer shouldn't start")
+
         viewModel.hours = 0
         viewModel.minutes = 0
         viewModel.seconds = 0
 
         viewModel.startTimer()
 
-        XCTAssertFalse(mockDelegate.timerStartedCalled)
-        XCTAssertNil(viewModel.timer)
-    }
-
-    func testUpdateTimerFinishesAndNotifiesDelegates() {
-        let expectation = self.expectation(description: "Timer should be stopped")
-
-        viewModel.startTimer(with: 1)
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-            XCTAssertTrue(self.mockDelegate.timerStartedCalled)
-            XCTAssertTrue(self.mockDelegate.timerStoppedCalled)
-            XCTAssertTrue(self.mockIngredientDelegate.timerStoppedWhenIngredientSheetOpenCalled)
-            XCTAssertTrue(self.mockTimerDelegate.timerStoppedWhenTimerSheetOpenCalled)
-
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            XCTAssertNil(self.viewModel.timerPublisher)
             expectation.fulfill()
         }
+
+        waitForExpectations(timeout: 1.0, handler: nil)
+    }
+
+    func testTimerFinishedAndPublisherCalled() {
+        let cookingModeScreenExpectation = expectation(description: "Timer in main cooking mode screen should be stopped")
+        let cookingIngredientsListSheetExpectation = expectation(description: "Timer in main cooking mode screen should be stopped")
+        let cookingTimerSheetExpectation = expectation(description: "Timer in main cooking mode screen should be stopped")
+
+        // Set up publisher
+        // In that case we need to test 3 publishers for every screen in cooking mode
+
+        viewModel.outputCookingModePublisher
+            .sink { event in
+                if case .timerStopped = event {
+                    cookingModeScreenExpectation.fulfill()
+                }
+            }
+            .store(in: &cancellables)
+
+        viewModel.outputCookingIngredientsListSheetPublisher
+            .sink { event in
+                if case .timerStopped = event {
+                    cookingIngredientsListSheetExpectation.fulfill()
+                }
+            }
+            .store(in: &cancellables)
+
+        viewModel.outputCookingTimerSheetPublisher
+            .sink { event in
+                if case .timerStopped = event {
+                    cookingTimerSheetExpectation.fulfill()
+                }
+            }
+            .store(in: &cancellables)
+
+        // Start tested method
+        viewModel.startTimer(with: 3)
 
         waitForExpectations(timeout: 5.0, handler: nil)
     }
@@ -172,7 +156,9 @@ class CookingModeViewModelTests: XCTestCase {
     }
 
     func testUpdateIngredientCheckStatusMovesToChecked() {
-        // Given
+        let expectation = self.expectation(description: "ReloadTable should be called")
+
+        // Set up ingredient
         var ingredient = ShopingListModel(
             id: UUID(),
             isChecked: false,
@@ -184,12 +170,20 @@ class CookingModeViewModelTests: XCTestCase {
         viewModel.uncheckedList = [ingredient]
         viewModel.checkedList = []
 
-        // When
+        // Set up publisher
+        viewModel.outputCookingIngredientsListSheetPublisher
+            .sink { event in
+                if case .reloadIngredientTable = event {
+                    expectation.fulfill()
+                }
+            }
+            .store(in: &cancellables)
+
+        // Call tested method
         viewModel.updateIngredientCheckStatus(ingredient: &ingredient)
 
-        // Then
-        let expectation = self.expectation(description: "reloadTable should be called")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [self] in
+        // Test result
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [self] in
             XCTAssertTrue(ingredient.isChecked, "Ingredient should be checked")
             XCTAssertTrue(
                 self.viewModel.checkedList.contains(where: { $0.id == ingredient.id }),
@@ -199,15 +193,14 @@ class CookingModeViewModelTests: XCTestCase {
                 viewModel.uncheckedList.contains(where: { $0.id == ingredient.id }),
                 "Ingredient should be removed from unchecked list"
             )
-            XCTAssertTrue(self.mockIngredientDelegate.reloadTableCalled)
-            expectation.fulfill()
         }
-
         waitForExpectations(timeout: 1.0, handler: nil)
     }
 
     func testUpdateIngredientCheckStatusMovesToUnchecked() {
-        // Given
+        let expectation = self.expectation(description: "ReloadTable should be called")
+
+        // Set up ingredient
         var ingredient = ShopingListModel(
             id: UUID(),
             isChecked: false,
@@ -219,11 +212,19 @@ class CookingModeViewModelTests: XCTestCase {
         viewModel.checkedList = [ingredient]
         viewModel.uncheckedList = []
 
-        // When
+        // Set up publisher
+        viewModel.outputCookingIngredientsListSheetPublisher
+            .sink { event in
+                if case .reloadIngredientTable = event {
+                    expectation.fulfill()
+                }
+            }
+            .store(in: &cancellables)
+
+        // Call tested method
         viewModel.updateIngredientCheckStatus(ingredient: &ingredient)
 
-        // Then
-        let expectation = self.expectation(description: "reloadTable should be called")
+        // Test result
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [self] in
             XCTAssertFalse(ingredient.isChecked, "Ingredient should be checked")
             XCTAssertTrue(
@@ -234,8 +235,6 @@ class CookingModeViewModelTests: XCTestCase {
                 viewModel.checkedList.contains(where: { $0.id == ingredient.id }),
                 "Ingredient should be removed from checked list"
             )
-            XCTAssertTrue(self.mockIngredientDelegate.reloadTableCalled)
-            expectation.fulfill()
         }
 
         waitForExpectations(timeout: 1.0, handler: nil)
