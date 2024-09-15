@@ -702,9 +702,9 @@ extension AddRecipeViewModel_Tests {
         viewModel.serving = "1"
         viewModel.prepTimeHours = "0"
         viewModel.prepTimeMinutes = "45"
-        viewModel.spicy = RecipeSpicy.medium.displayName
-        viewModel.category = RecipeCategory.dinner.displayName
-        viewModel.difficulty = RecipeDifficulty.easy.displayName
+        viewModel.spicy = RecipeSpicyModel.medium.displayName
+        viewModel.category = RecipeCategoryModel.dinner.displayName
+        viewModel.difficulty = RecipeDifficultyModel.easy.displayName
         viewModel.ingredientsList = [IngredientModel(id: UUID(), name: "Meat", value: "1", valueType: IngredientValueTypeModel.grams)]
         viewModel.instructionList = [InstructionModel(id: UUID(), index: 1, text: "Do something")]
         viewModel.isFavourite = false

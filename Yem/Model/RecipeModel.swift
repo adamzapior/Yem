@@ -14,9 +14,9 @@ struct RecipeModel {
     var serving: String
     var perpTimeHours: String
     var perpTimeMinutes: String
-    var spicy: RecipeSpicy
-    var category: RecipeCategory
-    var difficulty: RecipeDifficulty
+    var spicy: RecipeSpicyModel
+    var category: RecipeCategoryModel
+    var difficulty: RecipeDifficultyModel
     var ingredientList: [IngredientModel]
     var instructionList: [InstructionModel]
     var isImageSaved: Bool
@@ -29,9 +29,9 @@ struct RecipeModel {
         entity.servings = self.serving
         entity.prepTimeHours = self.perpTimeHours
         entity.prepTimeMinutes = self.perpTimeMinutes
-        entity.spicy = self.spicy.rawValue
-        entity.category = self.category.rawValue
-        entity.difficulty = self.difficulty.rawValue
+        entity.spicy = self.spicy.displayName
+        entity.category = self.category.displayName
+        entity.difficulty = self.difficulty.displayName
         entity.isImageSaved = self.isImageSaved
         entity.isFavourite = self.isFavourite
 

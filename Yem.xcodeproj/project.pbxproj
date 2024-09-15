@@ -20,6 +20,10 @@
 		5810495F2BB4455800FF2E8C /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5810495E2BB4455800FF2E8C /* AuthenticationManager.swift */; };
 		5812ADED2B5927E90035EAA5 /* RecipeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5812ADEC2B5927E90035EAA5 /* RecipeModel.swift */; };
 		581F14212BA8AC3B0046FFA8 /* DualOptionAlertVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581F14202BA8AC3B0046FFA8 /* DualOptionAlertVC.swift */; };
+		5828C1112C96165500228545 /* ShopingListAddItemSheetVM_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5828C1102C96165500228545 /* ShopingListAddItemSheetVM_Tests.swift */; };
+		5828C1132C96C3F400228545 /* RecipeSpicyModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5828C1122C96C3F400228545 /* RecipeSpicyModel.swift */; };
+		5828C1152C96C3FE00228545 /* RecipeCategoryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5828C1142C96C3FE00228545 /* RecipeCategoryModel.swift */; };
+		5828C1172C96C40900228545 /* RecipeDifficultyModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5828C1162C96C40900228545 /* RecipeDifficultyModel.swift */; };
 		582E71AE2B62C7BC002D3164 /* ValidationAlertVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 582E71AD2B62C7BC002D3164 /* ValidationAlertVC.swift */; };
 		58354B552B992B1C002C7A40 /* ShopingListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58354B542B992B1C002C7A40 /* ShopingListCell.swift */; };
 		58356AFB2B1FB9E5000AC548 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58356AFA2B1FB9E5000AC548 /* AppDelegate.swift */; };
@@ -143,6 +147,10 @@
 		5810495E2BB4455800FF2E8C /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
 		5812ADEC2B5927E90035EAA5 /* RecipeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeModel.swift; sourceTree = "<group>"; };
 		581F14202BA8AC3B0046FFA8 /* DualOptionAlertVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DualOptionAlertVC.swift; sourceTree = "<group>"; };
+		5828C1102C96165500228545 /* ShopingListAddItemSheetVM_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopingListAddItemSheetVM_Tests.swift; sourceTree = "<group>"; };
+		5828C1122C96C3F400228545 /* RecipeSpicyModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeSpicyModel.swift; sourceTree = "<group>"; };
+		5828C1142C96C3FE00228545 /* RecipeCategoryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeCategoryModel.swift; sourceTree = "<group>"; };
+		5828C1162C96C40900228545 /* RecipeDifficultyModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeDifficultyModel.swift; sourceTree = "<group>"; };
 		582E71AD2B62C7BC002D3164 /* ValidationAlertVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidationAlertVC.swift; sourceTree = "<group>"; };
 		58354B542B992B1C002C7A40 /* ShopingListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopingListCell.swift; sourceTree = "<group>"; };
 		58356AF72B1FB9E5000AC548 /* Yem.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yem.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -293,6 +301,9 @@
 				580ED3832B2513C000B4A9F0 /* IngredientModel.swift */,
 				58BBEB942B5B0C3A0058851C /* InstructionModel.swift */,
 				587F97192BA71A0900F5B937 /* ShopingListModel.swift */,
+				5828C1122C96C3F400228545 /* RecipeSpicyModel.swift */,
+				5828C1142C96C3FE00228545 /* RecipeCategoryModel.swift */,
+				5828C1162C96C40900228545 /* RecipeDifficultyModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -605,6 +616,7 @@
 			children = (
 				58C3E4AE2C616B75005CAC3E /* AddRecipeViewModel_Tests.swift */,
 				58C3E4B12C67CBD0005CAC3E /* ShopingListVM_Tests.swift */,
+				5828C1102C96165500228545 /* ShopingListAddItemSheetVM_Tests.swift */,
 				587E7A212C68C8D1002E9BB5 /* RecipeDetailsVM_Tests.swift */,
 				587E7A2B2C695E1C002E9BB5 /* RecipesListVM_Tests.swift */,
 				58B99A812C79CA88000B0818 /* CookingModeViewModel_Tests.swift */,
@@ -780,6 +792,7 @@
 				585F7C932C51B73C0005A55C /* RecipeSearchResultCell.swift in Sources */,
 				58C5814E2B94BB49000D3B7D /* IngredientView.swift in Sources */,
 				58D5F9C02B27A84700A72619 /* AddPickerView.swift in Sources */,
+				5828C1152C96C3FE00228545 /* RecipeCategoryModel.swift in Sources */,
 				58356B472B20E0DB000AC548 /* ShopingListVC.swift in Sources */,
 				58BBEB9B2B5C14C70058851C /* InstructionTableFooterView.swift in Sources */,
 				583C5D782BBD97A9002FCD5C /* SettingsCell.swift in Sources */,
@@ -838,6 +851,7 @@
 				588746912B2E400000EC5E11 /* ActionButton.swift in Sources */,
 				58C259CF2C147ADE004BCEC2 /* SplashScreenCoordinator.swift in Sources */,
 				58AB57BD2B588E8400053C74 /* DataRepository.swift in Sources */,
+				5828C1132C96C3F400228545 /* RecipeSpicyModel.swift in Sources */,
 				586932152B252D1800379C8C /* UIViewExt.swift in Sources */,
 				58BBEB7C2B59C9EB0058851C /* RecipeEntity.swift in Sources */,
 				58354B552B992B1C002C7A40 /* ShopingListCell.swift in Sources */,
@@ -854,6 +868,7 @@
 				5887468C2B2E075C00EC5E11 /* IngredientsCell.swift in Sources */,
 				583647012C14F8FD00EABB64 /* Destination.swift in Sources */,
 				58B99A7A2C73386E000B0818 /* CookingTimerSheetVC.swift in Sources */,
+				5828C1172C96C40900228545 /* RecipeDifficultyModel.swift in Sources */,
 				58B99A7C2C77D262000B0818 /* ShakeAnimation.swift in Sources */,
 				580ED3842B2513C000B4A9F0 /* IngredientModel.swift in Sources */,
 				5899294E2B44946000FAB070 /* ManageRecipeCoordinator.swift in Sources */,
@@ -880,6 +895,7 @@
 				587E7A252C6940DE002E9BB5 /* MockLocalFileManager.swift in Sources */,
 				58C3E4AD2C6017AD005CAC3E /* MockDataRepository.swift in Sources */,
 				58A208F72C7A971400A0AE9E /* RecipeEntity.swift in Sources */,
+				5828C1112C96165500228545 /* ShopingListAddItemSheetVM_Tests.swift in Sources */,
 				58A208F22C7A961400A0AE9E /* YemData.xcdatamodeld in Sources */,
 				58C3E4AF2C616B75005CAC3E /* AddRecipeViewModel_Tests.swift in Sources */,
 				587E7A2A2C6944E0002E9BB5 /* MockImageFetcherManager.swift in Sources */,

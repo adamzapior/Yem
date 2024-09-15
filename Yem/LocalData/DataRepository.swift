@@ -100,9 +100,9 @@ final class DataRepository: DataRepositoryProtocol {
         data.servings = recipe.serving
         data.prepTimeHours = recipe.perpTimeHours
         data.prepTimeMinutes = recipe.perpTimeMinutes
-        data.spicy = recipe.spicy.rawValue
-        data.category = recipe.category.rawValue
-        data.difficulty = recipe.difficulty.rawValue
+        data.spicy = recipe.spicy.displayName
+        data.category = recipe.category.displayName
+        data.difficulty = recipe.difficulty.displayName
         data.isImageSaved = recipe.isImageSaved
         data.isFavourite = recipe.isFavourite
 
@@ -142,9 +142,9 @@ final class DataRepository: DataRepositoryProtocol {
             recipeToUpdate.servings = recipe.serving
             recipeToUpdate.prepTimeHours = recipe.perpTimeHours
             recipeToUpdate.prepTimeMinutes = recipe.perpTimeMinutes
-            recipeToUpdate.spicy = recipe.spicy.rawValue
-            recipeToUpdate.category = recipe.category.rawValue
-            recipeToUpdate.difficulty = recipe.difficulty.rawValue
+            recipeToUpdate.spicy = recipe.spicy.displayName
+            recipeToUpdate.category = recipe.category.displayName
+            recipeToUpdate.difficulty = recipe.difficulty.displayName
             recipeToUpdate.isImageSaved = recipe.isImageSaved
             recipeToUpdate.isFavourite = recipe.isFavourite
 
@@ -309,9 +309,9 @@ extension DataRepository {
             serving: recipeEntity.servings,
             perpTimeHours: recipeEntity.prepTimeHours,
             perpTimeMinutes: recipeEntity.prepTimeMinutes,
-            spicy: RecipeSpicy(rawValue: recipeEntity.spicy) ?? .medium,
-            category: RecipeCategory(rawValue: recipeEntity.category) ?? .notSelected,
-            difficulty: RecipeDifficulty(rawValue: recipeEntity.difficulty) ?? .medium,
+            spicy: RecipeSpicyModel(value: recipeEntity.spicy),
+            category: RecipeCategoryModel(value: recipeEntity.category),
+            difficulty: RecipeDifficultyModel(value: recipeEntity.difficulty),
             ingredientList: recipeEntity.ingredients.map { ingredient in
                 IngredientModel(
                     id: ingredient.id,

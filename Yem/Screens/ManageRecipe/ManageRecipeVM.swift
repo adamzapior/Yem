@@ -63,9 +63,9 @@ final class ManageRecipeVM {
     var servingRowArray: [Int] = RecipeModel.servingRowArray
     var timeHoursArray: [Int] = RecipeModel.timeHoursArray
     var timeMinutesArray: [Int] = RecipeModel.timeMinutesArray
-    var spicyRowArray: [RecipeSpicy] = RecipeSpicy.allCases
-    var categoryRowArray: [RecipeCategory] = RecipeCategory.allCases
-    var difficultyRowArray: [RecipeDifficulty] = RecipeDifficulty.allCases
+    var spicyRowArray: [RecipeSpicyModel] = RecipeSpicyModel.allCases
+    var categoryRowArray: [RecipeCategoryModel] = RecipeCategoryModel.allCases
+    var difficultyRowArray: [RecipeDifficultyModel] = RecipeDifficultyModel.allCases
     var ingredientValueTypeArray: [IngredientValueTypeModel] = IngredientValueTypeModel.allCases
     
     var didRecipeExist: Bool = false
@@ -294,9 +294,9 @@ final class ManageRecipeVM {
                                  serving: serving.description,
                                  perpTimeHours: prepTimeHours,
                                  perpTimeMinutes: prepTimeMinutes,
-                                 spicy: RecipeSpicy(rawValue: spicy) ?? .medium,
-                                 category: RecipeCategory(rawValue: category) ?? .notSelected,
-                                 difficulty: RecipeDifficulty(rawValue: difficulty) ?? .medium,
+                                 spicy: RecipeSpicyModel(value: spicy),
+                                 category: RecipeCategoryModel(value: category),
+                                 difficulty: RecipeDifficultyModel(value: difficulty),
                                  ingredientList: ingredientsList,
                                  instructionList: instructionList,
                                  isImageSaved: selectedImage != nil,

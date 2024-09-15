@@ -113,7 +113,7 @@ final class RecipesListVM {
         
         let groupedRecipes = Dictionary(grouping: recipes, by: { $0.category })
         
-        for category in RecipeCategory.allCases {
+        for category in RecipeCategoryModel.allCases {
             if let recipesForCategory = groupedRecipes[category], !recipesForCategory.isEmpty {
                 let section = Section(title: category, items: recipesForCategory)
                 sections.append(section)
@@ -234,7 +234,7 @@ extension RecipesListVM {
 
 extension RecipesListVM {
     struct Section {
-        let title: RecipeCategory
+        let title: RecipeCategoryModel
         let items: [RecipeModel]
     }
 }
