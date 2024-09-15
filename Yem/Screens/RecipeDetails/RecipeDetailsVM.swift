@@ -58,7 +58,7 @@ final class RecipeDetailsVM {
                 try repository.updateRecipeFavouriteStatus(recipeId: recipe.id, isFavourite: newFavouriteStatus)
                 recipe.isFavourite = newFavouriteStatus
                 isFavourite = newFavouriteStatus
-                outputEvent.send(.recipeFavouriteValueChanged(to: newFavouriteStatus))
+                outputEvent.send(.recipeFavouriteValueChanged(value: newFavouriteStatus))
             } catch {
                 print("Error when updating favourite status: \(error)")
             }
@@ -82,7 +82,7 @@ final class RecipeDetailsVM {
         }
     }
 
-    private func loadRecipeImage(recipe: RecipeModel, completion: @escaping (UIImage?) -> Void) {
+    func loadRecipeImage(recipe: RecipeModel, completion: @escaping (UIImage?) -> Void) {
         guard recipe.isImageSaved else {
             completion(nil)
             return
@@ -92,27 +92,8 @@ final class RecipeDetailsVM {
                 imageFetcher.fetchImage(from: imageUrl) { [weak self] image in
                     guard self != nil else { return }
                     completion(image)
-//                    self.recipeImage.image = image
-//                    self.recipeImage.isHidden = (image == nil)
                 }
             }
-
-//        let imageUrlResult = localFileManager.imageUrl(for: recipe.id.uuidString)
-//
-//        switch imageUrlResult {
-//        case .success(let imageUrl):
-//            imageFetcher.fetchImage(from: imageUrl) { result in
-//                switch result {
-//                case .success(let image):
-//                    completion(image)
-//                case .failure(let error):
-//                    completion(nil)
-//                    print("Error fetching image: \(error.localizedDescription)")
-//                }
-//            }
-//        case .failure(let error):
-//            print("Error retrieving image URL: \(error.localizedDescription)")
-//        }
     }
 }
 
@@ -143,7 +124,7 @@ extension RecipeDetailsVM {
 
     enum Output {
         case updatePhoto(UIImage)
-        case recipeFavouriteValueChanged(to: Bool)
+        case recipeFavouriteValueChanged(value: Bool)
     }
 }
 

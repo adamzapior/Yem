@@ -185,7 +185,7 @@ final class RecipeDetailsVC: UIViewController {
         photoView.snp.makeConstraints { make in
             make.top.equalTo(contentView.snp.top).offset(18)
             make.leading.trailing.equalToSuperview().inset(18)
-            make.height.equalTo(200)
+            make.height.equalTo(200.VAdapted)
         }
     }
     
@@ -305,7 +305,6 @@ final class RecipeDetailsVC: UIViewController {
     private func setupIngredientsContainer() {
         contentView.addSubview(ingredientsContainer)
         
-//        ingredientsContainer.backgroundColor = UIColor.ui.primaryContainer
         ingredientsContainer.layer.cornerRadius = 10
         ingredientsContainer.clipsToBounds = true
         
