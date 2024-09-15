@@ -116,7 +116,6 @@ extension OnboardingVM {
             .sink { [unowned self] event in
                 self.handleInput(event: event)
             }.store(in: &cancellables)
-        print(cancellables.count)
     }
 
     private func handleInput(event: Input) {

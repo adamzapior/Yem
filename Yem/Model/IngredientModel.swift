@@ -54,6 +54,6 @@ struct IngredientValueTypeModel {
 
 extension IngredientValueTypeModel {
     static func from(name: String) -> IngredientValueTypeModel {
-        return self.allCases.first { $0.name == name } ?? .unit // Domyślnie zwraca `.unit` jeśli nie znaleziono
+        return self.allCases.first { $0.name == name } ?? .unit 
     }
 }

@@ -92,7 +92,6 @@ final class CoreDataManagerTests: XCTestCase {
 
     func testSaveRecipe() throws {
         let recipe = RecipeEntity(using: testStack.context)
-        print("Recipe Entity: \(recipe)")
     
         recipe.name = sampleRecipe.name
         recipe.id = sampleRecipe.id
@@ -122,7 +121,6 @@ final class CoreDataManagerTests: XCTestCase {
             recipe.addToInstructions(instructionEntity)
         }
     
-        print("Recipe Entity: \(recipe)")
 
         // Save contex
         do {

@@ -60,7 +60,7 @@ final class RecipeDetailsVM {
                 isFavourite = newFavouriteStatus
                 outputEvent.send(.recipeFavouriteValueChanged(value: newFavouriteStatus))
             } catch {
-                print("Error when updating favourite status: \(error)")
+                print("DEBUG: Error when updating favourite status: \(error)")
             }
         }
     }
@@ -69,7 +69,7 @@ final class RecipeDetailsVM {
         do {
             try repository.addIngredientsToShopingList(ingredients: recipe.ingredientList)
         } catch {
-            print("Error adding ingredients to shoping list: \(error)")
+            print("DEBUG: Error adding ingredients to shoping list: \(error)")
         }
     }
 
@@ -78,7 +78,7 @@ final class RecipeDetailsVM {
             try repository.deleteRecipe(withId: recipe.id)
 
         } catch {
-            print("Error with delete recipe method: \(error)")
+            print("DEBUG: Error with delete recipe method: \(error)")
         }
     }
 

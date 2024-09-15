@@ -11,37 +11,6 @@ import Combine
 import Foundation
 
 final class MockDataRepository: DataRepositoryProtocol {
-    func commitTransaction() throws {
-        mockSaveSuccess = true
-    }
-    
-    func fetchAllRecipes() throws -> [Yem.RecipeModel] {
-        return mockRecipes
-    }
-    
-    func fetchRecipesWithName(_ name: String) throws -> [Yem.RecipeModel]? {
-        let filteredRecipes = mockRecipes.filter { $0.name.contains(name) }
-        return filteredRecipes
-    }
-    
-    func fetchShopingList(isChecked: Bool) throws -> [Yem.ShopingListModel] {
-        if isChecked {
-            return checkedItems
-        } else {
-            return uncheckedItems
-        }
-    }
-    
-    func addIngredientsToShopingList(ingredients: [Yem.IngredientModel]) throws {
-        let newItem = ShopingListModel(id: ingredients.first!.id,
-                                       isChecked: false,
-                                       name: ingredients.first!.name,
-                                       value: ingredients.first!.value,
-                                       valueType: ingredients.first!.valueType.name)
-        uncheckedItems.append(newItem)
-        shopingListPublisher.send(completion: .finished)
-    }
-    
     var recipesInsertedPublisher = PassthroughSubject<ObjectChange, Never>()
     var recipesDeletedPublisher = PassthroughSubject<ObjectChange, Never>()
     var recipesUpdatedPublisher = PassthroughSubject<ObjectChange, Never>()
@@ -64,6 +33,10 @@ final class MockDataRepository: DataRepositoryProtocol {
         return mockSaveSuccess
     }
 
+    func commitTransaction() throws {
+        mockSaveSuccess = true
+    }
+
     func beginTransaction() {
         // No-op for mock
     }
@@ -80,9 +53,40 @@ final class MockDataRepository: DataRepositoryProtocol {
         return mockRecipeExists
     }
 
+    // MARK: Fetch
+
+    func fetchAllRecipes() throws -> [Yem.RecipeModel] {
+        return mockRecipes
+    }
+
+    func fetchRecipesWithName(_ name: String) throws -> [Yem.RecipeModel]? {
+        let filteredRecipes = mockRecipes.filter { $0.name.contains(name) }
+        return filteredRecipes
+    }
+
+    func fetchShopingList(isChecked: Bool) throws -> [Yem.ShopingListModel] {
+        if isChecked {
+            return checkedItems
+        } else {
+            return uncheckedItems
+        }
+    }
+
+    // MARK: Operations
+
     func addRecipe(recipe: RecipeModel) {
         isAddRecipeCalled = true
         mockRecipes.append(recipe)
+    }
+
+    func addIngredientsToShopingList(ingredients: [Yem.IngredientModel]) throws {
+        let newItem = ShopingListModel(id: ingredients.first!.id,
+                                       isChecked: false,
+                                       name: ingredients.first!.name,
+                                       value: ingredients.first!.value,
+                                       valueType: ingredients.first!.valueType.name)
+        uncheckedItems.append(newItem)
+        shopingListPublisher.send(completion: .finished)
     }
 
     func updateRecipe(recipe: RecipeModel) {
@@ -98,42 +102,15 @@ final class MockDataRepository: DataRepositoryProtocol {
         }
     }
 
-    func fetchAllRecipes() -> Result<[RecipeModel], Error> {
-        return .success(mockRecipes)
-    }
-
-    func fetchRecipesWithName(_ name: String) -> Result<[RecipeModel]?, Error> {
-        let filteredRecipes = mockRecipes.filter { $0.name.contains(name) }
-        return .success(filteredRecipes)
-    }
-
     func updateRecipeFavouriteStatus(recipeId: UUID, isFavourite: Bool) {
         isUpdateRecipeCalled = true
     }
 
-    func fetchShopingList(isChecked: Bool) -> Result<[Yem.ShopingListModel], any Error> {
-        if isChecked {
-            return .success(checkedItems)
-        } else {
-            return .success(uncheckedItems)
-        }
-    }
-
     func updateShopingList(shopingList: Yem.ShopingListModel) {
-        // TO DO
+        // no-op 
     }
 
     func clearShopingList() {
         clearShopingListCalled = true
-    }
-
-    func addIngredientsToShoppingList(ingredients: [Yem.IngredientModel]) {
-        let newItem = ShopingListModel(id: ingredients.first!.id,
-                                       isChecked: false,
-                                       name: ingredients.first!.name,
-                                       value: ingredients.first!.value,
-                                       valueType: ingredients.first!.valueType.name)
-        uncheckedItems.append(newItem)
-        shopingListPublisher.send(completion: .finished)
     }
 }

@@ -194,7 +194,6 @@ extension RecipeDetailsVM_Tests {
         let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let testImageURL = documentsDirectory.appendingPathComponent("testImage.jpg")
 
-        // Tworzenie i zapisywanie tymczasowego pliku
         let testImage = UIImage.testImage()
         if let data = testImage.jpegData(compressionQuality: 0.5) {
             try? data.write(to: testImageURL)

@@ -16,9 +16,9 @@ final class ShopingListAddItemSheetVM {
     @Published var ingredientValue: String = ""
     @Published var ingredientValueType: String = ""
 
-    private var ingredientNameIsError: Bool = false
-    private var ingredientValueIsError: Bool = false
-    private var ingredientValueTypeIsError: Bool = false
+    var ingredientNameIsError: Bool = false
+    var ingredientValueIsError: Bool = false
+    var ingredientValueTypeIsError: Bool = false
 
     private var validationErrors: [ValidationError] = []
 
@@ -28,7 +28,7 @@ final class ShopingListAddItemSheetVM {
     private var inputPublisher: AnyPublisher<Input, Never> {
         inputEvent.eraseToAnyPublisher()
     }
-    
+
     private let outputEvent = PassthroughSubject<Output, Never>()
     var outputPublisher: AnyPublisher<Output, Never> {
         outputEvent.eraseToAnyPublisher()
@@ -49,20 +49,31 @@ final class ShopingListAddItemSheetVM {
     }
 
     // MARK: - Public methods
-
-    func addIngredientToShoppingList() -> Result<Void, ValidationErrors> {
-        resetIngredientValidationFlags()
+    
+    func addIngredientToShoppingList() throws {
+        validationErrors = []
+        ingredientNameIsError = false
+        ingredientValueIsError = false
+        ingredientValueTypeIsError = false
+        
         let ingredient = IngredientModel(id: UUID(), name: ingredientName, value: ingredientValue, valueType: .init(name: ingredientValueType))
         
-        let validationResult = validateIngredient(ingredient)
-
-        switch validationResult {
-        case .success:
-            try! repository.addIngredientsToShopingList(ingredients: [ingredient])
-            return .success(())
-        case .failure(let error):
-            return .failure(error)
+        validateIngredient(ingredient)
+        
+        if hasValidationErrors() {
+            sendValidationOutput()
+            throw ValidationErrors(errors: validationErrors)
         }
+        
+        do {
+            try repository.addIngredientsToShopingList(ingredients: [ingredient])
+        } catch {
+            throw error
+        }
+    }
+    
+    func hasValidationErrors() -> Bool {
+        return ingredientNameIsError || ingredientValueIsError || ingredientValueTypeIsError
     }
 
     // MARK: - Private methods
@@ -100,26 +111,21 @@ final class ShopingListAddItemSheetVM {
         return true
     }
 
-    private func validateIngredient(_ ingredient: IngredientModel) -> Result<Void, ValidationErrors> {
-        var errors: [ValidationError] = []
+    private func validateIngredient(_ ingredient: IngredientModel) {
+        validationErrors.removeAll()
 
         if !validateIngredientName() {
-            errors.append(.invalidName)
+            validationErrors.append(.invalidName)
         }
         if !validateIngredientValue() {
-            errors.append(.invalidValue)
+            validationErrors.append(.invalidValue)
         }
         if !validateIngredientValueType() {
-            errors.append(.invalidValueType)
-        }
-
-        switch errors.isEmpty {
-        case true:
-            return .success(())
-        case false:
-            return .failure(.init(errors: errors))
+            validationErrors.append(.invalidValueType)
         }
     }
+    
+
 }
 
 // MARK: - Observed Input & Handling
@@ -141,10 +147,27 @@ extension ShopingListAddItemSheetVM {
                 let newValue = value
                 ingredientName = newValue
             case .ingredientValue(value: let value):
-                print("print: \(value.description)")
                 ingredientValue = value
             case .ingredientValueType(value: let value):
                 ingredientValueType = value.name
+            }
+        }
+    }
+}
+
+// MARK: - Handle output method
+
+extension ShopingListAddItemSheetVM {
+    private func sendValidationOutput() {
+        for error in self.validationErrors {
+            switch error {
+            case .invalidName:
+                outputEvent.send(.validationError(.invalidName))
+            case .invalidValue:
+                outputEvent.send(.validationError(.invalidValue))
+            case .invalidValueType:
+                outputEvent.send(.validationError(.invalidValueType))
+
             }
         }
     }
@@ -184,6 +207,7 @@ extension ShopingListAddItemSheetVM {
 
     enum Output {
         case updateField(IngredientField)
+        case validationError(ValidationError)
     }
 
     enum IngredientField {

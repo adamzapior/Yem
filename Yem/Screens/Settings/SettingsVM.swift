@@ -23,7 +23,7 @@ final class SettingsVM {
         do {
             try await authManager.signOut()
         } catch {
-            print(error)
+            print("DEBUG: \(error)")
         }
     }
 }

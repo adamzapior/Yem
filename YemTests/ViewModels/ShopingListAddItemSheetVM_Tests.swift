@@ -75,7 +75,7 @@ final class ShopingListAddItemSheetVM_Tests: XCTestCase {
         ]
 
         for scenario in scenarios {
-            print("Running scenario: \(scenario.description)")
+            print("DEBUG: Running scenario: \(scenario.description)")
 
             viewModel.ingredientNameIsError = scenario.initialValues.ingredientNameIsError
             viewModel.ingredientValueIsError = scenario.initialValues.ingredientValueIsError
@@ -121,7 +121,7 @@ final class ShopingListAddItemSheetVM_Tests: XCTestCase {
                 XCTAssertEqual(mockRepository.uncheckedItems.first?.valueType, viewModel.ingredientValueType)
                 
             } catch let error as ShopingListAddItemSheetVM.ValidationErrors {
-                print("Caught validation error: \(error.errors)")
+                print("DEBUG: Caught validation error: \(error.errors)")
                 XCTAssertEqual(error.errors.contains(.invalidName), scenario.expectedNameError, "Name validation error mismatch for scenario: \(scenario)")
                 XCTAssertEqual(error.errors.contains(.invalidValue), scenario.expectedValueError, "Value validation error mismatch for scenario: \(scenario)")
                 XCTAssertEqual(error.errors.contains(.invalidValueType), scenario.expectedValueTypeError, "ValueType validation error mismatch for scenario: \(scenario)")

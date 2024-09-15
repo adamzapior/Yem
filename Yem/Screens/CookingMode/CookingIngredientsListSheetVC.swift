@@ -74,7 +74,7 @@ final class CookingIngredientsListSheetVC: UIViewController {
 
 extension CookingIngredientsListSheetVC {
     private func observeViewModelOutput() {
-        viewModel.outputCookingIngredientsListSheetEventPublisher
+        viewModel.outputCookingIngredientsListSheetPublisher
             .sink { [weak self] event in
                 self?.handleViewModelOutput(event)
             }

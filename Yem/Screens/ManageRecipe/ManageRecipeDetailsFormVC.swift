@@ -364,7 +364,6 @@ extension ManageRecipeDetailsFromVC {
     private func handleDetailsFieldOutput(for field: ManageRecipeVM.Details) {
         switch field {
         case .recipeTitle(let value):
-            print("Should update \(value) here")
             nameTextfield.textField.text = value
         case .difficulty(let value):
             difficultyPickerView.textOnButton.text = value

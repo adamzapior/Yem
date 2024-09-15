@@ -105,6 +105,8 @@ final class CoreDataManager: CoreDataManagerProtocol {
             }
             .eraseToAnyPublisher()
     }
+    
+    // The application does not use each type of publisher separately, but for example when adding notifications about a new element - this code may be useful
 
     private func objectChange<T: NSManagedObject>(from notification: Notification, ofType type: T.Type) -> ObjectChange? {
         guard let userInfo = notification.userInfo else { return nil }

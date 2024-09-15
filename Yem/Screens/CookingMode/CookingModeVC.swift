@@ -311,7 +311,7 @@ class CookingModeVC: UIViewController {
 
 extension CookingModeVC {
     func observeViewModelOutput() {
-        viewModel.outputCookingModeEventPublisher
+        viewModel.outputCookingModePublisher
             .sink { [unowned self] event in
                 handleViewModelOutput(event)
             }

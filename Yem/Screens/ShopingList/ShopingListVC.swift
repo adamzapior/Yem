@@ -144,7 +144,6 @@ extension ShopingListVC {
                 }
             }
             .store(in: &cancellables)
-        print(cancellables.count)
     }
 }
 

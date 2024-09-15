@@ -82,10 +82,6 @@ final class RecipesListVC: UIViewController {
         viewModel.inputRecipesListEvent.send(.viewDidLoad)
     }
 
-    deinit {
-        print("DEBUG: RecipesListVC - deinit")
-    }
-
     // MARK: - UI Setup
 
     private func setupSearchController() {
@@ -117,64 +113,50 @@ final class RecipesListVC: UIViewController {
         UICollectionViewCompositionalLayout { [weak self] sectionIndex, _ in
             guard let self = self else { return nil }
             let section = self.viewModel.sections[sectionIndex]
+            let sectionCategory = section.title
 
-            let sectionName = section.title
+            let (itemWidth, itemHeight, groupWidth, groupHeight) = self.dimensionsForSection(sectionCategory)
 
-            switch sectionName {
-            case RecipeCategory.breakfast, RecipeCategory.desserts, RecipeCategory.snacks, RecipeCategory.beverages, RecipeCategory.vegan, RecipeCategory.vegetarian:
+            let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(itemWidth),
+                                                  heightDimension: .fractionalHeight(itemHeight))
+            let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
-                let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(250), heightDimension: .absolute(170))
-                let item = NSCollectionLayoutItem(layoutSize: itemSize)
+            let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(groupWidth),
+                                                   heightDimension: .fractionalHeight(groupHeight))
+            let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
 
-                let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(250), heightDimension: .absolute(170))
-                let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+            let layoutSection = NSCollectionLayoutSection(group: group)
+            layoutSection.orthogonalScrollingBehavior = .continuous
+            layoutSection.interGroupSpacing = 7
+            layoutSection.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 5, bottom: 10, trailing: 5)
+            layoutSection.boundarySupplementaryItems = [self.supplementaryHeaderItem(forSection: sectionIndex)]
 
-                let section = NSCollectionLayoutSection(group: group)
-                section.orthogonalScrollingBehavior = .continuous
-                section.interGroupSpacing = 7
-                section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 5, bottom: 10, trailing: 5)
-                section.boundarySupplementaryItems = [self.supplementaryHeaderItem(forSection: sectionIndex)]
-                return section
-            case RecipeCategory.lunch, RecipeCategory.dinner:
-                let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(250), heightDimension: .absolute(250))
-                let item = NSCollectionLayoutItem(layoutSize: itemSize)
+            return layoutSection
+        }
+    }
 
-                let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(250), heightDimension: .absolute(250))
-                let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
-
-                let section = NSCollectionLayoutSection(group: group)
-                section.orthogonalScrollingBehavior = .continuous
-                section.interGroupSpacing = 7
-                section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 5, bottom: 10, trailing: 5)
-                section.boundarySupplementaryItems = [self.supplementaryHeaderItem(forSection: sectionIndex)]
-                return section
-            case RecipeCategory.appetizers, RecipeCategory.sideDishes, RecipeCategory.notSelected:
-//                let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(170), heightDimension: .absolute(170))
-//                let item = NSCollectionLayoutItem(layoutSize: itemSize)
-//
-//                let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(170), heightDimension: .absolute(170))
-//                let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
-//
-//                let section = NSCollectionLayoutSection(group: group)
-//                section.orthogonalScrollingBehavior = .continuous
-//                section.interGroupSpacing = 7
-//                section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 5, bottom: 10, trailing: 5)
-//                section.boundarySupplementaryItems = [self.supplementaryHeaderItem(forSection: sectionIndex)]
-//                return section
-
-                let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.5), heightDimension: .fractionalHeight(0.5))
-                let item = NSCollectionLayoutItem(layoutSize: itemSize)
-
-                let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(0.5))
-                let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
-
-                let section = NSCollectionLayoutSection(group: group)
-                section.orthogonalScrollingBehavior = .continuous
-                section.interGroupSpacing = 7
-                section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 5, bottom: 10, trailing: 5)
-                section.boundarySupplementaryItems = [self.supplementaryHeaderItem(forSection: sectionIndex)]
-                return section
-            }
+    private func dimensionsForSection(_ category: RecipeCategoryModel) -> (itemWidth: CGFloat, itemHeight: CGFloat, groupWidth: CGFloat, groupHeight: CGFloat) {
+        switch category {
+        case .breakfast, .desserts, .snacks, .beverages, .vegan, .vegetarian:
+            return (1.0, // itemWidth
+                    1.0, // itemHeight
+                    0.8, // groupWidth
+                    0.25) // groupHeight
+        case .lunch, .dinner:
+            return (1.0, // itemWidth
+                    1.0, // itemHeight
+                    0.8, // groupWidth
+                    0.35) // groupHeight
+        case .appetizers, .sideDishes, .notSelected:
+            return (1.0, // itemWidth
+                    1.0, // itemHeight
+                    0.8, // groupWidth
+                    0.25) // groupHeight
+        default:
+            return (1.0, // itemWidth
+                    1.0, // itemHeight
+                    0.8, // groupWidth
+                    0.25) // groupHeight
         }
     }
 
@@ -300,7 +282,7 @@ extension RecipesListVC: UICollectionViewDataSource {
 
         cell.isAccessibilityElement = true
         cell.accessibilityLabel = "Recipe from \(section.title.displayName) category"
-        cell.accessibilityValue = "\(recipe.name) with perp time \(recipe.getPerpTimeString()) and \(recipe.spicy.displayName) spicy level"
+        cell.accessibilityValue = "\(recipe.name) with prep time \(recipe.getPrepTimeString()) and \(recipe.spicy.displayName) spicy level"
 
         return cell
     }
@@ -314,10 +296,10 @@ extension RecipesListVC: UICollectionViewDataSource {
             let section = viewModel.sections[indexPath.section]
             let sectionTitle = section.title
 
-            headerView.configure(title: sectionTitle.rawValue)
+            headerView.configure(title: sectionTitle.displayName)
 
             headerView.isAccessibilityElement = true
-            headerView.accessibilityLabel = "\(sectionTitle.rawValue) section"
+            headerView.accessibilityLabel = "\(sectionTitle.displayName) section"
             headerView.accessibilityValue = "Contains \(section.items.count) recipes"
 
             return headerView
@@ -346,20 +328,6 @@ extension RecipesListVC: UICollectionViewDelegate {
 
         coordinator?.navigateTo(.recipeDetailsScreen, recipe: recipe)
     }
-
-    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        cell.transform = CGAffineTransform(translationX: 0, y: 50)
-        cell.alpha = 0
-
-        // Calculate delay based on the position in the section
-        let delay = Double(indexPath.item) * 0.1
-
-        // Animate the cell appearance
-        UIView.animate(withDuration: 0.5, delay: delay, options: [.curveEaseInOut], animations: {
-            cell.transform = .identity
-            cell.alpha = 1
-        }, completion: nil)
-    }
 }
 
 // MARK: - NavigationItems & Navigation
@@ -371,11 +339,15 @@ extension RecipesListVC {
     }
 
     @objc func addRecipeButtonTapped() {
-        coordinator?.navigateTo(.addRecipeScreen)
+        DispatchQueue.main.async { [weak self] in
+            self?.coordinator?.navigateTo(.addRecipeScreen)
+        }
     }
 
     @objc func settingsButtonTapped() {
-        coordinator?.navigateTo(.settingsScreen)
+        DispatchQueue.main.async { [weak self] in
+            self?.coordinator?.navigateTo(.settingsScreen)
+        }
     }
 }
 

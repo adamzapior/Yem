@@ -84,9 +84,6 @@ class CookingTimerSheetVC: UIViewController {
             timerButton.systemLayoutSizeFitting(size).height
         ].reduce(0, +)
 
-        print(pickerView.systemLayoutSizeFitting(size).height)
-        print(timerButton.systemLayoutSizeFitting(size).height)
-
         return elementHeights + marginsAndSpacings
     }
 

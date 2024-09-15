@@ -112,8 +112,6 @@ final class TabBarCoordinator: UITabBarController, DestinationProviding {
         recipesNavigator = nil
         shoppingNavigator = nil
 
-        print(recipesNavigator.debugDescription)
-        print(shoppingNavigator.debugDescription)
         print("DEBUG: Navigators cleared: recipesNavigator - \(recipesNavigator.debugDescription), shoppingNavigator - \(shoppingNavigator.debugDescription)")
     }
 }

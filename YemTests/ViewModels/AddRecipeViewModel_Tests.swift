@@ -83,13 +83,10 @@ class AddRecipeViewModel_Tests: XCTestCase {
     }
 
     func testAddInstructiontoListSuccess() {
-        // Przygotowanie
         viewModel.instruction = "Do something"
 
-        // Działanie
         XCTAssertNoThrow(try viewModel.addInstructionToList(), "Adding instruction should not throw an error")
 
-        // Sprawdzenie
         XCTAssertFalse(viewModel.instructionIsError, "Instruction should not have validation errors")
         XCTAssertEqual(viewModel.instructionList.count, 1, "Instruction list should have one item")
 
@@ -100,12 +97,11 @@ class AddRecipeViewModel_Tests: XCTestCase {
             XCTFail("Instruction was not added to the list")
         }
 
-        // Sprawdzenie, czy właściwości zostały wyczyszczone
         XCTAssertTrue(viewModel.instruction.isEmpty, "Instruction property should be cleared after adding")
     }
 
     func testAddInstructiontoListFailure() {
-        viewModel.instruction = "" // Pusty string powinien spowodować błąd walidacji
+        viewModel.instruction = ""
 
         XCTAssertThrowsError(try viewModel.addInstructionToList()) { error in
             XCTAssertTrue(error is ManageRecipeVM.ValidationError, "Unexpected error type: \(type(of: error))")
@@ -403,7 +399,7 @@ class AddRecipeViewModel_Tests: XCTestCase {
         ]
 
         for scenario in scenarios {
-            print("Running scenario: \(scenario.description)")
+            print("DEBUG: Running scenario: \(scenario.description)")
 
             viewModel.recipeID = scenario.initialValues.recipeID
             viewModel.recipeTitle = scenario.initialValues.title

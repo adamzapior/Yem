@@ -57,11 +57,11 @@ final class CookingModeViewModel {
 
     // MARK: Output publishers
 
-    var outputCookingModeEventPublisher: AnyPublisher<CookingModeOutput, Never> {
+    var outputCookingModePublisher: AnyPublisher<CookingModeOutput, Never> {
         outputCookingModeEvent.eraseToAnyPublisher()
     }
 
-    var outputCookingIngredientsListSheetEventPublisher: AnyPublisher<CookingIngredientsListSheetOutput, Never> {
+    var outputCookingIngredientsListSheetPublisher: AnyPublisher<CookingIngredientsListSheetOutput, Never> {
         outputCookingIngredientsListSheetEvent.eraseToAnyPublisher()
     }
 
@@ -167,7 +167,7 @@ final class CookingModeViewModel {
             let hours = Int(selectedTime) / 3600
             let minutes = (Int(selectedTime) % 3600) / 60
             let seconds = Int(selectedTime) % 60
-            print("Time left: \(hours) hr \(minutes) min \(seconds) sec")
+            print("DEBUG: Time left: \(hours) hr \(minutes) min \(seconds) sec")
 
             timeRemaining = String(format: "%02d:%02d:%02d", hours, minutes, seconds)
             outputCookingModeEvent.send(.sendTimeRemaningString(timeRemaining))
@@ -182,7 +182,7 @@ final class CookingModeViewModel {
             cancellables.removeAll()
             timer?.invalidate()
             timer = nil
-            print("Timer finished")
+            print("DEBUG: Timer finished")
 
             notifyDelegatesTimerStopped()
             startVibration()

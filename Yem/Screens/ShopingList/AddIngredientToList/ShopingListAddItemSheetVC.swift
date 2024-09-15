@@ -261,6 +261,8 @@ extension ShopingListAddItemSheetVC {
                     handleUpdateAccessibility(for: .ingredientNameTextField, value: value)
                     ingredientValueTypePicker.textOnButton.textColor = .ui.primaryText
                 }
+            case .validationError(let type):
+                handleValidationError(type)
             }
         }
     }
@@ -285,10 +287,10 @@ extension ShopingListAddItemSheetVC {
     private func handleActionButtonEvent(type: ActionButtonType) {
         switch type {
         case .add:
-            switch viewModel.addIngredientToShoppingList() {
-            case .success:
+            do {
+                try viewModel.addIngredientToShoppingList()
                 dismissSheet()
-            case .failure(let error):
+            } catch let error as ShopingListAddItemSheetVM.ValidationErrors {
                 for validationError in error.errors {
                     switch validationError {
                     case .invalidName:
@@ -299,9 +301,12 @@ extension ShopingListAddItemSheetVC {
                         handleValidationError(.invalidValueType)
                     }
                 }
+            } catch {
+                print("DEBUG: Unexpected error when handling button event in ShopingListAddItemSheetVC: \(error)")
             }
+
         case .cancel:
-            dismissSheet()
+            dismissSheet() 
         }
     }
     

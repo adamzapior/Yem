@@ -18,11 +18,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let appWindow = UIWindow(frame: windowScene.coordinateSpace.bounds)
         appWindow.windowScene = windowScene
 
-        // Tworzenie AppCoordinator
         let appCoordinator = AppCoordinator()
         self.appCoordinator = appCoordinator
 
-        // Tworzenie Navigator z AppCoordinator jako startowym destination
         let navigator = Navigator(start: appCoordinator)
         self.navigator = navigator
         appCoordinator.navigator = navigator

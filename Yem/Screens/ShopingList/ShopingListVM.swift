@@ -71,8 +71,7 @@ final class ShopingListVM {
                 checkIfShoppingListIsEmpty()
                 outputEvent.send(.reloadTable)
             } catch {
-                // Handle error fetching shopping lists
-                print("Error fetching shopping list: \(error)")
+                print("DEBUG: Error fetching shopping list: \(error)")
             }
         }
     }
@@ -90,7 +89,7 @@ final class ShopingListVM {
         do {
             try repository.updateShopingList(shopingList: ingredient)
         } catch {
-            print("Error when shoping list updated: \(error)")
+            print("DEBUG: Error when shoping list updated: \(error)")
         }
         outputEvent.send(.reloadTable)
     }
@@ -99,7 +98,7 @@ final class ShopingListVM {
         do {
             try repository.clearShopingList()
         } catch {
-            print("Error clearing shopping list: \(error)")
+            print("DEBUG: Error clearing shopping list: \(error)")
         }
     }
 
@@ -114,8 +113,7 @@ final class ShopingListVM {
                 checkIfShoppingListIsEmpty()
                 outputEvent.send(.reloadTable)
             } catch {
-                // Handle error fetching shopping lists
-                print("Error reloading shopping list: \(error)")
+                print("DEBUG: Error reloading shopping list: \(error)")
             }
         }
     }
