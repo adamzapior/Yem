@@ -171,7 +171,7 @@ final class ManageRecipeDetailsFromVC: UIViewController {
         addPhotoView.snp.makeConstraints { make in
             make.top.equalTo(pageStackView.snp.bottom).offset(18)
             make.leading.trailing.equalToSuperview().inset(18)
-            make.height.equalTo(200)
+            make.height.equalTo(200.VAdapted)
         }
                 
         // picker delegate
