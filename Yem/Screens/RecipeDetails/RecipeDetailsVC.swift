@@ -265,7 +265,7 @@ final class RecipeDetailsVC: UIViewController {
         )
         categoryView.configure(
             titleText: "Category",
-            valueText: viewModel.recipe.category.rawValue
+            valueText: viewModel.recipe.category.displayName
         )
         servingView.configure(
             titleText: "Serving",
@@ -274,15 +274,15 @@ final class RecipeDetailsVC: UIViewController {
         
         prepTiemView.configure(
             titleText: "Prep time",
-            valueText: "\(viewModel.recipe.perpTimeHours)h \(viewModel.recipe.perpTimeMinutes)min"
+            valueText: "\(viewModel.recipe.prepTimeHours)h \(viewModel.recipe.prepTimeMinutes)min"
         )
         spicyView.configure(
             titleText: "Spicy",
-            valueText: viewModel.recipe.spicy.rawValue
+            valueText: viewModel.recipe.spicy.displayName
         )
         difficultyView.configure(
             titleText: "Difficulty",
-            valueText: viewModel.recipe.difficulty.rawValue
+            valueText: viewModel.recipe.difficulty.displayName
         )
     }
     
@@ -434,8 +434,8 @@ final class RecipeDetailsVC: UIViewController {
         servingView.accessibilityValue = viewModel.recipe.serving
         
         prepTiemView.isAccessibilityElement = true
-        prepTiemView.accessibilityLabel = "Recipe perp time"
-        prepTiemView.accessibilityValue = viewModel.recipe.getPerpTimeString()
+        prepTiemView.accessibilityLabel = "Recipe prep time"
+        prepTiemView.accessibilityValue = viewModel.recipe.getPrepTimeString()
         
         spicyView.isAccessibilityElement = true
         spicyView.accessibilityLabel = "Recipe spicy level"

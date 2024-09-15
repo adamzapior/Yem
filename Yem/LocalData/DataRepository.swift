@@ -98,8 +98,8 @@ final class DataRepository: DataRepositoryProtocol {
         data.id = recipe.id
         data.name = recipe.name
         data.servings = recipe.serving
-        data.prepTimeHours = recipe.perpTimeHours
-        data.prepTimeMinutes = recipe.perpTimeMinutes
+        data.prepTimeHours = recipe.prepTimeHours
+        data.prepTimeMinutes = recipe.prepTimeMinutes
         data.spicy = recipe.spicy.displayName
         data.category = recipe.category.displayName
         data.difficulty = recipe.difficulty.displayName
@@ -140,8 +140,8 @@ final class DataRepository: DataRepositoryProtocol {
 
             recipeToUpdate.name = recipe.name
             recipeToUpdate.servings = recipe.serving
-            recipeToUpdate.prepTimeHours = recipe.perpTimeHours
-            recipeToUpdate.prepTimeMinutes = recipe.perpTimeMinutes
+            recipeToUpdate.prepTimeHours = recipe.prepTimeHours
+            recipeToUpdate.prepTimeMinutes = recipe.prepTimeMinutes
             recipeToUpdate.spicy = recipe.spicy.displayName
             recipeToUpdate.category = recipe.category.displayName
             recipeToUpdate.difficulty = recipe.difficulty.displayName
@@ -307,8 +307,8 @@ extension DataRepository {
             id: recipeEntity.id,
             name: recipeEntity.name,
             serving: recipeEntity.servings,
-            perpTimeHours: recipeEntity.prepTimeHours,
-            perpTimeMinutes: recipeEntity.prepTimeMinutes,
+            prepTimeHours: recipeEntity.prepTimeHours,
+            prepTimeMinutes: recipeEntity.prepTimeMinutes,
             spicy: RecipeSpicyModel(value: recipeEntity.spicy),
             category: RecipeCategoryModel(value: recipeEntity.category),
             difficulty: RecipeDifficultyModel(value: recipeEntity.difficulty),

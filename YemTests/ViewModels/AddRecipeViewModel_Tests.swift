@@ -565,8 +565,8 @@ class AddRecipeViewModel_Tests: XCTestCase {
             id: UUID(),
             name: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.",
             serving: "1",
-            perpTimeHours: "1",
-            perpTimeMinutes: "2",
+            prepTimeHours: "1",
+            prepTimeMinutes: "2",
             spicy: .mild,
             category: .breakfast,
             difficulty: .easy,
@@ -654,8 +654,8 @@ class AddRecipeViewModel_Tests: XCTestCase {
         viewModel.inputDetailsFormEvent.send(.sendDetailsValues(.recipeTitle(testedModel.name)))
         viewModel.inputDetailsFormEvent.send(.sendDetailsValues(.difficulty(testedModel.difficulty.displayName)))
 
-        viewModel.inputDetailsFormEvent.send(.sendDetailsValues(.prepTime(.hours(testedModel.perpTimeHours))))
-        viewModel.inputDetailsFormEvent.send(.sendDetailsValues(.prepTime(.minutes(testedModel.perpTimeMinutes))))
+        viewModel.inputDetailsFormEvent.send(.sendDetailsValues(.prepTime(.hours(testedModel.prepTimeHours))))
+        viewModel.inputDetailsFormEvent.send(.sendDetailsValues(.prepTime(.minutes(testedModel.prepTimeMinutes))))
 
         viewModel.inputDetailsFormEvent.send(.sendDetailsValues(.servings(testedModel.serving)))
         viewModel.inputDetailsFormEvent.send(.sendDetailsValues(.spicy(testedModel.spicy.displayName)))
@@ -668,7 +668,7 @@ class AddRecipeViewModel_Tests: XCTestCase {
         viewModel.inputInstructionFormEvent.send(.sendInstructionValue(testedModel.instructionList.first!.text))
 
         let formattedRecipeTitle = String(testedModel.name.prefix(32))
-        let formattedPrepTime = RecipeModel.getPerpTimeString(testedModel)
+        let formattedPrepTime = RecipeModel.getPrepTimeString(testedModel)
 
         wait(for: [expectationRecipeTitle,
                    expectationDifficulty,

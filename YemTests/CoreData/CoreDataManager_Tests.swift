@@ -17,8 +17,8 @@ final class CoreDataManagerTests: XCTestCase {
         id: UUID(),
         name: "Spicy Vegan Tacos",
         serving: "4",
-        perpTimeHours: "0",
-        perpTimeMinutes: "45",
+        prepTimeHours: "0",
+        prepTimeMinutes: "45",
         spicy: .hot,
         category: .vegan,
         difficulty: .medium,
@@ -96,8 +96,8 @@ final class CoreDataManagerTests: XCTestCase {
     
         recipe.name = sampleRecipe.name
         recipe.id = sampleRecipe.id
-        recipe.prepTimeHours = sampleRecipe.perpTimeHours
-        recipe.prepTimeMinutes = sampleRecipe.perpTimeMinutes
+        recipe.prepTimeHours = sampleRecipe.prepTimeHours
+        recipe.prepTimeMinutes = sampleRecipe.prepTimeMinutes
         recipe.servings = sampleRecipe.serving
         recipe.spicy = sampleRecipe.spicy.displayName
         recipe.category = sampleRecipe.category.displayName
@@ -142,8 +142,8 @@ final class CoreDataManagerTests: XCTestCase {
         }
     
         XCTAssertEqual(fetchedRecipe.name, sampleRecipe.name, "The recipe name should match")
-        XCTAssertEqual(fetchedRecipe.prepTimeHours, sampleRecipe.perpTimeHours, "The preparation hours should match")
-        XCTAssertEqual(fetchedRecipe.prepTimeMinutes, sampleRecipe.perpTimeMinutes, "The preparation minutes should match")
+        XCTAssertEqual(fetchedRecipe.prepTimeHours, sampleRecipe.prepTimeHours, "The preparation hours should match")
+        XCTAssertEqual(fetchedRecipe.prepTimeMinutes, sampleRecipe.prepTimeMinutes, "The preparation minutes should match")
         XCTAssertEqual(fetchedRecipe.servings, sampleRecipe.serving, "The servings should match")
         XCTAssertEqual(fetchedRecipe.spicy, sampleRecipe.spicy.displayName, "The spiciness level should match")
         XCTAssertEqual(fetchedRecipe.category, sampleRecipe.category.displayName, "The category should match")
@@ -161,8 +161,8 @@ final class CoreDataManagerTests: XCTestCase {
         let recipe = RecipeEntity(context: context)
         recipe.name = "Unique Recipe"
         recipe.id = sampleRecipe.id
-        recipe.prepTimeHours = sampleRecipe.perpTimeHours
-        recipe.prepTimeMinutes = sampleRecipe.perpTimeMinutes
+        recipe.prepTimeHours = sampleRecipe.prepTimeHours
+        recipe.prepTimeMinutes = sampleRecipe.prepTimeMinutes
         recipe.servings = sampleRecipe.serving
         recipe.spicy = sampleRecipe.spicy.displayName
         recipe.category = sampleRecipe.category.displayName

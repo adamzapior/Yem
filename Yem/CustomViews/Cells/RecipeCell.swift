@@ -89,7 +89,7 @@ final class RecipeCell: UICollectionViewCell {
         
         titleLabel.text = model.name
 
-        prepTimeLabel.text = model.getPerpTimeString()
+        prepTimeLabel.text = model.getPrepTimeString()
         
         switch model.spicy {
         case .mild:

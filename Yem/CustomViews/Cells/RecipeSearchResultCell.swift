@@ -43,7 +43,7 @@ final class RecipeSearchResultCell: UITableViewCell {
         fontWeight: .semibold,
         textColor: .ui.primaryText
     )
-    private var perpTimeLabel = TextLabel(
+    private var prepTimeLabel = TextLabel(
         fontStyle: .footnote,
         fontWeight: .regular,
         textColor: .ui.secondaryText
@@ -91,16 +91,16 @@ final class RecipeSearchResultCell: UITableViewCell {
         var hours = ""
         var minutes = ""
         
-        if model.perpTimeHours != "0", model.perpTimeHours != "1", model.perpTimeHours != "" {
-            hours = "\(model.perpTimeHours) hours"
-        } else if model.perpTimeHours == "1" {
-            hours = "\(model.perpTimeHours) hour"
+        if model.prepTimeHours != "0", model.prepTimeHours != "1", model.prepTimeHours != "" {
+            hours = "\(model.prepTimeHours) hours"
+        } else if model.prepTimeHours == "1" {
+            hours = "\(model.prepTimeHours) hour"
         }
 
-        if model.perpTimeMinutes != "0", model.perpTimeMinutes != "" {
-            minutes = "\(model.perpTimeMinutes) min"
+        if model.prepTimeMinutes != "0", model.prepTimeMinutes != "" {
+            minutes = "\(model.prepTimeMinutes) min"
         }
-        perpTimeLabel.text = "\(hours) \(minutes)".trimmingCharacters(in: .whitespaces)
+        prepTimeLabel.text = "\(hours) \(minutes)".trimmingCharacters(in: .whitespaces)
         
         switch model.spicy {
         case .mild:
@@ -149,7 +149,7 @@ final class RecipeSearchResultCell: UITableViewCell {
         
         /// Cooking info details:
         contentView.addSubview(cookingInfoContainerView)
-        cookingInfoContainerView.addSubview(perpTimeLabel)
+        cookingInfoContainerView.addSubview(prepTimeLabel)
         cookingInfoContainerView.addSubview(spicyIcon)
         
         cookingInfoContainerView.snp.makeConstraints { make in
@@ -166,7 +166,7 @@ final class RecipeSearchResultCell: UITableViewCell {
             make.bottom.lessThanOrEqualTo(cookingInfoContainerView.snp.bottom).offset(-6)
         }
         
-        perpTimeLabel.snp.makeConstraints { make in
+        prepTimeLabel.snp.makeConstraints { make in
             make.top.equalTo(cookingInfoContainerView.snp.top).offset(6)
             make.leading.equalTo(spicyIcon.snp.trailing).offset(6)
             make.bottom.equalTo(cookingInfoContainerView.snp.bottom).offset(-6)
@@ -176,8 +176,8 @@ final class RecipeSearchResultCell: UITableViewCell {
         cookingInfoContainerView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         cookingInfoContainerView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
 
-        perpTimeLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        perpTimeLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        prepTimeLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        prepTimeLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
     }
     
     private func addTextShadow() {

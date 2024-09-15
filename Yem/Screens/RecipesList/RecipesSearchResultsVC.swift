@@ -146,7 +146,7 @@ extension RecipesSearchResultsVC: UITableViewDataSource {
         )
 
         cell.isAccessibilityElement = true
-        cell.accessibilityValue = "\(recipe.name) with perp time \(recipe.getPerpTimeString()) and \(recipe.spicy.displayName) spicy level"
+        cell.accessibilityValue = "\(recipe.name) with prep time \(recipe.getPrepTimeString()) and \(recipe.spicy.displayName) spicy level"
 
         return cell
     }

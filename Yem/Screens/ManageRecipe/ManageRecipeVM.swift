@@ -292,8 +292,8 @@ final class ManageRecipeVM {
         let recipe = RecipeModel(id: recipeID,
                                  name: recipeTitle,
                                  serving: serving.description,
-                                 perpTimeHours: prepTimeHours,
-                                 perpTimeMinutes: prepTimeMinutes,
+                                 prepTimeHours: prepTimeHours,
+                                 prepTimeMinutes: prepTimeMinutes,
                                  spicy: RecipeSpicyModel(value: spicy),
                                  category: RecipeCategoryModel(value: category),
                                  difficulty: RecipeDifficultyModel(value: difficulty),
@@ -533,7 +533,7 @@ extension ManageRecipeVM {
         }
     }
     
-    private func validatePerpTime() {
+    private func validatePrepTime() {
         if prepTimeHours.isEmpty, prepTimeMinutes.isEmpty {
             recipeTitleIsError = true
             validationErrors.append(.details(.prepTime))
@@ -609,7 +609,7 @@ extension ManageRecipeVM {
         validateRecipeTitle()
         validateDifficulty()
         validateServing()
-        validatePerpTime()
+        validatePrepTime()
         validateSpicy()
         validateCategory()
         validateIngredientList()
@@ -767,8 +767,8 @@ extension ManageRecipeVM {
         recipeID = recipe.id
         recipeTitle = recipe.name
         serving = recipe.serving
-        prepTimeHours = recipe.perpTimeHours
-        prepTimeMinutes = recipe.perpTimeMinutes
+        prepTimeHours = recipe.prepTimeHours
+        prepTimeMinutes = recipe.prepTimeMinutes
         spicy = recipe.spicy.displayName
         category = recipe.category.displayName
         difficulty = recipe.difficulty.displayName

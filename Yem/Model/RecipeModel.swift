@@ -12,8 +12,8 @@ struct RecipeModel {
     var id: UUID
     var name: String
     var serving: String
-    var perpTimeHours: String
-    var perpTimeMinutes: String
+    var prepTimeHours: String
+    var prepTimeMinutes: String
     var spicy: RecipeSpicyModel
     var category: RecipeCategoryModel
     var difficulty: RecipeDifficultyModel
@@ -27,8 +27,8 @@ struct RecipeModel {
         entity.id = self.id
         entity.name = self.name
         entity.servings = self.serving
-        entity.prepTimeHours = self.perpTimeHours
-        entity.prepTimeMinutes = self.perpTimeMinutes
+        entity.prepTimeHours = self.prepTimeHours
+        entity.prepTimeMinutes = self.prepTimeMinutes
         entity.spicy = self.spicy.displayName
         entity.category = self.category.displayName
         entity.difficulty = self.difficulty.displayName
@@ -66,23 +66,23 @@ extension RecipeModel {
 }
 
 extension RecipeModel {
-    func getPerpTimeString() -> String {
-        var perpTimeString = ""
+    func getPrepTimeString() -> String {
+        var prepTimeString = ""
         var hours = ""
         var minutes = ""
 
-        if self.perpTimeHours != "0", self.perpTimeHours != "1", self.perpTimeHours != "" {
-            hours = "\(self.perpTimeHours) hours"
-        } else if self.perpTimeHours == "1" {
-            hours = "\(self.perpTimeHours) hour"
+        if self.prepTimeHours != "0", self.prepTimeHours != "1", self.prepTimeHours != "" {
+            hours = "\(self.prepTimeHours) hours"
+        } else if self.prepTimeHours == "1" {
+            hours = "\(self.prepTimeHours) hour"
         }
 
-        if self.perpTimeMinutes != "0", self.perpTimeMinutes != "" {
-            minutes = "\(self.perpTimeMinutes) min"
+        if self.prepTimeMinutes != "0", self.prepTimeMinutes != "" {
+            minutes = "\(self.prepTimeMinutes) min"
         }
 
-        perpTimeString = "\(hours) \(minutes)".trimmingCharacters(in: .whitespaces)
-        return perpTimeString
+        prepTimeString = "\(hours) \(minutes)".trimmingCharacters(in: .whitespaces)
+        return prepTimeString
     }
 
     func getStringForURL() -> String {
