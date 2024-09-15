@@ -24,39 +24,39 @@ final class ManageRecipeVM {
     
     // MARK: Recipe properties
 
-    private var recipeID: UUID = .init()
+    var recipeID: UUID = .init()
     @Published var selectedImage: UIImage?
-    @Published private var recipeTitle: String = ""
-    @Published private var difficulty: String = ""
-    @Published private var serving: String = ""
-    @Published private var prepTimeHours: String = ""
-    @Published private var prepTimeMinutes: String = ""
-    @Published private var spicy: String = ""
-    @Published private var category: String = ""
-    @Published private var ingredientName: String = ""
-    @Published private var ingredientValue: String = ""
-    @Published private var ingredientValueType: String = ""
-    @Published private var instruction: String = ""
-    @Published private var isFavourite: Bool = false
+    @Published var recipeTitle: String = ""
+    @Published var difficulty: String = ""
+    @Published var serving: String = ""
+    @Published var prepTimeHours: String = ""
+    @Published var prepTimeMinutes: String = ""
+    @Published var spicy: String = ""
+    @Published var category: String = ""
+    @Published var ingredientName: String = ""
+    @Published var ingredientValue: String = ""
+    @Published var ingredientValueType: String = ""
+    @Published var instruction: String = ""
+    @Published var isFavourite: Bool = false
     @Published var ingredientsList: [IngredientModel] = []
     @Published var instructionList: [InstructionModel] = []
 
     // MARK: Error handling properties
 
-    private var recipeTitleIsError: Bool = false
-    private var difficultyIsError: Bool = false
-    private var servingIsError: Bool = false
-    private var prepTimeIsError: Bool = false
-    private var spicyIsError: Bool = false
-    private var categoryIsError: Bool = false
-    private var ingredientNameIsError: Bool = false
-    private var ingredientValueIsError: Bool = false
-    private var ingredientValueTypeIsError: Bool = false
-    private var ingredientListIsError: Bool = false
-    private var instructionIsError: Bool = false
-    private var instructionListIsError: Bool = false
+    var recipeTitleIsError: Bool = false
+    var difficultyIsError: Bool = false
+    var servingIsError: Bool = false
+    var prepTimeIsError: Bool = false
+    var spicyIsError: Bool = false
+    var categoryIsError: Bool = false
+    var ingredientNameIsError: Bool = false
+    var ingredientValueIsError: Bool = false
+    var ingredientValueTypeIsError: Bool = false
+    var ingredientListIsError: Bool = false
+    var instructionIsError: Bool = false
+    var instructionListIsError: Bool = false
     
-    private var validationErrors: [ErrorType] = []
+    var validationErrors: [ErrorType] = []
 
     // MARK: - Properties
         
@@ -408,96 +408,10 @@ final class ManageRecipeVM {
     }
 }
 
-// MARK: - Observed Input
-
-extension ManageRecipeVM {
-    private func observeInput() {
-        inputDetailsFormEvent
-            .sink { [unowned self] event in
-                switch event {
-                case .viewDidLoad:
-                    guard let existingRecipe else { return }
-                    loadRecipeData(existingRecipe)
-                case .sendDetailsValues(let type):
-                    switch type {
-                    case .recipeTitle(let value):
-                        recipeTitle = value
-                    case .difficulty(let value):
-                        difficulty = value
-                    case .servings(let value):
-                        serving = value
-                    case .prepTime(let type):
-                        switch type {
-                        case .hours(let value): prepTimeHours = value
-                        case .minutes(let value): prepTimeMinutes = value
-                        case .fullTime: break
-                        }
-                    case .spicy(let value):
-                        spicy = value
-                    case .category(let value):
-                        category = value
-                    }
-                case .requestPhotoLibrary:
-                    requestPhotoLibraryPermission()
-                case .requestCamera:
-                    requestCameraPermission()
-                }
-            }
-            .store(in: &cancellables)
-
-        inputIngredientFormEvent
-            .sink { [unowned self] event in
-                switch event {
-                case .viewDidLoad:
-                    break
-                case .sendIngredientValues(let type):
-                    switch type {
-                    case .ingredientName(let value):
-                        ingredientName = value
-                    case .ingredientValue(let value):
-                        ingredientValue = value
-                    case .ingredientValueType(let value):
-                        ingredientValueType = value
-                    }
-                }
-            }
-            .store(in: &cancellables)
-
-        inputIngredientsListEvent
-            .sink { [unowned self] event in
-                switch event {
-                case .viewDidLoad:
-                    self.outputIngredientsListEvent.send(.updateListStatus(isEmpty: ingredientsList.isEmpty))
-                }
-            }
-            .store(in: &cancellables)
-
-        inputInstructionFormEvent
-            .sink { [unowned self] event in
-                switch event {
-                case .viewDidLoad:
-                    break
-                case .sendInstructionValue(let value):
-                    instruction = value
-                }
-            }
-            .store(in: &cancellables)
-
-        inputInstructionsListEvent
-            .sink { [unowned self] event in
-                switch event {
-                case .viewDidLoad:
-                    self.outputInstructionsListEvent.send(.updateListStatus(isEmpty: instructionList.isEmpty))
-                }
-            }
-            .store(in: &cancellables)
-    }
-}
-
 // MARK: - Validation methods
 
 extension ManageRecipeVM {
-    private func hasRecipeValidationErrors() -> Bool {
+    func hasRecipeValidationErrors() -> Bool {
         return recipeTitleIsError || servingIsError || difficultyIsError || prepTimeIsError || spicyIsError || categoryIsError || ingredientListIsError || instructionListIsError
     }
     
@@ -759,6 +673,92 @@ extension ManageRecipeVM {
     }
 }
 
+// MARK: - Observed Input
+
+extension ManageRecipeVM {
+    private func observeInput() {
+        inputDetailsFormEvent
+            .sink { [unowned self] event in
+                switch event {
+                case .viewDidLoad:
+                    guard let existingRecipe else { return }
+                    loadRecipeData(existingRecipe)
+                case .sendDetailsValues(let type):
+                    switch type {
+                    case .recipeTitle(let value):
+                        recipeTitle = value
+                    case .difficulty(let value):
+                        difficulty = value
+                    case .servings(let value):
+                        serving = value
+                    case .prepTime(let type):
+                        switch type {
+                        case .hours(let value): prepTimeHours = value
+                        case .minutes(let value): prepTimeMinutes = value
+                        case .fullTime: break
+                        }
+                    case .spicy(let value):
+                        spicy = value
+                    case .category(let value):
+                        category = value
+                    }
+                case .requestPhotoLibrary:
+                    requestPhotoLibraryPermission()
+                case .requestCamera:
+                    requestCameraPermission()
+                }
+            }
+            .store(in: &cancellables)
+
+        inputIngredientFormEvent
+            .sink { [unowned self] event in
+                switch event {
+                case .viewDidLoad:
+                    break
+                case .sendIngredientValues(let type):
+                    switch type {
+                    case .ingredientName(let value):
+                        ingredientName = value
+                    case .ingredientValue(let value):
+                        ingredientValue = value
+                    case .ingredientValueType(let value):
+                        ingredientValueType = value
+                    }
+                }
+            }
+            .store(in: &cancellables)
+
+        inputIngredientsListEvent
+            .sink { [unowned self] event in
+                switch event {
+                case .viewDidLoad:
+                    self.outputIngredientsListEvent.send(.updateListStatus(isEmpty: ingredientsList.isEmpty))
+                }
+            }
+            .store(in: &cancellables)
+
+        inputInstructionFormEvent
+            .sink { [unowned self] event in
+                switch event {
+                case .viewDidLoad:
+                    break
+                case .sendInstructionValue(let value):
+                    instruction = value
+                }
+            }
+            .store(in: &cancellables)
+
+        inputInstructionsListEvent
+            .sink { [unowned self] event in
+                switch event {
+                case .viewDidLoad:
+                    self.outputInstructionsListEvent.send(.updateListStatus(isEmpty: instructionList.isEmpty))
+                }
+            }
+            .store(in: &cancellables)
+    }
+}
+
 // MARK: Load recipe data if exsist method
 
 extension ManageRecipeVM {
@@ -779,37 +779,12 @@ extension ManageRecipeVM {
         instructionList.sort { $0.index < $1.index }
         
         if recipe.isImageSaved {
-            
             if let imageUrl = localFileManager.imageUrl(for: recipe.id.uuidString) {
                 imageFetcherManager.fetchImage(from: imageUrl) { [weak self] image in
-                        guard let self = self else { return }
-                        selectedImage = image
-    //                    self.recipeImage.image = image
-    //                    self.recipeImage.isHidden = (image == nil)
-                    }
+                    guard let self = self else { return }
+                    selectedImage = image
                 }
-            
-            
-//            var url: URL?
-//            
-//            let getURL = localFileManager.imageUrl(for: recipe.getStringForURL())
-//            switch getURL {
-//            case .success(let result):
-//                url = result
-//            case .failure(let error):
-//                print("Error fetching image: \(error.localizedDescription)")
-//            }
-//            
-//            guard let url else { return }
-//            
-//            imageFetcherManager.fetchImage(from: url) { [weak self] result in
-//                switch result {
-//                case .success(let image):
-//                    self?.selectedImage = image
-//                case .failure(let error):
-//                    print("Error fetching image: \(error.localizedDescription)")
-//                }
-//            }
+            }
         }
     }
 }
