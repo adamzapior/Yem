@@ -32,7 +32,14 @@ App navigation is based on coordinator pattern, which are responsible for creati
 -   Each Destination renders its respective view controller using the render() method, which returns a UIViewController.
 -   The view controller's destination property is dynamically associated with the Destination instance using Objective-C runtime functions, enabling the navigation system to access and control each screen.
 -   The Navigator class manages the navigation stack using a UINavigationController. It provides various methods for navigation, including presenting screens, dismissing screens, changing root view controllers, and managing sheets and alerts.
-     
+
+## More about design pattern
+
+The application uses the MVVM architecture along with the previously mentioned coordinator pattern. However, in two areas of the app, more than one controller utilizes the same ViewModel. A single ViewModel is initialized for all screens in both the ManageRecipeCoordinator and the CookingModeCoordinator. Using a shared ViewModel allows for easier management of the state when adding the current recipe and during cooking mode.
+
+The app employs Combine for communication between objects at the ViewController-ViewModel level and between ViewController-Custom UI Views. Defenitions of Input/Outpu are created in each ViewModel. These are sent using PassthroughSubject and received in a variable of type AnyPublisher. The ViewControllers observe changes in the outputPublisher, while the ViewModel listens to the inputPublisher.
+
+For the recipe creation and cooking mode screens, each one has its own dedicated publisher. While this can introduce some complexity when sending event information, it ensures that updates are always applied to the correct screen.
 
 ## Configuration
 
