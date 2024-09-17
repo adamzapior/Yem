@@ -115,14 +115,13 @@ final class RecipeSearchResultCell: UITableViewCell {
         }
         
         if model.isImageSaved, let fileManager = localFileManager, let imageFetcher = imageFetcherManager {
-            
             if let imageUrl = fileManager.imageUrl(for: model.id.uuidString) {
-                    imageFetcher.fetchImage(from: imageUrl) { [weak self] image in
-                        guard let self = self else { return }
-                        self.recipeImage.image = image
-                        self.recipeImage.isHidden = (image == nil)
-                    }
+                imageFetcher.fetchImage(from: imageUrl) { [weak self] image in
+                    guard let self = self else { return }
+                    self.recipeImage.image = image
+                    self.recipeImage.isHidden = (image == nil)
                 }
+            }
         }
     }
     

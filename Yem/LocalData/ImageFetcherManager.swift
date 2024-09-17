@@ -10,7 +10,6 @@ import LifetimeTracker
 import UIKit
 
 protocol ImageFetcherManagerProtocol {
-//    func fetchImage(from url: URL, completion: @escaping (Result<UIImage, Error>) -> Void)
     func fetchImage(from url: URL, completion: @escaping (UIImage?) -> Void)
 }
 
@@ -23,9 +22,15 @@ final class ImageFetcherManager: ImageFetcherManagerProtocol {
     
     func fetchImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
         let provider = LocalFileImageDataProvider(fileURL: url)
+        let options: KingfisherOptionsInfo = [
+            .cacheOriginalImage,
+            .forceRefresh   /// force is necessary to handle updated recipe photos
+                            /// this can be avoided by getting the exact id of the updated image - todo in future
+        ]
         let fetchImageView = UIImageView()
+        
 
-        fetchImageView.kf.setImage(with: provider) { result in
+        fetchImageView.kf.setImage(with: provider, options: options) { result in
             switch result {
             case .success(let result):
                 DispatchQueue.main.async {
@@ -36,24 +41,6 @@ final class ImageFetcherManager: ImageFetcherManagerProtocol {
             }
         }
     }
-
-//    func fetchImage(from url: URL, completion: @escaping (Result<UIImage, Error>) -> Void) {
-//        let provider = LocalFileImageDataProvider(fileURL: url)
-//        let fetchImageView = UIImageView()
-//
-//        fetchImageView.kf.setImage(with: provider) { result in
-//            switch result {
-//            case .success(let result):
-//                DispatchQueue.main.async {
-//                    completion(.success(result.image))
-//                }
-//            case .failure(let error):
-//                DispatchQueue.main.async {
-//                    completion(.failure(error))
-//                }
-//            }
-//        }
-//    }
 }
 
 #if DEBUG
