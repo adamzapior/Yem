@@ -571,7 +571,7 @@ extension RecipeDetailsVC {
         DispatchQueue.main.async { [weak self] in
             coordinator.presentAlert(.deleteRecipe, title: title, message: message, confirmAction: {
                 self?.viewModel.deleteRecipe()
-                coordinator.dismissAlert()
+                coordinator.popUpToRoot()
             }) {
                 coordinator.dismissAlert()
             }
