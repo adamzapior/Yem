@@ -515,7 +515,7 @@ extension ManageRecipeDetailsFromVC {
     }
 }
 
-// MARK: - UIPickerViewDelegate, UIPickerViewDataSource
+// MARK: - UIPickerViewDataSource
 
 extension ManageRecipeDetailsFromVC: UIPickerViewDataSource {
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -561,6 +561,8 @@ extension ManageRecipeDetailsFromVC: UIPickerViewDataSource {
         return pickerView.numberOfComponents
     }
 }
+
+// MARK: - UIPickerViewDataSource
     
 extension ManageRecipeDetailsFromVC: UIPickerViewDelegate {
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
@@ -701,7 +703,9 @@ extension ManageRecipeDetailsFromVC {
     }
         
     @objc func nextButtonTapped(_ sender: UIBarButtonItem) {
-        coordinator?.navigateTo(.ingredientsList)
+        DispatchQueue.main.async { [weak self] in
+            self?.coordinator?.navigateTo(.ingredientsList)
+        }
     }
 }
 

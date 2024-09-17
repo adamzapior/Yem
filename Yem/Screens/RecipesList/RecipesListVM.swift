@@ -15,36 +15,36 @@ final class RecipesListVM {
     let localFileManager: LocalFileManagerProtocol
     let imageFetcherManager: ImageFetcherManagerProtocol
     private let repository: DataRepositoryProtocol
-   
+
     var sections: [Section] = []
-    
+
     var recipes: [RecipeModel] = []
     var filteredRecipes: [RecipeModel] = []
-    
+
     @Published var currentQuery: String = ""
-    
+
     // MARK: Input events
-    
+
     let inputRecipesListEvent = PassthroughSubject<RecipesListInput, Never>()
     let inputSearchResultsEvent = PassthroughSubject<RecipesSearchResultInput, Never>()
 
     // MARK: Input publishers
-    
+
     private var inputRecipesListEventPublisher: AnyPublisher<RecipesListInput, Never> {
         inputRecipesListEvent.eraseToAnyPublisher()
     }
-    
+
     private var inputSearchResultsPublisher: AnyPublisher<RecipesSearchResultInput, Never> {
         inputSearchResultsEvent.eraseToAnyPublisher()
     }
-    
+
     // MARK: Output events
-    
+
     private let outputRecipesListEvent = PassthroughSubject<RecipesListOutput, Never>()
     private let outputSearchResultsEvent = PassthroughSubject<RecipesSearchResultOutput, Never>()
 
     // MARK: Output publishers
-    
+
     var outputPublisher: AnyPublisher<RecipesListOutput, Never> {
         outputRecipesListEvent.eraseToAnyPublisher()
     }
@@ -54,7 +54,7 @@ final class RecipesListVM {
     }
 
     private var cancellables: Set<AnyCancellable> = []
-    
+
     init(
         repository: DataRepositoryProtocol,
         localFileManager: LocalFileManagerProtocol,
@@ -63,19 +63,19 @@ final class RecipesListVM {
         self.repository = repository
         self.localFileManager = localFileManager
         self.imageFetcherManager = imageFetcherManager
-        
+
         observeRepositoryPublishers()
         observeRecipesListInput()
         observeSearchableQuery()
         observeRecipesSearchResultsInput()
-        
+
 #if DEBUG
         trackLifetime()
 #endif
     }
-    
+
     // MARK: - Fetch methods
-    
+
     func loadRecipes() {
         Task {
             do {
@@ -90,7 +90,7 @@ final class RecipesListVM {
             }
         }
     }
-    
+
     func reloadRecipesList() {
         Task {
             do {
@@ -105,22 +105,22 @@ final class RecipesListVM {
         }
     }
 
-    
     // MARK: - Private methods
 
     private func groupRecipesByCategory() {
         sections.removeAll()
-        
+
         let groupedRecipes = Dictionary(grouping: recipes, by: { $0.category })
-        
+
         for category in RecipeCategoryModel.allCases {
             if let recipesForCategory = groupedRecipes[category], !recipesForCategory.isEmpty {
-                let section = Section(title: category, items: recipesForCategory)
+                let sortedRecipes = recipesForCategory.sorted { $0.name.lowercased() < $1.name.lowercased() }
+                let section = Section(title: category, items: sortedRecipes)
                 sections.append(section)
             }
         }
     }
-    
+
     private func filterRecipes(query: String) {
         if query.isEmpty {
             filteredRecipes = recipes
@@ -141,7 +141,7 @@ extension RecipesListVM {
                 }
             })
             .store(in: &cancellables)
-        
+
         repository.recipesUpdatedPublisher
             .sink(receiveValue: { [unowned self] _ in
                 Task {
@@ -149,7 +149,7 @@ extension RecipesListVM {
                 }
             })
             .store(in: &cancellables)
-        
+
         repository.recipesDeletedPublisher
             .sink(receiveValue: { [unowned self] _ in
                 Task {
@@ -187,7 +187,7 @@ extension RecipesListVM {
             }
             .store(in: &cancellables)
     }
-    
+
     private func observeRecipesSearchResultsInput() {
         inputSearchResultsPublisher
             .sink { [unowned self] event in
@@ -208,7 +208,7 @@ extension RecipesListVM {
     enum RecipesListInput {
         case viewDidLoad
     }
-    
+
     enum RecipesListOutput {
         case reloadTable
         case initialDataFetched
@@ -223,7 +223,7 @@ extension RecipesListVM {
         case viewDidLoad
         case sendQueryValue(String)
     }
-    
+
     enum RecipesSearchResultOutput {
         case reloadTable
         case updateListStatus(isEmpty: Bool)

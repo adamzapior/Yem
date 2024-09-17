@@ -319,7 +319,6 @@ final class ManageRecipeVM {
     private func handleSaveRecipeError(_ error: Error) throws {
         print("DEBUG: Repository save failed: \(error.localizedDescription)")
 
-        // Spróbuj usunąć obraz, jeśli został zapisany wcześniej
         if selectedImage != nil, case .failure(let deleteError) = localFileManager.deleteImage(with: recipeID.uuidString) {
             print("DEBUG: Error deleting image: \(deleteError.localizedDescription)")
             throw UpsertRecipeError.imageDeleteFailed(deleteError)
@@ -358,7 +357,6 @@ final class ManageRecipeVM {
     
     private func saveImageIfNeeded() throws {
         guard let image = selectedImage else { return }
-        // Próba zapisu obrazu
         if case .failure(let error) = localFileManager.saveImage(with: recipeID.uuidString, image: image) {
             print("DEBUG: Error saving image: \(error.localizedDescription)")
             throw UpsertRecipeError.imageSaveFailed(error)
